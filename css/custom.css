@@ -601,6 +601,10 @@ b, strong {
     height: 100vh;
   }
 
+  .bg-header-mobile .btn.rounded-pill {
+    font-size: 14px;
+  }
+
   .site-header-mobile {
     background-image: url(../img/mobile-header.jpg);
   }
