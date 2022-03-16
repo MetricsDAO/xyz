@@ -126,8 +126,6 @@ strong {
 }
 
 .site-header header {
-  padding-bottom: 3rem;
-  padding-top: 3rem;
   margin-bottom: 3rem;
   margin-top: 1rem;
 }
@@ -152,6 +150,10 @@ strong {
 
 .site-header .g-4 {
   --bs-gutter-x: 10.5rem;
+}
+
+.feature {
+  margin-bottom: 48px;
 }
 
 .feature p {
