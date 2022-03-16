@@ -2,31 +2,34 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  font-family: 'Work Sans', sans-serif;
+  font-family: "Work Sans", sans-serif;
   font-weight: 400;
   color: black;
   overflow-x: hidden;
 }
 
-a, img, a>span {
-  -webkit-transition: all .3s ease-out;
-  -moz-transition: all .3s ease-out;
-  -o-transition: all .3s ease-out;
-  transition: all .3s ease-out;
+a,
+img,
+a > span {
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
 }
 
-b, strong {
+b,
+strong {
   font-weight: 600;
 }
 
 @font-face {
-  font-family: 'LFT Etica Mono';
-  src: url('../fonts/LFTEticaMono-SemiBold.eot');
-  src: local('LFT Etica Mono SemiBold'), local('LFTEticaMono-SemiBold'),
-    url('../fonts/LFTEticaMono-SemiBold.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/LFTEticaMono-SemiBold.woff2') format('woff2'),
-    url('../fonts/LFTEticaMono-SemiBold.woff') format('woff'),
-    url('../fonts/LFTEticaMono-SemiBold.ttf') format('truetype');
+  font-family: "LFT Etica Mono";
+  src: url("../fonts/LFTEticaMono-SemiBold.eot");
+  src: local("LFT Etica Mono SemiBold"), local("LFTEticaMono-SemiBold"),
+    url("../fonts/LFTEticaMono-SemiBold.eot?#iefix") format("embedded-opentype"),
+    url("../fonts/LFTEticaMono-SemiBold.woff2") format("woff2"),
+    url("../fonts/LFTEticaMono-SemiBold.woff") format("woff"),
+    url("../fonts/LFTEticaMono-SemiBold.ttf") format("truetype");
   font-weight: 600;
   font-style: normal;
 }
@@ -46,7 +49,7 @@ b, strong {
   display: flex;
 }
 
-.btn-main>span:first-child {
+.btn-main > span:first-child {
   width: 120px;
   position: relative;
   border-width: 2px;
@@ -64,7 +67,7 @@ b, strong {
   margin-left: -10px;
 }
 
-.btn-main>span:last-child {
+.btn-main > span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -80,7 +83,6 @@ b, strong {
   padding-left: 25px;
 }
 
-
 .btn-main-white {
   width: 232px;
   position: relative;
@@ -89,7 +91,7 @@ b, strong {
   display: flex;
 }
 
-.btn-main-white>span:first-child {
+.btn-main-white > span:first-child {
   width: 212px;
   position: relative;
   border-width: 2px;
@@ -107,7 +109,7 @@ b, strong {
   margin-left: -10px;
 }
 
-.btn-main-white>span:last-child {
+.btn-main-white > span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -131,7 +133,7 @@ b, strong {
 }
 
 .intro {
-  padding-top: 1.5rem
+  padding-top: 1.5rem;
 }
 
 .intro .section-title {
@@ -201,7 +203,6 @@ b, strong {
   background-position: 17% 41%;
 }
 
-
 .section-1 .text-content {
   font-size: 34px;
   line-height: 1.2;
@@ -213,7 +214,7 @@ b, strong {
 }
 
 .section-what-we-do .section-label {
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   position: absolute;
@@ -253,7 +254,6 @@ b, strong {
   margin-bottom: 300px;
 }
 
-
 .section-3 .box-content.box-3 {
   padding-left: 10rem;
   padding-right: 6rem;
@@ -272,7 +272,7 @@ b, strong {
   left: -80px;
   top: 10px;
   transform: rotate(-90deg);
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   font-size: 23px;
@@ -284,13 +284,11 @@ b, strong {
   left: -80px;
   top: 10px;
   transform: rotate(-90deg);
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   font-size: 23px;
 }
-
-
 
 .section-creation .section-subtitle {
   font-size: 39px;
@@ -311,7 +309,7 @@ b, strong {
   left: -80px;
   top: 10px;
   transform: rotate(-90deg);
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   font-size: 23px;
@@ -344,7 +342,7 @@ b, strong {
   left: -80px;
   top: 10px;
   transform: rotate(-90deg);
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   font-size: 23px;
@@ -382,7 +380,7 @@ b, strong {
   left: -80px;
   top: 10px;
   transform: rotate(-90deg);
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   font-size: 23px;
@@ -396,8 +394,6 @@ b, strong {
 .section-review .btn.rounded-pill {
   margin-top: 3rem;
 }
-
-
 
 .section-payment .section-subtitle {
   font-size: 39px;
@@ -418,7 +414,7 @@ b, strong {
   left: -80px;
   top: 9px;
   transform: rotate(-90deg);
-  font-family: 'LFT Etica Mono';
+  font-family: "LFT Etica Mono";
   font-weight: 600;
   font-style: normal;
   font-size: 23px;
@@ -432,9 +428,6 @@ b, strong {
 .section-payment .btn.rounded-pill {
   margin-top: 3rem;
 }
-
-
-
 
 .section-4 {
   background: url(../img/bg-footer.jpg);
@@ -457,30 +450,29 @@ b, strong {
   align-items: center;
 }
 
-.btn-main:hover>span:first-child {
+.btn-main:hover > span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main:hover>span:last-child {
+.btn-main:hover > span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
 }
 
-
-.btn-main-white:hover>span:first-child {
+.btn-main-white:hover > span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main-white:hover>span:last-child {
+.btn-main-white:hover > span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
 }
 
-@media (max-width:1399px) {
+@media (max-width: 1399px) {
   .site-header .g-4 {
     --bs-gutter-x: 2.5rem;
   }
@@ -579,23 +571,20 @@ b, strong {
   .section-4 .section-title {
     font-size: 3.2rem;
   }
-
-
 }
 
-@media (min-width:992px) {
-
-
-  .site-header-mobile, .mobile-break, .box-actions-mobile {
+@media (min-width: 992px) {
+  .site-header-mobile,
+  .mobile-break,
+  .box-actions-mobile {
     display: none;
   }
 }
 
-@media (max-width:991px) {
+@media (max-width: 991px) {
   .site-header {
     display: none;
   }
-
 
   .bg-header-mobile {
     height: 100vh;
@@ -703,5 +692,13 @@ b, strong {
   .footer-brand img {
     max-width: 80%;
   }
-
+}
+.bi-mirror {
+  background-image: url(../img/mirror_black.svg) !important;
+  background-size: 18px 18px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.bi-mirror:hover {
+  background-image: url(../img/mirror_white.svg) !important;
 }
