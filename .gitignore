@@ -1,3 +1,11 @@
-.DS_Store
-*.pem
-node_modules/
+node_modules
+
+.cache
+.env
+.vercel
+.output
+
+/build/
+/public/build
+/api/index.js
+api/index.js
