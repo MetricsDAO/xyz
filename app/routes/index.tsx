@@ -1,3 +1,4 @@
+import { Link } from "remix";
 import LandingHeader from "../components/landing-header";
 
 export default function Index() {
@@ -43,12 +44,12 @@ export default function Index() {
                   READ THE WHITEPAPER{" "}
                   <i className="bi bi-arrow-right-short"></i>
                 </a>
-                <a
-                  href="https://www.notion.so/metricsdao/MetricsDAO-Roadmap-09ce7d1f23a741b38f63587be59574a6"
+                <Link
+                  to="/roadmap"
                   className="btn btn-sm btn-outline-light rounded-pill px-3 mx-2 mb-4"
                 >
                   VIEW ROADMAP <i className="bi bi-arrow-right-short"></i>
-                </a>
+                </Link>
               </p>
             </div>
           </div>

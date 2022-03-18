@@ -1,3 +1,5 @@
+import { Link } from "remix";
+
 export default function LandingHeader() {
   return (
     <>
@@ -13,8 +15,8 @@ const DesktopHeader = () => {
       <div className="container">
         <header className="d-flex flex-wrap justify-content-between align-items-center">
           <div className="col-md-4 d-flex align-items-center">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
             >
               <img
@@ -23,15 +25,15 @@ const DesktopHeader = () => {
                 width="241"
                 height="44"
               />
-            </a>
+            </Link>
           </div>
           <ul className="nav col-md-8 justify-content-end list-unstyled d-flex align-items-center">
-            <a
+            <Link
               className="btn btn-outline-dark rounded-pill px-3 me-3"
-              href="https://www.notion.so/metricsdao/MetricsDAO-Roadmap-09ce7d1f23a741b38f63587be59574a6"
+              to="/roadmap"
             >
               ROADMAP
-            </a>
+            </Link>
             <a
               className="btn btn-outline-dark rounded-pill px-3 me-3 text-uppercase"
               href="https://docs.google.com/forms/d/e/1FAIpQLSdh5JDUp-7MSl-N-Mk_4hNWmGdNRkpcdhzuLMbSP0ef9f094Q/viewform"
@@ -123,14 +125,14 @@ const MobileHeader = () => {
       <div className="bg-header-mobile">
         <div className="container h-100 d-flex flex-column justify-content-between align-items-between">
           <div className="col-12 d-flex align-items-center">
-            <a href="/" className="mx-auto pt-5">
+            <Link to="/" className="mx-auto pt-5">
               <img
                 src="img/bw-lightbg@2x.png"
                 alt="MetricsDAO"
                 width="241"
                 height="44"
               />
-            </a>
+            </Link>
           </div>
           <section className="intro text-center">
             <h1
@@ -156,18 +158,18 @@ const MobileHeader = () => {
 
           <header className="pb-5 d-flex flex-wrap justify-content-between align-items-center">
             <ul className="nav col-12 justify-content-end list-unstyled d-flex align-items-center justify-content-center">
-              <a
-                href="https://www.notion.so/metricsdao/MetricsDAO-Roadmap-09ce7d1f23a741b38f63587be59574a6"
+              <Link
+                to="/roadmap"
                 className="btn btn-outline-dark rounded-pill px-3 me-2"
               >
                 ROADMAP
-              </a>
-              <a
-                href="#contactus"
+              </Link>
+              <Link
+                to="#contactus"
                 className="btn btn-outline-dark rounded-pill px-3 me-2 text-uppercase"
               >
                 Partner with Us
-              </a>
+              </Link>
               <li className="ms-0 social-network">
                 <a
                   className="btn btn-outline-dark"

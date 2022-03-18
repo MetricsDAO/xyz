@@ -1,12 +1,14 @@
+import { Link } from "remix";
+
 export default function AppFooter() {
   return (
     <footer className="site-footer">
       <div className="container">
         <div className="row d-flex flex-wrap justify-content-between align-items-center py-3 my-4">
           <div className="col-4 d-flex align-items-center">
-            <a href="/" className="footer-brand">
+            <Link to="/" className="footer-brand">
               <img src="img/black-mark@2x.png" alt="MetricsDAO" width="96" />
-            </a>
+            </Link>
           </div>
           <ul className="nav col-auto justify-content-end list-unstyled d-flex flex-row flex-lg-column social-network">
             <li className="ms-3 mb-lg-3">
