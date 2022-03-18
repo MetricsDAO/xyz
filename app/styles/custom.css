@@ -2,7 +2,7 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  font-family: "Work Sans", sans-serif;
+  font-family: "Work Sans", sans-serif !important;
   font-weight: 400;
   color: black;
   overflow-x: hidden;
@@ -20,18 +20,6 @@ a > span {
 b,
 strong {
   font-weight: 600;
-}
-
-@font-face {
-  font-family: "LFT Etica Mono";
-  src: url("../fonts/LFTEticaMono-SemiBold.eot");
-  src: local("LFT Etica Mono SemiBold"), local("LFTEticaMono-SemiBold"),
-    url("../fonts/LFTEticaMono-SemiBold.eot?#iefix") format("embedded-opentype"),
-    url("../fonts/LFTEticaMono-SemiBold.woff2") format("woff2"),
-    url("../fonts/LFTEticaMono-SemiBold.woff") format("woff"),
-    url("../fonts/LFTEticaMono-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
 }
 
 .btn {
@@ -127,7 +115,7 @@ strong {
 
 .site-header header {
   margin-bottom: 3rem;
-  margin-top: 1rem;
+  margin-top: 2.5rem;
 }
 
 .intro {
@@ -142,7 +130,7 @@ strong {
 }
 
 .site-header {
-  background: url(../img/desktop-header.jpg);
+  background: url(/img/desktop-header.jpg);
   background-size: cover;
   min-height: 105vh;
   display: flex;
@@ -198,7 +186,7 @@ strong {
   display: flex;
   color: white;
   position: relative;
-  background-image: url(../img/what-we-do.png);
+  background-image: url(/img/what-we-do.png);
   background-color: #0061ff;
   background-size: 41%;
   background-repeat: no-repeat;
@@ -248,7 +236,7 @@ strong {
 }
 
 .section-3 .container {
-  background-image: url(../img/bg-section-3.jpg);
+  background-image: url(/img/bg-section-3.jpg);
   background-size: contain;
   background-position: center 224px;
   background-repeat: no-repeat;
@@ -432,7 +420,7 @@ strong {
 }
 
 .section-4 {
-  background: url(../img/bg-footer.jpg);
+  background: url(/img/bg-footer.jpg);
   background-size: cover;
   min-height: 80vh;
   display: flex;
@@ -597,7 +585,7 @@ strong {
   }
 
   .site-header-mobile {
-    background-image: url(../img/mobile-header.jpg);
+    background-image: url(/img/mobile-header.jpg);
   }
 
   .site-header-mobile .intro {
@@ -639,7 +627,7 @@ strong {
   }
 
   .section-3 .container {
-    background-image: url(../img/bg-section-3-mobile.jpg);
+    background-image: url(/img/bg-section-3-mobile.jpg);
     background-position: center center;
     padding-top: 210px;
     margin-bottom: 130px;
@@ -696,11 +684,11 @@ strong {
   }
 }
 .bi-mirror {
-  background-image: url(../img/mirror_black.svg) !important;
+  background-image: url(/img/mirror_black.svg) !important;
   background-size: 18px 18px;
   background-position: center;
   background-repeat: no-repeat;
 }
 .bi-mirror:hover {
-  background-image: url(../img/mirror_white.svg) !important;
+  background-image: url(/img/mirror_white.svg) !important;
 }
