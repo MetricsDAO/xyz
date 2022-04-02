@@ -3,7 +3,7 @@ import { LoaderFunction, redirect } from "remix";
 export const loader: LoaderFunction = async () => {
   // Remove this loader code to remove the redirect
   return redirect(
-    "https://www.notion.so/metricsdao/MetricsDAO-Roadmap-09ce7d1f23a741b38f63587be59574a6",
+    "https://metricsdao.notion.site/metricsdao/MetricsDAO-Roadmap-09ce7d1f23a741b38f63587be59574a6",
     302
   );
 };
