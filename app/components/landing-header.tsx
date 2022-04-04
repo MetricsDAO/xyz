@@ -36,7 +36,7 @@ const DesktopHeader = () => {
             </Link>
             <a
               className="btn btn-outline-dark rounded-pill px-3 me-3 text-uppercase"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdh5JDUp-7MSl-N-Mk_4hNWmGdNRkpcdhzuLMbSP0ef9f094Q/viewform"
+              href="https://partnerwith.metricsdao.xyz"
             >
               Partner with Us
             </a>
