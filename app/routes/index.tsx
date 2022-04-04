@@ -232,7 +232,7 @@ export default function Index() {
               >
                 <a
                   className="btn-main-white"
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSdh5JDUp-7MSl-N-Mk_4hNWmGdNRkpcdhzuLMbSP0ef9f094Q/viewform"
+                  href="https://partnerwith.metricsdao.xyz"
                 >
                   <span>PARTNER WITH US!</span>
                   <span>
