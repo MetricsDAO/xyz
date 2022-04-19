@@ -1,6 +1,7 @@
 html {
   scroll-behavior: smooth;
 }
+
 body {
   font-family: "Work Sans", sans-serif !important;
   font-weight: 400;
@@ -10,7 +11,7 @@ body {
 
 a,
 img,
-a > span {
+a>span {
   -webkit-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
   -o-transition: all 0.3s ease-out;
@@ -37,7 +38,7 @@ strong {
   display: flex;
 }
 
-.btn-main > span:first-child {
+.btn-main>span:first-child {
   width: 120px;
   position: relative;
   border-width: 2px;
@@ -55,7 +56,7 @@ strong {
   margin-left: -10px;
 }
 
-.btn-main > span:last-child {
+.btn-main>span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -79,7 +80,7 @@ strong {
   display: flex;
 }
 
-.btn-main-white > span:first-child {
+.btn-main-white>span:first-child {
   width: 212px;
   position: relative;
   border-width: 2px;
@@ -97,7 +98,7 @@ strong {
   margin-left: -10px;
 }
 
-.btn-main-white > span:last-child {
+.btn-main-white>span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -113,6 +114,7 @@ strong {
   align-items: center;
 }
 
+.site-header-skinny header,
 .site-header header {
   margin-bottom: 3rem;
   margin-top: 2.5rem;
@@ -133,6 +135,13 @@ strong {
   background: url(/img/desktop-header.jpg);
   background-size: cover;
   min-height: 105vh;
+  display: flex;
+}
+
+.site-header-skinny {
+  background: url(/img/desktop-header.jpg);
+  background-size: cover;
+  min-height: 100px;
   display: flex;
 }
 
@@ -440,23 +449,23 @@ strong {
   align-items: center;
 }
 
-.btn-main:hover > span:first-child {
+.btn-main:hover>span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main:hover > span:last-child {
+.btn-main:hover>span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
 }
 
-.btn-main-white:hover > span:first-child {
+.btn-main-white:hover>span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main-white:hover > span:last-child {
+.btn-main-white:hover>span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
@@ -564,6 +573,7 @@ strong {
 }
 
 @media (min-width: 992px) {
+
   .site-header-mobile,
   .mobile-break,
   .box-actions-mobile {
@@ -683,12 +693,14 @@ strong {
     max-width: 80%;
   }
 }
+
 .bi-mirror {
   background-image: url(/img/mirror_black.svg) !important;
   background-size: 18px 18px;
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .bi-mirror:hover {
   background-image: url(/img/mirror_white.svg) !important;
 }
