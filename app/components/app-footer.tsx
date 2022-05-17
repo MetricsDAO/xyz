@@ -31,6 +31,17 @@ export default function AppFooter() {
                 <span className="ms-2 text-uppercase">mirror</span>
               </div>
             </li>
+            <li className="ms-3 mb-lg-3">
+              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
+                <a
+                  className="btn btn-outline-dark"
+                  href="https://docs.metricsdao.xyz/"
+                >
+                  <i className="bi bi-book-half"></i>
+                </a>
+                <span className="ms-2 text-uppercase">docs</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>

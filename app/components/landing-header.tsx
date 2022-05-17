@@ -54,6 +54,14 @@ const DesktopHeader = () => {
                 href="https://metricsdao.mirror.xyz/"
               ></a>
             </li>
+            <li className="ms-2 social-network">
+              <a
+                className="btn btn-outline-dark"
+                href="https://docs.metricsdao.xyz/"
+              >
+                <i className="bi bi-book-half"></i>
+              </a>
+            </li>
           </ul>
         </header>
         <section className="intro text-center">
