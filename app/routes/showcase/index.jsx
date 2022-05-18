@@ -28,7 +28,7 @@ function App() {
     <>
       <AppHeader />
       <InstantSearch searchClient={searchClient} indexName="submissions">
-        <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
+        <div className="tw-flex tw-flex-row tw-min-h-screen tw-bg-gray-100 tw-text-gray-800">
           <Filters />
           <Content />
         </div>
@@ -39,19 +39,19 @@ function App() {
 function Filters() {
   return (
     <aside
-      class="sidebar lg:w-80  md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
-      <div className="sidebar-content px-2 py-6  ml-2 mr-4 mt-14 ">
-        <ul className="flex flex-col w-full ">
-          <li className="my-px  rounded-sm shadow-lg mb-4 p-4">
-            <div className="text-xl mb-2">Program</div>
+      class="tw-sidebar lg:tw-w-80  md:tw-shadow tw-transform -tw-translate-x-full md:tw-translate-x-0 tw-transition-transform tw-duration-150 tw-ease-in">
+      <div className="tw-sidebar-content tw-px-2 tw-py-6  tw-ml-2 tw-mr-4 tw-mt-14 ">
+        <ul className="tw-flex tw-flex-col tw-w-full ">
+          <li className="tw-my-px  tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4">
+            <div className="tw-text-xl tw-mb-2">Program</div>
             <RefinementList attribute="program_name" />
           </li>
-          <li className="my-px  rounded-sm shadow-lg mb-4 p-4">
-            <div className="text-xl mb-2">Quality</div>
+          <li className="tw-my-px  tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4">
+            <div className="tw-text-xl tw-mb-2">Quality</div>
             <RefinementList attribute="submission_quality" />
           </li>
-          <li className="my-px  rounded-sm shadow-lg mb-4 p-4">
-            <div className="text-xl mb-2">Analyst</div>
+          <li className="tw-my-px  tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4">
+            <div className="tw-text-xl tw-mb-2">Analyst</div>
             <RefinementList attribute="hunter_discord_id" searchable={true} limit={5} />
           </li>
         </ul>
@@ -61,10 +61,10 @@ function Filters() {
 }
 function Content() {
   return (
-    <main className="main flex flex-col flex-grow -ml-64 md:ml-0 transition-all duration-150 ease-in">
-      <div className="main-content flex flex-col flex-grow p-4">
-        <h1 className="font-bold text-2xl text-gray-700 mb-4">Submissions</h1>
-        <div className="max-w-full mb-4">
+    <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-64 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
+      <div className="tw-main-content tw-flex tw-flex-col tw-flex-grow tw-p-4">
+        <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">Submissions</h1>
+        <div className="tw-max-w-full tw-mb-4">
           <SearchBox
             translations={{
               submitTitle: 'Submit your search query.',
@@ -85,34 +85,34 @@ function Content() {
 }
 function Hit(props) {
   return (
-    <div className="p-3 mb-3 max-w-full mx-auto bg-white rounded-md shadow-md flex items-center space-x-4 hover:shadow-xl hover:rounded-xl">
+    <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
       <div>
-        <div className="text-xl font-medium text-black mb-3">
-          <a href={props.hit['public_dashboard']} target="_blank"> {props.hit.program_name} - {props.hit.question_display_title} <FontAwesomeIcon className='text-slate-300 align-middle pl-2 text-sm' icon={faExternalLink} /> </a>
+        <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3">
+          <a href={props.hit['public_dashboard']} target="_blank"> {props.hit.program_name} - {props.hit.question_display_title} <FontAwesomeIcon className='tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm' icon={faExternalLink} /> </a>
         </div>
-        <div className="flex flex-row space-x-8 text-sm ">
-          <div className="flex flex-row space-x-2">
+        <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm ">
+          <div className="tw-flex tw-flex-row tw-space-x-2">
             <div>
-              <FontAwesomeIcon className='text-slate-500' icon={faSignal} />
+              <FontAwesomeIcon className='tw-text-slate-500' icon={faSignal} />
             </div>
-            <div className="text-slate-500">
+            <div className="tw-text-slate-500">
               {props.hit["submission_quality"]}
             </div>
 
           </div>
-          <div className="flex flex-row space-x-2">
+          <div className="tw-flex tw-flex-row tw-space-x-2">
             <div>
-              <FontAwesomeIcon className='text-slate-500' icon={faCalendar} />
+              <FontAwesomeIcon className='tw-text-slate-500' icon={faCalendar} />
             </div>
-            <div className="text-slate-500">
+            <div className="tw-text-slate-500">
               {props.hit["created_at"]}
             </div>
           </div>
-          <div className="flex flex-row space-x-2 w-min-200">
+          <div className="tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
             <div>
-              <FontAwesomeIcon className='text-slate-500' icon={faUserGraduate} />
+              <FontAwesomeIcon className='tw-text-slate-500' icon={faUserGraduate} />
             </div>
-            <div className="text-slate-500">
+            <div className="tw-text-slate-500">
               {props.hit["hunter_discord_id"]}
             </div>
           </div>
