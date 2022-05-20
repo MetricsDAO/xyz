@@ -690,6 +690,11 @@ strong {
     padding: 0 50px;
   }
 
+  .site-footer .nav {
+    flex: 1;
+    justify-content: space-between!important;
+  }
+
   .footer-brand img {
     max-width: 80%;
   }
