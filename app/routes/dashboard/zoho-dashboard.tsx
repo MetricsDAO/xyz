@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import IframeResizer from 'iframe-resizer-react'
+
 
 
 export default () => {  

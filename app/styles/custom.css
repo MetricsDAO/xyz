@@ -188,6 +188,7 @@ strong {
 .icon-custom {
   margin-top: -19px;
   margin-left: -6px;
+  display: inline;
 }
 
 .section-1 {

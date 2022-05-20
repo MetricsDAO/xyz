@@ -6,12 +6,13 @@ import {
   MetaFunction,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  ScrollRestoration,  
 } from "remix";
-
 import customStyles from "./styles/custom.css";
 import fontStyles from "./styles/fonts.css";
 import AppFooter from "./components/app-footer";
+import styles from "./styles/app.css"
+import algoliaStyles from "./styles/algolia.css"
 
 export const meta: MetaFunction = () => {
   return {
@@ -76,10 +77,14 @@ export const links: LinksFunction = () => {
     },
     { rel: "stylesheet", href: fontStyles },
     { rel: "stylesheet", href: customStyles },
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: algoliaStyles },
   ];
 };
 
+
 export default function App() {
+
   return (
     <html lang="en">
       <head>
@@ -100,6 +105,7 @@ export default function App() {
           `,
           }}
         ></script>
+       
       </head>
       <body>
         <Outlet />
