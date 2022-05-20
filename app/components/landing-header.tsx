@@ -54,6 +54,14 @@ const DesktopHeader = () => {
                 href="https://metricsdao.mirror.xyz/"
               ></a>
             </li>
+            <li className="ms-2 social-network">
+              <a
+                  className="btn btn-outline-dark"
+                  href="https://docs.metricsdao.xyz/"
+              >
+                <i className="bi bi-file-earmark-text-fill"></i>
+              </a>
+            </li>
           </ul>
         </header>
         <section className="intro text-center">
@@ -157,20 +165,20 @@ const MobileHeader = () => {
           </section>
 
           <header className="pb-5 d-flex flex-wrap justify-content-between align-items-center">
-            <ul className="nav col-12 justify-content-end list-unstyled d-flex align-items-center justify-content-center">
+            <ul className="nav col-12 list-unstyled d-flex align-items-center justify-content-between">
               <Link
                 to="/roadmap"
-                className="btn btn-outline-dark rounded-pill px-3 me-2"
+                className="btn btn-outline-dark rounded-pill px-3"
               >
                 ROADMAP
               </Link>
               <Link
                 to="#contactus"
-                className="btn btn-outline-dark rounded-pill px-3 me-2 text-uppercase"
+                className="btn btn-outline-dark rounded-pill px-3 text-uppercase"
               >
                 Partner with Us
               </Link>
-              <li className="ms-0 social-network">
+              <li className="social-network">
                 <a
                   className="btn btn-outline-dark"
                   href="https://twitter.com/MetricsDAO"
@@ -178,11 +186,19 @@ const MobileHeader = () => {
                   <i className="bi bi-twitter"></i>
                 </a>
               </li>
-              <li className="ms-2 social-network">
+              <li className="social-network">
                 <a
                   className="btn btn-outline-dark bi-mirror"
                   href="https://metricsdao.mirror.xyz/"
                 ></a>
+              </li>
+              <li className="social-network">
+                <a
+                    className="btn btn-outline-dark"
+                    href="https://docs.metricsdao.xyz/"
+                >
+                  <i className="bi bi-file-earmark-text-fill"></i>
+                </a>
               </li>
             </ul>
           </header>
