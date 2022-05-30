@@ -585,12 +585,11 @@ strong {
 
 @media (max-width: 991px) {
   .site-header {
-    /*display: none;*/
     background-image: url(/img/mobile-header.jpg);
     background-size: auto;
   }
 
-  .site-header .nav {
+  .site-header .nav, .site-header-skinny .nav {
     position: fixed;
     width: 100%;
     top: 0;
@@ -604,15 +603,15 @@ strong {
     backdrop-filter: blur(12px);
     padding: 1rem;
     height: 100vh;
-    transform: translateX(100vh);
+    transform: translateX(100vw);
     transition: all .3s ease-in-out;
   }
 
-  .site-header .nav-open {
+  .site-header .nav-open, .site-header-skinny .nav-open {
     transform: translateX(0);
   }
 
-  .site-header .nav-open > a {
+  .site-header .nav > a, .site-header-skinny .nav > a {
     margin: 1rem;
     font-size: 1.5rem;
     border: none;
@@ -620,16 +619,16 @@ strong {
     border-radius: 0!important;
   }
 
-  header .nav-open .social-network {
+  header .nav .social-network {
     display: none;
   }
 
-  .site-header .hamburger {
+  .hamburger {
     z-index: 2;
     background-color: #ffffff4f;
   }
 
-  .site-header .hamburger > span {
+  .hamburger > span {
     transition: all .3s ease-in-out;
   }
 
