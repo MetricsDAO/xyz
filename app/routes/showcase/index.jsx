@@ -18,7 +18,6 @@ import {
   Configure,
 } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
 
 export function loader() {
   return {
@@ -95,10 +94,6 @@ function Content() {
 }
 function Hit(props) {
   const { hit } = props;
-  useEffect(() => {
-    // Update the document title using the browser API
-    console.log(hit);
-  }, [hit]);
   return (
     <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
       <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
