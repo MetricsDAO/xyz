@@ -11,7 +11,7 @@ body {
 
 a,
 img,
-a>span {
+a > span {
   -webkit-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
   -o-transition: all 0.3s ease-out;
@@ -38,7 +38,7 @@ strong {
   display: flex;
 }
 
-.btn-main>span:first-child {
+.btn-main > span:first-child {
   width: 120px;
   position: relative;
   border-width: 2px;
@@ -56,7 +56,7 @@ strong {
   margin-left: -10px;
 }
 
-.btn-main>span:last-child {
+.btn-main > span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -80,7 +80,7 @@ strong {
   display: flex;
 }
 
-.btn-main-white>span:first-child {
+.btn-main-white > span:first-child {
   width: 212px;
   position: relative;
   border-width: 2px;
@@ -98,7 +98,7 @@ strong {
   margin-left: -10px;
 }
 
-.btn-main-white>span:last-child {
+.btn-main-white > span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -112,6 +112,14 @@ strong {
   justify-content: center;
   padding-left: 25px;
   align-items: center;
+}
+
+.btn.rounded-pill-tag {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  font-size: 0.75rem;
+  border-radius: 50rem;
+  border-color: rgb(100 116 139 / var(--tw-text-opacity));
 }
 
 .site-header-skinny header,
@@ -451,23 +459,23 @@ strong {
   align-items: center;
 }
 
-.btn-main:hover>span:first-child {
+.btn-main:hover > span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main:hover>span:last-child {
+.btn-main:hover > span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
 }
 
-.btn-main-white:hover>span:first-child {
+.btn-main-white:hover > span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main-white:hover>span:last-child {
+.btn-main-white:hover > span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
@@ -489,6 +497,14 @@ strong {
     padding-top: 2px;
     padding-bottom: 2px;
     font-size: 15px;
+  }
+
+  .btn.rounded-pill-tag {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-size: 0.75rem;
+    border-radius: 50rem;
+    border-color: rgb(100 116 139 / var(--tw-text-opacity));
   }
 
   .social-network .btn i {
@@ -575,7 +591,6 @@ strong {
 }
 
 @media (min-width: 992px) {
-
   .site-header-mobile,
   .mobile-break,
   .box-actions-mobile {
@@ -654,6 +669,14 @@ strong {
 
   .bg-header-mobile .btn.rounded-pill {
     font-size: 14px;
+  }
+
+  .btn.rounded-pill-tag {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    font-size: 0.75rem;
+    border-radius: 50rem;
+    border-color: rgb(100 116 139 / var(--tw-text-opacity));
   }
 
   .site-header-mobile {
@@ -753,7 +776,7 @@ strong {
 
   .site-footer .nav {
     flex: 1;
-    justify-content: space-between!important;
+    justify-content: space-between !important;
   }
 
   .footer-brand img {
