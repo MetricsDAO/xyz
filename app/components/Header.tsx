@@ -19,7 +19,7 @@ const Header = () => {
     };
 
     return (
-        <header className="tw-flex tw-flex-wrap tw-justify-between tw-items-center">
+        <header className="tw-flex tw-flex-wrap tw-justify-between tw-items-center tw-absolute lg:tw-static tw-w-full tw-left-0">
             <div className="tw-w-full lg:tw-w-1/4 tw-flex tw-items-center tw-justify-center lg:tw-justify-start">
                 <Link
                     to="/"

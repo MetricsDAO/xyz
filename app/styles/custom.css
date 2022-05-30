@@ -131,11 +131,12 @@ strong {
   display: block;
 }
 
-.site-header {
+.hero-section {
   background: url(/img/desktop-header.jpg);
   background-size: cover;
-  min-height: 105vh;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
 }
 
 .site-header-skinny {
@@ -154,7 +155,7 @@ strong {
 }
 
 .feature p {
-  line-height: 1;
+  line-height: 1.125rem;
   font-size: 15px;
 }
 
