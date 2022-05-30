@@ -1,10 +1,12 @@
 import { Link } from "remix";
+import Header from "~/components/Header";
+import SocialIcons from "~/components/SocialIcons";
 
 export default function LandingHeader() {
   return (
     <>
       <DesktopHeader />
-      <MobileHeader />
+      {/*<MobileHeader />*/}
     </>
   );
 }
@@ -13,57 +15,7 @@ const DesktopHeader = () => {
   return (
     <section className="site-header">
       <div className="container">
-        <header className="d-flex flex-wrap justify-content-between align-items-center">
-          <div className="col-md-4 d-flex align-items-center">
-            <Link
-              to="/"
-              className="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1"
-            >
-              <img
-                src="img/bw-lightbg@2x.png"
-                alt="MetricsDAO"
-                width="241"
-                height="44"
-              />
-            </Link>
-          </div>
-          <ul className="nav col-md-8 justify-content-end list-unstyled d-flex align-items-center">
-            <Link
-              className="btn btn-outline-dark rounded-pill px-3 me-3"
-              to="/roadmap"
-            >
-              ROADMAP
-            </Link>
-            <a
-              className="btn btn-outline-dark rounded-pill px-3 me-3 text-uppercase"
-              href="https://partnerwith.metricsdao.xyz"
-            >
-              Partner with Us
-            </a>
-            <li className="ms-2 social-network">
-              <a
-                className="btn btn-outline-dark"
-                href="https://twitter.com/MetricsDAO"
-              >
-                <i className="bi bi-twitter"></i>
-              </a>
-            </li>
-            <li className="ms-2 social-network">
-              <a
-                className="btn btn-outline-dark bi-mirror"
-                href="https://metricsdao.mirror.xyz/"
-              ></a>
-            </li>
-            <li className="ms-2 social-network">
-              <a
-                  className="btn btn-outline-dark"
-                  href="https://docs.metricsdao.xyz/"
-              >
-                <i className="bi bi-file-earmark-text-fill"></i>
-              </a>
-            </li>
-          </ul>
-        </header>
+        <Header />
         <section className="intro text-center">
           <h1
             className="section-title"
@@ -82,6 +34,9 @@ const DesktopHeader = () => {
                 <i className="bi bi-arrow-right-short"></i>
               </span>
             </a>
+          </div>
+          <div className="tw-flex lg:tw-hidden tw-list-none tw-mt-8 tw-justify-center">
+            <SocialIcons/>
           </div>
           <div className="row g-4 pt-5 mt-4 row-cols-1 row-cols-lg-3">
             <div className="feature col">

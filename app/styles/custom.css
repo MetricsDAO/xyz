@@ -584,7 +584,68 @@ strong {
 
 @media (max-width: 991px) {
   .site-header {
+    /*display: none;*/
+    background-image: url(/img/mobile-header.jpg);
+    background-size: auto;
+  }
+
+  .site-header .nav {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #ffffff70;
+    z-index: 1;
+    backdrop-filter: blur(12px);
+    padding: 1rem;
+    height: 100vh;
+    transform: translateX(100vh);
+    transition: all .3s ease-in-out;
+  }
+
+  .site-header .nav-open {
+    transform: translateX(0);
+  }
+
+  .site-header .nav-open > a {
+    margin: 1rem;
+    font-size: 1.5rem;
+    border: none;
+    border-bottom: 1px solid;
+    border-radius: 0!important;
+  }
+
+  header .nav-open .social-network {
     display: none;
+  }
+
+  .site-header .hamburger {
+    z-index: 2;
+    background-color: #ffffff4f;
+  }
+
+  .site-header .hamburger > span {
+    transition: all .3s ease-in-out;
+  }
+
+  .hamburger-close > span:nth-child(2) {
+    visibility: hidden;
+  }
+
+  .hamburger-close > span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 5px);
+  }
+
+  .hamburger-close > span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+  }
+
+  .intro .social-network {
+    margin: 0 1rem;
   }
 
   .bg-header-mobile {
