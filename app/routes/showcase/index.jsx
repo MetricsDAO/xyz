@@ -2,7 +2,7 @@ import algoliasearch from 'algoliasearch/lite';
 import AppHeader from "../../components/app-header-skinny";
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faExternalLink, faExternalLinkAlt, faSignal, faUserGraduate } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar, faExternalLink, faSignal, faUserGraduate } from '@fortawesome/free-solid-svg-icons'
 import {
   InstantSearch,
   Hits,
@@ -39,7 +39,7 @@ function App() {
 function Filters() {
   return (
     <aside
-      class="tw-sidebar lg:tw-w-80  md:tw-shadow tw-transform -tw-translate-x-full md:tw-translate-x-0 tw-transition-transform tw-duration-150 tw-ease-in">
+      className="tw-sidebar lg:tw-w-80  md:tw-shadow tw-transform -tw-translate-x-full md:tw-translate-x-0 tw-transition-transform tw-duration-150 tw-ease-in">
       <div className="tw-sidebar-content tw-px-2 tw-py-6  tw-ml-2 tw-mr-4 tw-mt-14 ">
         <ul className="tw-flex tw-flex-col tw-w-full ">
           <li className="tw-my-px  tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4">
@@ -88,7 +88,7 @@ function Hit(props) {
     <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
       <div>
         <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3">
-          <a href={props.hit['public_dashboard']} target="_blank"> {props.hit.program_name} - {props.hit.question_display_title} <FontAwesomeIcon className='tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm' icon={faExternalLink} /> </a>
+          <a href={props.hit['public_dashboard']} target="_blank" rel="noreferrer"> {props.hit.program_name} - {props.hit.question_display_title} <FontAwesomeIcon className='tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm' icon={faExternalLink} /> </a>
         </div>
         <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm ">
           <div className="tw-flex tw-flex-row tw-space-x-2">
