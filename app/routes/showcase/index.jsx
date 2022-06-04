@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
   faExternalLink,
-  faExternalLinkAlt,
   faSignal,
   faUserGraduate,
 } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +17,8 @@ import {
   Configure,
 } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
+import uniswapLogo from "../../../public/img/uniswap-logo.png";
+import olympusLogo from "../../../public/img/olympusdao-logo.png";
 
 export function loader() {
   return {
@@ -25,6 +26,11 @@ export function loader() {
     ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
   };
 }
+
+const icons = {
+  OlympusDAO: olympusLogo,
+  Uniswap: uniswapLogo,
+};
 
 function App() {
   const data = useLoaderData();
@@ -99,7 +105,9 @@ function Hit(props) {
       <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
         <div>
           <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3">
-            {" "}
+            <div className="program-icon">
+              <img alt="" src={icons[hit["program_name"]]} />
+            </div>{" "}
             {hit.question_title}{" "}
             <button className="btn btn-outline-dark tw-text-slate-500 rounded-pill-tag">
               {hit.program_name}
