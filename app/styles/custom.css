@@ -200,6 +200,19 @@ strong {
   display: inline;
 }
 
+.program-icon {
+  min-height: 24px;
+  display: inline-block;
+}
+
+.program-icon img {
+  max-width: 24px;
+  max-height: 24px;
+  margin-left: 2px;
+  margin-right: 2px;
+  display: inherit;
+}
+
 .section-1 {
   min-height: 112vh;
   display: flex;
@@ -499,14 +512,6 @@ strong {
     font-size: 15px;
   }
 
-  .btn.rounded-pill-tag {
-    padding-top: 1px;
-    padding-bottom: 1px;
-    font-size: 0.75rem;
-    border-radius: 50rem;
-    border-color: rgb(100 116 139 / var(--tw-text-opacity));
-  }
-
   .social-network .btn i {
     font-size: 18px;
   }
@@ -669,14 +674,6 @@ strong {
 
   .bg-header-mobile .btn.rounded-pill {
     font-size: 14px;
-  }
-
-  .btn.rounded-pill-tag {
-    padding-top: 1px;
-    padding-bottom: 1px;
-    font-size: 0.75rem;
-    border-radius: 50rem;
-    border-color: rgb(100 116 139 / var(--tw-text-opacity));
   }
 
   .site-header-mobile {
