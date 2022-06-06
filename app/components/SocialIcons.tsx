@@ -11,6 +11,14 @@ const SocialIcons = () => {
             </li>
             <li className="tw-ml-1 xl:tw-ml-2 social-network">
                 <a
+                  className="btn btn-outline-dark"
+                  href="https://discord.gg/f4H7M54xcE"
+                >
+                  <i className="bi bi-discord"></i>
+                </a>
+            </li>
+            <li className="tw-ml-1 xl:tw-ml-2 social-network">
+                <a
                     className="btn btn-outline-dark bi-mirror"
                     href="https://metricsdao.mirror.xyz/"
                 ></a>

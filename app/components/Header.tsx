@@ -64,6 +64,12 @@ const Header = () => {
                 >
                     Partner with Us
                 </a>
+                <a
+                    className="btn btn-outline-dark rounded-pill xl:tw-px-4 lg:tw-px-3 xl:tw-mr-4 lg:tw-mr-2 md:tw-mr-1 text-uppercase"
+                    href="https://metricsdao.substack.com/"
+                >
+                    Newsletter
+                </a>
                 <SocialIcons/>
             </ul>
         </header>

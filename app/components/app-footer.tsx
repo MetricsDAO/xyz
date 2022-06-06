@@ -25,6 +25,17 @@ export default function AppFooter() {
             <li className="mb-lg-3">
               <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
                 <a
+                  className="btn btn-outline-dark"
+                  href="https://discord.gg/f4H7M54xcE"
+                >
+                  <i className="bi bi-discord"></i>
+                </a>
+                <span className="ms-md-2 text-uppercase">Discord</span>
+              </div>
+            </li>
+            <li className="mb-lg-3">
+              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
+                <a
                   className="btn btn-outline-dark bi-mirror"
                   href="https://metricsdao.mirror.xyz/"
                 ></a>
