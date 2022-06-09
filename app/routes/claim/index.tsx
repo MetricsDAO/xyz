@@ -1,6 +1,7 @@
 import { useLoaderData } from "remix";
-import { SetStateAction, Dispatch, ReactElement, useEffect } from "react";
+import { SetStateAction, Dispatch, ReactElement } from "react";
 import { useContractRead } from 'wagmi';
+import { utils } from "ethers";
 
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
@@ -8,40 +9,70 @@ import ConnectWalletButton from "~/components/ConnectWalletButton";
 
 
 export async function loader() {
-    let contractData
+    let topChefJson;
+    let metricJson;
     try {
-        contractData = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
+        topChefJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
+        metricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/MetricToken.json`);
     } catch (error) {
         console.log("ERROR", error);
-        contractData = null;
+        topChefJson = null;
+        metricJson = null;
     }
-    return contractData;
+    return {
+        topChefJson,
+        metricJson
+    }
 }
 
 export default function Index() {
-    const data = useLoaderData();
+    const {topChefJson, metricJson} = useLoaderData();
 
-    function ShowMetric () {
-        const { data: contractData, isError, isLoading, status } = useContractRead({
-            addressOrName: data.address,
-            contractInterface: data.abi,
+    function ShowMetric ({address}: {address: string}) {
+        console.log('address', address)
+        const { data: contractData } = useContractRead({
+            addressOrName: topChefJson.address,
+            contractInterface: topChefJson.abi,
         }, 'getAllocationGroups',     {
             onError: (err) => {
               console.error(err);
             },
-          })
-        console.log('contracttoread', contractData, "isError", isError, "isLoading", isLoading, "status", status );
+          });
+
+        const { data: totalSupply } = useContractRead({
+            addressOrName: metricJson.address,
+            contractInterface: metricJson.abi,
+        }, 'totalSupply', {
+            onError: (err) => {
+                console.error(err);
+              },
+        });
+        function doesUserHaveMetric() {
+            const found = Array.isArray(contractData) && contractData.find((accounts) => {
+                if (accounts[0] === address) {
+                    return accounts
+                } else {
+                    return null;
+                }
+            });
+            return (
+                <>
+                <p>{found ? "Eligible" : "Not Eligible"} for Vesting</p>
+                <p>{found ? `${utils.formatEther(found[1])} $METRIC has vested out of a total ${totalSupply && utils.formatEther(totalSupply)} $METRIC` : (
+                    "You have no $METRIC available to vest in the connected wallet."
+                )}
+                </p>
+                </>
+            )
+        }
         return (
-            <div className="tw-mx-auto">
-                {Array.isArray(contractData) && contractData.map((accounts) => {
-                    // eslint-disable-next-line react/jsx-key
-                    return <p> {accounts[0]}</p>
-                })}
+            <div className="tw-mx-auto bg-white tw-w[440px] ">
+                {doesUserHaveMetric()}
             </div>
         )
     }
 
-    function ClaimBody({isOpen, setIsOpen, selectWalletObj, children}: {isOpen?: boolean, selectWalletObj?: any, setIsOpen?: Dispatch<SetStateAction<boolean>>, children?: ReactElement}) {
+    function ClaimBody({setIsOpen, selectWalletObj, children}: {selectWalletObj?: any, setIsOpen?: Dispatch<SetStateAction<boolean>>, children?: ReactElement}) {
         const { account } = selectWalletObj;
 
 
@@ -52,7 +83,7 @@ export default function Index() {
              </div>
              <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Vest Metric</h1>
              {account ? (
-                 <ShowMetric />
+                 <ShowMetric address={account.address} />
              ) : (
              <ConnectWalletButton marginAuto buttonText="Connect Wallet to Vest" connectWallet={setIsOpen} />
              )
@@ -63,7 +94,7 @@ export default function Index() {
 
     return (
     <WalletProvider>
-        <Wrapper contractJson={data} >
+        <Wrapper contractJson={topChefJson} >
             <ClaimBody />
         </Wrapper>
     </WalletProvider>   
