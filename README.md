@@ -35,3 +35,30 @@ If you're used to using the `vercel dev` command provided by [Vercel CLI](https:
 
 ## TroubleShooting  
 when setting up first time you may need to run `npm run dev:css` before running npm run dev
+
+## Claiming and Staking dAPP IN XYZ    
+in core-evm-contracts repo run in a terminal  
+`npx hardhat node`    
+This will run an ethereum blockchain node on your local computer  
+make sure you have hardhat with chain id 31337 configured in a wallet  
+since we have hardhat deploy package the above command will deploy contracts in your deploy folder automatically    
+There are 19 public and private keys assocated with the hardhat network - save these you'll need them  
+You'll see some json file in source control changed.
+For Local testing you can either use npm link (more on that later) or temporarily  
+Create a test branch and push that branch and reference that in your package.json in xyz repo example below notice after hash symbol
+`"core-evm-contracts": "git+https://github.com/MetricsDAO/core-evm-contracts.git#testBranchforXyz",`  
+
+Now switch to XYZ Repo  
+`npm install`  
+this will install core-evm-contracts json files as an npm package  
+now if you look in allocationGroups.json file  
+it's an array of 4 objects assocated with Accounts 16, 17, 18, 19 in hardhat node  
+this will be imported to allocationAssigner now run in the comman line in a new terminal
+`node allocationAssigner.js`  
+If you go back to core-evm-contracts - you should see in the terminal the calls made to allocation Groups  
+Now in a seperate terminal run  
+`npm run dev`  
+now open browser to http://localhost:3000/claim  
+connect wallet to account that has allocated metric  
+You should see message Eligible for Vesting statement  
+Switch account to a non allocated group and you should see not eligible  
