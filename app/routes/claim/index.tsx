@@ -2,6 +2,7 @@ import { useLoaderData } from "remix";
 import { SetStateAction, Dispatch, ReactElement } from "react";
 import { useContractRead } from 'wagmi';
 import { utils } from "ethers";
+import { CheckmarkFilled32, CloseFilled32 } from '@carbon/icons-react';
 
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
@@ -57,16 +58,30 @@ export default function Index() {
             });
             return (
                 <>
-                <p>{found ? "Eligible" : "Not Eligible"} for Vesting</p>
-                <p>{found ? `${utils.formatEther(found[1])} $METRIC has vested out of a total ${totalSupply && utils.formatEther(totalSupply)} $METRIC` : (
-                    "You have no $METRIC available to vest in the connected wallet."
+                <div className="tw-mx-auto tw-flex tw-items-center tw-justify-center tw-mb-4">
+                    {found ? (
+                    <>
+                    <CheckmarkFilled32 className="tw-fill-[#66B75F] tw-inline" /> 
+                    <h3 className="tw-text-2xl tw-inline tw-pl-2 tw-font-semibold">Eligible for Vesting</h3> 
+                    </> 
+                    ) : 
+                    <> 
+                    <CloseFilled32 className="tw-fill-[#F7746D] tw-inline" />
+                    <h3 className="tw-text-2xl tw-inline tw-pl-2">Not Eligible for vesting</h3>
+                    </>
+                    } 
+                </div>
+                <p>{found ? (
+                <span>{utils.formatEther(found[1])} $METRIC has vested out of a total {totalSupply && utils.formatEther(totalSupply)} $METRIC</span>
+                ) : (
+                    <span>You have no $METRIC available to vest in the connected wallet.</span>
                 )}
                 </p>
                 </>
             )
         }
         return (
-            <div className="tw-mx-auto bg-white tw-w[440px] ">
+            <div className="tw-mx-auto bg-white tw-p-6 tw-rounded-lg">
                 {doesUserHaveMetric()}
             </div>
         )
