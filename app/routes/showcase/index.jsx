@@ -106,7 +106,19 @@ function Hit(props) {
         <div>
           <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3">
             <div className="program-icon">
-              <img alt="" src={icons[hit["program_name"]]} />
+              {icons[hit["program_name"]] ? (
+                <img
+                  alt="Hello"
+                  src={icons[hit["program_name"]]}
+                  title={hit["program_name"]}
+                />
+              ) : (
+                <img
+                  alt=""
+                  src="../img/black-mark@2x.png"
+                  title={hit["program_name"]}
+                />
+              )}
             </div>{" "}
             {hit.question_title}{" "}
             <button className="btn btn-outline-dark tw-text-slate-500 rounded-pill-tag">
