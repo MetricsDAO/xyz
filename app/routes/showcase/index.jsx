@@ -75,7 +75,7 @@ function Filters() {
 }
 function Content() {
   return (
-    <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-64 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
+    <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-56 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
       <div className="tw-main-content tw-flex tw-flex-col tw-flex-grow tw-p-4">
         <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">
           Submissions
