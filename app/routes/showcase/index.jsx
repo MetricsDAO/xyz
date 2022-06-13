@@ -121,9 +121,6 @@ function Hit(props) {
               )}
             </div>{" "}
             {hit.question_title}{" "}
-            <button className="btn btn-outline-dark tw-text-slate-500 rounded-pill-tag">
-              {hit.program_name}
-            </button>
             <FontAwesomeIcon
               className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm"
               icon={faExternalLink}

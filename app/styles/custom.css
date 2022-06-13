@@ -114,14 +114,6 @@ strong {
   align-items: center;
 }
 
-.btn.rounded-pill-tag {
-  padding-top: 1px;
-  padding-bottom: 1px;
-  font-size: 0.75rem;
-  border-radius: 50rem;
-  border-color: rgb(100 116 139 / var(--tw-text-opacity));
-}
-
 .site-header-skinny header,
 .site-header header {
   margin-bottom: 3rem;
@@ -609,7 +601,8 @@ strong {
     background-size: auto;
   }
 
-  .site-header .nav, .site-header-skinny .nav {
+  .site-header .nav,
+  .site-header-skinny .nav {
     position: fixed;
     width: 100%;
     top: 0;
@@ -624,19 +617,21 @@ strong {
     padding: 1rem;
     height: 100vh;
     transform: translateX(100vw);
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
-  .site-header .nav-open, .site-header-skinny .nav-open {
+  .site-header .nav-open,
+  .site-header-skinny .nav-open {
     transform: translateX(0);
   }
 
-  .site-header .nav > a, .site-header-skinny .nav > a {
+  .site-header .nav > a,
+  .site-header-skinny .nav > a {
     margin: 1rem;
     font-size: 1.5rem;
     border: none;
     border-bottom: 1px solid;
-    border-radius: 0!important;
+    border-radius: 0 !important;
   }
 
   header .nav .social-network {
@@ -649,7 +644,7 @@ strong {
   }
 
   .hamburger > span {
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
   .hamburger-close > span:nth-child(2) {
