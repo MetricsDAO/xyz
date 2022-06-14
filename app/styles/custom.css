@@ -11,7 +11,7 @@ body {
 
 a,
 img,
-a>span {
+a > span {
   -webkit-transition: all 0.3s ease-out;
   -moz-transition: all 0.3s ease-out;
   -o-transition: all 0.3s ease-out;
@@ -38,7 +38,7 @@ strong {
   display: flex;
 }
 
-.btn-main>span:first-child {
+.btn-main > span:first-child {
   width: 120px;
   position: relative;
   border-width: 2px;
@@ -56,7 +56,7 @@ strong {
   margin-left: -10px;
 }
 
-.btn-main>span:last-child {
+.btn-main > span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -80,7 +80,7 @@ strong {
   display: flex;
 }
 
-.btn-main-white>span:first-child {
+.btn-main-white > span:first-child {
   width: 212px;
   position: relative;
   border-width: 2px;
@@ -98,7 +98,7 @@ strong {
   margin-left: -10px;
 }
 
-.btn-main-white>span:last-child {
+.btn-main-white > span:last-child {
   position: absolute;
   right: -11px;
   top: 0;
@@ -190,6 +190,19 @@ strong {
   margin-top: -19px;
   margin-left: -6px;
   display: inline;
+}
+
+.program-icon {
+  min-height: 24px;
+  display: inline-block;
+}
+
+.program-icon img {
+  max-width: 24px;
+  max-height: 24px;
+  margin-left: 2px;
+  margin-right: 2px;
+  display: inherit;
 }
 
 .section-1 {
@@ -451,23 +464,23 @@ strong {
   align-items: center;
 }
 
-.btn-main:hover>span:first-child {
+.btn-main:hover > span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main:hover>span:last-child {
+.btn-main:hover > span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
 }
 
-.btn-main-white:hover>span:first-child {
+.btn-main-white:hover > span:first-child {
   color: white;
   background-color: black;
 }
 
-.btn-main-white:hover>span:last-child {
+.btn-main-white:hover > span:last-child {
   color: #0a58ca;
   background-color: white;
   border-color: black;
@@ -575,7 +588,6 @@ strong {
 }
 
 @media (min-width: 992px) {
-
   .site-header-mobile,
   .mobile-break,
   .box-actions-mobile {
@@ -589,7 +601,8 @@ strong {
     background-size: auto;
   }
 
-  .site-header .nav, .site-header-skinny .nav {
+  .site-header .nav,
+  .site-header-skinny .nav {
     position: fixed;
     width: 100%;
     top: 0;
@@ -604,19 +617,21 @@ strong {
     padding: 1rem;
     height: 100vh;
     transform: translateX(100vw);
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
-  .site-header .nav-open, .site-header-skinny .nav-open {
+  .site-header .nav-open,
+  .site-header-skinny .nav-open {
     transform: translateX(0);
   }
 
-  .site-header .nav > a, .site-header-skinny .nav > a {
+  .site-header .nav > a,
+  .site-header-skinny .nav > a {
     margin: 1rem;
     font-size: 1.5rem;
     border: none;
     border-bottom: 1px solid;
-    border-radius: 0!important;
+    border-radius: 0 !important;
   }
 
   header .nav .social-network {
@@ -629,7 +644,7 @@ strong {
   }
 
   .hamburger > span {
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
   .hamburger-close > span:nth-child(2) {
@@ -753,7 +768,7 @@ strong {
 
   .site-footer .nav {
     flex: 1;
-    justify-content: space-between!important;
+    justify-content: space-between !important;
   }
 
   .footer-brand img {
