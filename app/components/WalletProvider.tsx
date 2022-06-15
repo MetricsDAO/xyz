@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import { ClientOnly } from "remix-utils";
 import { WagmiConfig, createClient, configureChains, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
+// import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
@@ -19,12 +19,13 @@ export default function WalletProvider ({children}: {children: ReactElement}) {
         autoConnect: true,
         connectors: [
           new MetaMaskConnector({ chains }),
-          new CoinbaseWalletConnector({
-            chains,
-            options: {
-              appName: 'wagmi',
-            },
-          }),
+        // TODO implement COINBASE WALLET
+        //   new CoinbaseWalletConnector({
+        //     chains,
+        //     options: {
+        //       appName: 'wagmi',
+        //     },
+        //   }),
           new WalletConnectConnector({
             chains,
             options: {

@@ -12,9 +12,10 @@ import ConnectWalletButton from "~/components/ConnectWalletButton";
 export async function loader() {
     let topChefJson;
     let metricJson;
+    const network = process.env.NETWORK || "localhost";
     try {
-        topChefJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
-        metricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/MetricToken.json`);
+        topChefJson = require(`core-evm-contracts/deployments/${network}/TopChef.json`);
+        metricJson = require(`core-evm-contracts/deployments/${network}/MetricToken.json`);
     } catch (error) {
         console.log("ERROR", error);
         topChefJson = null;

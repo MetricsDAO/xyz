@@ -5,9 +5,10 @@ import Wrapper from "~/components/Wrapper";
 
 
 export async function loader() {
-    let contractData
+    let contractData;
+    const network = process.env.NETWORK || "localhost";
     try {
-        contractData = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
+        contractData = require(`core-evm-contracts/deployments/${network}/TopChef.json`);
     } catch (error) {
         console.log("ERROR", error);
         contractData = null;
