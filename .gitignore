@@ -5,6 +5,8 @@ node_modules
 .vercel
 .output
 
+.DS_Store
+
 /build/
 /public/build
 /api/index.js
