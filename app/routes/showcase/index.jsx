@@ -1,8 +1,13 @@
-import algoliasearch from 'algoliasearch/lite';
+import algoliasearch from "algoliasearch/lite";
 import AppHeader from "../../components/app-header-skinny";
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faExternalLink, faSignal, faUserGraduate } from '@fortawesome/free-solid-svg-icons'
+import PropTypes from "prop-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendar,
+  faExternalLink,
+  faSignal,
+  faUserGraduate,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   InstantSearch,
   Hits,
@@ -10,9 +15,10 @@ import {
   Pagination,
   RefinementList,
   Configure,
-} from 'react-instantsearch-dom';
+} from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
-
+import uniswapLogo from "../../../public/img/uniswap-logo.png";
+import olympusLogo from "../../../public/img/olympusdao-logo.png";
 
 export function loader() {
   return {
@@ -20,6 +26,11 @@ export function loader() {
     ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
   };
 }
+
+const icons = {
+  OlympusDAO: olympusLogo,
+  Uniswap: uniswapLogo,
+};
 
 function App() {
   const data = useLoaderData();
@@ -32,7 +43,7 @@ function App() {
           <Filters />
           <Content />
         </div>
-      </InstantSearch >
+      </InstantSearch>
     </>
   );
 }
@@ -52,7 +63,11 @@ function Filters() {
           </li>
           <li className="tw-my-px  tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4">
             <div className="tw-text-xl tw-mb-2">Analyst</div>
-            <RefinementList attribute="hunter_discord_id" searchable={true} limit={5} />
+            <RefinementList
+              attribute="hunter_discord_id"
+              searchable={true}
+              limit={5}
+            />
           </li>
         </ul>
       </div>
@@ -61,20 +76,21 @@ function Filters() {
 }
 function Content() {
   return (
-    <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-64 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
+    <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-56 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
       <div className="tw-main-content tw-flex tw-flex-col tw-flex-grow tw-p-4">
-        <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">Submissions</h1>
+        <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">
+          Submissions
+        </h1>
         <div className="tw-max-w-full tw-mb-4">
           <SearchBox
             translations={{
-              submitTitle: 'Submit your search query.',
-              resetTitle: 'Clear your search query.',
-              placeholder: 'Search all submissions...',
-            }} />
-
+              submitTitle: "Submit your search query.",
+              resetTitle: "Clear your search query.",
+              placeholder: "Search all submissions...",
+            }}
+          />
         </div>
-        <div >
-
+        <div>
           <Hits hitComponent={Hit} />
           <Configure hitsPerPage={7} />
           <Pagination />
@@ -84,45 +100,69 @@ function Content() {
   );
 }
 function Hit(props) {
+  const { hit } = props;
   return (
-    <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
-      <div>
-        <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3">
-          <a href={props.hit['public_dashboard']} target="_blank" rel="noreferrer"> {props.hit.program_name} - {props.hit.question_display_title} <FontAwesomeIcon className='tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm' icon={faExternalLink} /> </a>
+    <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
+      <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
+        <div>
+          <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3">
+            <div className="program-icon">
+              {icons[hit["program_name"]] ? (
+                <img
+                  alt="Hello"
+                  src={icons[hit["program_name"]]}
+                  title={hit["program_name"]}
+                />
+              ) : (
+                <img
+                  alt=""
+                  src="../img/black-mark@2x.png"
+                  title={hit["program_name"]}
+                />
+              )}
+            </div>{" "}
+            {hit.question_title}{" "}
+            <FontAwesomeIcon
+              className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm"
+              icon={faExternalLink}
+            />{" "}
+          </div>
+          <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm ">
+            <div className="tw-flex tw-flex-row tw-space-x-2">
+              <div>
+                <FontAwesomeIcon
+                  className="tw-text-slate-500"
+                  icon={faSignal}
+                />
+              </div>
+              <div className="tw-text-slate-500">
+                {hit["submission_quality"]}
+              </div>
+            </div>
+            <div className="tw-flex tw-flex-row tw-space-x-2">
+              <div>
+                <FontAwesomeIcon
+                  className="tw-text-slate-500"
+                  icon={faCalendar}
+                />
+              </div>
+              <div className="tw-text-slate-500">{hit["created_at"]}</div>
+            </div>
+            <div className="tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
+              <div>
+                <FontAwesomeIcon
+                  className="tw-text-slate-500"
+                  icon={faUserGraduate}
+                />
+              </div>
+              <div className="tw-text-slate-500">
+                {hit["hunter_discord_id"]}
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm ">
-          <div className="tw-flex tw-flex-row tw-space-x-2">
-            <div>
-              <FontAwesomeIcon className='tw-text-slate-500' icon={faSignal} />
-            </div>
-            <div className="tw-text-slate-500">
-              {props.hit["submission_quality"]}
-            </div>
-
-          </div>
-          <div className="tw-flex tw-flex-row tw-space-x-2">
-            <div>
-              <FontAwesomeIcon className='tw-text-slate-500' icon={faCalendar} />
-            </div>
-            <div className="tw-text-slate-500">
-              {props.hit["created_at"]}
-            </div>
-          </div>
-          <div className="tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
-            <div>
-              <FontAwesomeIcon className='tw-text-slate-500' icon={faUserGraduate} />
-            </div>
-            <div className="tw-text-slate-500">
-              {props.hit["hunter_discord_id"]}
-            </div>
-          </div>
-        </div>
-
-
       </div>
-    </div>
-
-
+    </a>
   );
 }
 
