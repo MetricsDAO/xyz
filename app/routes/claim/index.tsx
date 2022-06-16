@@ -1,5 +1,5 @@
 import { useLoaderData } from "remix";
-import { SetStateAction, Dispatch, ReactElement } from "react";
+import type { SetStateAction, Dispatch, ReactElement } from "react";
 import { useContractRead } from 'wagmi';
 import { utils } from "ethers";
 import { CheckmarkFilled32, CloseFilled32 } from '@carbon/icons-react';

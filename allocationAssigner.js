@@ -1,4 +1,4 @@
-const { ethers, utils } = require("ethers");
+const { ethers } = require("ethers");
 require('dotenv').config();
 const topChefJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
 const allocationGroups = require('./allocationGroups.json');
@@ -13,7 +13,7 @@ async function init() {
     const alocGrps = allocationGroups;
     for (let i=0; i<allocationGroups.length; i++) {
         try {
-        await topChef.addAllocationGroup(alocGrps[i].address, utils.parseUnits(alocGrps[i].shares, "ether"), alocGrps[i].autoDistribute);
+        await topChef.addAllocationGroup(alocGrps[i].address, alocGrps[i].shares, alocGrps[i].autoDistribute);
         } catch(error) {
             console.log("ERROR", error);
         }

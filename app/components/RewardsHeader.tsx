@@ -1,24 +1,16 @@
-import { Dispatch, SetStateAction, Fragment } from "react";
+import type { Dispatch, SetStateAction} from "react";
+import React, { Fragment } from "react";
 import { Link } from "remix";
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDown16, Copy16, Close16 } from "@carbon/icons-react";
 import ConnectWalletButton from "./ConnectWalletButton";
-import { truncateAddress } from "~/utils/helpers";
+import { truncateAddress, getIcon } from "~/utils/helpers";
 export default function RewardsHeader ({link, linkText, connectWallet, account, disconnect}: {link:string, linkText: string, connectWallet:Dispatch<SetStateAction<boolean>>, account: any, disconnect: any}) {
 
-    function copyText(e:any) {
+    function copyText(e: React.ClipboardEvent) {
         e.preventDefault();
         navigator.clipboard.writeText(account.address);
     }
-
-    function getIcon() {
-        return WALLET_ICONS[account.connector?.name];
-    }
-
-    const WALLET_ICONS: Record<string, string> = {
-        WalletConnect: "/img/wallet-connect-white.svg",
-        MetaMask: "/img/metamask-fox.svg",
-      };
 
     return (
         <header className="tw-max-w-screen-xl tw-flex tw-mx-auto tw-my-5 tw-items-center">
@@ -44,7 +36,7 @@ export default function RewardsHeader ({link, linkText, connectWallet, account, 
                     <div className="tw-ml-auto">
                     <Menu as="div" className="tw-relative tw-inline-block tw-text-left">
                     <Menu.Button className="tw-py-2 tw-inline-flex tw-items-center">
-                         <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon()} />
+                         <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon(account.connector?.name)} />
                          <span className="tw-text-sm">{truncateAddress(account.address)}</span>
                          <ChevronDown16 className="tw-inline tw-ml-2" />
                     </Menu.Button>
@@ -61,7 +53,7 @@ export default function RewardsHeader ({link, linkText, connectWallet, account, 
                         <Menu.Item>
                             {({ active }) => (
                                 <div className={`tw-flex tw-items-center tw-px-2 tw-rounded-lg tw-py-2 tw-justify-between ${active ? 'tw-bg-[#F6F7F8]' : 'tw-bg-transparent'}` }>
-                                    <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon()} />
+                                    <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon(account.connector?.name)} />
                                     <p className="tw-text-sm">{truncateAddress(account.address)}</p>
                                     <p className="tw-rounded-full tw-border-[#EBEDF3] tw-p-2 tw-border"><Copy16 className="tw-cursor-pointer" onClick={copyText} /></p>
                                 </div>

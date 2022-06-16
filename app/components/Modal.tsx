@@ -1,5 +1,6 @@
 import { Fragment, SetStateAction, Dispatch, ReactElement } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Close32 } from "@carbon/icons-react";
 import SelectWallet from "./SelectWallet";
 export default function Modal ({isOpen, setIsOpen, selectWalletObj, children}: {isOpen: boolean, selectWalletObj?: any, setIsOpen: Dispatch<SetStateAction<boolean>>, children?: ReactElement}) {
 
@@ -39,17 +40,17 @@ export default function Modal ({isOpen, setIsOpen, selectWalletObj, children}: {
               leaveTo="opacity-0 scale-95"
             >
               <div className="tw-my-8 tw-inline-block tw-w-full tw-max-w-md tw-transform tw-overflow-hidden tw-rounded-2xl tw-bg-white tw-p-6 tw-text-left tw-align-middle tw-shadow-xl tw-transition-all">
+                  <Close32 className="tw-relative tw-cursor-pointer tw-left-[90%]" onClick={() => setIsOpen(false)} />
                   <Dialog.Title
                     as="h3"
-                    className="tw-mb-[30px] tw-mt-[25px] tw-text-center tw-text-lg tw-font-medium leading-6"
+                    className="tw-mb-[20px] tw-mt-[25px] tw-text-center tw-text-lg tw-font-medium tw-font-bold"
                   >
                     Connect your wallet
                   </Dialog.Title>
-                  <p>Connect the wallet you want to use to claim rewards in your wallet.</p>
+                  <p className="tw-mb-[20px] tw-text-center">Connect the wallet you want to use to claim rewards in your wallet.</p>
 
                   {selectWalletObj && <SelectWallet selectWalletObj={selectWalletObj} />}
                   {children}
-                <button onClick={() => setIsOpen(false)}>Cancel</button>
               </div>
             </Transition.Child>
           </div>
