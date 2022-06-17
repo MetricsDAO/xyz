@@ -1,12 +1,13 @@
 import { useLoaderData } from "remix";
-import type { SetStateAction, Dispatch, ReactElement } from "react";
+import type { SetStateAction, Dispatch, ReactElement} from "react";
+import { useEffect } from "react";
 import { useContractRead } from 'wagmi';
-import { utils } from "ethers";
 import { CheckmarkFilled32, CloseFilled32 } from '@carbon/icons-react';
 
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
 import ConnectWalletButton from "~/components/ConnectWalletButton";
+import { BigNumber, utils } from "ethers";
 
 
 export async function loader() {
@@ -28,28 +29,38 @@ export async function loader() {
 }
 
 export default function Index() {
-    const {topChefJson, metricJson} = useLoaderData();
+    const {topChefJson} = useLoaderData();
+
 
     function ShowMetric ({address}: {address: string}) {
-        console.log('address', address)
+
         const { data: contractData } = useContractRead({
             addressOrName: topChefJson.address,
             contractInterface: topChefJson.abi,
-        }, 'getAllocationGroups',     {
+        }, 'getAllocationGroups', {
             onError: (err) => {
               console.error(err);
             },
-          });
-
-        const { data: totalSupply } = useContractRead({
-            addressOrName: metricJson.address,
-            contractInterface: metricJson.abi,
-        }, 'totalSupply', {
-            onError: (err) => {
-                console.error(err);
-              },
         });
-        function doesUserHaveMetric() {
+
+        const { data: pendingHarvest } = useContractRead({
+            addressOrName: topChefJson.address,
+            contractInterface: topChefJson.abi,
+        }, 'viewPendingClaims', {
+            args: [3],
+            onError: (err) => {
+              console.error(err);
+            },
+        });
+
+        useEffect(() => {
+            if (BigNumber.isBigNumber(pendingHarvest)) {
+                console.log(utils.formatEther(pendingHarvest))
+            }
+        }, [pendingHarvest])
+        
+
+        function isAddressEligible() {
             const found = Array.isArray(contractData) && contractData.find((accounts) => {
                 if (accounts[0] === address) {
                     return accounts
@@ -73,17 +84,21 @@ export default function Index() {
                     } 
                 </div>
                 <p>{found ? (
-                <span>{utils.formatEther(found[1])} $METRIC has vested out of a total {totalSupply && utils.formatEther(totalSupply)} $METRIC</span>
+                <span>The current address will be Eligible for vesting $METRIC</span>
                 ) : (
-                    <span>You have no $METRIC available to vest in the connected wallet.</span>
+                    <span>The current address is not eligible for vesting $METRIC</span>
                 )}
                 </p>
+                <div className="tw-mx-auto tw-flex tw-items-center tw-justify-center tw-mb-4">
+                    
+                </div>
                 </>
             )
         }
+
         return (
             <div className="tw-mx-auto bg-white tw-p-6 tw-rounded-lg">
-                {doesUserHaveMetric()}
+                {isAddressEligible()}
             </div>
         )
     }
@@ -110,7 +125,7 @@ export default function Index() {
 
     return (
     <WalletProvider>
-        <Wrapper contractJson={topChefJson} >
+        <Wrapper >
             <ClaimBody />
         </Wrapper>
     </WalletProvider>   

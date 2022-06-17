@@ -1,21 +1,20 @@
 import { useLocation } from "remix";
-import { ReactElement, useEffect, useState, cloneElement, isValidElement } from "react";
-import { useConnect, useContract, useAccount, useDisconnect } from 'wagmi';
+import type { ReactElement} from "react";
+import { useEffect, useState, cloneElement, isValidElement } from "react";
+import { useConnect, useAccount, useDisconnect } from 'wagmi';
 import { Buffer } from "buffer";
 import Modal from './Modal';
 import RewardsHeader from "./RewardsHeader";
 
-export default function Wrapper ({contractJson, children}: {contractJson: any, children?: ReactElement}) {
-    let topChefContract: { abi: any; address: string };
+export default function Wrapper ({children}: {children?: ReactElement}) {
     let link:string;
     let linkText: string;
 
-    topChefContract = contractJson;
 
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const { data: account } = useAccount()
-    const { connect, activeConnector, connectors, error, isConnecting, pendingConnector } =
+    const { connect, connectors, error, isConnecting, pendingConnector } =
       useConnect()
     const { disconnect } = useDisconnect();
 
@@ -33,12 +32,6 @@ export default function Wrapper ({contractJson, children}: {contractJson: any, c
         linkText = "Stake Metric";
     }
 
-
-    const contract = useContract({
-        addressOrName: topChefContract.address,
-        contractInterface: topChefContract.abi,
-      });
-      console.log('account', account, "contract", contract, "activeConnector", activeConnector);
 
     if (!window.Buffer) {
         window.Buffer = Buffer;
@@ -61,12 +54,3 @@ export default function Wrapper ({contractJson, children}: {contractJson: any, c
         </div>
     )
 }
-
-
-    // const [selectedConnector, setSelectedConnector] =
-    // useState<Connector<any, any>>();
-        // useEffect(() => {
-    //     if (activeConnector) {
-    //       setSelectedConnector(activeConnector);
-    //     }
-    //   }, [activeConnector]);

@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 import { ClientOnly } from "remix-utils";
 import { WagmiConfig, createClient, configureChains, chain } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
@@ -10,7 +10,7 @@ export default function WalletProvider ({children}: {children: ReactElement}) {
 
     //TODO create config of all chains we support
 
-    const { chains, provider, webSocketProvider } = configureChains([chain.mainnet, chain.hardhat], [
+    const { chains, provider, webSocketProvider } = configureChains([chain.hardhat, chain.mainnet], [
         publicProvider(),
       ]);
 
