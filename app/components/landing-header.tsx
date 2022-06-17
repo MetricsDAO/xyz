@@ -19,7 +19,7 @@ export default function LandingHeader() {
                 blockchain ecosystems.
               </h1>
               <div data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-                <a className="btn-main" href="https://discord.gg/metrics">
+                <a className="btn-main" href="https://discord.gg/p3GMjK2zAr">
                   <span>JOIN</span>
                   <span>
                 <i className="bi bi-arrow-right-short"></i>
