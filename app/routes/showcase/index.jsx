@@ -7,7 +7,6 @@ import {
   faExternalLink,
   faSignal,
   faUserGraduate,
-  faComments
 } from "@fortawesome/free-solid-svg-icons";
 import {
   InstantSearch,
@@ -20,6 +19,7 @@ import {
 import { useLoaderData } from "@remix-run/react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
+import Comments from './Comments';
 
 export function loader() {
   return {
@@ -101,14 +101,14 @@ function Content() {
 }
 function Hit(props) {
   const { hit } = props;
-  const {grading_notes = '', overall_score} = hit;
-  const notes = grading_notes.split('<--review-delimiter-->').join(', ').trim();
+  const { grading_notes = '', overall_score } = hit;
+  const notes = grading_notes.split('<--review-delimiter-->');
   return (
-    <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
-      <div className="tw-p-3 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
-        <div className="md:tw-w-full">
+    <div className="tw-p-4 md:tw-p-6 tw-mb-3 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
+      <div className="md:tw-w-full">
+        <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
           <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3 md:tw-flex tw-items-center">
-            <div className="program-icon">
+            <div className="program-icon tw-mr-2">
               {icons[hit["program_name"]] ? (
                 <img
                   alt="Hello"
@@ -128,18 +128,29 @@ function Hit(props) {
               className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm"
               icon={faExternalLink}
             />{" "}
-            <div 
-              className="tw-flex tw-items-center tw-justify-around tw-w-24 tw-text-sm tw-leading-7 md:tw-ml-auto 
-                sm:tw-ml-0 tw-my-2 md:tw-my-0 tw-px-1 tw-py-0.5 score-label tw-rounded tw-border tw-border-slate-400"
+            <div
+              className="tw-flex tw-items-center tw-justify-between md:tw-justify-around md:tw-w-24 tw-max-w-xs tw-text-sm tw-leading-7 md:tw-ml-auto 
+                sm:tw-ml-0 tw-my-2 md:tw-my-0 tw-px-4 md:tw-px-1 tw-py-0.5 score-label tw-rounded-xl md:tw-rounded tw-border tw-border-slate-400"
             >
-              Score
+              <div className="tw-flex md:tw-hidden tw-flex-row tw-space-x-2 tw-w-min-200">
+                <div>
+                  <FontAwesomeIcon
+                    className="tw-text-slate-500"
+                    icon={faUserGraduate}
+                  />
+                </div>
+                <div className="tw-text-slate-500">
+                  {hit["hunter_discord_id"]}
+                </div>
+              </div>
+              <span className="md:tw-flex tw-hidden">Score</span>
               <span className="tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-text-xs tw-rounded-full
-                tw-font-bold tw-text-white tw-bg-slate-400">
+                tw-font-bold tw-text-white tw-bg-slate-400 tw-ml-4 md:tw-ml-0">
                 {overall_score}
               </span>
             </div>
           </div>
-          <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm ">
+          <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm tw-justify-around md:tw-justify-start">
             <div className="tw-flex tw-flex-row tw-space-x-2">
               <div>
                 <FontAwesomeIcon
@@ -160,7 +171,7 @@ function Hit(props) {
               </div>
               <div className="tw-text-slate-500">{hit["created_at"]}</div>
             </div>
-            <div className="tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
+            <div className="tw-hidden md:tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
               <div>
                 <FontAwesomeIcon
                   className="tw-text-slate-500"
@@ -172,20 +183,14 @@ function Hit(props) {
               </div>
             </div>
           </div>
-          {
-            notes && (
-              <div className="tw-text-slate-600 tw-mt-2 tw-border-t tw-border-slate-200 tw-pt-2 tw-flex tw-items-center">
-                <FontAwesomeIcon
-                  className="tw-mr-2"
-                  icon={faComments}
-                />
-                <span className="tw-text-sm">{notes}</span>
-              </div>
-            )
-          }
-        </div>
+        </a>
+        {
+          notes && (
+            <Comments comments={notes} />
+          )
+        }
       </div>
-    </a>
+    </div>
   );
 }
 
