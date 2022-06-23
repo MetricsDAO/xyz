@@ -13,16 +13,16 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
 
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
-    const { data: account } = useAccount()
+    const { data: account } = useAccount();
     const { connect, connectors, error, isConnecting, pendingConnector } =
       useConnect()
     const { disconnect } = useDisconnect();
 
     useEffect(() => {
-        if (account) {
+        if (account && isOpen) {
             setIsOpen(false);
         }
-    }, [account])
+    }, [account, isOpen])
 
     if (location.pathname === "/staking") {
         link =  "/claim";
@@ -50,7 +50,7 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
         <div>
         <RewardsHeader link={link} linkText={linkText} connectWallet={setIsOpen} account={account} disconnect={disconnect}/>
         <Modal isOpen={isOpen} setIsOpen={setIsOpen} selectWalletObj={selectWalletObj} />
-        {isValidElement(children) && cloneElement(children, {isOpen, setIsOpen, selectWalletObj, account })}
+        {isValidElement(children) && cloneElement(children, {setIsOpen, account})}
         </div>
     )
 }

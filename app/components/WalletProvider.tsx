@@ -48,7 +48,7 @@ export default function WalletProvider ({children}: {children: ReactElement}) {
         <ClientOnly>
             {() => {
             return (
-            <WagmiConfig client={client} >
+            <WagmiConfig client={client}>
               {children}
             </WagmiConfig> 
             )

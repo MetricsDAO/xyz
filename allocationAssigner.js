@@ -18,6 +18,7 @@ async function init() {
             console.log("ERROR", error);
         }
     }
+    await topChef.toggleRewards(true);
 }
 
 init();
