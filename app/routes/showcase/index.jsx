@@ -103,7 +103,6 @@ function Hit(props) {
   const { hit } = props;
   const { grading_notes = '', overall_score } = hit;
   const notes = grading_notes?.length ? grading_notes.split('<--review-delimiter-->') : [];
-  console.log(notes)
   return (
     <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
       <div className="md:tw-w-full">
