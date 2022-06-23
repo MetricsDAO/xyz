@@ -1,4 +1,5 @@
-import { Fragment, SetStateAction, Dispatch, ReactElement } from "react";
+import type { SetStateAction, Dispatch, ReactElement } from "react";
+import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Close32 } from "@carbon/icons-react";
 import SelectWallet from "./SelectWallet";

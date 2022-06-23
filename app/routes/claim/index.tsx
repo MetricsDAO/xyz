@@ -1,14 +1,18 @@
 import { useLoaderData } from "remix";
 import type { SetStateAction, Dispatch} from "react";
 import { useEffect, useState, useRef } from "react";
-import { useContractRead, useContractWrite } from 'wagmi';
+import { useContractRead, useContractWrite, useProvider } from 'wagmi';
 import { CheckmarkFilled32, CloseFilled32 } from '@carbon/icons-react';
+import { BigNumber, utils } from "ethers";
+
+import allocationGroups from "../../../allocationGroups.json";
 
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
 import ConnectWalletButton from "~/components/ConnectWalletButton";
-import { BigNumber, utils } from "ethers";
-import allocationGroups from "../../../allocationGroups.json";
+import AlertBanner from "~/components/AlertBanner";
+
+
 
 
 
@@ -56,7 +60,14 @@ export default function Index() {
         const [indexOfAllocation,] = useState<number>(getIndexOfAllocator(address))
         const prevAddress = usePrevious(address);
 
-        console.log("address equal prevAddress", prevAddress !== address);
+
+        //transactions
+        const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
+        const [writeTransactionStatus, setWriteTransactionStatus] = useState<any>(null);
+
+        const preWriteTransaction = usePrevious(writeTransactionStatus);
+
+
 
 
         const { data: contractData } = useContractRead({
@@ -74,7 +85,7 @@ export default function Index() {
             contractInterface: topChefJson.abi,
         }, 'viewPendingHarvest', {
             args: [indexOfAllocation],
-            enabled: indexOfAllocation >= 0 && prevAddress !== address,
+            enabled: (indexOfAllocation >= 0 && prevAddress !== address) || preWriteTransaction !== writeTransactionStatus,
             onError: (err) => {
               console.error(err);
             },
@@ -85,7 +96,7 @@ export default function Index() {
             contractInterface: topChefJson.abi,
         }, 'viewPendingClaims', {
             args: [indexOfAllocation],
-            enabled: indexOfAllocation >= 0 && prevAddress !== address && currentAllocationGroup.autodistribute === false,
+            enabled: (indexOfAllocation >= 0 && prevAddress !== address) || preWriteTransaction !== writeTransactionStatus,
             onError: (err) => {
               console.error(err);
             },
@@ -101,6 +112,31 @@ export default function Index() {
               },
               onSettled(data, error) {
                 console.log('Settled', { data, error })
+                if (error) {
+                    setWriteTransactionStatus(false);
+                }
+              },
+              onSuccess(data) {
+                console.log("onsuccess", data);
+              },
+              onMutate({ args, overrides }) {
+                console.log('Mutate', { args, overrides })
+              },
+        });
+
+        const claim = useContractWrite({
+            addressOrName: topChefJson.address,
+            contractInterface: topChefJson.abi,
+        }, 'claim', {
+            args: [indexOfAllocation],
+            onError: (err) => {
+                console.error(err);
+              },
+              onSettled(data, error) {
+                console.log('Settled', { data, error })
+                if (error) {
+                    setWriteTransactionStatus(false);
+                }
               },
               onSuccess(data) {
                 console.log('Success', data)
@@ -134,14 +170,41 @@ export default function Index() {
             }
 
             if (Array.isArray(contractData) && address !== prevAddress) {
-                console.log("contractData", contractData);
                 setCurrentAllocationGroup(isAddressEligible(contractData));
             }
         }, [address, contractData, prevAddress])
 
-        function harvestRewards () {
+        async function harvestRewards () {
             if (indexOfAllocation >= 0) {
-                harvest.write()
+                setWriteTransactionStatus(null);
+                setAlertContainerStatus(true);
+                const txnResponse = await harvest.writeAsync();
+                console.log('txnResponse', txnResponse);
+                const confirmation = await txnResponse.wait();
+                console.log("confirmation wait", confirmation);
+                if (confirmation.blockNumber) {
+                    setWriteTransactionStatus(true);
+                    setTimeout(() => {
+                        setAlertContainerStatus(false);
+                    }, 10000);           
+                }
+            }
+        }
+
+        async function claimRewards () {
+            if (indexOfAllocation >= 0) {
+                setWriteTransactionStatus(null);
+                setAlertContainerStatus(true);
+                const txnResponse = await claim.writeAsync();
+                console.log('txnResponse', txnResponse);
+                const confirmation = await txnResponse.wait();
+                console.log("confirmation wait claim", confirmation);
+                if (confirmation.blockNumber) {
+                    setWriteTransactionStatus(true);
+                    setTimeout(() => {
+                        setAlertContainerStatus(false);
+                    }, 10000);     
+                }
             }
         }
 
@@ -149,6 +212,7 @@ export default function Index() {
 
         return (
                 <>
+                {alertContainerStatus && <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />}
                 <div className="tw-mx-auto bg-white tw-p-6 tw-rounded-lg tw-w-1/3 tw-mb-7">
                     <div className="tw-mx-auto tw-flex tw-items-center tw-justify-center tw-mb-4">
                         {currentAllocationGroup ? (
@@ -186,6 +250,11 @@ export default function Index() {
                     <div className="tw-mx-auto tw-justify-between tw-items-center tw-flex-wrap tw-flex tw-mb-4">
                         <p className="tw-w-full tw-text-small">pending claims (METRIC)</p>
                         <h4 className="tw-font-semibold tw-text-2xl">{pendingClaimEstimate}</h4>
+                        {pendingClaimEstimate > 0 && (
+                            <button onClick={() => claimRewards()}className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white">
+                                Claim Rewards
+                            </button>
+                        )}
                     </div>
                     )}
 
@@ -198,7 +267,6 @@ export default function Index() {
 
     /* ELEMENT CLONED IN WRAPPER */
     function ClaimBody({setIsOpen, account}: {setIsOpen?: Dispatch<SetStateAction<boolean>>, account?: any}) {
-        console.log("account", account?.connector);
          return (
          <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
              <div className="tw-bg-white tw-rounded-full tw-w-[120px] tw-h-[120px] tw-flex tw-flex-col tw-justify-center tw-mx-auto">
