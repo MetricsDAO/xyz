@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 export function truncateAddress (address: String) {
     return address.substring(0, 5) + "..." + address.substring(address.length - 5);
 }
@@ -11,3 +12,13 @@ const WALLET_ICONS: Record<string, string> = {
     MetaMask: "/img/metamask-fox.svg",
     WalletIcon: "img/wallet-icon.svg"
   };
+
+
+
+export function usePrevious(value:any) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    },[value]);
+    return ref.current;
+}
