@@ -1,11 +1,13 @@
+import { useConnect } from 'wagmi';
 import { getIcon } from "~/utils/helpers";
 import { ChevronRight16 } from "@carbon/icons-react";
-export default function SelectWallet ({selectWalletObj }: {selectWalletObj: any}) {
-  const {connect, connectors, error, isConnecting, pendingConnector} = selectWalletObj;
+export default function SelectWallet () {
+  const { connect, connectors, error, isConnecting, pendingConnector } =
+  useConnect()
 
   return (
     <div className="tw-flex tw-flex-col">
-      {connectors.map((connector: any) => (
+      {connectors.map((connector) => (
         <button
           disabled={!connector.ready}
           key={connector.id}

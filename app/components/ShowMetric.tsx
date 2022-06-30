@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useContractRead, useContractWrite } from 'wagmi';
 import { BigNumber, utils } from "ethers";
 
-import { usePrevious } from '~/utils/helpers';
+import { usePrevious, TransactionStatus } from '~/utils/helpers';
 import AlertBanner from "~/components/AlertBanner";
 
-export default function ShowMetric ({currentAllocationGroup, indexOfAllocation, prevAddress, address, topChef}: {currentAllocationGroup:any, indexOfAllocation: number, prevAddress: any, address: string, topChef: any}) {
+export default function ShowMetric ({indexOfAllocation, prevAddress, address, topChef}: {indexOfAllocation: number, prevAddress: string | undefined, address: string, topChef: Record<string, string>}) {
     const [pendingRewardsEstimate, setPendingRewardsEstimate] = useState<number>(parseInt("0"));
 
     //transactions
     const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
-    const [writeTransactionStatus, setWriteTransactionStatus] = useState<any>(null);
+    const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
     const preWriteTransaction = usePrevious(writeTransactionStatus);
 
     const { data: pendingRewards } = useContractRead({
@@ -35,14 +35,11 @@ export default function ShowMetric ({currentAllocationGroup, indexOfAllocation, 
           onSettled(data, error) {
             console.log('Settled', { data, error })
             if (error) {
-                setWriteTransactionStatus(false);
+                setWriteTransactionStatus(TransactionStatus.Failed);
             }
           },
           onSuccess(data) {
             console.log('Success', data)
-          },
-          onMutate({ args, overrides }) {
-            console.log('Mutate', { args, overrides })
           },
     });
 
@@ -54,12 +51,12 @@ export default function ShowMetric ({currentAllocationGroup, indexOfAllocation, 
 
     async function claimRewards () {
         if (indexOfAllocation >= 0) {
-            setWriteTransactionStatus(null);
+            setWriteTransactionStatus(TransactionStatus.Pending);
             setAlertContainerStatus(true);
             const txnResponse = await claim.writeAsync();
             const confirmation = await txnResponse.wait();
             if (confirmation.blockNumber) {
-                setWriteTransactionStatus(true);
+                setWriteTransactionStatus(TransactionStatus.Approved);
                 setTimeout(() => {
                     setAlertContainerStatus(false);
                 }, 9000);     

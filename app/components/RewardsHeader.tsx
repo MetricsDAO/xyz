@@ -1,15 +1,20 @@
-import type { Dispatch, SetStateAction} from "react";
+import type { Dispatch, ReactSVGElement, SetStateAction} from "react";
 import React, { Fragment } from "react";
 import { Link } from "remix";
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDown16, Copy16, Close16 } from "@carbon/icons-react";
 import ConnectWalletButton from "./ConnectWalletButton";
 import { truncateAddress, getIcon } from "~/utils/helpers";
-export default function RewardsHeader ({link, linkText, connectWallet, account, disconnect}: {link:string, linkText: string, connectWallet:Dispatch<SetStateAction<boolean>>, account: any, disconnect: any}) {
 
-    function copyText(e: React.ClipboardEvent) {
+import type { GetAccountResult, Provider } from "@wagmi/core";
+
+
+export default function RewardsHeader ({link, linkText, connectWallet, account, disconnect}: {link:string, linkText: string, connectWallet:Dispatch<SetStateAction<boolean>>, account: GetAccountResult<Provider> | undefined, disconnect: () => void}) {
+    function copyText(e: React.MouseEvent<ReactSVGElement, MouseEvent>) {
         e.preventDefault();
-        navigator.clipboard.writeText(account.address);
+        if (account?.address) {
+            navigator.clipboard.writeText(account.address);
+        }
     }
 
     return (

@@ -6,8 +6,8 @@ import { usePrevious } from '~/utils/helpers';
 import ShowMetric from "./ShowMetric";
 
 
-export default function ShowUser ({address, topChef}: {address: string, topChef: any}) {
-        const [currentAllocationGroup, setCurrentAllocationGroup] = useState<any>(false);
+export default function ShowUser ({address, topChef}: {address: string, topChef: Record<string, string> }) {
+        const [currentAllocationGroup, setCurrentAllocationGroup] = useState<Array<string>>([]);
         const [indexOfAllocation, setIndexAllocation] = useState<number>(-1)
         const prevAddress = usePrevious(address);
 
@@ -21,10 +21,10 @@ export default function ShowUser ({address, topChef}: {address: string, topChef:
             },
         });
         useEffect(() => {
-            function isAddressEligible(data: any) {
-                 let match = false;
+            function isAddressEligible(data:string[][]) {
+                 let match:string[] | [] = [];
                  let index = -1;
-                 data.forEach((accounts: any, i:number) => {
+                 data.forEach((accounts:string[], i:number) => {
                     if (accounts[0] === address) {
                         match = accounts;
                         index = i;
@@ -38,7 +38,7 @@ export default function ShowUser ({address, topChef}: {address: string, topChef:
 
             if (Array.isArray(contractData) && address !== prevAddress) {
                 const obj = isAddressEligible(contractData)
-                setCurrentAllocationGroup(obj.match);
+                setCurrentAllocationGroup(obj.match || []);
                 setIndexAllocation(obj.index)
             }
         }, [address, contractData, prevAddress])
@@ -47,7 +47,7 @@ export default function ShowUser ({address, topChef}: {address: string, topChef:
                 <>
                 <div className="tw-mx-auto bg-white tw-p-6 tw-rounded-lg tw-w-1/3 tw-mb-7">
                     <div className="tw-mx-auto tw-flex tw-items-center tw-justify-center tw-mb-4">
-                        {currentAllocationGroup ? (
+                        {currentAllocationGroup.length ? (
                         <>
                         <CheckmarkFilled32 className="tw-fill-[#66B75F] tw-inline" /> 
                         <h3 className="tw-text-2xl tw-inline tw-pl-2 tw-font-semibold">Eligible for Vesting</h3> 
@@ -59,17 +59,16 @@ export default function ShowUser ({address, topChef}: {address: string, topChef:
                         </>
                         } 
                     </div>
-                    <p className="tw-text-center">{currentAllocationGroup ? (
+                    <p className="tw-text-center">{currentAllocationGroup.length ? (
                     <span>The current address will be Eligible for vesting $METRIC</span>
                     ) : (
                         <span>The current address is not eligible for vesting $METRIC</span>
                     )}
                     </p>
                 </div>
-                {currentAllocationGroup && indexOfAllocation >= 0 && (
+                {currentAllocationGroup.length && indexOfAllocation >= 0 && (
                 <ShowMetric 
                     topChef={topChef} 
-                    currentAllocationGroup={currentAllocationGroup} 
                     address={address} 
                     prevAddress={prevAddress} 
                     indexOfAllocation={indexOfAllocation} 

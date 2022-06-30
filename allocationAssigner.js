@@ -4,6 +4,7 @@ const metricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK
 const topChefJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
 const allocationGroups = require('./allocationGroups.json');
 
+// TODO change this to whatever provider is available based on env variables
 const provider = new ethers.providers.JsonRpcProvider();
 const signer = provider.getSigner();
 
@@ -14,7 +15,7 @@ async function init() {
     const topChef = new ethers.Contract(topChefJson.address, topChefJson.abi, signer);
 
     await metricToken.transfer(topChefJson.address, await metricToken.totalSupply())
-    
+
     const alocGrps = allocationGroups;
     for (let i=0; i<allocationGroups.length; i++) {
         try {

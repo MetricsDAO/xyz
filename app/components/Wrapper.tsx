@@ -1,7 +1,7 @@
 import { useLocation } from "remix";
 import type { ReactElement} from "react";
 import { useEffect, useState, cloneElement, isValidElement } from "react";
-import { useConnect, useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import { Buffer } from "buffer";
 import Modal from './Modal';
 import RewardsHeader from "./RewardsHeader";
@@ -14,8 +14,6 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const { data: account } = useAccount();
-    const { connect, connectors, error, isConnecting, pendingConnector } =
-      useConnect()
     const { disconnect } = useDisconnect();
 
     useEffect(() => {
@@ -37,19 +35,10 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
         window.Buffer = Buffer;
       }
 
-    const selectWalletObj = {
-        connectors,
-        connect,
-        error,
-        isConnecting,
-        pendingConnector,
-        account
-    }
-
     return (
         <div>
         <RewardsHeader link={link} linkText={linkText} connectWallet={setIsOpen} account={account} disconnect={disconnect}/>
-        <Modal isOpen={isOpen} setIsOpen={setIsOpen} selectWalletObj={selectWalletObj} />
+        <Modal isOpen={isOpen} setIsOpen={setIsOpen} selectWallet={true} />
         {isValidElement(children) && cloneElement(children, {setIsOpen, account})}
         </div>
     )

@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Close32 } from "@carbon/icons-react";
 import SelectWallet from "./SelectWallet";
-export default function Modal ({isOpen, setIsOpen, selectWalletObj, children}: {isOpen: boolean, selectWalletObj?: any, setIsOpen: Dispatch<SetStateAction<boolean>>, children?: ReactElement}) {
+export default function Modal ({isOpen, setIsOpen, selectWallet, children}: {isOpen: boolean, selectWallet?: boolean, setIsOpen: Dispatch<SetStateAction<boolean>>, children?: ReactElement}) {
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -50,7 +50,7 @@ export default function Modal ({isOpen, setIsOpen, selectWalletObj, children}: {
                   </Dialog.Title>
                   <p className="tw-mb-[20px] tw-text-center">Connect the wallet you want to use to claim rewards in your wallet.</p>
 
-                  {selectWalletObj && <SelectWallet selectWalletObj={selectWalletObj} />}
+                  {selectWallet && <SelectWallet />}
                   {children}
               </div>
             </Transition.Child>
