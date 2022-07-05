@@ -18,7 +18,8 @@ export default function ShowMetric ({indexOfAllocation, prevAddress, address, to
         contractInterface: topChef.abi,
     }, 'viewPendingRewards', {
         args: [indexOfAllocation],
-        enabled: prevAddress !== address || preWriteTransaction !== writeTransactionStatus,
+        enabled:  true, // prevAddress !== address || preWriteTransaction !== writeTransactionStatus,
+        watch: true,
         onError: (err) => {
           console.error(err);
         },
@@ -45,6 +46,7 @@ export default function ShowMetric ({indexOfAllocation, prevAddress, address, to
 
     useEffect(() => {
         if (BigNumber.isBigNumber(pendingRewards)) {
+            console.log("pending rewards", utils.formatEther(pendingRewards) );
             setPendingRewardsEstimate(parseInt(utils.formatEther(pendingRewards)));
         }
     }, [pendingRewards]);
