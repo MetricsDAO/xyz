@@ -777,12 +777,13 @@ strong {
 }
 
 .bi-mirror {
-  background-image: url(/img/mirror_black.svg) !important;
+  background-image: url(/img/book-solid.svg) !important;
   background-size: 18px 18px;
   background-position: center;
   background-repeat: no-repeat;
 }
 
 .bi-mirror:hover {
-  background-image: url(/img/mirror_white.svg) !important;
+  color: white;
+  background-color: transparent;
 }

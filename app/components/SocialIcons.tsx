@@ -12,7 +12,7 @@ const SocialIcons = () => {
             <li className="tw-ml-1 xl:tw-ml-2 social-network">
                 <a
                     className="btn btn-outline-dark bi-mirror"
-                    href="https://metricsdao.mirror.xyz/"
+                    href="https://metricsdao.ghost.io/"
                 ></a>
             </li>
             <li className="tw-ml-1 xl:tw-ml-2 social-network">

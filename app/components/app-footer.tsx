@@ -26,9 +26,9 @@ export default function AppFooter() {
               <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
                 <a
                   className="btn btn-outline-dark bi-mirror"
-                  href="https://metricsdao.mirror.xyz/"
+                  href="https://metricsdao.ghost.io/"
                 ></a>
-                <span className="ms-md-2 text-uppercase">mirror</span>
+                <span className="ms-md-2 text-uppercase">blog</span>
               </div>
             </li>
             <li className="mb-lg-3">
