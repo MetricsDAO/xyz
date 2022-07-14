@@ -1,4 +1,5 @@
-import { useLoaderData } from "remix";
+import { redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import type { SetStateAction, Dispatch} from "react";
 
 import WalletProvider from "~/components/WalletProvider";
@@ -10,21 +11,23 @@ import type { GetAccountResult, Provider } from "@wagmi/core";
 
 
 export async function loader() {
-    let topChefJson;
-    let metricJson;
-    const network = "localhost";
-    try {
-        topChefJson = require(`core-evm-contracts/deployments/${network}/TopChef.json`);
-        metricJson = require(`core-evm-contracts/deployments/${network}/MetricToken.json`);
-    } catch (error) {
-        console.log("ERROR", error);
-        topChefJson = null;
-        metricJson = null;
-    }
-    return {
-        topChefJson,
-        metricJson
-    }
+    // REMOVE THIS LATER
+    return redirect("/");
+    // let topChefJson;
+    // let metricJson;
+    // const network = "localhost";
+    // try {
+    //     topChefJson = require(`core-evm-contracts/deployments/${network}/TopChef.json`);
+    //     metricJson = require(`core-evm-contracts/deployments/${network}/MetricToken.json`);
+    // } catch (error) {
+    //     console.log("ERROR", error);
+    //     topChefJson = null;
+    //     metricJson = null;
+    // }
+    // return {
+    //     topChefJson,
+    //     metricJson
+    // }
 }
 
 export default function Index() {
