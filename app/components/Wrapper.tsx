@@ -22,12 +22,16 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
         }
     }, [account, isOpen])
 
+    // TODO REFACTOR
     if (location.pathname === "/staking") {
         link =  "/claim";
         linkText = "Claim Metric"
-    } else {
+    } else if (location.pathname === "/claim") {
         link = "/staking";
         linkText = "Stake Metric";
+    } else {
+        link = "/all-questions"
+        linkText = "View current questions"
     }
 
 
