@@ -26,7 +26,7 @@ const Header = () => {
                     className="tw-no-underline"
                 >
                     <img
-                        src="img/bw-lightbg@2x.png"
+                        src="/img/bw-lightbg@2x.png"
                         alt="MetricsDAO"
                         width="241"
                         height="44"

@@ -18,6 +18,7 @@ export default function Index() {
                   <span>
                     on-demand{" "}
                     <img
+                      alt="Metrics"
                       src="img/icon-custom-chevron.png"
                       className="icon-custom"
                     />
