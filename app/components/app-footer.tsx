@@ -22,7 +22,7 @@ export default function AppFooter() {
                 <span className="ms-md-2 text-uppercase">twitter</span>
               </div>
             </li>
-            <li className="mb-lg-3">
+            {/* <li className="mb-lg-3">
               <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
                 <a
                   className="btn btn-outline-dark bi-mirror"
@@ -30,7 +30,7 @@ export default function AppFooter() {
                 ></a>
                 <span className="ms-md-2 text-uppercase">blog</span>
               </div>
-            </li>
+            </li> */}
             <li className="mb-lg-3">
               <a href="https://docs.metricsdao.xyz/"
                  className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none">

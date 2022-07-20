@@ -12,7 +12,7 @@ export default function Index() {
               <h2 className="section-label">About MetricsDAO</h2>
             </div>
             <div className="col-10 col-lg-8 col-xl-6 offset-2 offset-lg-1 offset-xl-2">
-              <p className="text-content">
+              {/* <p className="text-content">
                 <span className="fw-bold">
                   MetricsDAO provides{" "}
                   <span>
@@ -29,7 +29,8 @@ export default function Index() {
                 community solutions, and rewards analysts in the project’s
                 native token - thereby driving user growth and acquisition for
                 DAOs.
-              </p>
+              </p> */}
+              <p className="text-content">The three-step Brainstorming, Analytics, and Review system provides a variety of ways for the community and Web3 organizations to generate engagement, education, content, and peer reviewed analytics about protocols or topics they care about. Each step can be activated on its own or together.</p>
             </div>
             <div
               className="col-12"
@@ -45,12 +46,12 @@ export default function Index() {
                   READ THE WHITEPAPER{" "}
                   <i className="bi bi-arrow-right-short"></i>
                 </a>
-                <Link
-                  to="/roadmap"
+                <a
+                  href="https://metricsdao.ghost.io/"
                   className="btn btn-sm btn-outline-light rounded-pill px-3 mx-2 mb-4"
                 >
-                  VIEW ROADMAP <i className="bi bi-arrow-right-short"></i>
-                </Link>
+                  VIEW BLOG <i className="bi bi-arrow-right-short"></i>
+                </a>
               </p>
             </div>
           </div>
@@ -65,7 +66,7 @@ export default function Index() {
               data-aos-delay="300"
               data-aos-duration="2000"
             >
-              <h2 className="section-title">
+              {/* <h2 className="section-title">
                 Organized
                 <br className="mobile-break" />{" "}
                 <span className="fw-bold">
@@ -80,7 +81,8 @@ export default function Index() {
                 </span>
                 <br /> Delivery for
                 <br className="mobile-break" /> Crypto Projects
-              </h2>
+              </h2> */}
+              <h2 className="section-title">3 Components to Engage, Educate and Create Peer Reviewed Analytics</h2>
             </div>
           </div>
         </div>
@@ -90,20 +92,17 @@ export default function Index() {
           <div className="row section-creation">
             <div className="col-6 box-content">
               <h3 className="section-subtitle">
-                <span className="fw-bold">Question Creation</span>
+                <span className="fw-bold">Community Brainstorming</span>
               </h3>
               <p>
-                The analytical needs of DAOs are discovered and organized into
-                Questions that can be addressed by Analysts. Effective
-                prioritization, achieved through “upvoting,” helps center
-                Analysts on addressing the right challenges at the right time.
+              Submit questions and/or upvote others’ so that the most relevant questions are prioritized, and spam is filtered out. No xMETRIC is required to participate in this component. Qualified submissions will earn 50 xMETRIC and $10 in partner tokens or stablecoins. Qualified upvotes will earn 5 xMETRIC. 
               </p>
               <p>
                 <a
                   className="btn btn-sm btn-outline-primary rounded-pill px-3"
                   href="https://bounty.metricsdao.xyz/"
                 >
-                  SUBMIT A QUESTION <i className="bi bi-arrow-right-short"></i>
+                  Join a Community Brainstorm <i className="bi bi-arrow-right-short"></i>
                 </a>
               </p>
             </div>
@@ -127,18 +126,17 @@ export default function Index() {
             </div>
             <div className="col-6 box-content">
               <h4 className="section-subtitle">
-                <span className="fw-bold">Solution Generation</span>
+                <span className="fw-bold">Analytics </span>
               </h4>
               <p>
-                Analysts address questions with results, visualizations,
-                insights, and further Questions that generate Solutions.
+              In this component, questions are turned into actionable bounties for our community of analysts to solve by creating analytics, tools and/or content. Analytics are rewarded in partner tokens or stablecoins. Most bounties require no xMETRIC to solve. 
               </p>
               <p>
                 <a
                   className="btn btn-sm btn-outline-primary rounded-pill px-3"
                   href="https://metricsdao.notion.site/metricsdao/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
                 >
-                  VIEW OPEN CHALLENGES{" "}
+                  VIEW OPEN REQUESTS{" "}
                   <i className="bi bi-arrow-right-short"></i>
                 </a>
               </p>
@@ -147,13 +145,19 @@ export default function Index() {
           <div className="row section-review">
             <div className="col-6 box-content">
               <h4 className="section-subtitle">
-                <span className="fw-bold">Solution Review</span>
+                <span className="fw-bold">Peer Review</span>
               </h4>
               <p>
-                Public feedback, as opposed to the private loops used in
-                traditional analysis methods, ensures that a Solution meets data
-                and delivery standards — does the Solution solve the challenge,
-                and does it do it well.
+              Analytics, tools and content are peer reviewed by a dynamic network of top analysts in order to validate and score results. This component is gated for analysts who have earned 2,000 xMETRIC or more and demonstrated their crypto analytics proficiency.
+              </p>
+              <p>
+                <a
+                  className="btn btn-sm btn-outline-primary rounded-pill px-3"
+                  href="https://metricsdao.ghost.io/xmetric/"
+                >
+                  Learn more about xMETRIC{" "}
+                  <i className="bi bi-arrow-right-short"></i>
+                </a>
               </p>
             </div>
             <div
@@ -165,7 +169,7 @@ export default function Index() {
               <img src="img/pic-review.png" alt="" className="img-fluid" />
             </div>
           </div>
-          <div className="row section-payment">
+          {/* <div className="row section-payment">
             <div
               className="col-6 order-2 order-lg-0"
               data-aos="fade-up"
@@ -204,7 +208,7 @@ export default function Index() {
                 </a>
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
       <section className="section-4" id="contactus">
