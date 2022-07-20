@@ -26,7 +26,7 @@ const Header = () => {
                     className="tw-no-underline"
                 >
                     <img
-                        src="img/bw-lightbg@2x.png"
+                        src="/img/bw-lightbg@2x.png"
                         alt="MetricsDAO"
                         width="241"
                         height="44"
@@ -52,12 +52,12 @@ const Header = () => {
                 >
                     SHOWCASE
                 </Link>
-                <Link
+                <a
                     className="btn btn-outline-dark rounded-pill xl:tw-px-4 lg:tw-px-3 xl:tw-mr-4 lg:tw-mr-2 md:tw-mr-1"
-                    to="/roadmap"
+                    href="https://metricsdao.ghost.io/"
                 >
-                    ROADMAP
-                </Link>
+                    BLOG
+                </a>
                 <a
                     className="btn btn-outline-dark rounded-pill xl:tw-px-4 lg:tw-px-3 xl:tw-mr-4 lg:tw-mr-2 md:tw-mr-1 text-uppercase"
                     href="https://partnerwith.metricsdao.xyz"

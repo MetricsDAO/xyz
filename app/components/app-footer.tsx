@@ -7,7 +7,7 @@ export default function AppFooter() {
         <div className="row d-flex flex-wrap justify-content-between align-items-center py-3 my-4">
           <div className="col-4 d-flex align-items-center">
             <Link to="/" className="footer-brand">
-              <img src="img/black-mark@2x.png" alt="MetricsDAO" width="96" />
+              <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="96" />
             </Link>
           </div>
           <ul className="nav col-auto justify-content-end list-unstyled d-flex flex-row flex-lg-column social-network">
@@ -22,15 +22,15 @@ export default function AppFooter() {
                 <span className="ms-md-2 text-uppercase">twitter</span>
               </div>
             </li>
-            <li className="mb-lg-3">
+            {/* <li className="mb-lg-3">
               <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
                 <a
                   className="btn btn-outline-dark bi-mirror"
-                  href="https://metricsdao.mirror.xyz/"
+                  href="https://metricsdao.ghost.io/"
                 ></a>
-                <span className="ms-md-2 text-uppercase">mirror</span>
+                <span className="ms-md-2 text-uppercase">blog</span>
               </div>
-            </li>
+            </li> */}
             <li className="mb-lg-3">
               <a href="https://docs.metricsdao.xyz/"
                  className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none">

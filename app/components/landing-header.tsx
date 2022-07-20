@@ -13,10 +13,11 @@ export default function LandingHeader() {
                   data-aos="fade"
                   data-aos-duration="1000"
               >
-                Uniting <strong>analytical minds</strong> to solve{" "}
+                {/* Uniting <strong>analytical minds</strong> to solve{" "}
                 <br className="d-none d-lg-block" />
                 the greatest challenges facing <br className="d-none d-lg-block" />
-                blockchain ecosystems.
+                blockchain ecosystems. */}
+                <strong>On-Demand Data Analytics for Crypto Projects</strong>
               </h1>
               <div data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
                 <a className="btn-main" href="https://discord.gg/p3GMjK2zAr">
