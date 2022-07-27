@@ -62,3 +62,7 @@ now open browser to http://localhost:3000/claim
 connect wallet to account that has allocated metric  
 You should see message Eligible for Vesting statement  
 Switch account to a non allocated group and you should see not eligible  
+
+
+using IPFS package node has to be > 15 to using 16.16  
+TODO update using .nvmrc file  

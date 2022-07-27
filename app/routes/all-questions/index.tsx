@@ -4,7 +4,7 @@ import type { SetStateAction, Dispatch} from "react";
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
 import ConnectWalletButton from "~/components/ConnectWalletButton";
-import CreateQuestionContainer from "~/components/CreateQuestionContainer";
+import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 
 import type { GetAccountResult, Provider } from "@wagmi/core";
 
@@ -12,31 +12,26 @@ import type { GetAccountResult, Provider } from "@wagmi/core";
 export async function loader() {
     let xMetricJson;
     let questionAPIJson;
-    let costController;
-    let vaultJson;
-    const network = "localhost";
+    let questionStateController;
     try {
         xMetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
         questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
-        costController = require(`core-evm-contracts/deployments/${process.env.NETWORK}/ActionCostController.json`);
-        vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
+        questionStateController = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionStateController.json`);
     } catch (error) {
         console.log("ERROR", error);
         xMetricJson = null;
         questionAPIJson = null;
-        vaultJson = null;
-        costController = null;
+        questionStateController = null;
     }
     return {
         xMetricJson,
         questionAPIJson,
-        vaultJson,
-        costController
+        questionStateController
     }
 }
 
 export default function Index() {
-    const {xMetricJson, questionAPIJson, vaultJson, costController  } = useLoaderData();
+    const {xMetricJson, questionAPIJson, questionStateController  } = useLoaderData();
     const xMETRICAbiAndAddress = {
         abi: xMetricJson.abi,
         address: xMetricJson.address,
@@ -47,14 +42,9 @@ export default function Index() {
         address: questionAPIJson.address,
     }
 
-    const vaultAbiandAddress = {
-        abi: vaultJson.abi,
-        address: vaultJson.address,
-    }
-
-    const costControllerAbiandAddress = {
-        abi: costController.abi,
-        address: costController.address,
+    const questionStateControllerAbiandAddress = {
+        abi: questionStateController.abi,
+        address: questionStateController.address,
     }
 
         /* ELEMENT CLONED IN WRAPPER */
@@ -64,9 +54,9 @@ export default function Index() {
                 <div className="tw-bg-white tw-rounded-full tw-w-[120px] tw-h-[120px] tw-flex tw-flex-col tw-justify-center tw-mx-auto">
                 <img src="img/color-mark@2x.png" className="tw-mx-auto" alt="MetricsDAO" width="62" />
                 </div>
-                <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question Generation</h1>
+                <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question List</h1>
                 {account?.address && account?.connector ? (
-                    <CreateQuestionContainer address={account.address} questionAPI={questionAPIAbiAndAddress} vault={vaultAbiandAddress} costController={costControllerAbiandAddress} xmetric={xMETRICAbiAndAddress} />
+                    <AllQuestionsContainer address={account.address} questionAPI={questionAPIAbiAndAddress} questionStateController={questionStateControllerAbiandAddress} xmetric={xMETRICAbiAndAddress} />
                 ) : (
                 <ConnectWalletButton marginAuto buttonText="Connect Wallet to Ask Question" connectWallet={setIsOpen} />
                 )

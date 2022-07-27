@@ -29,9 +29,12 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
     } else if (location.pathname === "/claim") {
         link = "/staking";
         linkText = "Stake Metric";
-    } else {
+    } else if (location.pathname === "/question-generation") {
         link = "/all-questions"
         linkText = "View current questions"
+    } else {
+        link = "/question-generation";
+        linkText = "Question Creation"
     }
 
 

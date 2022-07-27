@@ -20,7 +20,7 @@ const protocols = [
     { name: 'Polygon' },
   ]
 
-export default function ShowUser ({address, questionAPI, xmetric, costController}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, costController: Record<string, string> }) {
+export default function CreateQuestion ({address, questionAPI, xmetric, costController, vault}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, costController: Record<string, string>, vault: Record<string, string> }) {
         const [xmetricAmount, setxmetricAmount] = useState<string>("");
         const [questionCost, setQuestionCost] = useState<string>("");
         const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export default function ShowUser ({address, questionAPI, xmetric, costController
         // const [indexOfAllocation, setIndexAllocation] = useState<number>(-1)
         const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
         const [fileUrl, setFileUrl] = useState<any>();
-        const prevAddress = usePrevious(address);
+        // const prevAddress = usePrevious(address);
 
         const questionBody = useRef<any>();
         const questionTitle = useRef<any>();
@@ -40,6 +40,16 @@ export default function ShowUser ({address, questionAPI, xmetric, costController
             args: [address],
             enabled: true,
             watch: true,
+            onError: (err) => {
+              console.error(err);
+            },
+        });
+
+        const {data: createCost } = useContractRead({
+            addressOrName: costController.address,
+            contractInterface: costController.abi,
+        }, 'createCost', {
+            enabled: true,
             onError: (err) => {
               console.error(err);
             },
@@ -61,16 +71,6 @@ export default function ShowUser ({address, questionAPI, xmetric, costController
               onSuccess(data) {
                 console.log('Success', data)
               },
-        });
-
-        const {data: createCost } = useContractRead({
-            addressOrName: costController.address,
-            contractInterface: costController.abi,
-        }, 'createCost', {
-            enabled: true,
-            onError: (err) => {
-              console.error(err);
-            },
         });
 
         const approve =  useContractWrite({
@@ -141,7 +141,7 @@ export default function ShowUser ({address, questionAPI, xmetric, costController
         async function askQuestion () {
             console.log("test", utils.parseEther(questionCost));
             const approvetxnResponse = await approve.writeAsync({
-                args: [costController.address, utils.parseEther(questionCost)],
+                args: [vault.address, utils.parseEther(questionCost)],
                 overrides: {
                     gasLimit: 350000,
                   },
@@ -185,19 +185,6 @@ export default function ShowUser ({address, questionAPI, xmetric, costController
                 <>
                 {alertContainerStatus && <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />}
                 <div className="tw-mx-auto bg-white tw-p-6 tw-rounded-lg tw-w-1/3 tw-mb-7">
-                    {/* <div className="tw-mx-auto tw-flex tw-items-center tw-justify-center tw-mb-4">
-                        {currentAllocationGroup.length ? (
-                        <>
-                        <CheckmarkFilled32 className="tw-fill-[#66B75F] tw-inline" /> 
-                        <h3 className="tw-text-2xl tw-inline tw-pl-2 tw-font-semibold">Eligible for Vesting</h3> 
-                        </> 
-                        ) : 
-                        <> 
-                        <CloseFilled32 className="tw-fill-[#F7746D] tw-inline" />
-                        <h3 className="tw-text-2xl tw-inline tw-pl-2">Not Eligible for vesting</h3>
-                        </>
-                        } 
-                    </div> */}
                     <p className="tw-text-center">{parseInt(xmetricAmount) > 0 ? (
                     <span>You have {xmetricAmount} xMETRIC available to create or vote on questions</span>
                     ) : (
@@ -290,4 +277,4 @@ export default function ShowUser ({address, questionAPI, xmetric, costController
                 </>
 
         )
-    }
+}
