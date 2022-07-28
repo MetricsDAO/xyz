@@ -124,8 +124,9 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
             const jsonMetaData = {
                 "name": questionTitleValue,
                 "description": questionBodyValue,
-                "program" : selectedProgram,
-            };
+                "program" : selectedProgram?.name,
+                "date": Date.now(),
+            }
             console.log('meta', jsonMetaData);
             try {
                 const added = await client.add(JSON.stringify(jsonMetaData));
@@ -192,14 +193,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                     )}
                     </p>
                 </div>
-                {/* {currentAllocationGroup.length && indexOfAllocation >= 0 && (
-                <ShowMetric 
-                    topChef={topChef} 
-                    address={address} 
-                    prevAddress={prevAddress} 
-                    indexOfAllocation={indexOfAllocation} 
-                />
-                )} */}
                 {parseInt(xmetricAmount) > 0 && (
                     <section>
                         <p className="tw-text-center tw-mb-8">Create question below</p>
@@ -267,7 +260,7 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                         <textarea ref={questionBody} rows={4} className="tw-block tw-shadow tw-appearance-none tw-border tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline" id="question-body" placeholder="e.g. Which tokens are most popular on the top 3 L2's by market share?"/>
                         </div>
                         <div className="tw-mx-auto tw-max-w-md tw-mb-4">
-                        <button onClick={() => ipfsUpload()}className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white">
+                        <button onClick={ipfsUpload}className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white">
                             Create Question
                         </button>
                         </div>

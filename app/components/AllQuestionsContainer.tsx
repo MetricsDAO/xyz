@@ -2,11 +2,12 @@ import { useEffect, useState, Fragment} from "react";
 import type { Dispatch, SetStateAction} from "react";
 import { useContractRead, useContractWrite } from 'wagmi';
 import { BigNumber, utils } from "ethers";
+import { CSVLink } from "react-csv";
 import AlertBanner from "~/components/AlertBanner";
 import { TransactionStatus, usePrevious } from '~/utils/helpers';
 import { RadioGroup } from '@headlessui/react'
 import { Listbox, Transition } from '@headlessui/react'
-import { CheckmarkFilled32, CaretDown32 } from '@carbon/icons-react';
+import { CheckmarkFilled32, CaretDown32, Download16 } from '@carbon/icons-react';
 
 import ShowQuestions  from "~/components/ShowQuestions";
 
@@ -225,6 +226,7 @@ function AllQuestionsByState ({latestQuestion, questionStateController, question
 
   useEffect(() => {
     if (Array.isArray(questionData) && prevTokenId !== latestQuestion) {
+        console.log("question Data", questionData);
         setQuestionDataVotingState(questionData);
     }
   }, [questionData,  questionDataVotingState, prevTokenId, latestQuestion])
@@ -240,17 +242,18 @@ function AllQuestionsByState ({latestQuestion, questionStateController, question
         ipfsData.url = obj.url;
         ipfsData.questionId = obj.questionId.toNumber();
         ipfsData.totalVotes = utils.formatEther(obj.totalVotes.toString());
+        ipfsData.date = ipfsData.date || "Unavailable currently";
+        ipfsData.program = typeof ipfsData.program === "string" ? ipfsData.program : ipfsData.program.name;
         setQuestionArray((existingQuestion: any) => [...existingQuestion, ipfsData]);
         } catch (error:any) {
             const ipfsdataFailure = {
                 name: "Unavailable currently",
-                program: {
-                    name: "Unavailable currently"
-                },
+                program: "Unavailable currently",
                 description: "Unavailable currently",
                 url: obj.url,
                 questionId: obj.questionId.toNumber(),
-                totalVotes: utils.formatEther(obj.totalVotes.toString())
+                totalVotes: utils.formatEther(obj.totalVotes.toString()),
+                date: "Unavailable currently"
             };
             if (error.name === 'AbortError') return
             setQuestionArray((existingQuestion: any) => [...existingQuestion, ipfsdataFailure]);
@@ -318,6 +321,10 @@ function AllQuestionsByState ({latestQuestion, questionStateController, question
           <div className="tw-w-1/6 tw-px-4">
           <MyRadioGroup setSelected={setSelected} selected={selected} />
           <DropDown setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
+          <CSVLink data={querstionArray} className="blue-button tw-bg-[#21C5F2] tw-mt-8 tw-flex tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white" filename={"question-data.csv"} target="_blank"> 
+            <span className="tw-mr-3">Download CSV </span>
+            <Download16 />
+          </CSVLink>
           </div>
           </div>
       ) : (

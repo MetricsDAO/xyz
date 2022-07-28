@@ -10,7 +10,7 @@ export default function ShowQuestions ({ questions, upvoteQuestion, selected, se
     if (selectedProgram.name === "All") {
         if (selected.name === "Program") {
             sorted = questions.sort((a:any, b:any) => {
-                return a.program.name > b.program.name ? 1 : -1;
+                return a.program > b.program ? 1 : -1;
             });
         } else {
             const property = selected.name === "Votes" ? "totalVotes" : "Newest";
@@ -20,7 +20,7 @@ export default function ShowQuestions ({ questions, upvoteQuestion, selected, se
         }
     } else { //filter it
         sorted = questions.filter(((obj:any) => {
-            return obj.program.name == selectedProgram.name;
+            return obj.program == selectedProgram.name;
         }))
     }
     const [sortedQuestions, setSortedQuestions] = useState<any>(sorted);
@@ -60,14 +60,23 @@ export function FilteredQuestions({
     return (
         <div className="tw-flex tw-mb-10">
             <div id="post-votes" className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center">
+                {question.name !== "Unavailable currently" ? (
+                <>
                 <CaretUp32 className="tw-cursor-pointer" onClick={() => {
                     upvoteQuestion(question.questionId)
                 }} />
                 <span>{question.totalVotes}</span>
+                </>
+            ) : (
+                <>
+                <span className="tw-opacity-25">N/A</span>
+                <span className="tw-opacity-25">{question.totalVotes}</span>
+                </>
+                )}
             </div>
             <div className="tw-flex tw-flex-col">
                 <h4 className="tw-font-bold tw-text-xl"> {question.name}</h4>
-                <p className="tw-text-sm tw-mb-4">{question.program?.name}</p>
+                <p className="tw-text-sm tw-mb-4">{question.program}</p>
                 <p className="tw-text-base tw-mb-4">{question.description}</p>
             </div>
         </div> 

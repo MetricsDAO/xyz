@@ -787,3 +787,7 @@ strong {
   color: white;
   background-color: transparent;
 }
+
+.blue-button:hover {
+  color:#fff;
+}
