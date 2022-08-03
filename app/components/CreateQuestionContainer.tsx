@@ -3,22 +3,15 @@ import { useContractRead, useContractWrite } from 'wagmi';
 import { create } from "ipfs-http-client";
 import { BigNumber, utils } from "ethers";
 import { CheckmarkFilled32, CaretDown32 } from '@carbon/icons-react';
-import { usePrevious, TransactionStatus } from '~/utils/helpers';
+import { TransactionStatus } from '~/utils/helpers';
 
 import { Listbox, Transition } from '@headlessui/react'
 
 import AlertBanner from "~/components/AlertBanner";
+import { protocols } from "~/utils/helpers";
 
-
+// TODO - paid endpoint
 const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
-const protocols = [
-    { name: 'Ethereum' },
-    { name: 'Flow' },
-    { name: 'Algorand' },
-    { name: 'THOchain' },
-    { name: 'Cosmos' },
-    { name: 'Polygon' },
-  ]
 
 export default function CreateQuestion ({address, questionAPI, xmetric, costController, vault}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, costController: Record<string, string>, vault: Record<string, string> }) {
         const [xmetricAmount, setxmetricAmount] = useState<string>("");
@@ -168,6 +161,9 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                     console.log("confirmation", confirmation);
                     if (confirmation.blockNumber) {
                         setWriteTransactionStatus(TransactionStatus.Approved);
+                        questionBody.current.value = "";
+                        questionTitle.current.value = "";
+                        setSelectedProgram(protocols[0]);
                         setTimeout(() => {
                             setAlertContainerStatus(false);
                         }, 9000);     

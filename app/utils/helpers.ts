@@ -32,3 +32,42 @@ export enum TransactionStatus {
     Approved = "approved",
     Failed = "Failed",
   }
+
+export const questionStateEnum = {
+    UNINIT: 0,
+    VOTING: 1,
+    PUBLISHED: 2,
+    IN_GRADING: 3,
+    COMPLETED: 4,
+    CANCELLED: 5,
+    BAD: 6,
+};
+
+export const OFFSET = 1000;
+
+
+
+// TODO DO WE CHANGE
+export const sortMethods = [
+  {
+    name: 'Votes',
+  },
+  {
+    name: 'Newest',
+  },
+  {
+    name: 'Program',
+  },
+];
+
+// TODO How to get protocols
+
+export const protocols = [
+  { name: 'All'},
+  { name: 'Ethereum' },
+  { name: 'Flow' },
+  { name: 'Algorand' },
+  { name: 'THOchain' },
+  { name: 'Cosmos' },
+  { name: 'Polygon' },
+]

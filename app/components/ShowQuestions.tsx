@@ -3,33 +3,39 @@ import { CaretUp32 } from '@carbon/icons-react';
 import { usePrevious } from "~/utils/helpers";
 
 
-export default function ShowQuestions ({ questions, upvoteQuestion, selected, selectedProgram }: { questions: any, upvoteQuestion: (questionID: number) => {}, selected: any, selectedProgram: any }) {
+export default function ShowQuestions ({ questions, initUpVoteQuestion, selected, selectedProgram }: { questions: any, initUpVoteQuestion: (questionID: number) => {}, selected: any, selectedProgram: any }) {
     let sorted:any;
     const prevSelectedProgram = usePrevious(selectedProgram);
+    const previousQuestions = usePrevious(questions);
+    const prevSelected = usePrevious(selected);
 
-    if (selectedProgram.name === "All") {
-        if (selected.name === "Program") {
-            sorted = questions.sort((a:any, b:any) => {
-                return a.program > b.program ? 1 : -1;
-            });
-        } else {
-            const property = selected.name === "Votes" ? "totalVotes" : "Newest";
-            sorted = questions.sort((a:any, b:any) => {
-                return parseInt(a[property]) < parseInt(b[property]) ? 1 : -1;
-            });
+    if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions || prevSelected !== selected) {
+        if (selectedProgram.name === "All") {
+            if (selected.name === "Program") {
+                sorted = questions.sort((a:any, b:any) => {
+                    return a.program > b.program ? 1 : -1;
+                });
+            } else {
+                const property = selected.name === "Votes" ? "totalVotes" : "questionId";
+                sorted = questions.sort((a:any, b:any) => {
+                    return parseInt(a[property]) < parseInt(b[property]) ? 1 : -1;
+                });
+            }
+        } else { //filter it
+            sorted = questions.filter(((obj:any) => {
+                return obj.program == selectedProgram.name;
+            }))
         }
-    } else { //filter it
-        sorted = questions.filter(((obj:any) => {
-            return obj.program == selectedProgram.name;
-        }))
+    } else {
+        sorted = previousQuestions;
     }
     const [sortedQuestions, setSortedQuestions] = useState<any>(sorted);
 
     useEffect(() => {
-        if (selectedProgram !== prevSelectedProgram) {
+        if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions) {
             setSortedQuestions(sorted);
         }
-    }, [selectedProgram, prevSelectedProgram, sorted])
+    }, [selectedProgram, prevSelectedProgram, sorted, previousQuestions, questions])
 
     function render() {
         if (!sortedQuestions.length) {
@@ -39,7 +45,7 @@ export default function ShowQuestions ({ questions, upvoteQuestion, selected, se
             return (
                 <FilteredQuestions 
                 key={questionObj.questionId} 
-                upvoteQuestion={upvoteQuestion} 
+                initUpVoteQuestion={initUpVoteQuestion} 
                 question={questionObj} 
                 />
             )
@@ -51,19 +57,19 @@ export default function ShowQuestions ({ questions, upvoteQuestion, selected, se
 
 export function FilteredQuestions({
     question, 
-    upvoteQuestion, 
+    initUpVoteQuestion, 
     }:{ 
     question:any,  
-    upvoteQuestion: (questionID: number) => {}, 
+    initUpVoteQuestion: (questionID: number) => {}, 
     }) {
 
     return (
-        <div className="tw-flex tw-mb-10">
+        <div className={`tw-flex tw-mb-10 ${question.loading ? "tw-opacity-25" : "tw-opacity-100"}`}>
             <div id="post-votes" className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center">
-                {question.name !== "Unavailable currently" ? (
+                {question.name !== "Unavailable currently" || question.loading ? (
                 <>
                 <CaretUp32 className="tw-cursor-pointer" onClick={() => {
-                    upvoteQuestion(question.questionId)
+                    initUpVoteQuestion(question.questionId)
                 }} />
                 <span>{question.totalVotes}</span>
                 </>
