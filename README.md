@@ -54,7 +54,7 @@ this will install core-evm-contracts json files as an npm package
 now if you look in allocationGroups.json file  
 it's an array of 4 objects assocated with Accounts 16, 17, 18, 19 in hardhat node  
 this will be imported to allocationAssigner now run in the comman line in a new terminal
-`node allocationAssigner.js`  
+`node protocol-scripts/allocationAssigner.js`  
 If you go back to core-evm-contracts - you should see in the terminal the calls made to allocation Groups  
 Now in a seperate terminal run  
 `npm run dev`  
@@ -66,3 +66,14 @@ Switch account to a non allocated group and you should see not eligible
 
 using IPFS package node has to be > 15 to using 16.16  
 TODO update using .nvmrc file  
+
+## Create Questions and View Questions/Upvote  
+Run same steps in core-evm-contracts as claiming and staking then switch to XYZ  
+Make sure you clear/reset accounts in Metamask  
+Run this command  
+`node protocol-scripts/assignxMETRIC.js`  
+Now in a seperate terminal run  
+`npm run dev`  
+visit http://localhost:3000/question-generation to generate questions  
+In upper left hand corner you should see view all questions link  
+
