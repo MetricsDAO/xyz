@@ -14,7 +14,6 @@ export async function loader() {
     let questionAPIJson;
     let costController;
     let vaultJson;
-    const network = "localhost";
     try {
         xMetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
         questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);

@@ -8,17 +8,31 @@ const vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}
 const claimControllerJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/ClaimController.json`);
 const questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
 
-// HARDHAT addresses for testing
-const hardhat16 = "0x2546bcd3c84621e976d8185a91a922ae77ecec30";
-const hardhat17 = "0xbda5747bfd65f08deb54cb465eb87d40e51b197e";
-const hardhat18 = "0xdd2fd4581271e230360230f9337d5c0430bf44c0";
-const hardhat19 = "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199";
 
-const hardhat5 = "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc";
+const provider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_URL);
+
+let signer;
+let account1; //hardhat16  //third
+let account2; //hardhat17  //fourth
+let account3; //hardhat18  //fifth
+let account4; //hardhat19  //sixth
+
+if (process.env.NETWORK === "localhost") {
+    account1 = "0x2546bcd3c84621e976d8185a91a922ae77ecec30";
+    account2 = "0xbda5747bfd65f08deb54cb465eb87d40e51b197e";
+    account3 = "0xdd2fd4581271e230360230f9337d5c0430bf44c0";
+    account4 = "0x8626f6940e2eb28930efb4cef49b2d1f2c9c1199";
+    signer = provider.getSigner();
+} else if (process.env.NETWORK === "ropsten") {
+    account1 = "0x6f080B4820221b932EbF0C5A40286835D591A215";
+    account2 = "0x8d550cBA64eB7A8dFD8d88772621e6B47A4b3E55";
+    account3 = "0x077479Ac7Ce949b0D950F9c28b8F017793036d61";
+    account4 = "0xCa827406ea36f488be7b7FE1D6D05622e162b26F";
+    const privateKey = process.env.PRIVATE_KEY;
+    signer = new ethers.Wallet(privateKey, provider);
+}
 
 
-const provider = new ethers.providers.JsonRpcProvider();
-const signer = provider.getSigner();
 
 console.log(xmetricJson.address);
 
@@ -52,12 +66,12 @@ async function init() {
     await xmetric.setTransactor(costControllerJson.address, true);
     await xmetric.setTransactor(vaultJson.address, true);
 
-    await xmetric.transfer(hardhat5, ethers.utils.parseEther("55"));
+    // await xmetric.transfer(hardhat5, ethers.utils.parseEther("55"));
 
-    await xmetric.transfer(hardhat16, ethers.utils.parseEther("160"));
-    await xmetric.transfer(hardhat17, ethers.utils.parseEther("1700"));
-    await xmetric.transfer(hardhat18, ethers.utils.parseEther("18000"));
-    await xmetric.transfer(hardhat19, ethers.utils.parseEther("19"));
+    await xmetric.transfer(account1, ethers.utils.parseEther("160"));
+    await xmetric.transfer(account2, ethers.utils.parseEther("1700"));
+    await xmetric.transfer(account3, ethers.utils.parseEther("18000"));
+    await xmetric.transfer(account4, ethers.utils.parseEther("19"));
 }
 
 init();
