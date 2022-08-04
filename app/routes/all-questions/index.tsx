@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react";
+// import { useLoaderData } from "@remix-run/react";
 import type { SetStateAction, Dispatch} from "react";
 
 import WalletProvider from "~/components/WalletProvider";
@@ -8,18 +8,21 @@ import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 
 import type { GetAccountResult, Provider } from "@wagmi/core";
  
-import {xMetricJson, questionAPIJson, questionStateController} from "~/services/contracts.server";
+// import {xMetricJson, questionAPIJson, questionStateController} from "~/services/contracts.server";
+import xMetricJson from "core-evm-contracts/deployments/ropsten/Xmetric.json";
+import questionAPIJson from "core-evm-contracts/deployments/ropsten/QuestionAPI.json";
+import questionStateController from "core-evm-contracts/deployments/ropsten/QuestionStateController.json";
 
-export async function loader() {
-    return {
-        xMetricJson,
-        questionAPIJson,
-        questionStateController
-    }
-}
+// export async function loader() {
+//     return {
+//         xMetricJson,
+//         questionAPIJson,
+//         questionStateController
+//     }
+// }
 
 export default function Index() {
-    const {xMetricJson, questionAPIJson, questionStateController  } = useLoaderData();
+    // const {xMetricJson, questionAPIJson, questionStateController  } = useLoaderData();
     const xMETRICAbiAndAddress = {
         abi: xMetricJson.abi,
         address: xMetricJson.address,
