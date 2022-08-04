@@ -8,43 +8,11 @@ import CreateQuestionContainer from "~/components/CreateQuestionContainer";
 
 import type { GetAccountResult, Provider } from "@wagmi/core";
 
+import { getContracts } from "~/services/contracts.server"
+
 
 export async function loader() {
-    let xMetricJson;
-    let questionAPIJson;
-    let costController;
-    let vaultJson;
-    // TODO THIS is STUPID FIX THIS
-    // why can't I use template literals within require statement
-    // vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
-    xMetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
-    questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
-    costController = require(`core-evm-contracts/deployments/${process.env.NETWORK}/ActionCostController.json`);
-    vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
-    // try {
-    //     if (process.env.NETWORK === "ropsten") {
-    //     xMetricJson = require(`../../evm-contracts/deployments/ropsten/Xmetric.json`);
-    //     questionAPIJson = require(`../../evm-contracts/deployments/ropsten/QuestionAPI.json`);
-    //     costController = require(`../../evm-contracts/deployments/ropsten/ActionCostController.json`);
-    //     vaultJson = require(`../../evm-contracts/deployments/ropsten/Vault.json`);
-    //     } else if (process.env.NETWORK === "polygon") {
-    //         xMetricJson = require(`../../evm-contractss/deployments/polygon/Xmetric.json`);
-    //         questionAPIJson = require(`../../evm-contracts/deployments/polygon/QuestionAPI.json`);
-    //         costController = require(`../../evm-contracts/deployments/polygon/ActionCostController.json`);
-    //         vaultJson = require(`../../evm-contracts/deployments/polygon/Vault.json`);
-    //     } else { //localhost
-    //         xMetricJson = require(`../../evm-contracts/deployments/localhost/Xmetric.json`);
-    //         questionAPIJson = require(`../../evm-contracts/deployments/localhost/QuestionAPI.json`);
-    //         costController = require(`../../evm-contracts/deployments/localhost/ActionCostController.json`);
-    //         vaultJson = require(`../../evm-contracts/deployments/localhost/Vault.json`);
-    //     }
-    // } catch (error) {
-    //     console.log("ERROR", error);
-    //     xMetricJson = null;
-    //     questionAPIJson = null;
-    //     vaultJson = null;
-    //     costController = null;
-    // }
+    const {xMetricJson, questionAPIJson, vaultJson, costController} = getContracts();
     return {
         xMetricJson,
         questionAPIJson,
