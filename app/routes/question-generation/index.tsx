@@ -19,20 +19,20 @@ export async function loader() {
     // vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
     try {
         if (process.env.NETWORK === "ropsten") {
-        xMetricJson = require(`../..core-evm-contracts/deployments/ropsten/Xmetric.json`);
-        questionAPIJson = require(`../..core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
-        costController = require(`../..core-evm-contracts/deployments/ropsten/ActionCostController.json`);
-        vaultJson = require(`../..core-evm-contracts/deployments/ropsten/Vault.json`);
+        xMetricJson = require(`../../core-evm-contracts/deployments/ropsten/Xmetric.json`);
+        questionAPIJson = require(`../../core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
+        costController = require(`../../core-evm-contracts/deployments/ropsten/ActionCostController.json`);
+        vaultJson = require(`../../core-evm-contracts/deployments/ropsten/Vault.json`);
         } else if (process.env.NETWORK === "polygon") {
-            xMetricJson = require(`../..core-evm-contracts/deployments/polygon/Xmetric.json`);
-            questionAPIJson = require(`../..core-evm-contracts/deployments/polygon/QuestionAPI.json`);
-            costController = require(`../..core-evm-contracts/deployments/polygon/ActionCostController.json`);
-            vaultJson = require(`../..core-evm-contracts/deployments/polygon/Vault.json`);
+            xMetricJson = require(`../../core-evm-contracts/deployments/polygon/Xmetric.json`);
+            questionAPIJson = require(`../../core-evm-contracts/deployments/polygon/QuestionAPI.json`);
+            costController = require(`../../core-evm-contracts/deployments/polygon/ActionCostController.json`);
+            vaultJson = require(`../../core-evm-contracts/deployments/polygon/Vault.json`);
         } else { //localhost
-            xMetricJson = require(`../..core-evm-contracts/deployments/localhost/Xmetric.json`);
-            questionAPIJson = require(`../..core-evm-contracts/deployments/localhost/QuestionAPI.json`);
-            costController = require(`../..core-evm-contracts/deployments/localhost/ActionCostController.json`);
-            vaultJson = require(`../..core-evm-contracts/deployments/localhost/Vault.json`);
+            xMetricJson = require(`../../core-evm-contracts/deployments/localhost/Xmetric.json`);
+            questionAPIJson = require(`../../core-evm-contracts/deployments/localhost/QuestionAPI.json`);
+            costController = require(`../../core-evm-contracts/deployments/localhost/ActionCostController.json`);
+            vaultJson = require(`../../core-evm-contracts/deployments/localhost/Vault.json`);
         }
     } catch (error) {
         console.log("ERROR", error);
