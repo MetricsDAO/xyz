@@ -77,5 +77,4 @@ Now in a seperate terminal run
 visit http://localhost:3000/question-generation to generate questions  
 In upper left hand corner you should see view all questions link  
 
-BANDAID - currently copying files from node_modules/core-evm-contracts/deployments to app/evm-contracts
 
