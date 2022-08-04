@@ -14,11 +14,26 @@ export async function loader() {
     let questionAPIJson;
     let costController;
     let vaultJson;
+    // TODO THIS IF F***ing STUPID FIX THIS
+    // why can't I use template literals within require statement
+    // vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
     try {
-        xMetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
-        questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
-        costController = require(`core-evm-contracts/deployments/${process.env.NETWORK}/ActionCostController.json`);
-        vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
+        if (process.env.NETWORK === "ropsten") {
+        xMetricJson = require(`core-evm-contracts/deployments/ropsten/Xmetric.json`);
+        questionAPIJson = require(`core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
+        costController = require(`core-evm-contracts/deployments/ropsten/ActionCostController.json`);
+        vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
+        } else if (process.env.NETWORK === "polygon") {
+            xMetricJson = require(`core-evm-contracts/deployments/polygon/Xmetric.json`);
+            questionAPIJson = require(`core-evm-contracts/deployments/polygon/QuestionAPI.json`);
+            costController = require(`core-evm-contracts/deployments/polygon/ActionCostController.json`);
+            vaultJson = require(`core-evm-contracts/deployments/polygon/Vault.json`);
+        } else { //localhost
+            xMetricJson = require(`core-evm-contracts/deployments/localhost/Xmetric.json`);
+            questionAPIJson = require(`core-evm-contracts/deployments/localhost/QuestionAPI.json`);
+            costController = require(`core-evm-contracts/deployments/localhost/ActionCostController.json`);
+            vaultJson = require(`core-evm-contracts/deployments/localhost/Vault.json`);
+        }
     } catch (error) {
         console.log("ERROR", error);
         xMetricJson = null;
