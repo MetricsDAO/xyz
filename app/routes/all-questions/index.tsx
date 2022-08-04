@@ -7,22 +7,10 @@ import ConnectWalletButton from "~/components/ConnectWalletButton";
 import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 
 import type { GetAccountResult, Provider } from "@wagmi/core";
-
+ 
+import {xMetricJson, questionAPIJson, questionStateController} from "~/services/contracts.server";
 
 export async function loader() {
-    let xMetricJson;
-    let questionAPIJson;
-    let questionStateController;
-    try {
-        xMetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
-        questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
-        questionStateController = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionStateController.json`);
-    } catch (error) {
-        console.log("ERROR", error);
-        xMetricJson = null;
-        questionAPIJson = null;
-        questionStateController = null;
-    }
     return {
         xMetricJson,
         questionAPIJson,
