@@ -14,7 +14,7 @@ export default function WalletProvider ({children, network}: {children: ReactEle
 
     //TODO create config of all chains we support
 
-    console.log(defaultChains, defaultL2Chains);
+    // TODO configure for POLYGON
 
     if (network === "ropsten") {
     const infuraId = "54fcc811bac44f99b84a04a4a3e2f998"

@@ -20,7 +20,7 @@
     "@remix-run/react": "^1.3.1",
     "@remix-run/vercel": "^1.3.1",
     "algoliasearch": "^4.13.0",
-    "core-evm-contracts": "github:MetricsDAO/core-evm-contracts#testBranchforXyz",
+    "core-evm-contracts": "^1.0.0",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.8",
     "ipfs-http-client": "^56.0.1",

@@ -16,30 +16,36 @@ export async function loader() {
     // TODO THIS IF F***ing STUPID FIX THIS
     // why can't I use template literals within require statement
     // vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
-    try {
-        if (process.env.NETWORK === "ropsten") {
-        xMetricJson = require(`../../evm-contracts/deployments/ropsten/Xmetric.json`);
-        questionAPIJson = require(`../../evm-contracts/deployments/ropsten/QuestionAPI.json`);
-        questionStateController = require(`../../evm-contracts/deployments/ropsten/QuestionStateController.json`);
-        bountyQuestionJson = require(`../../evm-contracts/deployments/ropsten/BountyQuestion.json`);
-        } else if (process.env.NETWORK === "polygon") {
-            xMetricJson = require(`../../evm-contracts/deployments/polygon/Xmetric.json`);
-            questionAPIJson = require(`../../evm-contracts/deployments/polygon/QuestionAPI.json`);
-            questionStateController = require(`../../evm-contracts/deployments/polygon/QuestionStateController.json`);
-            bountyQuestionJson = require(`../../evm-contracts/deployments/polygon/BountyQuestion.json`);
-        } else { //localhost
-            xMetricJson = require(`../../evm-contracts/deployments/localhost/Xmetric.json`);
-            questionAPIJson = require(`../../evm-contracts/deployments/localhost/QuestionAPI.json`);
-            questionStateController = require(`../../evm-contracts/deployments/localhost/QuestionStateController.json`);
-            bountyQuestionJson = require(`../../evm-contracts/deployments/localhost/BountyQuestion.json`);
-        }
-    } catch (error) {
-        console.log("ERROR", error);
-        xMetricJson = null;
-        questionAPIJson = null;
-        questionStateController = null;
-        bountyQuestionJson = null;
-    }
+
+    xMetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
+    questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
+    questionStateController = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionStateController.json`);
+    bountyQuestionJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/BountyQuestion.json`);
+    console.log(process.env.NETWORK);
+    // try {
+    //     if (process.env.NETWORK === "ropsten") {
+    //     xMetricJson = require(`../../evm-contracts/deployments/ropsten/Xmetric.json`);
+    //     questionAPIJson = require(`../../evm-contracts/deployments/ropsten/QuestionAPI.json`);
+    //     questionStateController = require(`../../evm-contracts/deployments/ropsten/QuestionStateController.json`);
+    //     bountyQuestionJson = require(`../../evm-contracts/deployments/ropsten/BountyQuestion.json`);
+    //     } else if (process.env.NETWORK === "polygon") {
+    //         xMetricJson = require(`../../evm-contracts/deployments/polygon/Xmetric.json`);
+    //         questionAPIJson = require(`../../evm-contracts/deployments/polygon/QuestionAPI.json`);
+    //         questionStateController = require(`../../evm-contracts/deployments/polygon/QuestionStateController.json`);
+    //         bountyQuestionJson = require(`../../evm-contracts/deployments/polygon/BountyQuestion.json`);
+    //     } else { //localhost
+    //         xMetricJson = require(`../../evm-contracts/deployments/localhost/Xmetric.json`);
+    //         questionAPIJson = require(`../../evm-contracts/deployments/localhost/QuestionAPI.json`);
+    //         questionStateController = require(`../../evm-contracts/deployments/localhost/QuestionStateController.json`);
+    //         bountyQuestionJson = require(`../../evm-contracts/deployments/localhost/BountyQuestion.json`);
+    //     }
+    // } catch (error) {
+    //     console.log("ERROR", error);
+    //     xMetricJson = null;
+    //     questionAPIJson = null;
+    //     questionStateController = null;
+    //     bountyQuestionJson = null;
+    // }
     return {
         xMetricJson,
         questionAPIJson,
