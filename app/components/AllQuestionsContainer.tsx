@@ -6,7 +6,19 @@ import { usePrevious } from '~/utils/helpers';
 import AllQuestionsByState from "~/components/AllQuestionsByState";
 
 
-export default function AllQuestionContainer ({address, questionAPI, xmetric, questionStateController}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, questionStateController: Record<string, string> }) {
+export default function AllQuestionContainer ({
+    address, 
+    questionAPI, 
+    xmetric, 
+    questionStateController,
+    bountyQuestion,
+    }:{
+    address: string, 
+    questionAPI: Record<string, string>, 
+    xmetric: Record<string, string>, 
+    questionStateController: Record<string, string>,
+    bountyQuestion: Record<string, string>
+    }) {
     const [xmetricAmount, setxmetricAmount] = useState<string>("");
 
     const [latestTokenId, setLatestTokenId] = useState<number>(0);
@@ -25,9 +37,9 @@ export default function AllQuestionContainer ({address, questionAPI, xmetric, qu
     });
 
     const {data: currentQuestion} = useContractRead({
-        addressOrName: questionAPI.address,
-        contractInterface: questionAPI.abi,
-    }, 'currentQuestionId', {
+        addressOrName: bountyQuestion.address,
+        contractInterface: bountyQuestion.abi,
+    }, 'getMostRecentQuestion', {
         enabled: prevAddress !== address,
         onError: (err) => {
           console.error(err);

@@ -66,17 +66,17 @@ export function FilteredQuestions({
     return (
         <div className={`tw-flex tw-mb-10 ${question.loading ? "tw-opacity-25" : "tw-opacity-100"}`}>
             <div id="post-votes" className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center">
-                {question.name !== "Unavailable currently" || question.loading ? (
+                {question.unavailable || question.loading ? (
+                <>
+                <span className="tw-opacity-25">N/A</span>
+                <span className="tw-opacity-25">{question.totalVotes}</span>
+                </>
+            ) : (
                 <>
                 <CaretUp32 className="tw-cursor-pointer" onClick={() => {
                     initUpVoteQuestion(question.questionId)
                 }} />
                 <span>{question.totalVotes}</span>
-                </>
-            ) : (
-                <>
-                <span className="tw-opacity-25">N/A</span>
-                <span className="tw-opacity-25">{question.totalVotes}</span>
                 </>
                 )}
             </div>

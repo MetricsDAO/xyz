@@ -66,12 +66,19 @@ async function init() {
     await xmetric.setTransactor(costControllerJson.address, true);
     await xmetric.setTransactor(vaultJson.address, true);
 
+    try {
+    await actionCostController.setCreateCost(0);
+    await actionCostController.setVoteCost(0);
+    } catch(error) {
+        console.log("ERRRRRR!!!!!", error);
+    }
+
     // await xmetric.transfer(hardhat5, ethers.utils.parseEther("55"));
 
-    await xmetric.transfer(account1, ethers.utils.parseEther("160"));
-    await xmetric.transfer(account2, ethers.utils.parseEther("1700"));
-    await xmetric.transfer(account3, ethers.utils.parseEther("18000"));
-    await xmetric.transfer(account4, ethers.utils.parseEther("19"));
+    await xmetric.transfer(account1, ethers.utils.parseEther("166"));
+    await xmetric.transfer(account2, ethers.utils.parseEther("1770"));
+    await xmetric.transfer(account3, ethers.utils.parseEther("18800"));
+    await xmetric.transfer(account4, ethers.utils.parseEther("199"));
 }
 
 init();

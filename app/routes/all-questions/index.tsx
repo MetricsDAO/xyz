@@ -12,6 +12,7 @@ export async function loader() {
     let xMetricJson;
     let questionAPIJson;
     let questionStateController;
+    let bountyQuestionJson;
     // TODO THIS IF F***ing STUPID FIX THIS
     // why can't I use template literals within require statement
     // vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Vault.json`);
@@ -20,30 +21,36 @@ export async function loader() {
         xMetricJson = require(`../../evm-contracts/deployments/ropsten/Xmetric.json`);
         questionAPIJson = require(`../../evm-contracts/deployments/ropsten/QuestionAPI.json`);
         questionStateController = require(`../../evm-contracts/deployments/ropsten/QuestionStateController.json`);
+        bountyQuestionJson = require(`../../evm-contracts/deployments/ropsten/BountyQuestion.json`);
         } else if (process.env.NETWORK === "polygon") {
             xMetricJson = require(`../../evm-contracts/deployments/polygon/Xmetric.json`);
             questionAPIJson = require(`../../evm-contracts/deployments/polygon/QuestionAPI.json`);
             questionStateController = require(`../../evm-contracts/deployments/polygon/QuestionStateController.json`);
-        } else {
+            bountyQuestionJson = require(`../../evm-contracts/deployments/polygon/BountyQuestion.json`);
+        } else { //localhost
             xMetricJson = require(`../../evm-contracts/deployments/localhost/Xmetric.json`);
             questionAPIJson = require(`../../evm-contracts/deployments/localhost/QuestionAPI.json`);
             questionStateController = require(`../../evm-contracts/deployments/localhost/QuestionStateController.json`);
+            bountyQuestionJson = require(`../../evm-contracts/deployments/localhost/BountyQuestion.json`);
         }
     } catch (error) {
         console.log("ERROR", error);
         xMetricJson = null;
         questionAPIJson = null;
         questionStateController = null;
+        bountyQuestionJson = null;
     }
     return {
         xMetricJson,
         questionAPIJson,
-        questionStateController
+        questionStateController,
+        bountyQuestionJson,
+        network: process.env.NETWORK,
     }
 }
 
 export default function Index() {
-    const {xMetricJson, questionAPIJson, questionStateController  } = useLoaderData();
+    const {xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, network  } = useLoaderData();
     const xMETRICAbiAndAddress = {
         abi: xMetricJson.abi,
         address: xMetricJson.address,
@@ -59,6 +66,11 @@ export default function Index() {
         address: questionStateController.address,
     }
 
+    const bountyQuestionAbiAndAddress = {
+        abi: bountyQuestionJson.abi,
+        address: bountyQuestionJson.address
+    }
+
         /* ELEMENT CLONED IN WRAPPER */
         function ClaimBody({setIsOpen, account}: {setIsOpen?: Dispatch<SetStateAction<boolean>>, account?: GetAccountResult<Provider> | undefined}) {
             return (
@@ -68,7 +80,13 @@ export default function Index() {
                 </div>
                 <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question List</h1>
                 {account?.address && account?.connector ? (
-                    <AllQuestionsContainer address={account.address} questionAPI={questionAPIAbiAndAddress} questionStateController={questionStateControllerAbiandAddress} xmetric={xMETRICAbiAndAddress} />
+                    <AllQuestionsContainer 
+                        address={account.address} 
+                        questionAPI={questionAPIAbiAndAddress} 
+                        questionStateController={questionStateControllerAbiandAddress} 
+                        xmetric={xMETRICAbiAndAddress}
+                        bountyQuestion={bountyQuestionAbiAndAddress} 
+                        />
                 ) : (
                 <ConnectWalletButton marginAuto buttonText="Connect Wallet to Ask Question" connectWallet={setIsOpen} />
                 )
@@ -79,7 +97,7 @@ export default function Index() {
 
 
     return (
-    <WalletProvider>
+    <WalletProvider network={network}>
         <Wrapper >
         <ClaimBody /> 
         </Wrapper>

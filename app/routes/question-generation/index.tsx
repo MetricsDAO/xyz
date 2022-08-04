@@ -45,12 +45,13 @@ export async function loader() {
         xMetricJson,
         questionAPIJson,
         vaultJson,
-        costController
+        costController,
+        network: process.env.NETWORK
     }
 }
 
 export default function Index() {
-    const {xMetricJson, questionAPIJson, vaultJson, costController  } = useLoaderData();
+    const {xMetricJson, questionAPIJson, vaultJson, costController, network  } = useLoaderData();
     const xMETRICAbiAndAddress = {
         abi: xMetricJson.abi,
         address: xMetricJson.address,
@@ -91,7 +92,7 @@ export default function Index() {
 
 
     return (
-    <WalletProvider>
+    <WalletProvider network={network}>
         <Wrapper >
         <ClaimBody /> 
         </Wrapper>

@@ -15,13 +15,10 @@ const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
 
 export default function CreateQuestion ({address, questionAPI, xmetric, costController, vault}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, costController: Record<string, string>, vault: Record<string, string> }) {
         const [xmetricAmount, setxmetricAmount] = useState<string>("");
-        const [questionCost, setQuestionCost] = useState<string>("");
         const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
         const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
-        // const [indexOfAllocation, setIndexAllocation] = useState<number>(-1)
         const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
         const [fileUrl, setFileUrl] = useState<any>();
-        // const prevAddress = usePrevious(address);
 
         const questionBody = useRef<any>();
         const questionTitle = useRef<any>();
@@ -38,15 +35,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
             },
         });
 
-        const {data: createCost } = useContractRead({
-            addressOrName: costController.address,
-            contractInterface: costController.abi,
-        }, 'createCost', {
-            enabled: true,
-            onError: (err) => {
-              console.error(err);
-            },
-        });
 
         const createQuestion = useContractWrite({
             addressOrName: questionAPI.address,
@@ -66,27 +54,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
               },
         });
 
-        const approve =  useContractWrite({
-            addressOrName: xmetric.address,
-            contractInterface: xmetric.abi,
-        }, 'approve', {
-            onError: (err) => {
-                console.error(err);
-              },
-              onSettled(data, error) {
-                console.log('Settled', { data, error })
-                if (error) {
-                    setWriteTransactionStatus(TransactionStatus.Failed);
-                }
-              },
-              onSuccess(data) {
-                console.log('Success', data)
-              },
-            //   overrides: {
-            //     gasLimit: 10000000,
-            //     gasPrice: 10000000,
-            //   },
-        });
 
         useEffect(() => {
             if (BigNumber.isBigNumber(balanceData)) {
@@ -94,13 +61,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                 setxmetricAmount(utils.formatEther(balanceData.toString()));
             }
         }, [balanceData])
-
-        useEffect(() => {
-            if (BigNumber.isBigNumber(createCost)) {
-                console.log("data", utils.formatEther(createCost.toString()));
-                setQuestionCost(utils.formatEther(createCost.toString()));
-            }
-        }, [createCost])
 
         useEffect(() => {
             if (fileUrl) {
@@ -130,52 +90,31 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
             }       
             
         }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         async function askQuestion () {
-            console.log("test", utils.parseEther(questionCost));
-            const approvetxnResponse = await approve.writeAsync({
-                args: [vault.address, utils.parseEther(questionCost)],
-                overrides: {
-                    gasLimit: 350000,
-                  },
-              });
-
-            console.log("approvetxnResponse", approvetxnResponse )
-            const approveconfirmation = await approvetxnResponse.wait();
-
-
-            console.log("approveconfirmation", approveconfirmation )
-
-            if (approveconfirmation.blockNumber) {
-                console.log("fileURl", fileUrl);
-                const txnResponse = await createQuestion.writeAsync({
-                    overrides: {
-                        gasLimit: 10000000,
-                      },
-                    args: [fileUrl, BigNumber.from("10")]
-                });
-                console.log("txnResponse", txnResponse);
-                try {
-                    const confirmation = await txnResponse.wait();
-                    console.log("confirmation", confirmation);
-                    if (confirmation.blockNumber) {
-                        setWriteTransactionStatus(TransactionStatus.Approved);
-                        questionBody.current.value = "";
-                        questionTitle.current.value = "";
-                        setSelectedProgram(protocols[0]);
-                        setTimeout(() => {
-                            setAlertContainerStatus(false);
-                        }, 9000);     
-                    }
-                } catch(error) {
-                    console.error("ERRRR", error);
-                    setWriteTransactionStatus(TransactionStatus.Failed);
+            console.log("fileURl", fileUrl);
+            const txnResponse = await createQuestion.writeAsync({
+                // overrides: {
+                //     gasLimit: 10000000,
+                //   },
+                args: [fileUrl, BigNumber.from("10")]
+            });
+            console.log("txnResponse", txnResponse);
+            try {
+                const confirmation = await txnResponse.wait();
+                console.log("confirmation", confirmation);
+                if (confirmation.blockNumber) {
+                    setWriteTransactionStatus(TransactionStatus.Approved);
+                    questionBody.current.value = "";
+                    questionTitle.current.value = "";
+                    setSelectedProgram(protocols[0]);
+                    setTimeout(() => {
+                        setAlertContainerStatus(false);
+                    }, 9000);     
                 }
-
+            } catch(error) {
+                console.error("ERRRR", error);
+                setWriteTransactionStatus(TransactionStatus.Failed);
             }
-            
-
         }
 
         return (

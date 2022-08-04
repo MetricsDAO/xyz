@@ -66,11 +66,12 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
                     name: "Loading",
                     program: "Loading",
                     description: "Loading",
-                    url: question.url,
+                    url: question.uri,
                     questionId: question.questionId.toNumber(),
-                    totalVotes: utils.formatEther(question.totalVotes.toString()),
-                    date: "Unavailable currently",
+                    totalVotes: question.totalVotes.toNumber(),
+                    date: "Loading",
                     loading: true,
+                    unavaible: false,
                 }
             }))
             setUXToShow(true);
@@ -82,14 +83,15 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
     useEffect(() => {
       const ac = new AbortController();
       async function getIpfsdata (obj:any) {
+        console.log("object", obj);
           try {
-          const response = await fetch(obj.url, {
+          const response = await fetch(obj.uri, {
             signal: ac.signal
           });
           const ipfsData = await response.json();
-          ipfsData.url = obj.url;
+          ipfsData.url = obj.uri;
           ipfsData.questionId = obj.questionId.toNumber();
-          ipfsData.totalVotes = utils.formatEther(obj.totalVotes.toString());
+          ipfsData.totalVotes = obj.totalVotes.toNumber();
           ipfsData.date = ipfsData.date || "Unavailable currently";
           ipfsData.program = typeof ipfsData.program === "string" ? ipfsData.program : ipfsData.program.name;
           ipfsData.loading = false;
@@ -109,10 +111,12 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
                   name: "Unavailable currently",
                   program: "Unavailable currently",
                   description: "Unavailable currently",
-                  url: obj.url,
+                  url: obj.uri,
                   questionId: obj.questionId.toNumber(),
-                  totalVotes: utils.formatEther(obj.totalVotes.toString()),
-                  date: "Unavailable currently"
+                  totalVotes: obj.totalVotes.toNumber(),
+                  date: "Unavailable currently",
+                  loading: false,
+                  unavailable: true
               };
               if (error.name === 'AbortError') return
               setQuestionArray((prevArray: any) => {
@@ -143,11 +147,11 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
       setAlertContainerStatus(true);
       try {
         const approvetxnResponse = await upVoteQuestion.writeAsync({
-            args: [BigNumber.from(questionId), utils.parseEther("1")],
-            overrides: {
-                gasLimit: 30000000,
-                gasPrice: 10000000,
-                },
+            args: [BigNumber.from(questionId)],
+            // overrides: {
+            //     gasLimit: 30000000,
+            //     gasPrice: 10000000,
+            //     },
         });
         console.log("approvetxnResponse", approvetxnResponse )
         const approveconfirmation = await approvetxnResponse.wait();
