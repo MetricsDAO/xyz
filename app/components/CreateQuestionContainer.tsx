@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, Fragment} from "react";
 import { useContractRead, useContractWrite } from 'wagmi';
 import { create } from "ipfs-http-client";
-import { BigNumber, utils } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import { CheckmarkFilled32, CaretDown32 } from '@carbon/icons-react';
 import { TransactionStatus } from '~/utils/helpers';
 
@@ -12,6 +12,9 @@ import { protocols } from "~/utils/helpers";
 
 // TODO - paid endpoint
 const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
+
+let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 
 export default function CreateQuestion ({address, questionAPI, xmetric, costController, vault}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, costController: Record<string, string>, vault: Record<string, string> }) {
         const [xmetricAmount, setxmetricAmount] = useState<string>("");
@@ -93,9 +96,10 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
         async function askQuestion () {
             console.log("fileURl", fileUrl);
             const txnResponse = await createQuestion.writeAsync({
-                // overrides: {
-                //     gasLimit: 10000000,
-                //   },
+                overrides: {
+                    maxFeePerGas,
+                    maxPriorityFeePerGas,
+                  },
                 args: [fileUrl, BigNumber.from("10")]
             });
             console.log("txnResponse", txnResponse);
@@ -124,11 +128,11 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                     <p className="tw-text-center">{parseInt(xmetricAmount) > 0 ? (
                     <span>You have {xmetricAmount} xMETRIC available to create or vote on questions</span>
                     ) : (
-                        <span>You currently don't have any xMETRIC to create or vote on questions.</span>
+                        <span>You currently don't have any xMETRIC </span>
                     )}
                     </p>
                 </div>
-                {parseInt(xmetricAmount) > 0 && (
+
                     <section>
                         <p className="tw-text-center tw-mb-8">Create question below</p>
                         <div className="tw-mx-auto tw-max-w-md tw-mb-4">
@@ -200,7 +204,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                         </button>
                         </div>
                     </section>
-                )}
 
                 </>
 

@@ -24,6 +24,7 @@ export async function loader() {
 
 export default function Index() {
     const {xMetricJson, questionAPIJson, vaultJson, costController, network  } = useLoaderData();
+    console.log(xMetricJson.address, questionAPIJson.address, costController.address, vaultJson.address, network);
     const xMETRICAbiAndAddress = {
         abi: xMetricJson.abi,
         address: xMetricJson.address,
