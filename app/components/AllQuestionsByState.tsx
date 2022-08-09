@@ -1,6 +1,6 @@
 import { useEffect, useState} from "react";
 import { useContractRead, useContractWrite } from 'wagmi';
-import { BigNumber, utils } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import { CSVLink } from "react-csv";
 import { Download16 } from '@carbon/icons-react';
 
@@ -10,6 +10,8 @@ import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions  from "~/components/ShowQuestions";
 import { TransactionStatus, usePrevious, questionStateEnum, OFFSET, sortMethods, protocols } from '~/utils/helpers';
 
+let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 
 export default function AllQuestionsByState ({latestQuestion, questionStateController, questionAPI}: {latestQuestion:number, questionStateController: Record<string, string>, questionAPI: Record<string, string>}) {
     const [questionDataVotingState, setQuestionDataVotingState] = useState<any>([]);
@@ -148,10 +150,10 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
       try {
         const approvetxnResponse = await upVoteQuestion.writeAsync({
             args: [BigNumber.from(questionId)],
-            // overrides: {
-            //     gasLimit: 30000000,
-            //     gasPrice: 10000000,
-            //     },
+            overrides: {
+              maxFeePerGas,
+              maxPriorityFeePerGas,
+            },
         });
         console.log("approvetxnResponse", approvetxnResponse )
         const approveconfirmation = await approvetxnResponse.wait();

@@ -3,7 +3,7 @@ import { getIcon } from "~/utils/helpers";
 import { ChevronRight16 } from "@carbon/icons-react";
 export default function SelectWallet () {
   const { connect, connectors, error, isConnecting, pendingConnector } =
-  useConnect()
+  useConnect();
 
   return (
     <div className="tw-flex tw-flex-col">

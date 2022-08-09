@@ -58,7 +58,7 @@ export default function WalletProvider ({children, network}: {children: ReactEle
         ],
         provider,
         webSocketProvider,
-      })
+      });
 
       return (
         <ClientOnly>

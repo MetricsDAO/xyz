@@ -3,13 +3,37 @@ import React, { Fragment } from "react";
 import { Link } from "remix";
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDown16, Copy16, Close16 } from "@carbon/icons-react";
-import ConnectWalletButton from "./ConnectWalletButton";
-import { truncateAddress, getIcon } from "~/utils/helpers";
-
 import type { GetAccountResult, Provider } from "@wagmi/core";
 
+import ConnectWalletButton from "./ConnectWalletButton";
+import NetworkRender from "~/components/NetworkRender";
+import { truncateAddress, getIcon } from "~/utils/helpers";
 
-export default function RewardsHeader ({link, linkText, connectWallet, account, disconnect}: {link:string, linkText: string, connectWallet:Dispatch<SetStateAction<boolean>>, account: GetAccountResult<Provider> | undefined, disconnect: () => void}) {
+
+
+
+export default function RewardsHeader ({
+    link, 
+    linkText, 
+    connectWallet, 
+    account, 
+    network, 
+    disconnect,
+    chainId,
+    switchNetwork,
+    chainName,
+    }: {
+        link:string, 
+        linkText: string, 
+        connectWallet:Dispatch<SetStateAction<boolean>>, 
+        account: GetAccountResult<Provider> | undefined,
+        disconnect: () => void, 
+        network: string,
+        chainId: number,
+        switchNetwork?: (chainId?:number) => void,
+        chainName?: string,
+    }) {
+
     function copyText(e: React.MouseEvent<ReactSVGElement, MouseEvent>) {
         e.preventDefault();
         if (account?.address) {
@@ -76,6 +100,12 @@ export default function RewardsHeader ({link, linkText, connectWallet, account, 
                     </Transition>
 
                     </Menu>
+                    <NetworkRender 
+                        network={network} 
+                        chainName={chainName} 
+                        chainId={chainId}
+                        switchNetwork={switchNetwork}
+                        />
                     </div>
                 ) : (
                     <ConnectWalletButton buttonText="Connect Wallet" connectWallet={connectWallet} />

@@ -67,7 +67,7 @@ export const protocols = [
   { name: 'Ethereum' },
   { name: 'Flow' },
   { name: 'Algorand' },
-  { name: 'THOchain' },
+  { name: 'THORchain' },
   { name: 'Cosmos' },
   { name: 'Polygon' },
 ]

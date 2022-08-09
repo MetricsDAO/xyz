@@ -1,12 +1,12 @@
 import { useLocation } from "remix";
 import type { ReactElement} from "react";
 import { useEffect, useState, cloneElement, isValidElement } from "react";
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect, useNetwork } from 'wagmi';
 import { Buffer } from "buffer";
 import Modal from './Modal';
 import RewardsHeader from "./RewardsHeader";
 
-export default function Wrapper ({children}: {children?: ReactElement}) {
+export default function Wrapper ({children, network}: {children?: ReactElement, network:string}) {
     let link:string;
     let linkText: string;
 
@@ -15,6 +15,14 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
     const location = useLocation();
     const { data: account } = useAccount();
     const { disconnect } = useDisconnect();
+    const {
+        activeChain,
+        chains,
+        switchNetwork
+      } = useNetwork();
+    
+
+    console.log("account", account);
 
     useEffect(() => {
         if (account && isOpen) {
@@ -37,6 +45,9 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
         linkText = "Question Creation"
     }
 
+    const chainName = activeChain?.name;
+    const chainId = chains[0]?.id;
+
 
     if (!window.Buffer) {
         window.Buffer = Buffer;
@@ -44,9 +55,18 @@ export default function Wrapper ({children}: {children?: ReactElement}) {
 
     return (
         <div>
-        <RewardsHeader link={link} linkText={linkText} connectWallet={setIsOpen} account={account} disconnect={disconnect}/>
+        <RewardsHeader 
+            link={link} network={network} 
+            linkText={linkText} 
+            connectWallet={setIsOpen} 
+            account={account} 
+            disconnect={disconnect}
+            chainName={chainName}
+            chainId={chainId}
+            switchNetwork={switchNetwork}
+        />
         <Modal isOpen={isOpen} setIsOpen={setIsOpen} selectWallet={true} />
-        {isValidElement(children) && cloneElement(children, {setIsOpen, account})}
+        {isValidElement(children) && cloneElement(children, {setIsOpen, account, chainName, chainId, switchNetwork})}
         </div>
     )
 }

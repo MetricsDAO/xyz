@@ -70,7 +70,7 @@ export default function Index() {
 
     return (
     <WalletProvider network={network}>
-        <Wrapper >
+        <Wrapper network={network} >
         <ClaimBody /> 
         </Wrapper>
     </WalletProvider>   
