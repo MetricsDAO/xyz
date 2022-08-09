@@ -70,7 +70,7 @@ export default function Index() {
                     <CreateQuestionContainer address={account.address} questionAPI={questionAPIAbiAndAddress} vault={vaultAbiandAddress} costController={costControllerAbiandAddress} xmetric={xMETRICAbiAndAddress} />
                     </NetworkRender>
                 ) : (
-                <ConnectWalletButton marginAuto buttonText="Connect Wallet to Ask Question" connectWallet={setIsOpen} />
+                <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
                 )
             }
             </section>

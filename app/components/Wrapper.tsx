@@ -22,8 +22,6 @@ export default function Wrapper ({children, network}: {children?: ReactElement, 
       } = useNetwork();
     
 
-    console.log("account", account);
-
     useEffect(() => {
         if (account && isOpen) {
             setIsOpen(false);

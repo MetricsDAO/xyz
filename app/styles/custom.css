@@ -791,3 +791,7 @@ strong {
 .blue-button:hover {
   color:#fff;
 }
+
+button[disabled] {
+  opacity: 0.25;
+} 

@@ -55,9 +55,6 @@ export const sortMethods = [
   {
     name: 'Newest',
   },
-  {
-    name: 'Program',
-  },
 ];
 
 // TODO How to get protocols

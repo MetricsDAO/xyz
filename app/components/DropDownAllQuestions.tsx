@@ -45,7 +45,7 @@ export default function DropDown({selectedProgram, setSelectedProgram}: {selecte
                       {protocol.name}
                       </span>
                       {selected ? (
-                      <span className="tw-absolute tw-inset-y-0 tw-left-0 tw-flex tw-tems-center tw-pl-3 tw-text-amber-600">
+                      <span className="tw-absolute tw-items-center tw-inset-y-0 tw-left-0 tw-flex tw-tems-center tw-pl-3 tw-text-amber-600">
                           <CheckmarkFilled32 className="tw-h-5 tw-w-5" aria-hidden="true" />
                       </span>
                       ) : null}

@@ -24,7 +24,7 @@ export default function WalletProvider ({children, network}: {children: ReactEle
     );
     } else {
       const infuraId = "54fcc811bac44f99b84a04a4a3e2f998"
-      configureChainObj = configureChains([chain.polygon, chain.mainnet],
+      configureChainObj = configureChains([chain.polygon],
         [infuraProvider({ infuraId }), publicProvider()]
       );
     }

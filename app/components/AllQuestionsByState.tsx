@@ -10,10 +10,20 @@ import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions  from "~/components/ShowQuestions";
 import { TransactionStatus, usePrevious, questionStateEnum, OFFSET, sortMethods, protocols } from '~/utils/helpers';
 
-let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
-let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+// let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+// let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 
-export default function AllQuestionsByState ({latestQuestion, questionStateController, questionAPI}: {latestQuestion:number, questionStateController: Record<string, string>, questionAPI: Record<string, string>}) {
+export default function AllQuestionsByState ({
+    latestQuestion, 
+    questionStateController, 
+    questionAPI,
+    networkMatchesWallet
+    }: {
+    latestQuestion:number, 
+    questionStateController: Record<string, string>, 
+    questionAPI: Record<string, string>,
+    networkMatchesWallet: boolean
+    }) {
     const [questionDataVotingState, setQuestionDataVotingState] = useState<any>([]);
     const [querstionArray, setQuestionArray] = useState<any>([]);
     const [uxShow, setUXToShow] = useState<boolean>(false);
@@ -23,10 +33,10 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
     const [selected, setSelected] = useState(sortMethods[0]);
   
     const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   
     const prevTokenId = usePrevious(latestQuestion);
 
-    console.log("latestQuestion,",latestQuestion, "prevTokenId", prevTokenId)
   
     const {data: questionData} = useContractRead({
       addressOrName: questionStateController.address,
@@ -62,7 +72,6 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
     useEffect(() => {
       if (Array.isArray(questionData)) {
           if (prevTokenId !== latestQuestion || questionData.length !== prevQuestionData?.length) {
-            console.log("questionData", questionData);
             setQuestionArray(questionData.map((question:any) => {
                 return {
                     name: "Loading",
@@ -85,7 +94,6 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
     useEffect(() => {
       const ac = new AbortController();
       async function getIpfsdata (obj:any) {
-        console.log("object", obj);
           try {
           const response = await fetch(obj.uri, {
             signal: ac.signal
@@ -147,19 +155,21 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
     async function initUpVoteQuestion(questionId: number) {
       setWriteTransactionStatus(TransactionStatus.Pending);
       setAlertContainerStatus(true);
+      setButtonDisabled(true);
       try {
         const approvetxnResponse = await upVoteQuestion.writeAsync({
             args: [BigNumber.from(questionId)],
-            overrides: {
-              maxFeePerGas,
-              maxPriorityFeePerGas,
-            },
+            // overrides: {
+            //   maxFeePerGas,
+            //   maxPriorityFeePerGas,
+            // },
         });
         console.log("approvetxnResponse", approvetxnResponse )
         const approveconfirmation = await approvetxnResponse.wait();
         console.log("approveconfirmation", approveconfirmation )
         if (approveconfirmation.blockNumber) {
             setWriteTransactionStatus(TransactionStatus.Approved);
+            setButtonDisabled(false);
             setTimeout(() => {
                 setAlertContainerStatus(false);
             }, 9000); 
@@ -168,6 +178,7 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
       } catch(error) {
         console.error("ERRR", error);
         setWriteTransactionStatus(TransactionStatus.Failed);
+        setButtonDisabled(false);
       } 
     }
   
@@ -182,7 +193,9 @@ export default function AllQuestionsByState ({latestQuestion, questionStateContr
                     selected={selected}
                     selectedProgram={selectedProgram}  
                     questions={querstionArray} 
-                    initUpVoteQuestion={initUpVoteQuestion} 
+                    initUpVoteQuestion={initUpVoteQuestion}
+                    networkMatchesWallet={networkMatchesWallet}
+                    buttonDisabled={buttonDisabled} 
                     />
             </div>
             <div className="tw-w-1/6 tw-px-4">

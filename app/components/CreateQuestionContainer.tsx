@@ -13,31 +13,18 @@ import { protocols } from "~/utils/helpers";
 // TODO - paid endpoint
 const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
 
-let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
-let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+// let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
+// let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 
 export default function CreateQuestion ({address, questionAPI, xmetric, costController, vault}: {address: string, questionAPI: Record<string, string>, xmetric: Record<string, string>, costController: Record<string, string>, vault: Record<string, string> }) {
-        const [xmetricAmount, setxmetricAmount] = useState<string>("");
         const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
         const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
         const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
         const [fileUrl, setFileUrl] = useState<any>();
+        const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
         const questionBody = useRef<any>();
         const questionTitle = useRef<any>();
-
-        const {data: balanceData} = useContractRead({
-            addressOrName: xmetric.address,
-            contractInterface: xmetric.abi,
-        }, 'balanceOf', {
-            args: [address],
-            enabled: true,
-            watch: true,
-            onError: (err) => {
-              console.error(err);
-            },
-        });
-
 
         const createQuestion = useContractWrite({
             addressOrName: questionAPI.address,
@@ -57,13 +44,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
               },
         });
 
-
-        useEffect(() => {
-            if (BigNumber.isBigNumber(balanceData)) {
-                console.log("data", utils.formatEther(balanceData.toString()));
-                setxmetricAmount(utils.formatEther(balanceData.toString()));
-            }
-        }, [balanceData])
 
         useEffect(() => {
             if (fileUrl) {
@@ -95,15 +75,12 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
         }
         async function askQuestion () {
             console.log("fileURl", fileUrl);
-            const txnResponse = await createQuestion.writeAsync({
-                overrides: {
-                    maxFeePerGas,
-                    maxPriorityFeePerGas,
-                  },
-                args: [fileUrl, BigNumber.from("10")]
-            });
-            console.log("txnResponse", txnResponse);
+            setButtonDisabled(true);
             try {
+                const txnResponse = await createQuestion.writeAsync({
+                    args: [fileUrl, BigNumber.from("10")]
+                });
+                console.log("txnResponse", txnResponse);
                 const confirmation = await txnResponse.wait();
                 console.log("confirmation", confirmation);
                 if (confirmation.blockNumber) {
@@ -111,12 +88,14 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                     questionBody.current.value = "";
                     questionTitle.current.value = "";
                     setSelectedProgram(protocols[0]);
+                    setButtonDisabled(false);
                     setTimeout(() => {
                         setAlertContainerStatus(false);
                     }, 9000);     
                 }
             } catch(error) {
                 console.error("ERRRR", error);
+                setButtonDisabled(false);
                 setWriteTransactionStatus(TransactionStatus.Failed);
             }
         }
@@ -124,14 +103,6 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
         return (
                 <>
                 {alertContainerStatus && <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />}
-                <div className="tw-mx-auto bg-white tw-p-6 tw-rounded-lg tw-w-1/3 tw-mb-7">
-                    <p className="tw-text-center">{parseInt(xmetricAmount) > 0 ? (
-                    <span>You have {xmetricAmount} xMETRIC available to create or vote on questions</span>
-                    ) : (
-                        <span>You currently don't have any xMETRIC </span>
-                    )}
-                    </p>
-                </div>
 
                     <section>
                         <p className="tw-text-center tw-mb-8">Create question below</p>
@@ -176,7 +147,7 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                                                 {protocol.name}
                                                 </span>
                                                 {selected ? (
-                                                <span className="tw-absolute tw-inset-y-0 tw-left-0 tw-flex tw-tems-center tw-pl-3 tw-text-amber-600">
+                                                <span className="tw-absolute tw-items-center tw-inset-y-0 tw-left-0 tw-flex tw-tems-center tw-pl-3 tw-text-amber-600">
                                                     <CheckmarkFilled32 className="tw-h-5 tw-w-5" aria-hidden="true" />
                                                 </span>
                                                 ) : null}
@@ -199,7 +170,7 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                         <textarea ref={questionBody} rows={4} className="tw-block tw-shadow tw-appearance-none tw-border tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline" id="question-body" placeholder="e.g. Which tokens are most popular on the top 3 L2's by market share?"/>
                         </div>
                         <div className="tw-mx-auto tw-max-w-md tw-mb-4">
-                        <button onClick={ipfsUpload}className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white">
+                        <button disabled={buttonDisabled} onClick={ipfsUpload}className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white disabled:opacity-25">
                             Create Question
                         </button>
                         </div>

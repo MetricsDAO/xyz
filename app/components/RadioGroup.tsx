@@ -1,6 +1,6 @@
 import { RadioGroup } from '@headlessui/react';
 import type { Dispatch, SetStateAction} from "react";
-import {  sortMethods } from '~/utils/helpers';
+import { sortMethods } from '~/utils/helpers';
 
 export default function MyRadioGroup({setSelected, selected}: {setSelected: Dispatch<SetStateAction<any>>, selected:any}) {
     // const [selected, setSelected] = useState(sortMethods[0])
