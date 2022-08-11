@@ -67,7 +67,13 @@ export default function Index() {
                         chainName={chainName} 
                         chainId={chainId}
                         switchNetwork={switchNetwork}>
-                    <CreateQuestionContainer address={account.address} questionAPI={questionAPIAbiAndAddress} vault={vaultAbiandAddress} costController={costControllerAbiandAddress} xmetric={xMETRICAbiAndAddress} />
+                    <CreateQuestionContainer 
+                        address={account.address} 
+                        questionAPI={questionAPIAbiAndAddress} 
+                        vault={vaultAbiandAddress} 
+                        costController={costControllerAbiandAddress} 
+                        xmetric={xMETRICAbiAndAddress} 
+                        />
                     </NetworkRender>
                 ) : (
                 <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, Fragment} from "react";
 import { useContractRead, useContractWrite } from 'wagmi';
-import { create } from "ipfs-http-client";
+// import { create } from "ipfs-http-client";
 import { BigNumber, ethers, utils } from "ethers";
 import { CheckmarkFilled32, CaretDown32 } from '@carbon/icons-react';
 import { TransactionStatus } from '~/utils/helpers';
@@ -11,7 +11,8 @@ import AlertBanner from "~/components/AlertBanner";
 import { protocols } from "~/utils/helpers";
 
 // TODO - paid endpoint
-const client = create({ url: "https://ipfs.infura.io:5001/api/v0" });
+
+//https://ipfs.infura.io:5001
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -52,10 +53,16 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
         }, [fileUrl])
 
         async function ipfsUpload () {
-            setWriteTransactionStatus(TransactionStatus.Pending);
-            setAlertContainerStatus(true);
             const questionBodyValue = questionBody.current.value;
             const questionTitleValue = questionTitle.current.value;
+            if (questionTitleValue.length < 1 || questionBodyValue.length < 10) {
+                // old school   
+                alert("Make sure you add a title and enough characters for the question body");
+                return false;
+            }
+
+            setWriteTransactionStatus(TransactionStatus.Pending);
+            setAlertContainerStatus(true);
 
             const jsonMetaData = {
                 "name": questionTitleValue,
@@ -63,10 +70,19 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                 "program" : selectedProgram?.name,
                 "date": Date.now(),
             }
+
             console.log('meta', jsonMetaData);
             try {
-                const added = await client.add(JSON.stringify(jsonMetaData));
-                setFileUrl("https://ipfs.io/ipfs/" + added.path);
+                // const added = await client.add(JSON.stringify(jsonMetaData));
+                const ipfs = await fetch("/api/meta", {
+                    method: "POST",
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonMetaData),
+                });
+                const apiJson = await ipfs.json();      
+                setFileUrl("https://ipfs.io/ipfs/" + apiJson.path);
             } catch(error) {
                 console.error('err!', error);
                 setFileUrl(false);
@@ -80,9 +96,7 @@ export default function CreateQuestion ({address, questionAPI, xmetric, costCont
                 const txnResponse = await createQuestion.writeAsync({
                     args: [fileUrl, BigNumber.from("10")]
                 });
-                console.log("txnResponse", txnResponse);
                 const confirmation = await txnResponse.wait();
-                console.log("confirmation", confirmation);
                 if (confirmation.blockNumber) {
                     setWriteTransactionStatus(TransactionStatus.Approved);
                     questionBody.current.value = "";

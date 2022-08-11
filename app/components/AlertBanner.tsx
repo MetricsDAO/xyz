@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { SetStateAction, Dispatch, ReactElement } from "react";
 import { Close20, Checkmark32, Warning32 } from '@carbon/icons-react';
 
@@ -21,8 +22,19 @@ export default function AlertBanner ({setAlertContainerStatus, transactionStatus
         element = <Checkmark32 />
 
     }
+    const isSticky = () => {
+        const header = document.querySelector('.alert');
+        const scrollTop = window.scrollY;
+        scrollTop >= 60 ? header?.classList.add('is-sticky') : header?.classList.remove('is-sticky');
+    };
+    useEffect(() => {
+        window.addEventListener('scroll', isSticky);
+        return () => {
+            window.removeEventListener('scroll', isSticky);
+        };
+    });
     return (
-        <div className="tw-px-4 tw-py-3 tw-rounded-lg tw-w-1/5 tw-absolute tw-top-28 tw-right-16 tw-z-100 tw-bg-white">
+        <div className="tw-px-4 tw-py-3 tw-rounded-lg tw-w-1/5 tw-fixed tw-top-28 tw-left-16 tw-z-100 tw-bg-white alert">
             <div className="tw-flex tw-items-center">
             {element}
             <div>

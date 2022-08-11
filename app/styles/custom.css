@@ -795,3 +795,8 @@ strong {
 button[disabled] {
   opacity: 0.25;
 } 
+
+.alert.is-sticky {
+  position: fixed;
+  top: 1rem;
+}
