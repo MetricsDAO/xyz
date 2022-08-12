@@ -3,7 +3,6 @@ import React, { Fragment } from "react";
 import { Link } from "remix";
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDown16, Copy16, Close16 } from "@carbon/icons-react";
-import type { GetAccountResult, Provider } from "@wagmi/core";
 
 import ConnectWalletButton from "./ConnectWalletButton";
 import NetworkRender from "~/components/NetworkRender";
@@ -16,7 +15,8 @@ export default function RewardsHeader ({
     link, 
     linkText, 
     connectWallet, 
-    account, 
+    address,
+    activeConnector, 
     network, 
     disconnect,
     chainId,
@@ -26,18 +26,19 @@ export default function RewardsHeader ({
         link:string, 
         linkText: string, 
         connectWallet:Dispatch<SetStateAction<boolean>>, 
-        account: GetAccountResult<Provider> | undefined,
+        address: string | undefined,
         disconnect: () => void, 
         network: string,
         chainId: number,
         switchNetwork?: (chainId?:number) => void,
         chainName?: string,
+        activeConnector?: string | undefined
     }) {
 
     function copyText(e: React.MouseEvent<ReactSVGElement, MouseEvent>) {
         e.preventDefault();
-        if (account?.address) {
-            navigator.clipboard.writeText(account.address);
+        if (address) {
+            navigator.clipboard.writeText(address);
         }
     }
 
@@ -61,12 +62,12 @@ export default function RewardsHeader ({
                 >
                     <p>{linkText}</p>
                 </Link>
-                {account ? (
+                {address ? (
                     <div className="tw-ml-auto">
                     <Menu as="div" className="tw-relative tw-inline-block tw-text-left">
                     <Menu.Button className="tw-py-2 tw-inline-flex tw-items-center">
-                         <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon(account.connector?.name)} />
-                         <span className="tw-text-sm">{truncateAddress(account.address)}</span>
+                         <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon(activeConnector)} />
+                         <span className="tw-text-sm">{truncateAddress(address)}</span>
                          <ChevronDown16 className="tw-inline tw-ml-2" />
                     </Menu.Button>
                     <Transition
@@ -82,8 +83,8 @@ export default function RewardsHeader ({
                         <Menu.Item>
                             {({ active }) => (
                                 <div className={`tw-flex tw-items-center tw-px-2 tw-rounded-lg tw-py-2 tw-justify-between ${active ? 'tw-bg-[#F6F7F8]' : 'tw-bg-transparent'}` }>
-                                    <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon(account.connector?.name)} />
-                                    <p className="tw-text-sm">{truncateAddress(account.address)}</p>
+                                    <img width="30" className="tw-mr-2" height="30" alt="wallet logo" src={getIcon(activeConnector)} />
+                                    <p className="tw-text-sm">{truncateAddress(address)}</p>
                                     <p className="tw-rounded-full tw-border-[#EBEDF3] tw-p-2 tw-border"><Copy16 className="tw-cursor-pointer" onClick={copyText} /></p>
                                 </div>
                             )}

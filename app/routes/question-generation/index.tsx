@@ -6,7 +6,6 @@ import Wrapper from "~/components/Wrapper";
 import ConnectWalletButton from "~/components/ConnectWalletButton";
 import CreateQuestionContainer from "~/components/CreateQuestionContainer";
 
-import type { GetAccountResult, Provider } from "@wagmi/core";
 
 import { getContracts } from "~/services/contracts.server"
 
@@ -47,41 +46,41 @@ export default function Index() {
         address: costController.address,
     }
 
-        /* ELEMENT CLONED IN WRAPPER */
-        function ClaimBody({setIsOpen, account, chainId, switchNetwork, chainName,}: {
-            setIsOpen?: Dispatch<SetStateAction<boolean>>, 
-            account?: GetAccountResult<Provider> | undefined, 
-            chainId?: number,
-            switchNetwork?: (chainId?:number) => void,
-            chainName?: string
-            }) {
-            return (
-            <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
-                <div className="tw-bg-white tw-rounded-full tw-w-[120px] tw-h-[120px] tw-flex tw-flex-col tw-justify-center tw-mx-auto">
-                <img src="img/color-mark@2x.png" className="tw-mx-auto" alt="MetricsDAO" width="62" />
-                </div>
-                <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question Generation</h1>
-                {account?.address && account?.connector ? (
-                    <NetworkRender 
-                        network={network} 
-                        chainName={chainName} 
-                        chainId={chainId}
-                        switchNetwork={switchNetwork}>
-                    <CreateQuestionContainer 
-                        address={account.address} 
-                        questionAPI={questionAPIAbiAndAddress} 
-                        vault={vaultAbiandAddress} 
-                        costController={costControllerAbiandAddress} 
-                        xmetric={xMETRICAbiAndAddress} 
-                        />
-                    </NetworkRender>
-                ) : (
-                <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
-                )
-            }
-            </section>
+    /* ELEMENT CLONED IN WRAPPER */
+    function ClaimBody({setIsOpen, address, chainId, switchNetwork, chainName,}: {
+        setIsOpen?: Dispatch<SetStateAction<boolean>>, 
+        address?: string | undefined, 
+        chainId?: number,
+        switchNetwork?: (chainId?:number) => void,
+        chainName?: string
+        }) {
+        return (
+        <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
+            <div className="tw-bg-white tw-rounded-full tw-w-[120px] tw-h-[120px] tw-flex tw-flex-col tw-justify-center tw-mx-auto">
+            <img src="img/color-mark@2x.png" className="tw-mx-auto" alt="MetricsDAO" width="62" />
+            </div>
+            <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question Generation</h1>
+            {address ? (
+                <NetworkRender 
+                    network={network} 
+                    chainName={chainName} 
+                    chainId={chainId}
+                    switchNetwork={switchNetwork}>
+                <CreateQuestionContainer 
+                    address={address} 
+                    questionAPI={questionAPIAbiAndAddress} 
+                    vault={vaultAbiandAddress} 
+                    costController={costControllerAbiandAddress} 
+                    xmetric={xMETRICAbiAndAddress} 
+                    />
+                </NetworkRender>
+            ) : (
+            <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
             )
         }
+        </section>
+        )
+    }
 
 
     return (

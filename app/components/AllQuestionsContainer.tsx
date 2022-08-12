@@ -28,7 +28,6 @@ export default function AllQuestionContainer ({
         addressOrName: bountyQuestion.address,
         contractInterface: bountyQuestion.abi,
     }, 'getMostRecentQuestion', {
-        // enabled: prevAddress !== address,
         onError: (err) => {
           console.error(err);
         },
@@ -37,7 +36,7 @@ export default function AllQuestionContainer ({
 
     useEffect(() => {
         if (BigNumber.isBigNumber(currentQuestion)) {
-            console.log("latest question ID", currentQuestion.toNumber());
+            // console.log("latest question ID", currentQuestion.toNumber());
             setLatestTokenId(currentQuestion.toNumber());
         }
     }, [currentQuestion])

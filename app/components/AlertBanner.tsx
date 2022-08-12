@@ -25,6 +25,13 @@ export default function AlertBanner ({setAlertContainerStatus, transactionStatus
     const isSticky = () => {
         const header = document.querySelector('.alert');
         const scrollTop = window.scrollY;
+        if (scrollTop >= 60) {
+            header?.classList.add('is-sticky')
+        } else {
+            header?.classList.remove('is-sticky');
+            header?.classList.add('tw-top-28');
+            header?.classList.remove('tw-top-6');
+        }
         scrollTop >= 60 ? header?.classList.add('is-sticky') : header?.classList.remove('is-sticky');
     };
     useEffect(() => {
@@ -33,8 +40,9 @@ export default function AlertBanner ({setAlertContainerStatus, transactionStatus
             window.removeEventListener('scroll', isSticky);
         };
     });
+    const windowTop = window.scrollY;
     return (
-        <div className="tw-px-4 tw-py-3 tw-rounded-lg tw-w-1/5 tw-fixed tw-top-28 tw-left-16 tw-z-100 tw-bg-white alert">
+        <div className={`tw-px-4 tw-py-3 tw-rounded-lg tw-w-1/5 tw-fixed ${windowTop < 60 ? "tw-top-28" : "tw-top-6"} tw-left-10 tw-z-100 tw-bg-white alert`}>
             <div className="tw-flex tw-items-center">
             {element}
             <div>

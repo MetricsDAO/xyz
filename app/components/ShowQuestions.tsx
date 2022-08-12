@@ -78,8 +78,8 @@ export function FilteredQuestions({
     }) {
 
     return (
-        <div className={`tw-flex tw-mb-10 ${question.loading ? "tw-opacity-25" : "tw-opacity-100"}`}>
-            <div id="post-votes" className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center">
+        <div data-question-id={question.questionId} className={`tw-flex tw-mb-10 ${question.loading ? "tw-opacity-25" : "tw-opacity-100"}`}>
+            <div data-id="post-votes" className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center">
                 {question.unavailable || question.loading || !networkMatchesWallet ? (
                 <>
                 <span className="tw-opacity-25">N/A</span>

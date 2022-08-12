@@ -1,6 +1,6 @@
 import { useEffect, useState} from "react";
-import { useContractRead, useContractWrite } from 'wagmi';
-import { BigNumber, ethers, utils } from "ethers";
+import { useContractRead, useContractWrite, useContract, useProvider } from 'wagmi';
+import { BigNumber } from "ethers";
 import { CSVLink } from "react-csv";
 import { Download16 } from '@carbon/icons-react';
 
@@ -34,8 +34,11 @@ export default function AllQuestionsByState ({
   
     const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+
+    const [getTotalVotes, setGetTotalVotes] = useState<number>(0);
   
     const prevTokenId = usePrevious(latestQuestion);
+    const provider = useProvider();
 
   
     const {data: questionData} = useContractRead({
@@ -44,6 +47,7 @@ export default function AllQuestionsByState ({
   }, 'getQuestionsByState', {
       args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
       enabled: true,
+      cacheOnBlock: true,
       onError: (err) => {
         console.error(err);
       },
@@ -67,6 +71,12 @@ export default function AllQuestionsByState ({
         onSuccess(data) {
           console.log('Success', data)
         },
+    });
+
+    const questionAPIContract = useContract({
+      addressOrName: questionStateController.address,
+      contractInterface: questionStateController.abi,
+      signerOrProvider: provider,
     });
   
     useEffect(() => {
@@ -95,27 +105,26 @@ export default function AllQuestionsByState ({
       const ac = new AbortController();
       async function getIpfsdata (obj:any) {
           try {
-          const response = await fetch(obj.uri, {
-            signal: ac.signal
-          });
-          const ipfsData = await response.json();
-          ipfsData.url = obj.uri;
-          ipfsData.questionId = obj.questionId.toNumber();
-          ipfsData.totalVotes = obj.totalVotes.toNumber();
-          ipfsData.date = ipfsData.date || "Unavailable currently";
-          ipfsData.program = typeof ipfsData.program === "string" ? ipfsData.program : ipfsData.program.name;
-          ipfsData.loading = false;
-  
-          setQuestionArray((prevArray: any) => {
-            return prevArray.map((question:any) => {
-              if (question.questionId === ipfsData.questionId) {
-                return {...question, ...ipfsData}
-              } else {
-                return question;
-              }
+            const response = await fetch(obj.uri, {
+              signal: ac.signal
+            });
+            const ipfsData = await response.json();
+            ipfsData.url = obj.uri;
+            ipfsData.questionId = obj.questionId.toNumber();
+            ipfsData.totalVotes = obj.totalVotes.toNumber();
+            ipfsData.date = ipfsData.date || "Unavailable currently";
+            ipfsData.program = typeof ipfsData.program === "string" ? ipfsData.program : ipfsData.program.name;
+            ipfsData.loading = false;
+    
+            setQuestionArray((prevArray: any) => {
+              return prevArray.map((question:any) => {
+                if (question.questionId === ipfsData.questionId) {
+                  return {...question, ...ipfsData}
+                } else {
+                  return question;
+                }
+              })
             })
-          })
-  
           } catch (error:any) {
               const ipfsdataFailure = {
                   name: "Unavailable currently",
@@ -149,8 +158,29 @@ export default function AllQuestionsByState ({
     useEffect(() => {
       if (querstionArray.length && querstionArray.length === questionDataVotingState.length) {
           setUXToShow(true);
+          //reset here
+          setGetTotalVotes(0);
       }
     }, [querstionArray, questionDataVotingState]);
+
+    useEffect(() => {
+      function contractCall() {
+        return questionAPIContract.getTotalVotes(BigNumber.from(getTotalVotes))
+      }
+      if (getTotalVotes) {
+        contractCall().then((res:any) => {
+          setQuestionArray((prevArray: any) => {
+            return prevArray.map((question:any) => {
+              if (question.questionId === getTotalVotes) {
+                return {...question, totalVotes : res.toNumber()}
+              } else {
+                return question;
+              }
+            })
+          })
+        })
+      }
+    }, [getTotalVotes, questionAPIContract])
   
     async function initUpVoteQuestion(questionId: number) {
       setWriteTransactionStatus(TransactionStatus.Pending);
@@ -158,11 +188,7 @@ export default function AllQuestionsByState ({
       setButtonDisabled(true);
       try {
         const approvetxnResponse = await upVoteQuestion.writeAsync({
-            args: [BigNumber.from(questionId)],
-            // overrides: {
-            //   maxFeePerGas,
-            //   maxPriorityFeePerGas,
-            // },
+            args: [BigNumber.from(questionId)]
         });
         console.log("approvetxnResponse", approvetxnResponse )
         const approveconfirmation = await approvetxnResponse.wait();
@@ -170,7 +196,8 @@ export default function AllQuestionsByState ({
         if (approveconfirmation.blockNumber) {
             setWriteTransactionStatus(TransactionStatus.Approved);
             setButtonDisabled(false);
-            setTimeout(() => {
+            setGetTotalVotes(questionId);
+            setTimeout(async () => {
                 setAlertContainerStatus(false);
             }, 9000); 
     
