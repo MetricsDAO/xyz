@@ -108,7 +108,7 @@ export default function CreateQuestion({
     setButtonDisabled(true);
     try {
       const txnResponse = await createQuestion.writeAsync({
-        args: [fileUrl, BigNumber.from("10")],
+        args: [fileUrl],
       });
       const confirmation = await txnResponse.wait();
       if (confirmation.blockNumber) {
