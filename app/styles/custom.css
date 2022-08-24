@@ -790,7 +790,6 @@ strong {
 
 /* 3Step */
 
-
 /* HERO */
 .hero-3-step {
   background: url(/img/three-step-process/hero_background.png);
@@ -800,12 +799,13 @@ strong {
   flex-direction: column;
 }
 
-.hero-3-step .btn-main, .hero-3-step .btn-main span:first-child  {
+.hero-3-step .btn-main,
+.hero-3-step .btn-main span:first-child {
   width: 212px;
 }
 
 .hero-3-step .btn-main span:last-child {
-  right:-19px;
+  right: -19px;
   background-color: transparent;
 }
 
@@ -814,10 +814,9 @@ strong {
 .three-step .section-1 {
   background-color: black;
   background-image: none;
-  color:white;
+  color: white;
   background-image: url(/img/three-step-process/black-dots.svg);
   background-position: 50%;
-
 }
 
 .three-step .section-1 .section-label {
@@ -844,7 +843,12 @@ strong {
 
 /* INDIVIDUAL STEPS */
 .three-step .overview-steps {
-  background: linear-gradient(180deg, rgba(203, 246, 254, 0.31) 0%, rgba(245, 237, 255, 0.31) 50%, rgba(255, 226, 238, 0.31) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(203, 246, 254, 0.31) 0%,
+    rgba(245, 237, 255, 0.31) 50%,
+    rgba(255, 226, 238, 0.31) 100%
+  );
 }
 
 .three-step .rotate {
@@ -862,13 +866,13 @@ strong {
 .three-step .component {
   background-color: #fff;
   border-radius: 50px;
-  padding: .5rem;
+  padding: 0.5rem;
 }
 
 .three-step .component-step {
   background-color: #000;
   color: #fff;
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   border-radius: 25px;
 }
 
