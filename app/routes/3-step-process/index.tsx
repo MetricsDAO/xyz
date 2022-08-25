@@ -17,7 +17,12 @@ export default function Index() {
               onboard new users
             </p>
             <div data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-              <a className="btn-main" href="https://discord.gg/p3GMjK2zAr">
+              <a
+                className="btn-main"
+                target="_blank"
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdh5JDUp-7MSl-N-Mk_4hNWmGdNRkpcdhzuLMbSP0ef9f094Q/viewform"
+                rel="noreferrer"
+              >
                 <span>PARTNER WITH US</span>
                 <span>
                   <i className="bi bi-arrow-right-short"></i>
@@ -67,7 +72,7 @@ export default function Index() {
             </h2>
           </div>
           <div className="">
-            <h1 className="tw-font-bold tw-text-2xl sm:tw-text-6xl tw-max-w-md">Community Brainstorming</h1>
+            <h1 className="tw-font-bold tw-mb-4 tw-text-2xl sm:tw-text-6xl tw-max-w-md">Community Brainstorming</h1>
             <h4 className="sub-heading-3step tw-font-medium tw-text-2xl sm:tw-text-4xl tw-mb-20 tw-max-w-lg">
               To Engage &amp; Educate
             </h4>
@@ -94,7 +99,7 @@ export default function Index() {
             </h2>
           </div>
           <div data-aos="fade-up" data-aos-delay="300" data-aos-duration="2000">
-            <h1 className="tw-font-bold tw-text-2xl sm:tw-text-6xl tw-max-w-md">Analytics</h1>
+            <h1 className="tw-font-bold tw-mb-4 tw-text-2xl sm:tw-text-6xl tw-max-w-md">Analytics</h1>
             <h4 className="sub-heading-3step tw-font-medium tw-text-2xl sm:tw-text-4xl tw-mb-20 tw-max-w-lg">
               {" "}
               To Generate Insights &amp; Drive User Onboarding
@@ -126,10 +131,10 @@ export default function Index() {
             </h2>
           </div>
           <div className="">
-            <h1 className="tw-font-bold tw-text-2xl sm:tw-text-6xl tw-max-w-md">Analytics</h1>
+            <h1 className="tw-font-bold tw-mb-4 tw-text-2xl sm:tw-text-6xl tw-max-w-md">Peer Review</h1>
             <h4 className="sub-heading-3step tw-font-medium tw-text-2xl sm:tw-text-4xl tw-mb-20 tw-max-w-lg">
               {" "}
-              To Generate Insights &amp; Drive User Onboarding
+              To Create Legitimacy &amp; Promote Your Protocol
             </h4>
             <p className="tw-text-xl tw-max-w-lg tw-mb-10">
               Analytics, tools and content are peer reviewed by a dynamic network of top analysts in order to validate
@@ -201,9 +206,7 @@ export default function Index() {
                   </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
-                  Automating and decentralizing every step of the process to give us the speed and flexibility needed to
-                  support building this ecosystem. At the same time we strive to empower a dynamic group of analysts so
-                  that we can continue to scale over time.
+                  Analysts are paid in partner project’s native tokens and/or in stablecoins.
                 </Disclosure.Panel>
               </div>
             )}
@@ -224,9 +227,9 @@ export default function Index() {
                   </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
-                  Automating and decentralizing every step of the process to give us the speed and flexibility needed to
-                  support building this ecosystem. At the same time we strive to empower a dynamic group of analysts so
-                  that we can continue to scale over time.
+                  Yes! Mix and match the three components of the on-demand analytics process to best serve your needs.
+                  Just getting started and looking to onboard more users? Start with question generation. Have a
+                  question you need answered? Run the analytics engine.
                 </Disclosure.Panel>
               </div>
             )}
@@ -245,30 +248,8 @@ export default function Index() {
                   </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
-                  Automating and decentralizing every step of the process to give us the speed and flexibility needed to
-                  support building this ecosystem. At the same time we strive to empower a dynamic group of analysts so
-                  that we can continue to scale over time.
-                </Disclosure.Panel>
-              </div>
-            )}
-          </Disclosure>
-          <Disclosure>
-            {({ open }) => (
-              <div
-                className={`wrapper p-4 tw-border-solid tw-border-[#E9FAFE] tw-rounded-lg tw-border-2 tw-mb-10 ${
-                  open ? "tw-bg-[#E9FAFE]" : "tw-bg-transparent"
-                }`}
-              >
-                <Disclosure.Button className="tw-flex tw-justify-between tw-align-center tw-w-full">
-                  <span className="tw-font-semibold tw-text-xl sm:tw-text-3xl">What is MetricsDAO’s mission? </span>{" "}
-                  <span className="tw-bg-[#08BCF6] tw-p-3 tw-rounded-full">
-                    {open ? <ChevronDown24 className="tw-fill-white" /> : <ChevronRight24 className="tw-fill-white" />}
-                  </span>{" "}
-                </Disclosure.Button>
-                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
-                  Automating and decentralizing every step of the process to give us the speed and flexibility needed to
-                  support building this ecosystem. At the same time we strive to empower a dynamic group of analysts so
-                  that we can continue to scale over time.
+                  We can tailor our programs (in terms of components; number of tasks and/or timeframe) to work with
+                  budgets of $5K - $200K.
                 </Disclosure.Panel>
               </div>
             )}
