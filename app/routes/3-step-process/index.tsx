@@ -179,12 +179,14 @@ export default function Index() {
                 }`}
               >
                 <Disclosure.Button className="tw-flex tw-justify-between tw-align-center tw-w-full">
-                  <span className="tw-font-semibold tw-text-xl sm:tw-text-3xl">What is MetricsDAO’s mission?</span>{" "}
+                  <span className="tw-font-semibold tw-self-center tw-text-xl sm:tw-text-2xl">
+                    What is MetricsDAO’s mission?
+                  </span>{" "}
                   <span className="tw-bg-[#08BCF6] tw-p-3 tw-rounded-full">
                     {open ? <ChevronDown24 className="tw-fill-white" /> : <ChevronRight24 className="tw-fill-white" />}
                   </span>{" "}
                 </Disclosure.Button>
-                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
+                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-2xl">
                   Automating and decentralizing every step of the process to give us the speed and flexibility needed to
                   support building this ecosystem. At the same time we strive to empower a dynamic group of analysts so
                   that we can continue to scale over time.
@@ -200,12 +202,14 @@ export default function Index() {
                 }`}
               >
                 <Disclosure.Button className="tw-flex tw-justify-between tw-align-center tw-w-full">
-                  <span className="tw-font-semibold tw-text-xl sm:tw-text-3xl">How are analysts paid?</span>{" "}
+                  <span className="tw-font-semibold tw-self-center tw-text-xl sm:tw-text-2xl">
+                    How are analysts paid?
+                  </span>{" "}
                   <span className="tw-bg-[#08BCF6] tw-p-3 tw-rounded-full">
                     {open ? <ChevronDown24 className="tw-fill-white" /> : <ChevronRight24 className="tw-fill-white" />}
                   </span>{" "}
                 </Disclosure.Button>
-                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
+                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-2xl">
                   Analysts are paid in partner project’s native tokens and/or in stablecoins.
                 </Disclosure.Panel>
               </div>
@@ -219,14 +223,14 @@ export default function Index() {
                 }`}
               >
                 <Disclosure.Button className="tw-flex tw-justify-between tw-align-center tw-w-full">
-                  <span className="tw-font-semibold tw-text-xl sm:tw-text-3xl">
+                  <span className="tw-font-semibold tw-self-center tw-text-xl sm:tw-text-2xl">
                     I have questions I need answered. Can I skip straight to analytics?
                   </span>{" "}
                   <span className="tw-bg-[#08BCF6] tw-p-3 tw-rounded-full">
                     {open ? <ChevronDown24 className="tw-fill-white" /> : <ChevronRight24 className="tw-fill-white" />}
                   </span>{" "}
                 </Disclosure.Button>
-                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
+                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-2xl">
                   Yes! Mix and match the three components of the on-demand analytics process to best serve your needs.
                   Just getting started and looking to onboard more users? Start with question generation. Have a
                   question you need answered? Run the analytics engine.
@@ -242,12 +246,14 @@ export default function Index() {
                 }`}
               >
                 <Disclosure.Button className="tw-flex tw-justify-between tw-align-center tw-w-full">
-                  <span className="tw-font-semibold tw-text-xl sm:tw-text-3xl">How much does each component cost?</span>{" "}
+                  <span className="tw-font-semibold tw-self-center tw-text-xl sm:tw-text-2xl">
+                    How much does each component cost?
+                  </span>{" "}
                   <span className="tw-bg-[#08BCF6] tw-p-3 tw-rounded-full">
                     {open ? <ChevronDown24 className="tw-fill-white" /> : <ChevronRight24 className="tw-fill-white" />}
                   </span>{" "}
                 </Disclosure.Button>
-                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-3xl">
+                <Disclosure.Panel className="tw-pt-4 tw-w-5/6 tw-font-light tw-text-xl sm:tw-text-2xl">
                   We can tailor our programs (in terms of components; number of tasks and/or timeframe) to work with
                   budgets of $5K - $200K.
                 </Disclosure.Panel>

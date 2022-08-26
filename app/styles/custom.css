@@ -497,6 +497,10 @@ strong {
   flex-direction: column;
 }
 
+.three-step .hero-3-step {
+  min-height: 80vh;
+}
+
 .hero-3-step .btn-main,
 .hero-3-step .btn-main span:first-child {
   width: 212px;
