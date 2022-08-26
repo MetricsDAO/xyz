@@ -1,18 +1,11 @@
-import {
-  Links,
-  LinksFunction,
-  LiveReload,
-  Meta,
-  MetaFunction,
-  Outlet,
-  Scripts,
-  ScrollRestoration,  
-} from "remix";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+
 import customStyles from "./styles/custom.css";
 import fontStyles from "./styles/fonts.css";
 import AppFooter from "./components/app-footer";
-import styles from "./styles/app.css"
-import algoliaStyles from "./styles/algolia.css"
+import styles from "./styles/app.css";
+import algoliaStyles from "./styles/algolia.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -29,8 +22,7 @@ export const links: LinksFunction = () => {
     {
       rel: "stylesheet",
       href: "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
-      integrity:
-        "sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3",
+      integrity: "sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3",
       crossOrigin: "anonymous",
     },
     {
@@ -82,18 +74,13 @@ export const links: LinksFunction = () => {
   ];
 };
 
-
 export default function App() {
-
   return (
     <html lang="en">
       <head>
         <Links />
         <Meta />
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"
-        ></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
         <script
           type="text/javascript"
           dangerouslySetInnerHTML={{
@@ -105,7 +92,6 @@ export default function App() {
           `,
           }}
         ></script>
-       
       </head>
       <body>
         <Outlet />

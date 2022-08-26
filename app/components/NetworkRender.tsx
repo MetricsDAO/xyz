@@ -1,4 +1,3 @@
-import React from "react";
 import type { ReactElement } from "react";
 
 export default function NetworkRender({
@@ -19,14 +18,9 @@ export default function NetworkRender({
       if (typeof switchNetwork === "function") {
         return (
           <div
-            className={`tw-flex tw-flex-wrap tw-max-w-xs tw-text-sm tw-mx-auto ${
-              children ? "tw-justify-center" : ""
-            }`}
+            className={`tw-flex tw-flex-wrap tw-max-w-xs tw-text-sm tw-mx-auto ${children ? "tw-justify-center" : ""}`}
           >
-            <p className="tw-mb-2">
-              {" "}
-              You are currently connected to {chainName}
-            </p>
+            <p className="tw-mb-2"> You are currently connected to {chainName}</p>
             <button
               onClick={() => switchNetwork(chainId)}
               className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
@@ -40,10 +34,7 @@ export default function NetworkRender({
           <div
             className={`tw-flex tw-flex-wrap tw-max-w-xs tw-text-sm tw-mx-auto ${children} ? "tw-justify-center" : ""`}
           >
-            <p className="tw-mb-2">
-              {" "}
-              You are currently connected to {chainName}
-            </p>
+            <p className="tw-mb-2"> You are currently connected to {chainName}</p>
             <p>Please switch wallet to {network} network</p>
           </div>
         );

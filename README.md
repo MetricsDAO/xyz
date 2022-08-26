@@ -31,22 +31,24 @@ npm run dev
 
 Open up [http://localhost:3000](http://localhost:3000) and you should be ready to go!
 
-If you're used to using the `vercel dev` command provided by [Vercel CLI](https://vercel.com/cli) instead, you can also use that, but it's not needed.  
+If you're used to using the `vercel dev` command provided by [Vercel CLI](https://vercel.com/cli) instead, you can also use that, but it's not needed.
 
-## TroubleShooting  
+## TroubleShooting
+
 when setting up first time you may need to run `npm run dev:css` before running npm run dev
 
-## Claiming and Staking dAPP IN XYZ    
+## Claiming and Staking dAPP IN XYZ
+
 in core-evm-contracts repo run in a terminal  
-`npx hardhat node`    
+`npx hardhat node`  
 This will run an ethereum blockchain node on your local computer  
 make sure you have hardhat with chain id 31337 configured in a wallet  
-since we have hardhat deploy package the above command will deploy contracts in your deploy folder automatically    
+since we have hardhat deploy package the above command will deploy contracts in your deploy folder automatically  
 There are 19 public and private keys assocated with the hardhat network - save these you'll need them  
 You'll see some json file in source control changed.
 For Local testing you can either use npm link (more on that later) or temporarily  
 Create a test branch and push that branch and reference that in your package.json in xyz repo example below notice after hash symbol
-`"core-evm-contracts": "git+https://github.com/MetricsDAO/core-evm-contracts.git#testBranchforXyz",`  
+`"core-evm-contracts": "git+https://github.com/MetricsDAO/core-evm-contracts.git#testBranchforXyz",`
 
 Now switch to XYZ Repo  
 `npm install`  
@@ -61,13 +63,13 @@ Now in a seperate terminal run
 now open browser to http://localhost:3000/claim  
 connect wallet to account that has allocated metric  
 You should see message Eligible for Vesting statement  
-Switch account to a non allocated group and you should see not eligible  
-
+Switch account to a non allocated group and you should see not eligible
 
 using IPFS package node has to be > 15 to using 16.16  
-TODO update using .nvmrc file  
+with nvm installed you should be able to run `nvm use`
 
-## Create Questions and View Questions/Upvote  
+## Create Questions and View Questions/Upvote
+
 Run same steps in core-evm-contracts as claiming and staking then switch to XYZ  
 Make sure you clear/reset accounts in Metamask  
 Run this command  
@@ -75,6 +77,4 @@ Run this command
 Now in a seperate terminal run  
 `npm run dev`  
 visit http://localhost:3000/question-generation to generate questions  
-In upper left hand corner you should see view all questions link  
-
-
+In upper left hand corner you should see view all questions link
