@@ -65,7 +65,7 @@ connect wallet to account that has allocated metric
 You should see message Eligible for Vesting statement  
 Switch account to a non allocated group and you should see not eligible
 
-using IPFS package node has to be > 15 to using 16.16  
+using IPFS package node has to be > 15 to using version in .nvmrc  
 with nvm installed you should be able to run `nvm use`
 
 ## Create Questions and View Questions/Upvote
