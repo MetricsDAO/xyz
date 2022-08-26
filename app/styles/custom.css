@@ -486,6 +486,102 @@ strong {
   border-color: black;
 }
 
+/* 3Step */
+
+/* HERO */
+.hero-3-step {
+  background: url(/img/three-step-process/hero_background.png);
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-3-step .btn-main,
+.hero-3-step .btn-main span:first-child {
+  width: 212px;
+}
+
+.hero-3-step .btn-main span:last-child {
+  right: -19px;
+  background-color: transparent;
+}
+
+/* END OF HERO */
+
+.three-step .section-1 {
+  background-color: black;
+  background-image: none;
+  color: white;
+  background-image: url(/img/three-step-process/black-dots.svg);
+  background-position: 50%;
+}
+
+.three-step .section-1 .section-label {
+  transform: rotate(-90deg) translateX(180px);
+  font-family: "LFT Etica Mono";
+  font-weight: 600;
+}
+
+.three-step .section-1 .container a {
+  color: #0a58ca;
+}
+
+.three-step .section-1 .image-holder {
+  max-width: 12%;
+}
+
+/* INDIVIDUAL STEPS */
+.three-step .overview-steps {
+  background: linear-gradient(
+    180deg,
+    rgba(203, 246, 254, 0.31) 0%,
+    rgba(245, 237, 255, 0.31) 50%,
+    rgba(255, 226, 238, 0.31) 100%
+  );
+}
+
+.three-step .rotate {
+  transform: rotate(-90deg) translateX(-75px);
+}
+
+.three-step .image-holder {
+  max-width: 25%;
+  align-self: flex-start;
+}
+
+.three-step .component {
+  background-color: #fff;
+  border-radius: 50px;
+  padding: 0.5rem;
+}
+
+.three-step .component-step {
+  background-color: #000;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+}
+
+/* END OF STEPS */
+
+.three-step .protocols {
+  background-image: url(/img/three-step-process/second-background.jpeg);
+  padding: 100px 0;
+  transform: rotate(-180deg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.three-step .protocols > div {
+  transform: rotate(-180deg);
+}
+
+.three-step .faqs span {
+  text-align: left;
+  max-width: 80%;
+}
+
 @media (max-width: 1399px) {
   .site-header .g-4 {
     --bs-gutter-x: 2.5rem;
@@ -773,6 +869,20 @@ strong {
 
   .footer-brand img {
     max-width: 80%;
+  }
+
+  .three-step .section-1 .section-label {
+    width: 100px;
+    transform: rotate(-90deg) translateX(220px);
+  }
+
+  .three-step .image-holder {
+    max-width: 50%;
+    align-self: center;
+  }
+
+  .three-step .rotate {
+    transform: none;
   }
 }
 
