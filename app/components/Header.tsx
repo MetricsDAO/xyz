@@ -54,9 +54,10 @@ const Header = () => {
         >
           BLOG
         </a>
+        {/* TODO FIX AS AOS not working unless page is refreshed */}
         <a
           className="btn btn-outline-dark rounded-pill xl:tw-px-4 lg:tw-px-3 xl:tw-mr-4 lg:tw-mr-2 md:tw-mr-1 text-uppercase"
-          href="https://partnerwith.metricsdao.xyz"
+          href="https://metricsdao.xyz/3-step-process"
         >
           Partner with Us
         </a>
