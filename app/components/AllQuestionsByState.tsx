@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  useContractRead,
-  useContractWrite,
-  useContract,
-  useProvider,
-} from "wagmi";
+import { useContractRead, useContractWrite, useContract, useProvider } from "wagmi";
 import { BigNumber } from "ethers";
 import { CSVLink } from "react-csv";
 import { Download16 } from "@carbon/icons-react";
@@ -13,14 +8,9 @@ import AlertBanner from "~/components/AlertBanner";
 import MyRadioGroup from "~/components/RadioGroup";
 import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions from "~/components/ShowQuestions";
-import {
-  TransactionStatus,
-  usePrevious,
-  questionStateEnum,
-  OFFSET,
-  sortMethods,
-  protocols,
-} from "~/utils/helpers";
+import { TransactionStatus, usePrevious, questionStateEnum, OFFSET, sortMethods, protocols } from "~/utils/helpers";
+
+import type { QuestionData, ChainDataQuestion } from "~/utils/types";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -36,20 +26,15 @@ export default function AllQuestionsByState({
   questionAPI: Record<string, string>;
   networkMatchesWallet: boolean;
 }) {
-  const [questionDataVotingState, setQuestionDataVotingState] = useState<any>(
-    []
-  );
-  const [querstionArray, setQuestionArray] = useState<any>([]);
+  const [questionDataVotingState, setQuestionDataVotingState] = useState<ChainDataQuestion[]>([]);
+  const [querstionArray, setQuestionArray] = useState<QuestionData[]>([]);
   const [uxShow, setUXToShow] = useState<boolean>(false);
-  const [alertContainerStatus, setAlertContainerStatus] =
-    useState<boolean>(false);
-  const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(
-    TransactionStatus.Pending
-  );
+  const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
+  const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
 
-  const [selected, setSelected] = useState(sortMethods[0]);
+  const [selected, setSelected] = useState<Record<string, string>>(sortMethods[0]);
 
-  const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
+  const [selectedProgram, setSelectedProgram] = useState<Record<string, string>>(protocols[0]);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
   const [getTotalVotes, setGetTotalVotes] = useState<number>(0);
@@ -64,11 +49,7 @@ export default function AllQuestionsByState({
     },
     "getQuestionsByState",
     {
-      args: [
-        BigNumber.from(questionStateEnum.VOTING),
-        BigNumber.from(latestQuestion),
-        BigNumber.from(OFFSET),
-      ],
+      args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
       enabled: true,
       cacheOnBlock: true,
       onError: (err) => {
@@ -109,12 +90,9 @@ export default function AllQuestionsByState({
 
   useEffect(() => {
     if (Array.isArray(questionData)) {
-      if (
-        prevTokenId !== latestQuestion ||
-        questionData.length !== prevQuestionData?.length
-      ) {
+      if (prevTokenId !== latestQuestion || questionData.length !== prevQuestionData?.length) {
         setQuestionArray(
-          questionData.map((question: any) => {
+          questionData.map((question) => {
             return {
               name: "Loading",
               program: "Loading",
@@ -124,7 +102,7 @@ export default function AllQuestionsByState({
               totalVotes: question.totalVotes.toNumber(),
               date: "Loading",
               loading: true,
-              unavaible: false,
+              unavailable: false,
             };
           })
         );
@@ -132,18 +110,11 @@ export default function AllQuestionsByState({
         setQuestionDataVotingState(questionData);
       }
     }
-  }, [
-    questionData,
-    questionDataVotingState,
-    prevTokenId,
-    latestQuestion,
-    prevQuestionData,
-    querstionArray.length,
-  ]);
+  }, [questionData, prevTokenId, latestQuestion, prevQuestionData]);
 
   useEffect(() => {
     const ac = new AbortController();
-    async function getIpfsdata(obj: any) {
+    async function getIpfsdata(obj: ChainDataQuestion) {
       try {
         const response = await fetch(obj.uri, {
           signal: ac.signal,
@@ -153,14 +124,11 @@ export default function AllQuestionsByState({
         ipfsData.questionId = obj.questionId.toNumber();
         ipfsData.totalVotes = obj.totalVotes.toNumber();
         ipfsData.date = ipfsData.date || "Unavailable currently";
-        ipfsData.program =
-          typeof ipfsData.program === "string"
-            ? ipfsData.program
-            : ipfsData.program.name;
+        ipfsData.program = typeof ipfsData.program === "string" ? ipfsData.program : ipfsData.program.name;
         ipfsData.loading = false;
 
-        setQuestionArray((prevArray: any) => {
-          return prevArray.map((question: any) => {
+        setQuestionArray((prevArray) => {
+          return prevArray.map((question) => {
             if (question.questionId === ipfsData.questionId) {
               return { ...question, ...ipfsData };
             } else {
@@ -181,8 +149,8 @@ export default function AllQuestionsByState({
           unavailable: true,
         };
         if (error.name === "AbortError") return;
-        setQuestionArray((prevArray: any) => {
-          return prevArray.map((question: any) => {
+        setQuestionArray((prevArray) => {
+          return prevArray.map((question) => {
             if (question.questionId === ipfsdataFailure.questionId) {
               return { ...question, ...ipfsdataFailure };
             } else {
@@ -192,17 +160,14 @@ export default function AllQuestionsByState({
         });
       }
     }
-    questionDataVotingState.forEach((question: any) => {
+    questionDataVotingState.forEach((question) => {
       getIpfsdata(question);
     });
     return () => ac.abort();
   }, [questionDataVotingState]);
 
   useEffect(() => {
-    if (
-      querstionArray.length &&
-      querstionArray.length === questionDataVotingState.length
-    ) {
+    if (querstionArray.length && querstionArray.length === questionDataVotingState.length) {
       setUXToShow(true);
       //reset here
       setGetTotalVotes(0);
@@ -214,9 +179,9 @@ export default function AllQuestionsByState({
       return questionAPIContract.getTotalVotes(BigNumber.from(getTotalVotes));
     }
     if (getTotalVotes) {
-      contractCall().then((res: any) => {
-        setQuestionArray((prevArray: any) => {
-          return prevArray.map((question: any) => {
+      contractCall().then((res: BigNumber) => {
+        setQuestionArray((prevArray) => {
+          return prevArray.map((question) => {
             if (question.questionId === getTotalVotes) {
               return { ...question, totalVotes: res.toNumber() };
             } else {
@@ -257,10 +222,7 @@ export default function AllQuestionsByState({
   return (
     <>
       {alertContainerStatus && (
-        <AlertBanner
-          transactionStatus={writeTransactionStatus}
-          setAlertContainerStatus={setAlertContainerStatus}
-        />
+        <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
       )}
       {uxShow === true ? (
         <div className="tw-flex tw-justify-center">
@@ -277,10 +239,7 @@ export default function AllQuestionsByState({
           </div>
           <div className="tw-w-1/6 tw-px-4">
             <MyRadioGroup setSelected={setSelected} selected={selected} />
-            <DropDown
-              setSelectedProgram={setSelectedProgram}
-              selectedProgram={selectedProgram}
-            />
+            <DropDown setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
             <CSVLink
               data={querstionArray}
               className="blue-button tw-bg-[#21C5F2] tw-mt-8 tw-flex tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"

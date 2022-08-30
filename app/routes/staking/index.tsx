@@ -21,10 +21,11 @@ export default function Index() {
   // const data = useLoaderData();
 
   return (
-    <WalletProvider>
-      <Wrapper>
-        <h1>Staking Page</h1>
-      </Wrapper>
-    </WalletProvider>
+    <h1>UPDATE</h1>
+    // <WalletProvider>
+    //   <Wrapper>
+    //     <h1>Staking Page</h1>
+    //   </Wrapper>
+    // </WalletProvider>
   );
 }

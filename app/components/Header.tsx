@@ -3,18 +3,18 @@ import { useRef } from "react";
 import SocialIcons from "~/components/SocialIcons";
 
 const Header = () => {
-  const navRef = useRef<any>(null);
-  const menuRef = useRef<any>(null);
+  const navRef = useRef<HTMLUListElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const toggleMenu = () => {
     let nav = navRef.current;
     let hamburger = menuRef.current;
-    if (nav.classList.contains("nav-open")) {
+    if (nav?.classList.contains("nav-open")) {
       nav.classList.remove("nav-open");
-      hamburger.classList.remove("hamburger-close");
+      hamburger?.classList.remove("hamburger-close");
     } else {
-      nav.classList.add("nav-open");
-      hamburger.classList.add("hamburger-close");
+      nav?.classList.add("nav-open");
+      hamburger?.classList.add("hamburger-close");
     }
   };
 
