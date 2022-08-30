@@ -2,24 +2,12 @@ import algoliasearch from "algoliasearch/lite";
 import AppHeader from "../../components/app-header-skinny";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendar,
-  faExternalLink,
-  faSignal,
-  faUserGraduate,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  InstantSearch,
-  Hits,
-  SearchBox,
-  Pagination,
-  RefinementList,
-  Configure,
-} from "react-instantsearch-dom";
+import { faCalendar, faExternalLink, faSignal, faUserGraduate, faFlag } from "@fortawesome/free-solid-svg-icons";
+import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
-import Comments from './Comments';
+import Comments from "./Comments";
 
 export function loader() {
   return {
@@ -63,11 +51,7 @@ function Filters() {
           </li>
           <li className="tw-my-px tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4 tw-bg-white">
             <div className="tw-text-xl tw-mb-2">Analyst</div>
-            <RefinementList
-              attribute="hunter_discord_id"
-              searchable={true}
-              limit={5}
-            />
+            <RefinementList attribute="hunter_discord_id" searchable={true} limit={5} />
           </li>
         </ul>
       </div>
@@ -78,9 +62,7 @@ function Content() {
   return (
     <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-56 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
       <div className="tw-main-content tw-flex tw-flex-col tw-flex-grow tw-p-4">
-        <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">
-          Submissions
-        </h1>
+        <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">Submissions</h1>
         <div className="tw-max-w-full tw-mb-4">
           <SearchBox
             translations={{
@@ -101,8 +83,10 @@ function Content() {
 }
 function Hit(props) {
   const { hit } = props;
-  const { grading_notes = '', overall_score } = hit;
-  const notes = grading_notes?.length ? grading_notes.split('<--review-delimiter-->') : [];
+  const { grading_notes = "", overall_score, is_flagged_by_bounty_ops, is_flagged_by_reviewers } = hit;
+  const notes = grading_notes?.length ? grading_notes.split("<--review-delimiter-->") : [];
+  const bountyOpsFlag = is_flagged_by_bounty_ops == "Yes" ? hit["flag_by_bounty_ops"].split(",") : [];
+  const reviewerFlags = is_flagged_by_reviewers == "Yes" ? hit["flags_by_reviewers"].split(",") : [];
   return (
     <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
       <div className="md:tw-w-full">
@@ -110,85 +94,82 @@ function Hit(props) {
           <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3 md:tw-flex tw-items-center">
             <div className="program-icon tw-mr-2">
               {icons[hit["program_name"]] ? (
-                <img
-                  alt="MetricsDao"
-                  src={icons[hit["program_name"]]}
-                  title={hit["program_name"]}
-                />
+                <img alt="MetricsDao" src={icons[hit["program_name"]]} title={hit["program_name"]} />
               ) : (
-                <img
-                  alt="MetricsDao"
-                  src="../img/black-mark@2x.png"
-                  title={hit["program_name"]}
-                />
+                <img alt="MetricsDao" src="../img/black-mark@2x.png" title={hit["program_name"]} />
               )}
-            </div>{" "}
-            {hit.question_title}{" "}
-            <FontAwesomeIcon
-              className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm"
-              icon={faExternalLink}
-            />{" "}
+            </div>
+            {hit.question_title}
+            <FontAwesomeIcon className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm" icon={faExternalLink} />
             <div
-              className="tw-flex tw-items-center tw-justify-between md:tw-justify-around md:tw-w-24 tw-max-w-xs tw-text-sm tw-leading-7 md:tw-ml-auto 
-                sm:tw-ml-0 tw-my-2 md:tw-my-0 tw-px-4 md:tw-px-1 tw-py-0.5 score-label tw-rounded-xl md:tw-rounded tw-border tw-border-slate-400"
+              className="tw-flex tw-items-center tw-justify-between md:tw-justify-between md:tw-w-24 tw-max-w-xs tw-text-sm tw-leading-7 md:tw-ml-auto 
+                sm:tw-ml-0 tw-my-2 md:tw-my-0 tw-px-4 md:tw-px-1 tw-py-0.5 score-label tw-rounded-xl md:tw-rounded tw-border-slate-400"
             >
               <div className="tw-flex md:tw-hidden tw-flex-row tw-space-x-2 tw-w-min-200">
                 <div>
-                  <FontAwesomeIcon
-                    className="tw-text-slate-500"
-                    icon={faUserGraduate}
-                  />
+                  <FontAwesomeIcon className="tw-text-slate-500" icon={faUserGraduate} />
                 </div>
-                <div className="tw-text-slate-500">
-                  {hit["hunter_discord_id"]}
-                </div>
+                <div className="tw-text-slate-500">{hit["hunter_discord_id"]}</div>
               </div>
-              <span className="md:tw-flex tw-hidden">Score</span>
-              <span className="tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-text-xs tw-rounded-full
-                tw-font-bold tw-text-white tw-bg-slate-400 tw-ml-4 md:tw-ml-0">
-                {overall_score}
-              </span>
             </div>
+
+            {is_flagged_by_bounty_ops == "No" && is_flagged_by_reviewers == "No" ? (
+              <div
+                className="tw-flex tw-justify-between tw-space-x-2 tw-items-center md:tw-justify-around md:tw-w-24 tw-max-w-xs tw-text-sm tw-leading-7 md:tw-ml-auto 
+                sm:tw-ml-0 tw-my-2 md:tw-my-0 tw-px-4 md:tw-px-1 tw-py-0.5 score-label tw-rounded-xl md:tw-rounded tw-border tw-border-slate-400"
+              >
+                <span className="md:tw-flex tw-hidden">Score</span>
+                <span
+                  className="tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-text-xs tw-rounded-full
+                    tw-font-bold tw-text-white tw-bg-slate-400 tw-ml-4 md:tw-ml-0"
+                >
+                  {overall_score}
+                </span>
+              </div>
+            ) : (
+              <div className="tw-flex tw-justify-between tw-space-x-2 tw-items-center tw-border-none tw-w-min-200">
+                {is_flagged_by_bounty_ops == "Yes" ? (
+                  <div className="tw-flex tw-space-x-2">
+                    <FontAwesomeIcon className="tw-text-slate-500 tw-text-xs" icon={faFlag} />
+                    {/* bountyOpsFlag.map((flag, index) => {return ( <div>{flag[index]}</div> )} */}
+                    <div className="tw-text-xs tw-rounded-md tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
+                      {hit["flag_by_bounty_ops"]}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="tw-flex tw-space-x-2">
+                    <FontAwesomeIcon className="tw-text-slate-500" icon={faFlag} />
+                    <div className="tw-text-xs tw-rounded-md tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
+                      {hit["flags_by_reviewers"]}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {/* </div> */}
           </div>
           <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm tw-justify-around md:tw-justify-start">
             <div className="tw-flex tw-flex-row tw-space-x-2">
               <div>
-                <FontAwesomeIcon
-                  className="tw-text-slate-500"
-                  icon={faSignal}
-                />
+                <FontAwesomeIcon className="tw-text-slate-500" icon={faSignal} />
               </div>
-              <div className="tw-text-slate-500">
-                {hit["submission_quality"]}
-              </div>
+              <div className="tw-text-slate-500">{hit["submission_quality"]}</div>
             </div>
             <div className="tw-flex tw-flex-row tw-space-x-2">
               <div>
-                <FontAwesomeIcon
-                  className="tw-text-slate-500"
-                  icon={faCalendar}
-                />
+                <FontAwesomeIcon className="tw-text-slate-500" icon={faCalendar} />
               </div>
               <div className="tw-text-slate-500">{hit["created_at"]}</div>
             </div>
             <div className="tw-hidden md:tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
               <div>
-                <FontAwesomeIcon
-                  className="tw-text-slate-500"
-                  icon={faUserGraduate}
-                />
+                <FontAwesomeIcon className="tw-text-slate-500" icon={faUserGraduate} />
               </div>
-              <div className="tw-text-slate-500">
-                {hit["hunter_discord_id"]}
-              </div>
+              <div className="tw-text-slate-500">{hit["hunter_discord_id"]}</div>
             </div>
           </div>
         </a>
-        {
-          notes?.length > 0 && (
-            <Comments comments={notes} />
-          )
-        }
+        {notes?.length > 0 && <Comments comments={notes} />}
       </div>
     </div>
   );
