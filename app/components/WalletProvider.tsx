@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { ClientOnly } from "remix-utils";
 import { WagmiConfig, createClient, configureChains, chain, defaultChains } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
-// import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
@@ -14,13 +14,16 @@ export default function WalletProvider({ children, network }: { children: ReactE
   //TODO create config of all chains we support
 
   // TODO configure for POLYGON
-
+  const infuraId = "54fcc811bac44f99b84a04a4a3e2f998";
   if (network === "ropsten") {
-    const infuraId = "54fcc811bac44f99b84a04a4a3e2f998";
     configureChainObj = configureChains(defaultChains, [infuraProvider({ infuraId }), publicProvider()]);
-  } else {
-    const infuraId = "54fcc811bac44f99b84a04a4a3e2f998";
+  } else if (network === "polygon") {
     configureChainObj = configureChains([chain.polygon], [infuraProvider({ infuraId }), publicProvider()]);
+  } else if (network === "localhost") {
+    configureChainObj = configureChains([chain.hardhat, chain.localhost], [publicProvider()]);
+  } else {
+    //nothing provided will lead to front end error
+    configureChainObj = configureChains(defaultChains, [publicProvider()]);
   }
   const { chains, provider, webSocketProvider } = configureChainObj;
 
@@ -30,12 +33,12 @@ export default function WalletProvider({ children, network }: { children: ReactE
     connectors: [
       new MetaMaskConnector({ chains }),
       // TODO implement COINBASE WALLET
-      //   new CoinbaseWalletConnector({
-      //     chains,
-      //     options: {
-      //       appName: 'wagmi',
-      //     },
-      //   }),
+      new CoinbaseWalletConnector({
+        chains,
+        options: {
+          appName: "question API",
+        },
+      }),
       new WalletConnectConnector({
         chains,
         options: {
@@ -57,6 +60,10 @@ export default function WalletProvider({ children, network }: { children: ReactE
   return (
     <ClientOnly>
       {() => {
+        if (!network) {
+          window.alert("Please configure Network");
+          return null;
+        }
         return <WagmiConfig client={client}>{children}</WagmiConfig>;
       }}
     </ClientOnly>

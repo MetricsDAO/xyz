@@ -68,12 +68,15 @@ Switch account to a non allocated group and you should see not eligible
 using IPFS package node has to be > 15 to using version in .nvmrc  
 with nvm installed you should be able to run `nvm use`
 
-## Create Questions and View Questions/Upvote
+## Create Questions and View Questions/Upvote - (you'll need an .env file)
 
-Run same steps in core-evm-contracts as claiming and staking then switch to XYZ  
+Run same steps in core-evm-contracts as claiming and staking except stop at running the `allocationAssigner.js` script  
+IF YOU ARE RUNNING NODE LOCALLY - meaning your .env file for network is "localhost" Follow below steps  
 Make sure you clear/reset accounts in Metamask  
 Run this command  
 `node protocol-scripts/assignxMETRIC.js`  
+END OF RUNNING NODE/BLOCKCHAIN/HARDHAT locally
+
 Now in a seperate terminal run  
 `npm run dev`  
 visit http://localhost:3000/question-generation to generate questions  

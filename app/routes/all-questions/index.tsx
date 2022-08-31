@@ -79,7 +79,6 @@ export default function Index() {
       </section>
     );
   }
-  console.log("index all questions");
 
   return (
     <WalletProvider network={network}>

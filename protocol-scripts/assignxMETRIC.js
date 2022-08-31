@@ -1,5 +1,5 @@
 const { ethers } = require("ethers");
-require('dotenv').config();
+require("dotenv").config();
 const xmetricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/Xmetric.json`);
 const costControllerJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/ActionCostController.json`);
 const bountyQuestionJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/BountyQuestion.json`);
@@ -8,9 +8,7 @@ const vaultJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}
 const claimControllerJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/ClaimController.json`);
 const questionAPIJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/QuestionAPI.json`);
 
-
-
-
+let provider;
 let signer;
 let account1; //hardhat16  //third
 let account2; //hardhat17  //fourth
@@ -33,103 +31,99 @@ let account4; //hardhat19  //sixth
 // } else {
 
 // }
-const provider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_URL);
-const privateKey = process.env.PRIVATE_KEY;
-signer = new ethers.Wallet(privateKey, provider);
-
-
-
+if (process.env.NETWORK !== "localhost") {
+  provider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_URL);
+  const privateKey = process.env.PRIVATE_KEY;
+  signer = new ethers.Wallet(privateKey, provider);
+} else {
+  //localhost
+  provider = new ethers.providers.JsonRpcProvider();
+  signer = provider.getSigner();
+}
 
 console.log(xmetricJson.address, process.env.NETWORK, process.env.NETWORK_URL);
 
 async function init() {
+  const gasPrice = await provider.getGasPrice();
 
-    const gasPrice = await provider.getGasPrice();
+  let maxFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
+  let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
 
-    let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
-    let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
-    console.log("gasPrice", gasPrice);
-    const bountyQuestion = new ethers.Contract(bountyQuestionJson.address, bountyQuestionJson.abi, signer);
-    const questionStateController = new ethers.Contract(questionStateControllerJson.address, questionStateControllerJson.abi, signer);
-    const claimController = new ethers.Contract(claimControllerJson.address, claimControllerJson.abi, signer);
-    
-    const actionCostController = new ethers.Contract(costControllerJson.address, costControllerJson.abi, signer);
-    
-    const vault = new ethers.Contract(vaultJson.address, vaultJson.abi, signer);
+  console.log("gasPrice", gasPrice, maxFeePerGas, maxPriorityFeePerGas);
 
-    // try {
-    // const tx = await vault.setCostController(costControllerJson.address, {
-    //     gasPrice: 30000000000
-    // });
-    // const receipt = await tx.wait();
-    // console.log("receipt", receipt);
-    // } catch(error) {
-    //     console.log("setCostController", error)
-    // }
+  const bountyQuestion = new ethers.Contract(bountyQuestionJson.address, bountyQuestionJson.abi, signer);
+  const questionStateController = new ethers.Contract(
+    questionStateControllerJson.address,
+    questionStateControllerJson.abi,
+    signer
+  );
+  const claimController = new ethers.Contract(claimControllerJson.address, claimControllerJson.abi, signer);
 
-    // let tx = await bountyQuestion.setQuestionApi(questionAPIJson.address, {
-    //     gasPrice: 30000000000
-    // });
-    // let receipt = await tx.wait();
-  
-    // tx = await questionStateController.setQuestionApi(questionAPIJson.address, {
-    //     gasPrice: 30000000000
-    // });
-    // receipt = await tx.wait();
-  
-    // tx = await claimController.setQuestionApi(questionAPIJson.address, {
-    //     gasPrice: 30000000000
-    // });
-    // receipt = await tx.wait();
-  
-    // tx = await actionCostController.setQuestionApi(questionAPIJson.address, {
-    //     gasPrice: 30000000000
-    // });
-    // receipt = await tx.wait();
+  const actionCostController = new ethers.Contract(costControllerJson.address, costControllerJson.abi, signer);
 
-    // console.log(receipt)
+  const vault = new ethers.Contract(vaultJson.address, vaultJson.abi, signer);
 
+  try {
+    const tx = await vault.setCostController(costControllerJson.address);
+    const receipt = await tx.wait();
+    console.log("receipt", receipt);
+  } catch (error) {
+    console.log("setCostController", error);
+  }
 
+  let tx = await bountyQuestion.setQuestionApi(questionAPIJson.address);
+  await tx.wait();
 
-    const xmetric = new ethers.Contract(xmetricJson.address, xmetricJson.abi, signer);
+  tx = await questionStateController.setQuestionApi(questionAPIJson.address);
+  await tx.wait();
 
-    try {
-        await xmetric.setTransactor(costControllerJson.address, true, {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
-        });
-    } catch(error) {
-        console.log("setTransactor", "costControllerJson", error)
-    }
+  tx = await claimController.setQuestionApi(questionAPIJson.address);
+  await tx.wait();
 
-    try {
-        await xmetric.setTransactor(vaultJson.address, true, {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
-        });
-    } catch(error) {
-        console.log("setTransactor", "vaultJson", error)
-    }
+  tx = await actionCostController.setQuestionApi(questionAPIJson.address);
+  const receipt = await tx.wait();
 
-    // try {
-    // await actionCostController.setCreateCost(0, {
-    //     maxFeePerGas,
-    //     maxPriorityFeePerGas,
-    // });
-    // await actionCostController.setVoteCost(0, {
-    //     maxFeePerGas,
-    //     maxPriorityFeePerGas,
-    // });
-    // } catch(error) {
-    //     console.log("ERRRRRR!!!!! setcost", error);
-    // }
+  tx = await bountyQuestion.setStateController(questionStateController.address);
+  await tx.wait();
 
-    // await xmetric.transfer(hardhat5, ethers.utils.parseEther("55"));
+  console.log(receipt);
 
-    // await xmetric.transfer(account1, ethers.utils.parseEther("166"));
-    // await xmetric.transfer(account2, ethers.utils.parseEther("1770"));
-    // await xmetric.transfer(account3, ethers.utils.parseEther("18800"));
-    // await xmetric.transfer(account4, ethers.utils.parseEther("199"));
+  const xmetric = new ethers.Contract(xmetricJson.address, xmetricJson.abi, signer);
+
+  // EXTRA OPTIONS passed in as last param EXAMPLE BELOW
+  //   const extraOptions = {
+  //     maxFeePerGas,
+  //     maxPriorityFeePerGas,
+  //   };
+  //   await actionCostController.setVoteCost(0, {
+  //     maxFeePerGas,
+  //     maxPriorityFeePerGas,
+  // });
+  try {
+    await xmetric.setTransactor(costControllerJson.address, true);
+  } catch (error) {
+    console.log("setTransactor", "costControllerJson", error);
+  }
+
+  try {
+    await xmetric.setTransactor(vaultJson.address, true);
+  } catch (error) {
+    console.log("setTransactor", "vaultJson", error);
+  }
+
+  try {
+    await actionCostController.setActionCost(0, 0);
+    await actionCostController.setActionCost(1, 0);
+  } catch (error) {
+    console.log("ERRRRRR!!!!! setcost", error);
+  }
+
+  // await xmetric.transfer(hardhat5, ethers.utils.parseEther("55"));
+
+  // await xmetric.transfer(account1, ethers.utils.parseEther("166"));
+  // await xmetric.transfer(account2, ethers.utils.parseEther("1770"));
+  // await xmetric.transfer(account3, ethers.utils.parseEther("18800"));
+  // await xmetric.transfer(account4, ethers.utils.parseEther("199"));
 }
 
 init();
