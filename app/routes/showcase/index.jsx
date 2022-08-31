@@ -91,25 +91,30 @@ function Hit(props) {
   let uniqueReviewerFlags = [...new Set(reviewerFlags)];
 
   return (
-    <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-items-center tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
-      <div className="md:tw-w-full">
+    <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
+      <div className="tw-w-full">
         <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
-          <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3 tw-flex tw-items-center">
-            <div className="program-icon tw-mr-2">
-              {icons[hit["program_name"]] ? (
-                <img alt="MetricsDao" src={icons[hit["program_name"]]} title={hit["program_name"]} />
-              ) : (
-                <img alt="MetricsDao" src="../img/black-mark@2x.png" title={hit["program_name"]} />
-              )}
-            </div>
-            <div>
-              {hit.question_title}
-              <FontAwesomeIcon className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm" icon={faExternalLink} />
+          <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3 tw-flex tw-items-center tw-justify-between">
+            <div className="tw-flex tw-items-center">
+              <div className="program-icon tw-mr-2">
+                {icons[hit["program_name"]] ? (
+                  <img alt="MetricsDao" src={icons[hit["program_name"]]} title={hit["program_name"]} />
+                ) : (
+                  <img alt="MetricsDao" src="../img/black-mark@2x.png" title={hit["program_name"]} />
+                )}
+              </div>
+              <div className="tw-content-start">
+                {hit.question_title}
+                <FontAwesomeIcon
+                  className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm"
+                  icon={faExternalLink}
+                />
+              </div>
             </div>
             {is_flagged_by_bounty_ops == "No" && is_flagged_by_reviewers == "No" ? (
               <div
-                className="tw-flex tw-items-center md:tw-justify-around md:tw-w-24 tw-max-w-xs tw-text-sm tw-leading-7 sm:tw-ml-4 md:tw-ml-auto 
-                tw-my-2 md:tw-my-0 tw-px-4 md:tw-px-1 tw-py-0.5 score-label tw-rounded-xl md:tw-rounded tw-border tw-border-slate-400"
+                className="tw-flex tw-items-center tw-justify-around tw-space-x-2 tw-max-w-xs tw-text-sm tw-leading-7
+                tw-my-2 tw-px-4 tw-py-0.5 score-label tw-rounded-xl tw-border tw-border-slate-400"
               >
                 <span>Score</span>
                 <span
@@ -120,21 +125,21 @@ function Hit(props) {
                 </span>
               </div>
             ) : (
-              <div className="tw-flex tw-justify-between tw-space-x-2 tw-items-center tw-border-none tw-w-min-200 sm:tw-ml-4 md:tw-ml-auto">
+              <div className="tw-flex tw-justify-center tw-items-end tw-space-x-2 tw-border-none tw-border-x-slate-50:tw-ml-4">
                 {is_flagged_by_bounty_ops == "Yes" ? (
                   <div className="tw-flex tw-space-x-2 tw-items-center">
                     <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
                     {uniqueOpsFlags.map((element, i) => (
-                      <div key={i} className="tw-text-xs tw-rounded-md tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
+                      <div key={i} className="tw-text-xs tw-rounded-lg tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
                         {element}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="tw-flex tw-space-x-2 tw-items-center">
+                  <div className="tw-flex tw-items-center tw-space-x-2">
                     <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
                     {uniqueReviewerFlags.map((element, i) => (
-                      <div key={i} className="tw-text-xs tw-rounded-md tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
+                      <div key={i} className="tw-text-xs tw-rounded-lg tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
                         {element}
                       </div>
                     ))}
