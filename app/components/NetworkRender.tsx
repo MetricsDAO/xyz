@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { filteredNetwork } from "~/utils/helpers";
 
 export default function NetworkRender({
   network,
@@ -14,7 +15,7 @@ export default function NetworkRender({
   children?: ReactElement;
 }) {
   function getContents() {
-    if (network !== chainName?.toLowerCase()) {
+    if (filteredNetwork(network) !== chainName?.toLowerCase()) {
       if (typeof switchNetwork === "function") {
         return (
           <div
@@ -35,7 +36,7 @@ export default function NetworkRender({
             className={`tw-flex tw-flex-wrap tw-max-w-xs tw-text-sm tw-mx-auto ${children} ? "tw-justify-center" : ""`}
           >
             <p className="tw-mb-2"> You are currently connected to {chainName}</p>
-            <p>Please switch wallet to {network} network</p>
+            <p>Please switch wallet to {filteredNetwork} network</p>
           </div>
         );
       }

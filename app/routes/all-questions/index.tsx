@@ -3,6 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
 import AllQuestionsContainer from "~/components/AllQuestionsContainer";
+import { filteredNetwork } from "~/utils/helpers";
 
 import { getContracts } from "~/services/contracts.server";
 
@@ -74,7 +75,7 @@ export default function Index() {
           questionStateController={questionStateControllerAbiandAddress}
           // xmetric={xMETRICAbiAndAddress}
           bountyQuestion={bountyQuestionAbiAndAddress}
-          networkMatchesWallet={chainName?.toLowerCase() === network}
+          networkMatchesWallet={chainName?.toLowerCase() === filteredNetwork(network)}
         />
       </section>
     );

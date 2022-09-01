@@ -8,7 +8,15 @@ import AlertBanner from "~/components/AlertBanner";
 import MyRadioGroup from "~/components/RadioGroup";
 import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions from "~/components/ShowQuestions";
-import { TransactionStatus, usePrevious, questionStateEnum, OFFSET, sortMethods, protocols } from "~/utils/helpers";
+import {
+  TransactionStatus,
+  iPFSdomain,
+  usePrevious,
+  questionStateEnum,
+  OFFSET,
+  sortMethods,
+  protocols,
+} from "~/utils/helpers";
 
 import type { QuestionData, ChainDataQuestion } from "~/utils/types";
 
@@ -116,7 +124,7 @@ export default function AllQuestionsByState({
     const ac = new AbortController();
     async function getIpfsdata(obj: ChainDataQuestion) {
       try {
-        const response = await fetch(obj.uri, {
+        const response = await fetch(iPFSdomain + obj.uri, {
           signal: ac.signal,
         });
         const ipfsData = await response.json();

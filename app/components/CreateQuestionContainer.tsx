@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, Fragment } from "react";
 import { useContractWrite } from "wagmi";
-import { BigNumber } from "ethers";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
 import { TransactionStatus } from "~/utils/helpers";
 
@@ -87,7 +86,6 @@ export default function CreateQuestion({
 
     console.log("meta", jsonMetaData);
     try {
-      // const added = await client.add(JSON.stringify(jsonMetaData));
       const ipfs = await fetch("/api/meta", {
         method: "POST",
         headers: {
@@ -96,7 +94,7 @@ export default function CreateQuestion({
         body: JSON.stringify(jsonMetaData),
       });
       const apiJson = await ipfs.json();
-      setFileUrl("https://ipfs.io/ipfs/" + apiJson.path);
+      setFileUrl(apiJson.path);
     } catch (error) {
       console.error("err!", error);
       setFileUrl("");
@@ -107,7 +105,7 @@ export default function CreateQuestion({
     setButtonDisabled(true);
     try {
       const txnResponse = await createQuestion.writeAsync({
-        args: [fileUrl, BigNumber.from("10")],
+        args: [fileUrl],
       });
       const confirmation = await txnResponse.wait();
       if (confirmation.blockNumber) {
