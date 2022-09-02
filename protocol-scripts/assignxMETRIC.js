@@ -31,7 +31,9 @@ let account4; //hardhat19  //sixth
 // } else {
 
 // }
-if (process.env.NETWORK !== "localhost") {
+
+/* ADD FOR OTHER NETWORKS AS NEEDED */
+if (process.env.NETWORK === "polygon") {
   provider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_URL);
   const privateKey = process.env.PRIVATE_KEY;
   signer = new ethers.Wallet(privateKey, provider);
@@ -45,6 +47,12 @@ console.log(xmetricJson.address, process.env.NETWORK, process.env.NETWORK_URL);
 
 async function init() {
   const gasPrice = await provider.getGasPrice();
+  // const feeData = await provider.getFeeData();
+  // {
+  //   gasPrice: { BigNumber: "23610503242" },
+  //   maxFeePerGas: { BigNumber: "46721006484" },
+  //   maxPriorityFeePerGas: { BigNumber: "1500000000" }
+  // }
 
   let maxFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
   let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
