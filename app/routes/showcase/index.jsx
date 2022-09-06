@@ -100,7 +100,7 @@ function Hit(props) {
     setShowTooltip(false);
   };
 
-  const toolTipText = is_flagged_by_bounty_ops == "Yes" ? "Flagged by Bounty Ops" : "Flagged by Community";
+  const toolTipText = is_flagged_by_bounty_ops == "Yes" ? "Flagged by Bounty Ops" : "Flagged by Peer Review";
 
   return (
     <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
