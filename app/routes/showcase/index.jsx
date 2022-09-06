@@ -8,6 +8,7 @@ import { useLoaderData } from "@remix-run/react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
 import Comments from "./Comments";
+import { useState } from "react";
 
 export function loader() {
   return {
@@ -89,6 +90,17 @@ function Hit(props) {
   const reviewerFlags = is_flagged_by_reviewers == "Yes" ? hit["flags_by_reviewers"].split(",") : [];
   let uniqueOpsFlags = [...new Set(bountyOpsFlag)];
   let uniqueReviewerFlags = [...new Set(reviewerFlags)];
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const open = () => {
+    setShowTooltip(true);
+  };
+
+  const close = () => {
+    setShowTooltip(false);
+  };
+
+  const toolTipText = is_flagged_by_bounty_ops == "Yes" ? "Flagged By Bounty Ops" : "Flagged By Reviewers";
 
   return (
     <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
@@ -125,30 +137,42 @@ function Hit(props) {
                 </span>
               </div>
             ) : (
-              <div className="tw-flex tw-justify-center tw-items-end tw-space-x-2 tw-border-none tw-border-x-slate-50:tw-ml-4">
-                {is_flagged_by_bounty_ops == "Yes" ? (
-                  <div className="tw-flex tw-space-x-2 tw-items-center">
-                    <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
-                    {uniqueOpsFlags.map((element, i) => (
-                      <div key={i} className="tw-text-xs tw-rounded-lg tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
-                        {element}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="tw-flex tw-items-center tw-space-x-2">
-                    <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
-                    {uniqueReviewerFlags.map((element, i) => (
-                      <div key={i} className="tw-text-xs tw-rounded-lg tw-bg-slate-200 tw-py-1 tw-px-1 tw-text-black">
-                        {element}
-                      </div>
-                    ))}
-                  </div>
+              <div className="tw-flex tw-space-y-2 tw-flex-col">
+                {showTooltip && (
+                  <span className="tw-text-xs tw-px-2 tw-py-2 tw-rounded-none tw-bg-slate-100 tw-text-black">
+                    {toolTipText}
+                  </span>
                 )}
+                <div className="tw-flex tw-justify-center tw-items-end tw-space-x-2 tw-border-none tw-border-x-slate-50:tw-ml-4">
+                  {is_flagged_by_bounty_ops == "Yes" ? (
+                    <div onMouseOver={open} onMouseOut={close} className="tw-flex tw-space-x-2 tw-items-center">
+                      <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
+                      {uniqueOpsFlags.map((element, i) => (
+                        <div
+                          key={i}
+                          className="tw-text-xs tw-rounded-full tw-bg-[#0D8AF7] tw-bg-opacity-50 tw-py-1 tw-px-2 tw-text-black"
+                        >
+                          {element}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div onMouseOver={open} onMouseOut={close} className="tw-flex tw-items-center tw-space-x-2">
+                      <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
+                      {uniqueReviewerFlags.map((element, i) => (
+                        <div
+                          key={i}
+                          className="tw-text-xs tw-rounded-full tw-bg-[#ABE5FB] tw-bg-opacity-70 tw-py-1 tw-px-2 tw-text-black"
+                        >
+                          {element}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
-          {/* </div> */}
 
           <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm tw-justify-around md:tw-justify-start">
             <div className="tw-flex tw-flex-row tw-space-x-2">
