@@ -100,7 +100,10 @@ function Hit(props) {
     setShowTooltip(false);
   };
 
-  const toolTipText = is_flagged_by_bounty_ops == "Yes" ? "Flagged by Bounty Ops" : "Flagged by Peer Review";
+  const toolTipText = is_flagged_by_bounty_ops == "Yes" ? "Flagged by Bounty Ops" : "Flagged By Peer Review";
+
+  const uniqueFlags = is_flagged_by_bounty_ops == "Yes" ? uniqueOpsFlags : uniqueReviewerFlags;
+  const flagColor = is_flagged_by_bounty_ops == "Yes" ? "tw-bg-[#55ABFB]" : "tw-bg-[#B5E8FD]";
 
   return (
     <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
@@ -144,31 +147,17 @@ function Hit(props) {
                   </span>
                 )}
                 <div className="tw-flex tw-justify-center tw-items-end tw-space-x-2 tw-border-none tw-border-x-slate-50:tw-ml-4">
-                  {is_flagged_by_bounty_ops == "Yes" ? (
-                    <div onMouseOver={open} onMouseOut={close} className="tw-flex tw-space-x-2 tw-items-center">
-                      <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
-                      {uniqueOpsFlags.map((element, i) => (
-                        <div
-                          key={i}
-                          className="tw-text-xs tw-rounded-full tw-bg-[#0D8AF7] tw-bg-opacity-50 tw-py-1 tw-px-2 tw-text-black"
-                        >
-                          {element}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div onMouseOver={open} onMouseOut={close} className="tw-flex tw-items-center tw-space-x-2">
-                      <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
-                      {uniqueReviewerFlags.map((element, i) => (
-                        <div
-                          key={i}
-                          className="tw-text-xs tw-rounded-full tw-bg-[#ABE5FB] tw-bg-opacity-70 tw-py-1 tw-px-2 tw-text-black"
-                        >
-                          {element}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div onMouseOver={open} onMouseOut={close} className="tw-flex tw-space-x-2 tw-items-center">
+                    <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
+                    {uniqueFlags.map((element, i) => (
+                      <div
+                        key={i}
+                        className={`tw-text-xs tw-rounded-full ${flagColor} tw-bg-opacity-50 tw-py-1 tw-px-2 tw-text-black`}
+                      >
+                        {element}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
