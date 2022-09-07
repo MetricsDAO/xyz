@@ -8,7 +8,15 @@ import AlertBanner from "~/components/AlertBanner";
 import MyRadioGroup from "~/components/RadioGroup";
 import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions from "~/components/ShowQuestions";
-import { TransactionStatus, usePrevious, questionStateEnum, OFFSET, sortMethods, protocols } from "~/utils/helpers";
+import {
+  TransactionStatus,
+  usePrevious,
+  questionStateEnum,
+  OFFSET,
+  sortMethods,
+  protocols,
+  filterSortCsvData,
+} from "~/utils/helpers";
 
 import type { QuestionData, ChainDataQuestion } from "~/utils/types";
 
@@ -27,7 +35,7 @@ export default function AllQuestionsByState({
   networkMatchesWallet: boolean;
 }) {
   const [questionDataVotingState, setQuestionDataVotingState] = useState<ChainDataQuestion[]>([]);
-  const [querstionArray, setQuestionArray] = useState<QuestionData[]>([]);
+  const [questionArray, setQuestionArray] = useState<QuestionData[]>([]);
   const [uxShow, setUXToShow] = useState<boolean>(false);
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
@@ -167,12 +175,12 @@ export default function AllQuestionsByState({
   }, [questionDataVotingState]);
 
   useEffect(() => {
-    if (querstionArray.length && querstionArray.length === questionDataVotingState.length) {
+    if (questionArray.length && questionArray.length === questionDataVotingState.length) {
       setUXToShow(true);
       //reset here
       setGetTotalVotes(0);
     }
-  }, [querstionArray, questionDataVotingState]);
+  }, [questionArray, questionDataVotingState]);
 
   useEffect(() => {
     function contractCall() {
@@ -231,7 +239,7 @@ export default function AllQuestionsByState({
             <ShowQuestions
               selected={selected}
               selectedProgram={selectedProgram}
-              questions={querstionArray}
+              questions={questionArray}
               initUpVoteQuestion={initUpVoteQuestion}
               networkMatchesWallet={networkMatchesWallet}
               buttonDisabled={buttonDisabled}
@@ -241,7 +249,7 @@ export default function AllQuestionsByState({
             <MyRadioGroup setSelected={setSelected} selected={selected} />
             <DropDown setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
             <CSVLink
-              data={querstionArray}
+              data={filterSortCsvData(questionArray)}
               className="blue-button tw-bg-[#21C5F2] tw-mt-8 tw-flex tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
               filename={"question-data.csv"}
               target="_blank"

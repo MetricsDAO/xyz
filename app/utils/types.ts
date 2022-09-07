@@ -34,8 +34,8 @@ export interface QuestionData {
   questionId: number;
   totalVotes: number;
   date: string;
-  loading: boolean;
-  unavailable: boolean;
+  loading: boolean | undefined;
+  unavailable: boolean | undefined;
 }
 
 export interface ChainDataQuestion {
