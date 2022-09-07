@@ -597,7 +597,6 @@ strong {
 
 .pagination li.disabled a {
   cursor: default;
-  color: black;
 }
 
 .pagination li.selected {
