@@ -73,7 +73,8 @@ with nvm installed you should be able to run `nvm use`
 Run same steps in core-evm-contracts as claiming and staking except stop at running the `allocationAssigner.js` script  
 IF YOU ARE RUNNING NODE LOCALLY - meaning your .env file for network is "localhost" Follow below steps  
 Make sure you clear/reset accounts in Metamask  
-You can either run the configure_questionsapi script in core-evm when deploying or Run this command  
+SKIP below step if you ran the `configure_questionapi.js` deploy script in core-evm-contracts  
+Run this command  
 `node protocol-scripts/assignxMETRIC.js`  
 END OF RUNNING NODE/BLOCKCHAIN/HARDHAT locally
 
