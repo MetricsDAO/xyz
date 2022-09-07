@@ -78,6 +78,7 @@ export default function CreateQuestion({
     setAlertContainerStatus(true);
 
     const jsonMetaData = {
+      author: address,
       name: questionTitleValue,
       description: questionBodyValue,
       program: selectedProgram?.name,

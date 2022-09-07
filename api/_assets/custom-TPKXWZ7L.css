@@ -595,15 +595,6 @@ strong {
   padding: 1rem;
 }
 
-.pagination li.disabled a {
-  cursor: default;
-  color: black;
-}
-
-.pagination li.selected {
-  color: blue;
-}
-
 @media (max-width: 1399px) {
   .site-header .g-4 {
     --bs-gutter-x: 2.5rem;

@@ -595,9 +595,8 @@ strong {
   padding: 1rem;
 }
 
-.pagination li.disabled a {
+.pagination li.disabled {
   cursor: default;
-  color: black;
 }
 
 .pagination li.selected {

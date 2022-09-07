@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import type { QuestionData } from "~/utils/types";
 export function truncateAddress(address: string | undefined) {
   if (address) {
     return address.substring(0, 5) + "..." + address.substring(address.length - 5);
@@ -48,6 +49,7 @@ export const questionStateEnum = {
 };
 
 export const OFFSET = 1000;
+export const PAGINATION_AMOUNT = 10;
 
 // TODO DO WE CHANGE
 export const sortMethods = [
@@ -70,3 +72,11 @@ export const protocols = [
   { name: "Cosmos" },
   { name: "Polygon" },
 ];
+
+export function filterSortCsvData(questionArray: QuestionData[]) {
+  return questionArray.map((obj) => {
+    delete obj.loading;
+    delete obj.unavailable;
+    return obj;
+  });
+}
