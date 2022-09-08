@@ -72,7 +72,14 @@ with nvm installed you should be able to run `nvm use`
 
 Run same steps in core-evm-contracts as claiming and staking except stop at running the `allocationAssigner.js` script  
 IF YOU ARE RUNNING NODE LOCALLY - meaning your .env file for network is "localhost" Follow below steps  
-Make sure you clear/reset accounts in Metamask  
+Make sure you clear/reset accounts in Metamask
+To connect your locally deployed contracts to this xyz app  
+After running npx hardhat node in core-evm-contracts in a seperate terminal  
+run `npm link` then back in xyz app run `npm link core-evm-contracts`
+
+To unlike th process
+Just run `npm unlink core-evm-contracts` on your xyz directory to remove the local symlink, and run npm unlink on the core-evm-contracts directory to remove the global symlink.  
+You will need to run `npm i core-evm-contracts`
 SKIP below step if you ran the `configure_questionapi.js` deploy script in core-evm-contracts  
 Run this command  
 `node protocol-scripts/assignxMETRIC.js`  

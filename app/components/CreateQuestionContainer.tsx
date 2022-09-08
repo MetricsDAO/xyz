@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { useContractWrite } from "wagmi";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
 import { TransactionStatus } from "~/utils/helpers";
+import { BigNumber } from "ethers";
 
 import { Listbox, Transition } from "@headlessui/react";
 
@@ -21,12 +22,14 @@ export default function CreateQuestion({
   xmetric,
   costController,
   vault,
+  network,
 }: {
   address: string;
   questionAPI: Record<string, string>;
   xmetric: Record<string, string>;
   costController: Record<string, string>;
   vault: Record<string, string>;
+  network: string;
 }) {
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
@@ -105,8 +108,9 @@ export default function CreateQuestion({
     console.log("fileURl", fileUrl);
     setButtonDisabled(true);
     try {
+      const argumentsForWriteSync = network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl];
       const txnResponse = await createQuestion.writeAsync({
-        args: [fileUrl],
+        args: argumentsForWriteSync,
       });
       const confirmation = await txnResponse.wait();
       if (confirmation.blockNumber) {

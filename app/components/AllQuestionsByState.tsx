@@ -124,8 +124,9 @@ export default function AllQuestionsByState({
   useEffect(() => {
     const ac = new AbortController();
     async function getIpfsdata(obj: ChainDataQuestion) {
+      const domain = obj.uri.includes("https") ? obj.uri : iPFSdomain + obj.uri;
       try {
-        const response = await fetch(iPFSdomain + obj.uri, {
+        const response = await fetch(domain, {
           signal: ac.signal,
         });
         const ipfsData = await response.json();
