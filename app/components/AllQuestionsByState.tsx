@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { useContractRead, useContractWrite, useContract, useProvider } from "wagmi";
 import { BigNumber } from "ethers";
-import { CSVLink } from "react-csv";
-import { Download16 } from "@carbon/icons-react";
 
 import AlertBanner from "~/components/AlertBanner";
-import MyRadioGroup from "~/components/RadioGroup";
-import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions from "~/components/ShowQuestions";
 import {
   TransactionStatus,
@@ -235,9 +231,18 @@ export default function AllQuestionsByState({
         <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
       )}
       {uxShow === true ? (
-        <div className="tw-flex tw-justify-center">
+        <div className="tw-flex tw-px-4 tw-flex-col md:tw-flex-row justify-center">
           <div className="tw-invisible tw-w-1/6"></div>
-          <div className="bg-white  tw-p-6 tw-rounded-lg tw-w-2/3">
+          <div className="md:tw-hidden">
+            <QuestionReducer
+              setSelected={setSelected}
+              selected={selected}
+              setSelectedProgram={setSelectedProgram}
+              selectedProgram={selectedProgram}
+              questions={questionArray}
+            />
+          </div>
+          <div className="bg-white  tw-p-6 tw-rounded-lg gap-2 mt-4 md:mt-0">
             <ShowQuestions
               selected={selected}
               selectedProgram={selectedProgram}
@@ -247,18 +252,14 @@ export default function AllQuestionsByState({
               buttonDisabled={buttonDisabled}
             />
           </div>
-          <div className="tw-w-1/6 tw-px-4">
-            <MyRadioGroup setSelected={setSelected} selected={selected} />
-            <DropDown setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
-            <CSVLink
-              data={filterSortCsvData(questionArray)}
-              className="blue-button tw-bg-[#21C5F2] tw-mt-8 tw-flex tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
-              filename={"question-data.csv"}
-              target="_blank"
-            >
-              <span className="tw-mr-3">Download CSV </span>
-              <Download16 />
-            </CSVLink>
+          <div className="tw-hidden md:tw-block">
+            <QuestionReducer
+              setSelected={setSelected}
+              selected={selected}
+              setSelectedProgram={setSelectedProgram}
+              selectedProgram={selectedProgram}
+              questions={questionArray}
+            />
           </div>
         </div>
       ) : (
