@@ -12,10 +12,10 @@ import {
   OFFSET,
   sortMethods,
   protocols,
-  filterSortCsvData,
 } from "~/utils/helpers";
 
 import type { QuestionData, ChainDataQuestion } from "~/utils/types";
+import QuestionControls from "./QuestionControls";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -234,7 +234,7 @@ export default function AllQuestionsByState({
         <div className="tw-flex tw-px-4 tw-flex-col md:tw-flex-row justify-center">
           <div className="tw-invisible tw-w-1/6"></div>
           <div className="md:tw-hidden">
-            <QuestionReducer
+            <QuestionControls
               setSelected={setSelected}
               selected={selected}
               setSelectedProgram={setSelectedProgram}
@@ -253,7 +253,7 @@ export default function AllQuestionsByState({
             />
           </div>
           <div className="tw-hidden md:tw-block">
-            <QuestionReducer
+            <QuestionControls
               setSelected={setSelected}
               selected={selected}
               setSelectedProgram={setSelectedProgram}
