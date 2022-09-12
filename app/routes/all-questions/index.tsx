@@ -65,10 +65,6 @@ export default function Index() {
     // console.log("chainName", chainName?.toLowerCase(), "network", network, chainName?.toLowerCase() === network);
     return (
       <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
-        <div className="tw-bg-white tw-rounded-full tw-w-[120px] tw-h-[120px] tw-flex tw-flex-col tw-justify-center tw-mx-auto">
-          <img src="img/color-mark@2x.png" className="tw-mx-auto" alt="MetricsDAO" width="62" />
-        </div>
-        <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question List</h1>
         <AllQuestionsContainer
           // address={address}
           questionAPI={questionAPIAbiAndAddress}

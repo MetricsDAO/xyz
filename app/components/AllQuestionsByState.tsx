@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { useContractRead, useContractWrite, useContract, useProvider } from "wagmi";
 import { BigNumber } from "ethers";
-import { CSVLink } from "react-csv";
-import { Download16 } from "@carbon/icons-react";
 
 import AlertBanner from "~/components/AlertBanner";
-import MyRadioGroup from "~/components/RadioGroup";
-import DropDown from "~/components/DropDownAllQuestions";
 import ShowQuestions from "~/components/ShowQuestions";
 import {
   TransactionStatus,
@@ -16,10 +12,10 @@ import {
   OFFSET,
   sortMethods,
   protocols,
-  filterSortCsvData,
 } from "~/utils/helpers";
 
 import type { QuestionData, ChainDataQuestion } from "~/utils/types";
+import QuestionControls from "./QuestionControls";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -235,9 +231,17 @@ export default function AllQuestionsByState({
         <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
       )}
       {uxShow === true ? (
-        <div className="tw-flex tw-justify-center">
-          <div className="tw-invisible tw-w-1/6"></div>
-          <div className="bg-white  tw-p-6 tw-rounded-lg tw-w-2/3">
+        <div className="tw-flex tw-px-4 tw-flex-row justify-center tw-space-x-4">
+          <div className="tw-block tw-border tw-p-2">
+            <QuestionControls
+              setSelected={setSelected}
+              selected={selected}
+              setSelectedProgram={setSelectedProgram}
+              selectedProgram={selectedProgram}
+              questions={questionArray}
+            />
+          </div>
+          <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">
             <ShowQuestions
               selected={selected}
               selectedProgram={selectedProgram}
@@ -247,18 +251,17 @@ export default function AllQuestionsByState({
               buttonDisabled={buttonDisabled}
             />
           </div>
-          <div className="tw-w-1/6 tw-px-4">
-            <MyRadioGroup setSelected={setSelected} selected={selected} />
-            <DropDown setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
-            <CSVLink
-              data={filterSortCsvData(questionArray)}
-              className="blue-button tw-bg-[#21C5F2] tw-mt-8 tw-flex tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
-              filename={"question-data.csv"}
-              target="_blank"
-            >
-              <span className="tw-mr-3">Download CSV </span>
-              <Download16 />
-            </CSVLink>
+          <div className="tw-border tw-basis-1/4 tw-p-2">
+            <button disabled={true} className="tw-p-2"> + Create question </button>
+            <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
+            <div className="tw-p-5">
+              <p className="tw-font-bold">Be specific</p>
+              <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">tips</p>
+            </div>
+            <div className="tw-p-5">
+              <p className="tw-font-bold">Examples of good writing</p>
+              <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">examples</p>
+            </div>
           </div>
         </div>
       ) : (
