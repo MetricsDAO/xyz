@@ -1,26 +1,25 @@
 import { Checkbox32, CheckboxChecked32 } from "@carbon/icons-react";
 import { RadioGroup } from "@headlessui/react";
 import type { Dispatch, SetStateAction } from "react";
-import { sortMethods } from "~/utils/helpers";
+import { protocols, sortMethods } from "~/utils/helpers";
 
-export default function MyRadioGroup({
+export default function MultiSelect({
   setSelected,
   selected,
 }: {
   setSelected: Dispatch<SetStateAction<Record<string, string>>>;
   selected: Record<string, string>;
 }) {
-  // const [selected, setSelected] = useState(sortMethods[0])
 
   return (
     <div className="tw-mx-auto tw-w-full tw-max-w-md tw-pb-1">
       <RadioGroup value={selected} onChange={setSelected}>
-        <RadioGroup.Label className="tw-px-5 tw-py-2 tw-text-[#A3A3A3]">Sort By</RadioGroup.Label>
+        <RadioGroup.Label className="tw-px-5 tw-py-2 tw-text-[#A3A3A3]">Projects</RadioGroup.Label>
         <div>
-          {sortMethods.map((plan) => (
+          {protocols.map((plan) => (
             <RadioGroup.Option
               key={plan.name}
-              value={plan.name}
+              value={plan}
               className={`tw-bg-white tw-relative tw-flex tw-cursor-pointer tw-px-5 tw-py-2 tw-focus:outline-none`
               }
             >

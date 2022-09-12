@@ -54,7 +54,7 @@ export const PAGINATION_AMOUNT = 10;
 // TODO DO WE CHANGE
 export const sortMethods = [
   {
-    name: "Votes",
+    name: "Popular",
   },
   {
     name: "Newest",
