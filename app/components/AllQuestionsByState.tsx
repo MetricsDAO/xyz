@@ -252,10 +252,16 @@ export default function AllQuestionsByState({
             />
           </div>
           <div className="tw-border tw-basis-1/4 tw-p-2">
-            <button disabled={true}> + Create question </button>
-            <p>Bounty question writing tips</p>
-            <p>Be specific</p>
-            <p>Examples of good writing</p>
+            <button disabled={true} className="tw-p-2"> + Create question </button>
+            <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
+            <div className="tw-p-5">
+              <p className="tw-font-bold">Be specific</p>
+              <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">tips</p>
+            </div>
+            <div className="tw-p-5">
+              <p className="tw-font-bold">Examples of good writing</p>
+              <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">examples</p>
+            </div>
           </div>
         </div>
       ) : (
