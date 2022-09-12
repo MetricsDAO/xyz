@@ -43,7 +43,7 @@ export default function AllQuestionContainer({
 
   return (
     <>
-      <section className="tw-mx-auto tw-mb-7 tw-container tw-max-w-screen-xl">
+      <section className="tw-mx-auto tw-mb-7 tw-container">
         {latestTokenId && (
           <AllQuestionsByState
             questionAPI={questionAPI}

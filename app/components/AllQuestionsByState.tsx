@@ -231,9 +231,8 @@ export default function AllQuestionsByState({
         <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
       )}
       {uxShow === true ? (
-        <div className="tw-flex tw-px-4 tw-flex-col md:tw-flex-row justify-center">
-          <div className="tw-invisible tw-w-1/6"></div>
-          <div className="md:tw-hidden">
+        <div className="tw-flex tw-px-4 tw-flex-row justify-center tw-space-x-4">
+          <div className="tw-block tw-border tw-p-2">
             <QuestionControls
               setSelected={setSelected}
               selected={selected}
@@ -242,7 +241,7 @@ export default function AllQuestionsByState({
               questions={questionArray}
             />
           </div>
-          <div className="bg-white  tw-p-6 tw-rounded-lg gap-2 mt-4 md:mt-0">
+          <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">
             <ShowQuestions
               selected={selected}
               selectedProgram={selectedProgram}
@@ -252,14 +251,11 @@ export default function AllQuestionsByState({
               buttonDisabled={buttonDisabled}
             />
           </div>
-          <div className="tw-hidden md:tw-block">
-            <QuestionControls
-              setSelected={setSelected}
-              selected={selected}
-              setSelectedProgram={setSelectedProgram}
-              selectedProgram={selectedProgram}
-              questions={questionArray}
-            />
+          <div className="tw-border tw-basis-1/4 tw-p-2">
+            <button disabled={true}> + Create question </button>
+            <p>Bounty question writing tips</p>
+            <p>Be specific</p>
+            <p>Examples of good writing</p>
           </div>
         </div>
       ) : (
