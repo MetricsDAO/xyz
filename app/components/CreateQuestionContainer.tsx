@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { useContractWrite } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
 import { TransactionStatus } from "~/utils/helpers";
 import { BigNumber } from "ethers";
@@ -34,44 +34,18 @@ export default function CreateQuestion({
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
   const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
-  const [fileUrl, setFileUrl] = useState<string>("");
+  const [fileUrl, setFileUrl] = useState<string>();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
-    // With the migration to 0.6+ wagmi, they recommend preparing the transaction and
-  // estimating gas and current fees prior to calling the actual event handler for a user
-  // activating the function. However, the function needs to be called immediately pending the IPFS upload.
-  // We have a bit of an anti pattern now with this being the flow, but, even with a 2 button process for
-  // upload to ipfs -> start transaction, the usePrepareContractWrite is causing a crash. "Recklessly Unprepared"
-  // allows the call to work as it previously did but we get shamed even though it's their package that is 
-  // disfunctional: https://github.com/wagmi-dev/wagmi/discussions/880#discussioncomment-3516226
-
-  // const { config } = usePrepareContractWrite({
-  //     addressOrName: questionAPI.address,
-  //     contractInterface: questionAPI.abi,
-  //     functionName: "createQuestion",
-  //     args: [fileUrl],
-  //     // onError(err) {
-  //     //   console.error(err);
-  //     // },
-  //     // onSettled(data, error) {
-  //     //   console.log("Settled", { data, error });
-  //     //   if (error) {
-  //     //     setWriteTransactionStatus(TransactionStatus.Failed);
-  //     //   }
-  //     // },
-  //     // onSuccess(data) {
-  //     //   console.log("Success", data);
-  //     // },
-  // });
-
-  const createQuestion = useContractWrite({
-    mode: "recklesslyUnprepared",
+  const { config, isSuccess } = usePrepareContractWrite({
     addressOrName: questionAPI.address,
     contractInterface: questionAPI.abi,
     functionName: "createQuestion",
+    args: network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl],
+    enabled: Boolean(fileUrl),
     onError(err) {
       console.error(err);
     },
@@ -85,12 +59,13 @@ export default function CreateQuestion({
       console.log("Success", data);
     },
   });
+  const createQuestion = useContractWrite(config);
 
   useEffect(() => {
-    if (fileUrl) {
+    if (isSuccess) {
       askQuestion();
     }
-  }, [fileUrl]);
+  }, [isSuccess]);
 
   async function ipfsUpload() {
     const questionBodyValue = questionBody.current?.value ?? "";
@@ -132,12 +107,9 @@ export default function CreateQuestion({
     console.log("fileURl", fileUrl);
     setButtonDisabled(true);
     try {
-      const argumentsForWriteSync = network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl];
-      const txnResponse = await createQuestion.writeAsync({
-        recklesslySetUnpreparedArgs: argumentsForWriteSync,
-      });
-      const confirmation = await txnResponse.wait();
-      if (confirmation.blockNumber) {
+      const txnResponse = await createQuestion.writeAsync?.();
+      const confirmation = await txnResponse?.wait();
+      if (confirmation?.blockNumber) {
         setWriteTransactionStatus(TransactionStatus.Approved);
         if (questionBody.current) {
           questionBody.current.value = "";

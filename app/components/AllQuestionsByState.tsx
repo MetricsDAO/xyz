@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useContractRead, useContractWrite, useContract, useProvider } from "wagmi";
+import { useContractRead, useContractWrite, usePrepareContractWrite, useContract, useProvider } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AlertBanner from "~/components/AlertBanner";
@@ -41,6 +41,7 @@ export default function AllQuestionsByState({
 
   const [selectedProgram, setSelectedProgram] = useState<Record<string, string>>(protocols[0]);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+  const [questionIdToVote, setQuestionIdToVote] = useState<number>();
 
   const [getTotalVotes, setGetTotalVotes] = useState<number>(0);
 
@@ -61,11 +62,12 @@ export default function AllQuestionsByState({
 
   const prevQuestionData = usePrevious(questionData);
 
-  const upVoteQuestion = useContractWrite({
-    mode: "recklesslyUnprepared",
+  const { config, isSuccess } = usePrepareContractWrite({
     addressOrName: questionAPI.address,
     contractInterface: questionAPI.abi,
     functionName: "upvoteQuestion",
+    args: questionIdToVote ? [BigNumber.from(questionIdToVote)] : [],
+    enabled: Boolean(questionIdToVote),
     onError(err) {
       console.error(err);
     },
@@ -79,6 +81,8 @@ export default function AllQuestionsByState({
       console.log("Success", data);
     },
   });
+
+  const upVoteQuestion = useContractWrite(config);
 
   const questionAPIContract = useContract({
     addressOrName: questionStateController.address,
@@ -192,21 +196,23 @@ export default function AllQuestionsByState({
     }
   }, [getTotalVotes, questionAPIContract]);
 
-  async function initUpVoteQuestion(questionId: number) {
+  useEffect(() => {
+    if (isSuccess) {
+      initUpVoteQuestion();
+    }
+  }, [isSuccess])
+
+  async function initUpVoteQuestion() {
     setWriteTransactionStatus(TransactionStatus.Pending);
     setAlertContainerStatus(true);
     setButtonDisabled(true);
     try {
-      const approvetxnResponse = await upVoteQuestion.writeAsync({
-        recklesslySetUnpreparedArgs: [BigNumber.from(questionId)],
-      });
-      console.log("approvetxnResponse", approvetxnResponse);
-      const approveconfirmation = await approvetxnResponse.wait();
-      console.log("approveconfirmation", approveconfirmation);
-      if (approveconfirmation.blockNumber) {
+      const approvetxnResponse = await upVoteQuestion.writeAsync?.();
+      const approveconfirmation = await approvetxnResponse?.wait();
+      if (approveconfirmation?.blockNumber) {
         setWriteTransactionStatus(TransactionStatus.Approved);
         setButtonDisabled(false);
-        setGetTotalVotes(questionId);
+        setGetTotalVotes(questionIdToVote);
         setTimeout(async () => {
           setAlertContainerStatus(false);
         }, 9000);
@@ -239,7 +245,7 @@ export default function AllQuestionsByState({
               selected={selected}
               selectedProgram={selectedProgram}
               questions={questionArray}
-              initUpVoteQuestion={initUpVoteQuestion}
+              setQuestionIdToVote={setQuestionIdToVote}
               networkMatchesWallet={networkMatchesWallet}
               buttonDisabled={buttonDisabled}
             />
