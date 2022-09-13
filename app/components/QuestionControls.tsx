@@ -3,7 +3,7 @@ import MyRadioGroup from "~/components/RadioGroup";
 import DropDown from "~/components/DropDownAllQuestions";
 import { Download16 } from "@carbon/icons-react";
 import { filterSortCsvData } from "~/utils/helpers";
-import { QuestionData } from "~/utils/types";
+import type { QuestionData } from "~/utils/types";
 
 export default function QuestionControls({
   setSelected,

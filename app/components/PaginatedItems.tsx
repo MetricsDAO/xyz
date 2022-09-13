@@ -13,7 +13,7 @@ export default function PaginatedItems({
   name,
 }: {
   questions: QuestionData[];
-  setQuestionIdToVote: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
   itemsPerPage: number;
@@ -62,7 +62,7 @@ function Items({
   buttonDisabled,
 }: {
   currentItems: QuestionData[];
-  setQuestionIdToVote: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
 }) {
@@ -91,7 +91,7 @@ export function FilteredQuestions({
   buttonDisabled,
 }: {
   question: QuestionData;
-  setQuestionIdToVote: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
 }) {

@@ -12,9 +12,9 @@ export default function Wrapper({ children, network }: { children?: ReactElement
 
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { address, connector, isConnecting, isDisconnected } = useAccount();
+  const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
-  const { chain, chains } = useNetwork();
+  const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function Wrapper({ children, network }: { children?: ReactElement
   }
 
   const chainName = chain?.name;
-  const chainId = chains[0]?.id;
+  const chainId = chain?.id;
   const activeConnectorName = connector?.name;
 
   if (!window.Buffer) {

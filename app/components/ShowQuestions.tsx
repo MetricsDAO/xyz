@@ -15,7 +15,7 @@ export default function ShowQuestions({
   buttonDisabled,
 }: {
   questions: QuestionData[];
-  setQuestionIdToVote: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   selected: Record<string, string>;
   selectedProgram: Record<string, string>;
   networkMatchesWallet: boolean;

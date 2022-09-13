@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useContractRead, useContractWrite } from "wagmi";
 import { BigNumber, utils } from "ethers";
 
-import { usePrevious, TransactionStatus } from "~/utils/helpers";
+import { TransactionStatus } from "~/utils/helpers";
 import AlertBanner from "~/components/AlertBanner";
 
 export default function ShowMetric({
@@ -26,7 +26,7 @@ export default function ShowMetric({
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(
     TransactionStatus.Pending
   );
-  const preWriteTransaction = usePrevious(writeTransactionStatus);
+  // const preWriteTransaction = usePrevious(writeTransactionStatus);
 
   const { data: pendingRewards } = useContractRead({
     addressOrName: topChef.address,

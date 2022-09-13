@@ -82,7 +82,7 @@ export default function AllQuestionsByState({
     },
   });
 
-  const upVoteQuestion = useContractWrite(config);
+  const { writeAsync } = useContractWrite(config);
 
   const questionAPIContract = useContract({
     addressOrName: questionStateController.address,
@@ -197,32 +197,33 @@ export default function AllQuestionsByState({
   }, [getTotalVotes, questionAPIContract]);
 
   useEffect(() => {
-    if (isSuccess) {
-      initUpVoteQuestion();
-    }
-  }, [isSuccess])
+    async function initUpVoteQuestion() {
+      if (!isSuccess || !questionIdToVote) return
 
-  async function initUpVoteQuestion() {
-    setWriteTransactionStatus(TransactionStatus.Pending);
-    setAlertContainerStatus(true);
-    setButtonDisabled(true);
-    try {
-      const approvetxnResponse = await upVoteQuestion.writeAsync?.();
-      const approveconfirmation = await approvetxnResponse?.wait();
-      if (approveconfirmation?.blockNumber) {
-        setWriteTransactionStatus(TransactionStatus.Approved);
+      setWriteTransactionStatus(TransactionStatus.Pending);
+      setAlertContainerStatus(true);
+      setButtonDisabled(true);
+      try {
+        const approvetxnResponse = await writeAsync?.();
+        const approveconfirmation = await approvetxnResponse?.wait();
+        if (approveconfirmation?.blockNumber) {
+          setWriteTransactionStatus(TransactionStatus.Approved);
+          setButtonDisabled(false);
+          setGetTotalVotes(questionIdToVote);
+          setTimeout(async () => {
+            setAlertContainerStatus(false);
+          }, 9000);
+        }
+      } catch (error) {
+        console.error("ERRR", error);
+        setWriteTransactionStatus(TransactionStatus.Failed);
         setButtonDisabled(false);
-        setGetTotalVotes(questionIdToVote);
-        setTimeout(async () => {
-          setAlertContainerStatus(false);
-        }, 9000);
       }
-    } catch (error) {
-      console.error("ERRR", error);
-      setWriteTransactionStatus(TransactionStatus.Failed);
-      setButtonDisabled(false);
     }
-  }
+
+    initUpVoteQuestion();
+  }, [isSuccess, writeAsync, questionIdToVote])
+
 
   return (
     <>

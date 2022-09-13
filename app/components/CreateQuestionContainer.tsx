@@ -59,13 +59,40 @@ export default function CreateQuestion({
       console.log("Success", data);
     },
   });
-  const createQuestion = useContractWrite(config);
+  const { writeAsync } = useContractWrite(config);
 
   useEffect(() => {
+    async function askQuestion() {
+      console.log("fileURl", fileUrl);
+      setButtonDisabled(true);
+      try {
+        const txnResponse = await writeAsync?.();
+        const confirmation = await txnResponse?.wait();
+        if (confirmation?.blockNumber) {
+          setWriteTransactionStatus(TransactionStatus.Approved);
+          if (questionBody.current) {
+            questionBody.current.value = "";
+          }
+          if (questionTitle.current) {
+            questionTitle.current.value = "";
+          }
+          setSelectedProgram(protocols[0]);
+          setButtonDisabled(false);
+          setTimeout(() => {
+            setAlertContainerStatus(false);
+          }, 9000);
+        }
+      } catch (error) {
+        console.error("ERRRR", error);
+        setButtonDisabled(false);
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    }
+
     if (isSuccess) {
       askQuestion();
     }
-  }, [isSuccess]);
+  }, [isSuccess, writeAsync, fileUrl]);
 
   async function ipfsUpload() {
     const questionBodyValue = questionBody.current?.value ?? "";
@@ -101,32 +128,6 @@ export default function CreateQuestion({
     } catch (error) {
       console.error("err!", error);
       setFileUrl("");
-    }
-  }
-  async function askQuestion() {
-    console.log("fileURl", fileUrl);
-    setButtonDisabled(true);
-    try {
-      const txnResponse = await createQuestion.writeAsync?.();
-      const confirmation = await txnResponse?.wait();
-      if (confirmation?.blockNumber) {
-        setWriteTransactionStatus(TransactionStatus.Approved);
-        if (questionBody.current) {
-          questionBody.current.value = "";
-        }
-        if (questionTitle.current) {
-          questionTitle.current.value = "";
-        }
-        setSelectedProgram(protocols[0]);
-        setButtonDisabled(false);
-        setTimeout(() => {
-          setAlertContainerStatus(false);
-        }, 9000);
-      }
-    } catch (error) {
-      console.error("ERRRR", error);
-      setButtonDisabled(false);
-      setWriteTransactionStatus(TransactionStatus.Failed);
     }
   }
 
