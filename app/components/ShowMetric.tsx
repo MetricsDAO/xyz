@@ -28,44 +28,37 @@ export default function ShowMetric({
   );
   const preWriteTransaction = usePrevious(writeTransactionStatus);
 
-  const { data: pendingRewards } = useContractRead(
-    {
-      addressOrName: topChef.address,
-      contractInterface: topChef.abi,
+  const { data: pendingRewards } = useContractRead({
+    addressOrName: topChef.address,
+    contractInterface: topChef.abi,
+    functionName: "viewPendingRewards",
+    args: [indexOfAllocation],
+    enabled: true, // prevAddress !== address || preWriteTransaction !== writeTransactionStatus,
+    watch: true,
+    onError: (err) => {
+      console.error(err);
     },
-    "viewPendingRewards",
-    {
-      args: [indexOfAllocation],
-      enabled: true, // prevAddress !== address || preWriteTransaction !== writeTransactionStatus,
-      watch: true,
-      onError: (err) => {
-        console.error(err);
-      },
-    }
-  );
+  });
 
-  const claim = useContractWrite(
-    {
-      addressOrName: topChef.address,
-      contractInterface: topChef.abi,
+  const claim = useContractWrite({
+    mode: "recklesslyUnprepared",
+    addressOrName: topChef.address,
+    contractInterface: topChef.abi,
+    functionName: "claim",
+    args: [indexOfAllocation],
+    onError: (err) => {
+      console.error(err);
     },
-    "claim",
-    {
-      args: [indexOfAllocation],
-      onError: (err) => {
-        console.error(err);
-      },
-      onSettled(data, error) {
-        console.log("Settled", { data, error });
-        if (error) {
-          setWriteTransactionStatus(TransactionStatus.Failed);
-        }
-      },
-      onSuccess(data) {
-        console.log("Success", data);
-      },
-    }
-  );
+    onSettled(data, error) {
+      console.log("Settled", { data, error });
+      if (error) {
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    },
+    onSuccess(data) {
+      console.log("Success", data);
+    },
+  });
 
   useEffect(() => {
     if (BigNumber.isBigNumber(pendingRewards)) {

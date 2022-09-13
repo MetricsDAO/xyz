@@ -40,27 +40,51 @@ export default function CreateQuestion({
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
-  const createQuestion = useContractWrite(
-    {
-      addressOrName: questionAPI.address,
-      contractInterface: questionAPI.abi,
+    // With the migration to 0.6+ wagmi, they recommend preparing the transaction and
+  // estimating gas and current fees prior to calling the actual event handler for a user
+  // activating the function. However, the function needs to be called immediately pending the IPFS upload.
+  // We have a bit of an anti pattern now with this being the flow, but, even with a 2 button process for
+  // upload to ipfs -> start transaction, the usePrepareContractWrite is causing a crash. "Recklessly Unprepared"
+  // allows the call to work as it previously did but we get shamed even though it's their package that is 
+  // disfunctional: https://github.com/wagmi-dev/wagmi/discussions/880#discussioncomment-3516226
+
+  // const { config } = usePrepareContractWrite({
+  //     addressOrName: questionAPI.address,
+  //     contractInterface: questionAPI.abi,
+  //     functionName: "createQuestion",
+  //     args: [fileUrl],
+  //     // onError(err) {
+  //     //   console.error(err);
+  //     // },
+  //     // onSettled(data, error) {
+  //     //   console.log("Settled", { data, error });
+  //     //   if (error) {
+  //     //     setWriteTransactionStatus(TransactionStatus.Failed);
+  //     //   }
+  //     // },
+  //     // onSuccess(data) {
+  //     //   console.log("Success", data);
+  //     // },
+  // });
+
+  const createQuestion = useContractWrite({
+    mode: "recklesslyUnprepared",
+    addressOrName: questionAPI.address,
+    contractInterface: questionAPI.abi,
+    functionName: "createQuestion",
+    onError(err) {
+      console.error(err);
     },
-    "createQuestion",
-    {
-      onError: (err) => {
-        console.error(err);
-      },
-      onSettled(data, error) {
-        console.log("Settled", { data, error });
-        if (error) {
-          setWriteTransactionStatus(TransactionStatus.Failed);
-        }
-      },
-      onSuccess(data) {
-        console.log("Success", data);
-      },
-    }
-  );
+    onSettled(data, error) {
+      console.log("Settled", { data, error });
+      if (error) {
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    },
+    onSuccess(data) {
+      console.log("Success", data);
+    },
+  });
 
   useEffect(() => {
     if (fileUrl) {
@@ -110,7 +134,7 @@ export default function CreateQuestion({
     try {
       const argumentsForWriteSync = network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl];
       const txnResponse = await createQuestion.writeAsync({
-        args: argumentsForWriteSync,
+        recklesslySetUnpreparedArgs: argumentsForWriteSync,
       });
       const confirmation = await txnResponse.wait();
       if (confirmation.blockNumber) {

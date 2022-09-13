@@ -16,9 +16,9 @@ export default function WalletProvider({ children, network }: { children: ReactE
   // TODO configure for POLYGON
   const infuraId = "54fcc811bac44f99b84a04a4a3e2f998";
   if (network === "ropsten") {
-    configureChainObj = configureChains(defaultChains, [infuraProvider({ infuraId }), publicProvider()]);
+    configureChainObj = configureChains(defaultChains, [infuraProvider({ apiKey: infuraId }), publicProvider()]);
   } else if (network === "polygon") {
-    configureChainObj = configureChains([chain.polygon], [infuraProvider({ infuraId }), publicProvider()]);
+    configureChainObj = configureChains([chain.polygon], [infuraProvider({ apiKey: infuraId }), publicProvider()]);
   } else if (network === "localhost") {
     configureChainObj = configureChains([chain.hardhat, chain.localhost], [publicProvider()]);
   } else {
@@ -34,19 +34,20 @@ export default function WalletProvider({ children, network }: { children: ReactE
       new MetaMaskConnector({ chains }),
       // TODO implement COINBASE WALLET
       new CoinbaseWalletConnector({
-        chains,
+        chains: chains,
         options: {
+          jsonRpcUrl: `http://127.0.0.1:8545/`,
           appName: "question API",
         },
       }),
       new WalletConnectConnector({
-        chains,
+        chains: chains,
         options: {
           qrcode: true,
         },
       }),
       new InjectedConnector({
-        chains,
+        chains: chains,
         options: {
           name: "Injected",
           shimDisconnect: true,

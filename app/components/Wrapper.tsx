@@ -1,7 +1,7 @@
 import { useLocation } from "@remix-run/react";
 import type { ReactElement } from "react";
 import { useEffect, useState, cloneElement, isValidElement } from "react";
-import { useAccount, useDisconnect, useNetwork, useConnect } from "wagmi";
+import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { Buffer } from "buffer";
 import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
@@ -12,17 +12,16 @@ export default function Wrapper({ children, network }: { children?: ReactElement
 
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { data: account } = useAccount();
+  const { address, connector, isConnecting, isDisconnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { activeChain, chains, switchNetwork } = useNetwork();
-
-  const { activeConnector } = useConnect();
+  const { chain, chains } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
 
   useEffect(() => {
-    if (account?.address && isOpen) {
+    if (address && isOpen) {
       setIsOpen(false);
     }
-  }, [account?.address, isOpen]);
+  }, [address, isOpen]);
 
   // TODO REFACTOR
   if (location.pathname === "/staking") {
@@ -39,16 +38,15 @@ export default function Wrapper({ children, network }: { children?: ReactElement
     linkText = "Question Creation";
   }
 
-  const chainName = activeChain?.name;
+  const chainName = chain?.name;
   const chainId = chains[0]?.id;
-  const address = account?.address;
-  const activeConnectorName = activeConnector?.name;
+  const activeConnectorName = connector?.name;
 
   if (!window.Buffer) {
     window.Buffer = Buffer;
   }
 
-  if (address && !activeConnector) {
+  if (address && !connector) {
     return null;
   }
 

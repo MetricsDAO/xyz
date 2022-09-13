@@ -47,45 +47,38 @@ export default function AllQuestionsByState({
   const prevTokenId = usePrevious(latestQuestion);
   const provider = useProvider();
 
-  const { data: questionData } = useContractRead(
-    {
-      addressOrName: questionStateController.address,
-      contractInterface: questionStateController.abi,
+  const { data: questionData } = useContractRead({
+    addressOrName: questionStateController.address,
+    contractInterface: questionStateController.abi,
+    functionName: "getQuestionsByState",
+    args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
+    enabled: true,
+    cacheOnBlock: true,
+    onError: (err) => {
+      console.error(err);
     },
-    "getQuestionsByState",
-    {
-      args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
-      enabled: true,
-      cacheOnBlock: true,
-      onError: (err) => {
-        console.error(err);
-      },
-    }
-  );
+  });
 
   const prevQuestionData = usePrevious(questionData);
 
-  const upVoteQuestion = useContractWrite(
-    {
-      addressOrName: questionAPI.address,
-      contractInterface: questionAPI.abi,
+  const upVoteQuestion = useContractWrite({
+    mode: "recklesslyUnprepared",
+    addressOrName: questionAPI.address,
+    contractInterface: questionAPI.abi,
+    functionName: "upvoteQuestion",
+    onError(err) {
+      console.error(err);
     },
-    "upvoteQuestion",
-    {
-      onError: (err) => {
-        console.error(err);
-      },
-      onSettled(data, error) {
-        console.log("Settled", { data, error });
-        if (error) {
-          setWriteTransactionStatus(TransactionStatus.Failed);
-        }
-      },
-      onSuccess(data) {
-        console.log("Success", data);
-      },
-    }
-  );
+    onSettled(data, error) {
+      console.log("Settled", { data, error });
+      if (error) {
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    },
+    onSuccess(data) {
+      console.log("Success", data);
+    },
+  });
 
   const questionAPIContract = useContract({
     addressOrName: questionStateController.address,
@@ -205,7 +198,7 @@ export default function AllQuestionsByState({
     setButtonDisabled(true);
     try {
       const approvetxnResponse = await upVoteQuestion.writeAsync({
-        args: [BigNumber.from(questionId)],
+        recklesslySetUnpreparedArgs: [BigNumber.from(questionId)],
       });
       console.log("approvetxnResponse", approvetxnResponse);
       const approveconfirmation = await approvetxnResponse.wait();
