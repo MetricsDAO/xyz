@@ -1,0 +1,848 @@
+{
+  "address": "0xf4681fFd2072657413F1950D7F55FdE96868F415",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "bountyQuestion",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "questionStateController",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "claimController",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "costController",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "CannotVoteForOwnQuestion",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ClaimsNotOpen",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "DoesNotHold",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "FunctionIsLocked",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "NotAtBenchmark",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "challengeCreator",
+          "type": "address"
+        }
+      ],
+      "name": "ChallengeCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "answerer",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionAnswered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "claimant",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "creator",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "disqualifier",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionDisqualified",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "publisher",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionPublished",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionUnvoted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "voter",
+          "type": "address"
+        }
+      ],
+      "name": "QuestionUpvoted",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "PROGRAM_MANAGER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "nft",
+          "type": "address"
+        }
+      ],
+      "name": "addHolderRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "answerURL",
+          "type": "string"
+        }
+      ],
+      "name": "answerQuestion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "claimQuestion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "uri",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "claimLimit",
+          "type": "uint256"
+        }
+      ],
+      "name": "createChallenge",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "uri",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "claimLimit",
+          "type": "uint256"
+        }
+      ],
+      "name": "createQuestion",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "disqualifyQuestion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "publishQuestion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newQuestion",
+          "type": "address"
+        }
+      ],
+      "name": "setClaimController",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newCost",
+          "type": "address"
+        }
+      ],
+      "name": "setCostController",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newQuestion",
+          "type": "address"
+        }
+      ],
+      "name": "setQuestionProxy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newQuestion",
+          "type": "address"
+        }
+      ],
+      "name": "setQuestionStateController",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "toggleLock",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "unvoteQuestion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "questionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "upvoteQuestion",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xd4d82d895b74b75304366f265bd6044eb94808826846af049b7aac6a88f607c3",
+  "receipt": {
+    "to": null,
+    "from": "0x2d11F99f9884e257A1c9ACcc8A4Bea16FC6dA7AA",
+    "contractAddress": "0xf4681fFd2072657413F1950D7F55FdE96868F415",
+    "transactionIndex": 120,
+    "gasUsed": "2077456",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000800010000000000000000000000000000000000000000000008000000000000000080000000000000000000000000000000000000000800001000004000000000100000000000000000000020000000000000000000800000000000000000080000000000000400000000000000000000000000000000000000000000000000000000000800000200000000001000000000000800000000000000000000000000000004000004000000000000000000001000000000000000000000400000000100000000020000000000000000000000000000000000000000000000000008000000000100000",
+    "blockHash": "0xd8426930e9505b8d8b7155b53f1602f9640844e921b7bdd86d33aa51a1dbaa87",
+    "transactionHash": "0xd4d82d895b74b75304366f265bd6044eb94808826846af049b7aac6a88f607c3",
+    "logs": [
+      {
+        "transactionIndex": 120,
+        "blockNumber": 31552623,
+        "transactionHash": "0xd4d82d895b74b75304366f265bd6044eb94808826846af049b7aac6a88f607c3",
+        "address": "0xf4681fFd2072657413F1950D7F55FdE96868F415",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000002d11f99f9884e257a1c9accc8a4bea16fc6da7aa"
+        ],
+        "data": "0x",
+        "logIndex": 606,
+        "blockHash": "0xd8426930e9505b8d8b7155b53f1602f9640844e921b7bdd86d33aa51a1dbaa87"
+      },
+      {
+        "transactionIndex": 120,
+        "blockNumber": 31552623,
+        "transactionHash": "0xd4d82d895b74b75304366f265bd6044eb94808826846af049b7aac6a88f607c3",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x0000000000000000000000002d11f99f9884e257a1c9accc8a4bea16fc6da7aa",
+          "0x000000000000000000000000c6869257205e20c2a43cb31345db534aecb49f6e"
+        ],
+        "data": "0x000000000000000000000000000000000000000000000000010ad1986c1b1af0000000000000000000000000000000000000000000000002369c46fa4fcb99f100000000000000000000000000000000000000000000183426495d2794442d5c00000000000000000000000000000000000000000000000235917561e3b07f0100000000000000000000000000000000000000000000183427542ec0005f484c",
+        "logIndex": 607,
+        "blockHash": "0xd8426930e9505b8d8b7155b53f1602f9640844e921b7bdd86d33aa51a1dbaa87"
+      }
+    ],
+    "blockNumber": 31552623,
+    "cumulativeGasUsed": "26216121",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xBBBC7a66F884513ab88560eB4C1F0734AAA0f05b",
+    "0x90EA3EC3deb32DCbCfd87d81E358011185d2998e",
+    "0xE64AedB13b71033Ed6AeeA6f200BC963d47A31da",
+    "0xCBab9E2043cdE72Ad8BfDf45413eCce7623d6B74"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "23a5c42ffdc6fce9090df76d82673573",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"bountyQuestion\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"questionStateController\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"claimController\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"costController\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"CannotVoteForOwnQuestion\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ClaimsNotOpen\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"DoesNotHold\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"FunctionIsLocked\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotAtBenchmark\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"challengeCreator\",\"type\":\"address\"}],\"name\":\"ChallengeCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"answerer\",\"type\":\"address\"}],\"name\":\"QuestionAnswered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"claimant\",\"type\":\"address\"}],\"name\":\"QuestionClaimed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"creator\",\"type\":\"address\"}],\"name\":\"QuestionCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"disqualifier\",\"type\":\"address\"}],\"name\":\"QuestionDisqualified\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"publisher\",\"type\":\"address\"}],\"name\":\"QuestionPublished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"voter\",\"type\":\"address\"}],\"name\":\"QuestionUnvoted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"voter\",\"type\":\"address\"}],\"name\":\"QuestionUpvoted\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"PROGRAM_MANAGER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"nft\",\"type\":\"address\"}],\"name\":\"addHolderRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"answerURL\",\"type\":\"string\"}],\"name\":\"answerQuestion\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"}],\"name\":\"claimQuestion\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"uri\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"claimLimit\",\"type\":\"uint256\"}],\"name\":\"createChallenge\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"uri\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"claimLimit\",\"type\":\"uint256\"}],\"name\":\"createQuestion\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"}],\"name\":\"disqualifyQuestion\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"}],\"name\":\"publishQuestion\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newQuestion\",\"type\":\"address\"}],\"name\":\"setClaimController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newCost\",\"type\":\"address\"}],\"name\":\"setCostController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newQuestion\",\"type\":\"address\"}],\"name\":\"setQuestionProxy\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newQuestion\",\"type\":\"address\"}],\"name\":\"setQuestionStateController\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"toggleLock\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"}],\"name\":\"unvoteQuestion\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"questionId\",\"type\":\"uint256\"}],\"name\":\"upvoteQuestion\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"MetricsDAO team\",\"kind\":\"dev\",\"methods\":{\"answerQuestion(uint256,string)\":{\"params\":{\"answerURL\":\"THE IPFS hash of the answer.\",\"questionId\":\"The questionId of the question to answer.\"}},\"claimQuestion(uint256)\":{\"params\":{\"questionId\":\"The questionId of the question to disqualify\"}},\"constructor\":{\"params\":{\"bountyQuestion\":\"BountyQuestion contract instance.\",\"claimController\":\"The claim controller address.\",\"costController\":\"The action cost controller address.\",\"questionStateController\":\"The question state controller address.\"}},\"createChallenge(string,uint256)\":{\"params\":{\"claimLimit\":\"The limit for the amount of people that can claim the challenge\",\"uri\":\"The IPFS hash of the challenge\"},\"returns\":{\"_0\":\"questionId The question id\"}},\"createQuestion(string,uint256)\":{\"params\":{\"claimLimit\":\"The limit for the amount of people that can claim the question.\",\"uri\":\"The IPFS hash of the question.\"},\"returns\":{\"_0\":\"The question id\"}},\"disqualifyQuestion(uint256)\":{\"params\":{\"questionId\":\"The questionId of the question to disqualify.\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"publishQuestion(uint256)\":{\"params\":{\"questionId\":\"The questionId of the question to publish\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"setClaimController(address)\":{\"params\":{\"newQuestion\":\"The address of the new ClaimController contract.\"}},\"setCostController(address)\":{\"params\":{\"newCost\":\"The address of the new CostController contract.\"}},\"setQuestionProxy(address)\":{\"params\":{\"newQuestion\":\"The address of the new BountyQuestion contract.\"}},\"setQuestionStateController(address)\":{\"params\":{\"newQuestion\":\"The address of the new BountyQuestion contract.\"}},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"},\"unvoteQuestion(uint256)\":{\"params\":{\"questionId\":\"The questionId of the question to upvote.\"}},\"upvoteQuestion(uint256)\":{\"params\":{\"questionId\":\"The questionId of the question to upvote.\"}}},\"title\":\"MetricsDAO question API\",\"version\":1},\"userdoc\":{\"errors\":{\"CannotVoteForOwnQuestion()\":[{\"notice\":\"Throw if user tries to vote for own question\"}],\"ClaimsNotOpen()\":[{\"notice\":\"Throw if analysts tries to claim a question that is not published.\"}],\"InvalidAddress()\":[{\"notice\":\"Throw if address is equal to address(0).\"}],\"NotAtBenchmark()\":[{\"notice\":\"Throw if a question has not reached the benchmark for being published (yet).\"}]},\"events\":{\"ChallengeCreated(uint256,address)\":{\"notice\":\"Emitted when a challenge is created.\"},\"QuestionAnswered(uint256,address)\":{\"notice\":\"Emitted when a question is answered.\"},\"QuestionClaimed(uint256,address)\":{\"notice\":\"Emitted when a question is claimed.\"},\"QuestionCreated(uint256,address)\":{\"notice\":\"Emitted when a question is created.\"},\"QuestionDisqualified(uint256,address)\":{\"notice\":\"Emitted when a question is disqualified.\"},\"QuestionPublished(uint256,address)\":{\"notice\":\"Emitted when a question is published.\"},\"QuestionUnvoted(uint256,address)\":{\"notice\":\"Emitted when a question is unvoted.\"},\"QuestionUpvoted(uint256,address)\":{\"notice\":\"Emitted when a question is upvoted.\"}},\"kind\":\"user\",\"methods\":{\"answerQuestion(uint256,string)\":{\"notice\":\"Allows a claimed question to be answered by an analyst.\"},\"claimQuestion(uint256)\":{\"notice\":\"Allows anm analyst to claim a question and submit an answer before the dealine.\"},\"constructor\":{\"notice\":\"Constructor sets the question state controller, claim controller, and action cost controller.\"},\"createChallenge(string,uint256)\":{\"notice\":\"Directly creates a challenge, this is an optional feature for program managers that would like to create challenges directly (skipping the voting stage).\"},\"createQuestion(string,uint256)\":{\"notice\":\"Creates a question.\"},\"disqualifyQuestion(uint256)\":{\"notice\":\"Allows the owner to disqualify a question.\"},\"publishQuestion(uint256)\":{\"notice\":\"Publishes a question and allows it to be claimed and receive answers.\"},\"setClaimController(address)\":{\"notice\":\"Allows the owner to set the ClaimController contract address.\"},\"setCostController(address)\":{\"notice\":\"Allows the owner to set the CostController contract address.\"},\"setQuestionProxy(address)\":{\"notice\":\"Allows the owner to set the BountyQuestion contract address.\"},\"setQuestionStateController(address)\":{\"notice\":\"Allows the owner to set the QuestionStateController contract address.\"},\"unvoteQuestion(uint256)\":{\"notice\":\"Unvotes a question.\"},\"upvoteQuestion(uint256)\":{\"notice\":\"Upvotes a question.\"}},\"notice\":\"This contract is an API for MetricsDAO that allows for interacting with questions & challenges.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/contracts/Protocol/QuestionAPI.sol\":\"QuestionAPI\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n        _;\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby removing any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0x24e0364e503a9bbde94c715d26573a76f14cd2a202d45f96f52134ab806b67b9\",\"license\":\"MIT\"},\"@openzeppelin/contracts/interfaces/IERC721.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (interfaces/IERC721.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../token/ERC721/IERC721.sol\\\";\\n\",\"keccak256\":\"0xaf297d12d8d4a57fe01a70f0ef38908f208e3faedc577056d0b728fa2f3ccf0c\",\"license\":\"MIT\"},\"@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (token/ERC721/IERC721.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../../utils/introspection/IERC165.sol\\\";\\n\\n/**\\n * @dev Required interface of an ERC721 compliant contract.\\n */\\ninterface IERC721 is IERC165 {\\n    /**\\n     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);\\n\\n    /**\\n     * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.\\n     */\\n    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);\\n\\n    /**\\n     * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.\\n     */\\n    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);\\n\\n    /**\\n     * @dev Returns the number of tokens in ``owner``'s account.\\n     */\\n    function balanceOf(address owner) external view returns (uint256 balance);\\n\\n    /**\\n     * @dev Returns the owner of the `tokenId` token.\\n     *\\n     * Requirements:\\n     *\\n     * - `tokenId` must exist.\\n     */\\n    function ownerOf(uint256 tokenId) external view returns (address owner);\\n\\n    /**\\n     * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients\\n     * are aware of the ERC721 protocol to prevent tokens from being forever locked.\\n     *\\n     * Requirements:\\n     *\\n     * - `from` cannot be the zero address.\\n     * - `to` cannot be the zero address.\\n     * - `tokenId` token must exist and be owned by `from`.\\n     * - If the caller is not `from`, it must be have been allowed to move this token by either {approve} or {setApprovalForAll}.\\n     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId\\n    ) external;\\n\\n    /**\\n     * @dev Transfers `tokenId` token from `from` to `to`.\\n     *\\n     * WARNING: Usage of this method is discouraged, use {safeTransferFrom} whenever possible.\\n     *\\n     * Requirements:\\n     *\\n     * - `from` cannot be the zero address.\\n     * - `to` cannot be the zero address.\\n     * - `tokenId` token must be owned by `from`.\\n     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId\\n    ) external;\\n\\n    /**\\n     * @dev Gives permission to `to` to transfer `tokenId` token to another account.\\n     * The approval is cleared when the token is transferred.\\n     *\\n     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.\\n     *\\n     * Requirements:\\n     *\\n     * - The caller must own the token or be an approved operator.\\n     * - `tokenId` must exist.\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address to, uint256 tokenId) external;\\n\\n    /**\\n     * @dev Returns the account approved for `tokenId` token.\\n     *\\n     * Requirements:\\n     *\\n     * - `tokenId` must exist.\\n     */\\n    function getApproved(uint256 tokenId) external view returns (address operator);\\n\\n    /**\\n     * @dev Approve or remove `operator` as an operator for the caller.\\n     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.\\n     *\\n     * Requirements:\\n     *\\n     * - The `operator` cannot be the caller.\\n     *\\n     * Emits an {ApprovalForAll} event.\\n     */\\n    function setApprovalForAll(address operator, bool _approved) external;\\n\\n    /**\\n     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.\\n     *\\n     * See {setApprovalForAll}\\n     */\\n    function isApprovedForAll(address owner, address operator) external view returns (bool);\\n\\n    /**\\n     * @dev Safely transfers `tokenId` token from `from` to `to`.\\n     *\\n     * Requirements:\\n     *\\n     * - `from` cannot be the zero address.\\n     * - `to` cannot be the zero address.\\n     * - `tokenId` token must exist and be owned by `from`.\\n     * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.\\n     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function safeTransferFrom(\\n        address from,\\n        address to,\\n        uint256 tokenId,\\n        bytes calldata data\\n    ) external;\\n}\\n\",\"keccak256\":\"0x516a22876c1fab47f49b1bc22b4614491cd05338af8bd2e7b382da090a079990\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Counters.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Counters.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @title Counters\\n * @author Matt Condon (@shrugs)\\n * @dev Provides counters that can only be incremented, decremented or reset. This can be used e.g. to track the number\\n * of elements in a mapping, issuing ERC721 ids, or counting request ids.\\n *\\n * Include with `using Counters for Counters.Counter;`\\n */\\nlibrary Counters {\\n    struct Counter {\\n        // This variable should never be directly accessed by users of the library: interactions must be restricted to\\n        // the library's function. As of Solidity v0.5.2, this cannot be enforced, though there is a proposal to add\\n        // this feature: see https://github.com/ethereum/solidity/issues/4637\\n        uint256 _value; // default: 0\\n    }\\n\\n    function current(Counter storage counter) internal view returns (uint256) {\\n        return counter._value;\\n    }\\n\\n    function increment(Counter storage counter) internal {\\n        unchecked {\\n            counter._value += 1;\\n        }\\n    }\\n\\n    function decrement(Counter storage counter) internal {\\n        uint256 value = counter._value;\\n        require(value > 0, \\\"Counter: decrement overflow\\\");\\n        unchecked {\\n            counter._value = value - 1;\\n        }\\n    }\\n\\n    function reset(Counter storage counter) internal {\\n        counter._value = 0;\\n    }\\n}\\n\",\"keccak256\":\"0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC165 standard, as defined in the\\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\\n *\\n * Implementers can declare support of contract interfaces, which can then be\\n * queried by others ({ERC165Checker}).\\n *\\n * For an implementation, see {ERC165}.\\n */\\ninterface IERC165 {\\n    /**\\n     * @dev Returns true if this contract implements the interface defined by\\n     * `interfaceId`. See the corresponding\\n     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]\\n     * to learn more about how these ids are created.\\n     *\\n     * This function call must use less than 30 000 gas.\\n     */\\n    function supportsInterface(bytes4 interfaceId) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\"},\"src/contracts/Protocol/BountyQuestion.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport \\\"@openzeppelin/contracts/utils/Counters.sol\\\";\\nimport \\\"./modifiers/OnlyAPI.sol\\\";\\n\\n/// @custom:security-contact contracts@metricsdao.xyz\\ncontract BountyQuestion is Ownable, OnlyApi {\\n    using Counters for Counters.Counter;\\n\\n    Counters.Counter private _questionIdCounter;\\n\\n    // This maps the author to the list of question IDs they have created\\n    mapping(address => uint256[]) public authors;\\n\\n    // This maps the question ID to the question data\\n    mapping(uint256 => QuestionData) public questions;\\n\\n    constructor() {\\n        _questionIdCounter.increment();\\n    }\\n\\n    function mintQuestion(address author, string calldata uri) public onlyApi returns (uint256) {\\n        uint256 questionId = _questionIdCounter.current();\\n        _questionIdCounter.increment();\\n\\n        questions[questionId] = QuestionData({author: author, tokenId: questionId, url: uri});\\n        authors[author].push(questionId);\\n        return questionId;\\n    }\\n\\n    function getAuthor(address user) public view returns (QuestionData[] memory) {\\n        uint256[] memory created = authors[user];\\n\\n        QuestionData[] memory ret = new QuestionData[](created.length);\\n        for (uint256 i = 0; i < created.length; i++) {\\n            ret[i] = questions[created[i]];\\n        }\\n        return ret;\\n    }\\n\\n    function getAuthorOfQuestion(uint256 questionId) public view returns (address) {\\n        return questions[questionId].author;\\n    }\\n\\n    function getMostRecentQuestion() public view returns (uint256) {\\n        return _questionIdCounter.current();\\n    }\\n\\n    struct QuestionData {\\n        address author;\\n        uint256 tokenId;\\n        string url;\\n    }\\n}\\n\",\"keccak256\":\"0x934c4f3afbc259ce910e34a3383ee0948df846317fb5ecd669f51c1622646018\",\"license\":\"MIT\"},\"src/contracts/Protocol/QuestionAPI.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport \\\"./BountyQuestion.sol\\\";\\n\\n// Interfaces\\nimport \\\"./interfaces/IClaimController.sol\\\";\\nimport \\\"./interfaces/IQuestionStateController.sol\\\";\\nimport \\\"./interfaces/IActionCostController.sol\\\";\\n\\n// Modifiers\\nimport \\\"./modifiers/NFTLocked.sol\\\";\\nimport \\\"./modifiers/FunctionLocked.sol\\\";\\n\\n/**\\n * @title MetricsDAO question API\\n * @author MetricsDAO team\\n * @notice This contract is an API for MetricsDAO that allows for interacting with questions & challenges.\\n */\\n\\ncontract QuestionAPI is Ownable, NFTLocked, FunctionLocked {\\n    BountyQuestion private _question;\\n    IQuestionStateController private _questionStateController;\\n    IClaimController private _claimController;\\n    IActionCostController private _costController;\\n\\n    //------------------------------------------------------ ERRORS\\n\\n    /// @notice Throw if analysts tries to claim a question that is not published.\\n    error ClaimsNotOpen();\\n    /// @notice Throw if a question has not reached the benchmark for being published (yet).\\n    error NotAtBenchmark();\\n    /// @notice Throw if address is equal to address(0).\\n    error InvalidAddress();\\n    /// @notice Throw if user tries to vote for own question\\n    error CannotVoteForOwnQuestion();\\n\\n    //------------------------------------------------------ EVENTS\\n\\n    /// @notice Emitted when a question is created.\\n    event QuestionCreated(uint256 indexed questionId, address indexed creator);\\n\\n    /// @notice Emitted when a challenge is created.\\n    event ChallengeCreated(uint256 indexed questionId, address indexed challengeCreator);\\n\\n    /// @notice Emitted when a question is published.\\n    event QuestionPublished(uint256 indexed questionId, address indexed publisher);\\n\\n    /// @notice Emitted when a question is claimed.\\n    event QuestionClaimed(uint256 indexed questionId, address indexed claimant);\\n\\n    /// @notice Emitted when a question is answered.\\n    event QuestionAnswered(uint256 indexed questionId, address indexed answerer);\\n\\n    /// @notice Emitted when a question is disqualified.\\n    event QuestionDisqualified(uint256 indexed questionId, address indexed disqualifier);\\n\\n    /// @notice Emitted when a question is upvoted.\\n    event QuestionUpvoted(uint256 indexed questionId, address indexed voter);\\n\\n    /// @notice Emitted when a question is unvoted.\\n    event QuestionUnvoted(uint256 indexed questionId, address indexed voter);\\n\\n    //------------------------------------------------------ CONSTRUCTOR\\n\\n    /**\\n     * @notice Constructor sets the question state controller, claim controller, and action cost controller.\\n     * @param bountyQuestion BountyQuestion contract instance.\\n     * @param questionStateController The question state controller address.\\n     * @param claimController The claim controller address.\\n     * @param costController The action cost controller address.\\n     */\\n    constructor(\\n        address bountyQuestion,\\n        address questionStateController,\\n        address claimController,\\n        address costController\\n    ) {\\n        _question = BountyQuestion(bountyQuestion);\\n        _questionStateController = IQuestionStateController(questionStateController);\\n        _claimController = IClaimController(claimController);\\n        _costController = IActionCostController(costController);\\n    }\\n\\n    //------------------------------------------------------ FUNCTIONS\\n\\n    /**\\n     * @notice Creates a question.\\n     * @param uri The IPFS hash of the question.\\n     * @param claimLimit The limit for the amount of people that can claim the question.\\n     * @return The question id\\n     */\\n    function createQuestion(string calldata uri, uint256 claimLimit) public returns (uint256) {\\n        // Mint a new question\\n        uint256 questionId = _question.mintQuestion(_msgSender(), uri);\\n\\n        // Pay to create a question\\n        _costController.payForCreateQuestion(_msgSender(), questionId);\\n\\n        // Initialize the question\\n        _questionStateController.initializeQuestion(questionId, uri);\\n        _claimController.initializeQuestion(questionId, claimLimit);\\n\\n        emit QuestionCreated(questionId, _msgSender());\\n\\n        return questionId;\\n    }\\n\\n    /**\\n     * @notice Directly creates a challenge, this is an optional feature for program managers that would like to create challenges directly (skipping the voting stage).\\n     * @param uri The IPFS hash of the challenge\\n     * @param claimLimit The limit for the amount of people that can claim the challenge\\n     * @return questionId The question id\\n     */\\n    function createChallenge(string calldata uri, uint256 claimLimit) public onlyHolder(PROGRAM_MANAGER_ROLE) returns (uint256) {\\n        // Mint a new question\\n        uint256 questionId = _question.mintQuestion(_msgSender(), uri);\\n\\n        // Initialize the question\\n        _questionStateController.initializeQuestion(questionId, uri);\\n        _claimController.initializeQuestion(questionId, claimLimit);\\n\\n        // Publish the question\\n        _questionStateController.publish(questionId);\\n\\n        emit ChallengeCreated(questionId, _msgSender());\\n\\n        return questionId;\\n    }\\n\\n    /**\\n     * @notice Upvotes a question.\\n     * @param questionId The questionId of the question to upvote.\\n     */\\n    function upvoteQuestion(uint256 questionId) public {\\n        if (_question.getAuthorOfQuestion(questionId) == _msgSender()) revert CannotVoteForOwnQuestion();\\n\\n        // Vote for a question\\n        _questionStateController.voteFor(_msgSender(), questionId);\\n\\n        // Pay to upvote a question\\n        _costController.payForVoting(_msgSender(), questionId);\\n\\n        emit QuestionUpvoted(questionId, _msgSender());\\n    }\\n\\n    /**\\n     * @notice Unvotes a question.\\n     * @param questionId The questionId of the question to upvote.\\n     */\\n    function unvoteQuestion(uint256 questionId) public {\\n        _questionStateController.unvoteFor(_msgSender(), questionId);\\n\\n        emit QuestionUnvoted(questionId, _msgSender());\\n    }\\n\\n    /**\\n     * @notice Publishes a question and allows it to be claimed and receive answers.\\n     * @param questionId The questionId of the question to publish\\n     */\\n\\n    function publishQuestion(uint256 questionId) public onlyHolder(ADMIN_ROLE) functionLocked{\\n        // Publish the question\\n        _questionStateController.publish(questionId);\\n\\n        emit QuestionPublished(questionId, _msgSender());\\n    }\\n\\n    /**\\n     * @notice Allows anm analyst to claim a question and submit an answer before the dealine.\\n     * @param questionId The questionId of the question to disqualify\\n     */\\n    function claimQuestion(uint256 questionId) public functionLocked {\\n        // Check if the question is published and is therefore claimable\\n        if (_questionStateController.getState(questionId) != uint256(IQuestionStateController.STATE.PUBLISHED)) revert ClaimsNotOpen();\\n\\n        // Claim the question\\n        _claimController.claim(_msgSender(), questionId);\\n\\n        emit QuestionClaimed(questionId, _msgSender());\\n    }\\n\\n    /**\\n     * @notice Allows a claimed question to be answered by an analyst.\\n     * @param questionId The questionId of the question to answer.\\n     * @param answerURL THE IPFS hash of the answer.\\n     */\\n    function answerQuestion(uint256 questionId, string calldata answerURL) public functionLocked {\\n        _claimController.answer(_msgSender(), questionId, answerURL);\\n\\n        emit QuestionAnswered(questionId, _msgSender());\\n    }\\n\\n    /**\\n     * @notice Allows the owner to disqualify a question.\\n     * @param questionId The questionId of the question to disqualify.\\n     */\\n    function disqualifyQuestion(uint256 questionId) public onlyOwner functionLocked {\\n        _questionStateController.setDisqualifiedState(questionId);\\n\\n        emit QuestionDisqualified(questionId, _msgSender());\\n    }\\n\\n    //------------------------------------------------------ OWNER FUNCTIONS\\n\\n    /**\\n     * @notice Allows the owner to set the BountyQuestion contract address.\\n     * @param newQuestion The address of the new BountyQuestion contract.\\n     */\\n    function setQuestionProxy(address newQuestion) public onlyOwner {\\n        if (newQuestion == address(0)) revert InvalidAddress();\\n        _question = BountyQuestion(newQuestion);\\n    }\\n\\n    /**\\n     * @notice Allows the owner to set the QuestionStateController contract address.\\n     * @param newQuestion The address of the new BountyQuestion contract.\\n     */\\n    function setQuestionStateController(address newQuestion) public onlyOwner {\\n        if (newQuestion == address(0)) revert InvalidAddress();\\n        _questionStateController = IQuestionStateController(newQuestion);\\n    }\\n\\n    /**\\n     * @notice Allows the owner to set the ClaimController contract address.\\n     * @param newQuestion The address of the new ClaimController contract.\\n     */\\n    function setClaimController(address newQuestion) public onlyOwner {\\n        if (newQuestion == address(0)) revert InvalidAddress();\\n        _claimController = IClaimController(newQuestion);\\n    }\\n\\n    /**\\n     * @notice Allows the owner to set the CostController contract address.\\n     * @param newCost The address of the new CostController contract.\\n     */\\n    function setCostController(address newCost) public onlyOwner {\\n        if (newCost == address(0)) revert InvalidAddress();\\n        _costController = IActionCostController(newCost);\\n    }\\n}\\n\",\"keccak256\":\"0xb0f28448b93f42d01f692f6802301b9aa55b077b1f7cb5d85ea70f5fa42abc55\",\"license\":\"MIT\"},\"src/contracts/Protocol/interfaces/IActionCostController.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\ninterface IActionCostController {\\n    function payForCreateQuestion(address _user, uint256 questionId) external;\\n\\n    function setCreateCost(uint256 _cost) external;\\n\\n    function payForVoting(address user, uint256 questionId) external;\\n}\\n\",\"keccak256\":\"0xcbe03f87d165974beb31cc141166c0f90bb86be86796d38cef85fb9e5b0b97e0\",\"license\":\"MIT\"},\"src/contracts/Protocol/interfaces/IClaimController.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\ninterface IClaimController {\\n    function initializeQuestion(uint256 questionId, uint256 claimLimit) external;\\n\\n    function claim(address user, uint256 questionId) external;\\n\\n    function answer(\\n        address user,\\n        uint256 questionId,\\n        string calldata answerURL\\n    ) external;\\n}\\n\",\"keccak256\":\"0x2f3620da333026906853fe6394c516fd50b33bec988a008ef64812fa6bc6729c\",\"license\":\"MIT\"},\"src/contracts/Protocol/interfaces/IQuestionStateController.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\ninterface IQuestionStateController {\\n    function initializeQuestion(uint256 questionId, string calldata uri) external;\\n\\n    function voteFor(address _user, uint256 questionId) external;\\n\\n    function unvoteFor(address _user, uint256 questionId) external;\\n\\n    function publish(uint256 questionId) external;\\n\\n    // TODO currentState can probably be like a uint8, it depends on how many states we have\\n    function getState(uint256 quesitonId) external view returns (uint256 currentState);\\n\\n    function setDisqualifiedState(uint256 questionId) external;\\n\\n    enum STATE {\\n        // TODO this where it becomes a challenge, can be claimed and answered\\n        UNINIT,\\n        VOTING,\\n        PUBLISHED, // TODO this where it becomes a challenge, can be claimed and answered\\n        DISQUALIFIED,\\n        COMPLETED\\n    }\\n}\\n\",\"keccak256\":\"0x830f6fc04eabf46ce0ecc5b224c10fb0b0df157430ee95e877f300e33240ae82\",\"license\":\"MIT\"},\"src/contracts/Protocol/modifiers/FunctionLocked.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\nabstract contract FunctionLocked is Ownable {\\n    bool isLocked;\\n\\n    error FunctionIsLocked();\\n\\n    function toggleLock() public onlyOwner {\\n        isLocked = !isLocked;\\n    }\\n\\n    modifier functionLocked() {\\n        if (isLocked) revert FunctionIsLocked();\\n        _;\\n    }\\n}\\n\",\"keccak256\":\"0xfdf401383499d6118daa4e1278353e336dc6255d272b3832d66e4805630306c6\",\"license\":\"MIT\"},\"src/contracts/Protocol/modifiers/NFTLocked.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport \\\"@openzeppelin/contracts/interfaces/IERC721.sol\\\";\\n\\nabstract contract NFTLocked is Ownable {\\n    bytes32 public constant PROGRAM_MANAGER_ROLE = keccak256(\\\"PROGRAM_MANAGER_ROLE\\\");\\n    bytes32 public constant ADMIN_ROLE = keccak256(\\\"ADMIN_ROLE\\\");\\n\\n    mapping(bytes32 => address) private _nfts;\\n\\n    function addHolderRole(bytes32 role, address nft) public onlyOwner {\\n        _nfts[role] = nft;\\n    }\\n\\n    modifier onlyHolder(bytes32 role) {\\n        _checkRole(role);\\n        _;\\n    }\\n\\n    error DoesNotHold();\\n\\n    function _checkRole(bytes32 role) internal view virtual {\\n        if (IERC721(_nfts[role]).balanceOf(_msgSender()) == 0) revert DoesNotHold();\\n    }\\n}\\n\",\"keccak256\":\"0x2a75c101fce13a732db27396b63bc229742c0c2673d0a6c5cb288c6bfe02cb74\",\"license\":\"MIT\"},\"src/contracts/Protocol/modifiers/OnlyAPI.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\npragma solidity 0.8.13;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\ncontract OnlyApi is Ownable {\\n    address public questionApi;\\n\\n    // ------------------------------- Setter\\n    /**\\n     * @notice Sets the address of the question API.\\n     * @param _newApi The new address of the question API.\\n     */\\n    function setQuestionApi(address _newApi) external onlyOwner {\\n        questionApi = _newApi;\\n    }\\n\\n    // ------------------------ Modifiers\\n    modifier onlyApi() {\\n        if (_msgSender() != questionApi) revert NotTheApi();\\n        _;\\n    }\\n\\n    // ------------------------ Errors\\n    error NotTheApi();\\n}\\n\",\"keccak256\":\"0x0681de2966fa03720603c0e7361f8ee5d887b9526d074ba9c14dbf3b80978934\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60806040523480156200001157600080fd5b50604051620025953803806200259583398181016040528101906200003791906200029b565b620000576200004b6200016560201b60201c565b6200016d60201b60201c565b83600260016101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555081600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080600560006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505050506200030d565b600033905090565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508173ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a35050565b600080fd5b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000620002638262000236565b9050919050565b620002758162000256565b81146200028157600080fd5b50565b60008151905062000295816200026a565b92915050565b60008060008060808587031215620002b857620002b762000231565b5b6000620002c88782880162000284565b9450506020620002db8782880162000284565b9350506040620002ee8782880162000284565b9250506060620003018782880162000284565b91505092959194509250565b612278806200031d6000396000f3fe608060405234801561001057600080fd5b50600436106101215760003560e01c80638da5cb5b116100ad578063e9d8c38111610071578063e9d8c381146102c8578063ec8f6777146102e6578063f0f6420114610302578063f2fde38b1461031e578063ff9413d81461033a57610121565b80638da5cb5b1461022657806398c9f1df146102445780639a6110b414610274578063bc41029714610290578063e11041c3146102ac57610121565b8063447e52a0116100f4578063447e52a0146101965780636ee5a1b1146101b2578063715018a6146101ce57806371959d69146101d857806375b238fc1461020857610121565b8063072d8e7e146101265780630ef4b531146101425780631919bcd61461015e578063314c3e981461017a575b600080fd5b610140600480360381019061013b9190611c6c565b610344565b005b61015c60048036038101906101579190611c6c565b610491565b005b61017860048036038101906101739190611cf7565b6106a3565b005b610194600480360381019061018f9190611d5a565b6107c9565b005b6101b060048036038101906101ab9190611dff565b61089b565b005b6101cc60048036038101906101c79190611c6c565b6109cc565b005b6101d6610ab0565b005b6101f260048036038101906101ed9190611e5f565b610b38565b6040516101ff9190611ece565b60405180910390f35b610210610df2565b60405161021d9190611ef8565b60405180910390f35b61022e610e16565b60405161023b9190611f22565b60405180910390f35b61025e60048036038101906102599190611e5f565b610e3f565b60405161026b9190611ece565b60405180910390f35b61028e60048036038101906102899190611c6c565b61111c565b005b6102aa60048036038101906102a59190611cf7565b6112ba565b005b6102c660048036038101906102c19190611c6c565b6113e0565b005b6102d0611661565b6040516102dd9190611ef8565b60405180910390f35b61030060048036038101906102fb9190611cf7565b611685565b005b61031c60048036038101906103179190611cf7565b6117ab565b005b61033860048036038101906103339190611cf7565b6118d1565b005b6103426119c8565b005b7fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c2177561036e81611a70565b600260009054906101000a900460ff16156103b5576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc4ef119836040518263ffffffff1660e01b81526004016104109190611ece565b600060405180830381600087803b15801561042a57600080fd5b505af115801561043e573d6000803e3d6000fd5b5050505061044a611b60565b73ffffffffffffffffffffffffffffffffffffffff16827f48b3755b206fcea70a67e15db40f89daf0a8391f12082cc27d6c4412eb73158f60405160405180910390a35050565b600260009054906101000a900460ff16156104d8576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600260048111156104ec576104eb611f3d565b5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166344c9af28836040518263ffffffff1660e01b81526004016105479190611ece565b602060405180830381865afa158015610564573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906105889190611f81565b146105bf576040517f3b03644900000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663aad3ec96610605611b60565b836040518363ffffffff1660e01b8152600401610623929190611fae565b600060405180830381600087803b15801561063d57600080fd5b505af1158015610651573d6000803e3d6000fd5b5050505061065d611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f8420685f160085bdc75c7d5265ef561ea88eb1ab5b58b0cd38b68babcf537cb560405160405180910390a350565b6106ab611b60565b73ffffffffffffffffffffffffffffffffffffffff166106c9610e16565b73ffffffffffffffffffffffffffffffffffffffff161461071f576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161071690612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1603610785576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600560006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6107d1611b60565b73ffffffffffffffffffffffffffffffffffffffff166107ef610e16565b73ffffffffffffffffffffffffffffffffffffffff1614610845576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161083c90612034565b60405180910390fd5b806001600084815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b600260009054906101000a900460ff16156108e2576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663de9951a6610928611b60565b8585856040518563ffffffff1660e01b815260040161094a94939291906120a1565b600060405180830381600087803b15801561096457600080fd5b505af1158015610978573d6000803e3d6000fd5b50505050610984611b60565b73ffffffffffffffffffffffffffffffffffffffff16837f3523d3f08d443a3de3a7a5e0213c8b3728df4dcaa7ce5182097cadd88689766d60405160405180910390a3505050565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663e78daa75610a12611b60565b836040518363ffffffff1660e01b8152600401610a30929190611fae565b600060405180830381600087803b158015610a4a57600080fd5b505af1158015610a5e573d6000803e3d6000fd5b50505050610a6a611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f2ce8d0b5aac2aac75df5d055eba39e1a943c8ee924ac71efd94de57b4b6fa49b60405160405180910390a350565b610ab8611b60565b73ffffffffffffffffffffffffffffffffffffffff16610ad6610e16565b73ffffffffffffffffffffffffffffffffffffffff1614610b2c576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610b2390612034565b60405180910390fd5b610b366000611b68565b565b600080600260019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663dab6dbce610b81611b60565b87876040518463ffffffff1660e01b8152600401610ba1939291906120e1565b6020604051808303816000875af1158015610bc0573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610be49190611f81565b9050600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663186a8131610c2c611b60565b836040518363ffffffff1660e01b8152600401610c4a929190611fae565b600060405180830381600087803b158015610c6457600080fd5b505af1158015610c78573d6000803e3d6000fd5b50505050600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d257d16d8287876040518463ffffffff1660e01b8152600401610cdb93929190612113565b600060405180830381600087803b158015610cf557600080fd5b505af1158015610d09573d6000803e3d6000fd5b50505050600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663701776f782856040518363ffffffff1660e01b8152600401610d6a929190612145565b600060405180830381600087803b158015610d8457600080fd5b505af1158015610d98573d6000803e3d6000fd5b50505050610da4611b60565b73ffffffffffffffffffffffffffffffffffffffff16817fe507074282a0f805a6f370a3dfca4b5578056337d6fe37524243a02ca7a3cae160405160405180910390a3809150509392505050565b7fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c2177581565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60007f104852406e94df2c5112860c28c2d2e43c02e322bc0cf95e2d0159faf296d7fb610e6b81611a70565b6000600260019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663dab6dbce610eb3611b60565b88886040518463ffffffff1660e01b8152600401610ed3939291906120e1565b6020604051808303816000875af1158015610ef2573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610f169190611f81565b9050600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d257d16d8288886040518463ffffffff1660e01b8152600401610f7793929190612113565b600060405180830381600087803b158015610f9157600080fd5b505af1158015610fa5573d6000803e3d6000fd5b50505050600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663701776f782866040518363ffffffff1660e01b8152600401611006929190612145565b600060405180830381600087803b15801561102057600080fd5b505af1158015611034573d6000803e3d6000fd5b50505050600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc4ef119826040518263ffffffff1660e01b81526004016110939190611ece565b600060405180830381600087803b1580156110ad57600080fd5b505af11580156110c1573d6000803e3d6000fd5b505050506110cd611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f83a97ccca8e136a4d58fd664739225fcfe9db9a5b0bebf35df44614f2aa9b63a60405160405180910390a380925050509392505050565b611124611b60565b73ffffffffffffffffffffffffffffffffffffffff16611142610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611198576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161118f90612034565b60405180910390fd5b600260009054906101000a900460ff16156111df576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663ecf24b31826040518263ffffffff1660e01b815260040161123a9190611ece565b600060405180830381600087803b15801561125457600080fd5b505af1158015611268573d6000803e3d6000fd5b50505050611274611b60565b73ffffffffffffffffffffffffffffffffffffffff16817ff71fc70f190ad1360e34d483a2c00ef97b0da48cf5c510686ff1b3961176db1360405160405180910390a350565b6112c2611b60565b73ffffffffffffffffffffffffffffffffffffffff166112e0610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611336576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161132d90612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff160361139c576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600260016101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6113e8611b60565b73ffffffffffffffffffffffffffffffffffffffff16600260019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663710bc3cd836040518263ffffffff1660e01b81526004016114599190611ece565b602060405180830381865afa158015611476573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061149a9190612183565b73ffffffffffffffffffffffffffffffffffffffff16036114e7576040517f549bb9b900000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166324d6d60161152d611b60565b836040518363ffffffff1660e01b815260040161154b929190611fae565b600060405180830381600087803b15801561156557600080fd5b505af1158015611579573d6000803e3d6000fd5b50505050600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663708f7c7d6115c3611b60565b836040518363ffffffff1660e01b81526004016115e1929190611fae565b600060405180830381600087803b1580156115fb57600080fd5b505af115801561160f573d6000803e3d6000fd5b5050505061161b611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f2d41d13a6e38ae738043e6c4811b1f16f9608295287f54de44621ed6e4b4505660405160405180910390a350565b7f104852406e94df2c5112860c28c2d2e43c02e322bc0cf95e2d0159faf296d7fb81565b61168d611b60565b73ffffffffffffffffffffffffffffffffffffffff166116ab610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611701576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016116f890612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1603611767576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6117b3611b60565b73ffffffffffffffffffffffffffffffffffffffff166117d1610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611827576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161181e90612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff160361188d576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6118d9611b60565b73ffffffffffffffffffffffffffffffffffffffff166118f7610e16565b73ffffffffffffffffffffffffffffffffffffffff161461194d576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161194490612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16036119bc576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016119b390612222565b60405180910390fd5b6119c581611b68565b50565b6119d0611b60565b73ffffffffffffffffffffffffffffffffffffffff166119ee610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611a44576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401611a3b90612034565b60405180910390fd5b600260009054906101000a900460ff1615600260006101000a81548160ff021916908315150217905550565b60006001600083815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231611ac9611b60565b6040518263ffffffff1660e01b8152600401611ae59190611f22565b602060405180830381865afa158015611b02573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190611b269190611f81565b03611b5d576040517fbddc845600000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b50565b600033905090565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508173ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a35050565b600080fd5b600080fd5b6000819050919050565b611c4981611c36565b8114611c5457600080fd5b50565b600081359050611c6681611c40565b92915050565b600060208284031215611c8257611c81611c2c565b5b6000611c9084828501611c57565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000611cc482611c99565b9050919050565b611cd481611cb9565b8114611cdf57600080fd5b50565b600081359050611cf181611ccb565b92915050565b600060208284031215611d0d57611d0c611c2c565b5b6000611d1b84828501611ce2565b91505092915050565b6000819050919050565b611d3781611d24565b8114611d4257600080fd5b50565b600081359050611d5481611d2e565b92915050565b60008060408385031215611d7157611d70611c2c565b5b6000611d7f85828601611d45565b9250506020611d9085828601611ce2565b9150509250929050565b600080fd5b600080fd5b600080fd5b60008083601f840112611dbf57611dbe611d9a565b5b8235905067ffffffffffffffff811115611ddc57611ddb611d9f565b5b602083019150836001820283011115611df857611df7611da4565b5b9250929050565b600080600060408486031215611e1857611e17611c2c565b5b6000611e2686828701611c57565b935050602084013567ffffffffffffffff811115611e4757611e46611c31565b5b611e5386828701611da9565b92509250509250925092565b600080600060408486031215611e7857611e77611c2c565b5b600084013567ffffffffffffffff811115611e9657611e95611c31565b5b611ea286828701611da9565b93509350506020611eb586828701611c57565b9150509250925092565b611ec881611c36565b82525050565b6000602082019050611ee36000830184611ebf565b92915050565b611ef281611d24565b82525050565b6000602082019050611f0d6000830184611ee9565b92915050565b611f1c81611cb9565b82525050565b6000602082019050611f376000830184611f13565b92915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b600081519050611f7b81611c40565b92915050565b600060208284031215611f9757611f96611c2c565b5b6000611fa584828501611f6c565b91505092915050565b6000604082019050611fc36000830185611f13565b611fd06020830184611ebf565b9392505050565b600082825260208201905092915050565b7f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572600082015250565b600061201e602083611fd7565b915061202982611fe8565b602082019050919050565b6000602082019050818103600083015261204d81612011565b9050919050565b82818337600083830152505050565b6000601f19601f8301169050919050565b60006120808385611fd7565b935061208d838584612054565b61209683612063565b840190509392505050565b60006060820190506120b66000830187611f13565b6120c36020830186611ebf565b81810360408301526120d6818486612074565b905095945050505050565b60006040820190506120f66000830186611f13565b8181036020830152612109818486612074565b9050949350505050565b60006040820190506121286000830186611ebf565b818103602083015261213b818486612074565b9050949350505050565b600060408201905061215a6000830185611ebf565b6121676020830184611ebf565b9392505050565b60008151905061217d81611ccb565b92915050565b60006020828403121561219957612198611c2c565b5b60006121a78482850161216e565b91505092915050565b7f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160008201527f6464726573730000000000000000000000000000000000000000000000000000602082015250565b600061220c602683611fd7565b9150612217826121b0565b604082019050919050565b6000602082019050818103600083015261223b816121ff565b905091905056fea2646970667358221220fe69a1827a2721a78af8ea5da215cc0a54d2bcaacc2cd07affc2db192f4f118564736f6c634300080d0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101215760003560e01c80638da5cb5b116100ad578063e9d8c38111610071578063e9d8c381146102c8578063ec8f6777146102e6578063f0f6420114610302578063f2fde38b1461031e578063ff9413d81461033a57610121565b80638da5cb5b1461022657806398c9f1df146102445780639a6110b414610274578063bc41029714610290578063e11041c3146102ac57610121565b8063447e52a0116100f4578063447e52a0146101965780636ee5a1b1146101b2578063715018a6146101ce57806371959d69146101d857806375b238fc1461020857610121565b8063072d8e7e146101265780630ef4b531146101425780631919bcd61461015e578063314c3e981461017a575b600080fd5b610140600480360381019061013b9190611c6c565b610344565b005b61015c60048036038101906101579190611c6c565b610491565b005b61017860048036038101906101739190611cf7565b6106a3565b005b610194600480360381019061018f9190611d5a565b6107c9565b005b6101b060048036038101906101ab9190611dff565b61089b565b005b6101cc60048036038101906101c79190611c6c565b6109cc565b005b6101d6610ab0565b005b6101f260048036038101906101ed9190611e5f565b610b38565b6040516101ff9190611ece565b60405180910390f35b610210610df2565b60405161021d9190611ef8565b60405180910390f35b61022e610e16565b60405161023b9190611f22565b60405180910390f35b61025e60048036038101906102599190611e5f565b610e3f565b60405161026b9190611ece565b60405180910390f35b61028e60048036038101906102899190611c6c565b61111c565b005b6102aa60048036038101906102a59190611cf7565b6112ba565b005b6102c660048036038101906102c19190611c6c565b6113e0565b005b6102d0611661565b6040516102dd9190611ef8565b60405180910390f35b61030060048036038101906102fb9190611cf7565b611685565b005b61031c60048036038101906103179190611cf7565b6117ab565b005b61033860048036038101906103339190611cf7565b6118d1565b005b6103426119c8565b005b7fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c2177561036e81611a70565b600260009054906101000a900460ff16156103b5576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc4ef119836040518263ffffffff1660e01b81526004016104109190611ece565b600060405180830381600087803b15801561042a57600080fd5b505af115801561043e573d6000803e3d6000fd5b5050505061044a611b60565b73ffffffffffffffffffffffffffffffffffffffff16827f48b3755b206fcea70a67e15db40f89daf0a8391f12082cc27d6c4412eb73158f60405160405180910390a35050565b600260009054906101000a900460ff16156104d8576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600260048111156104ec576104eb611f3d565b5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166344c9af28836040518263ffffffff1660e01b81526004016105479190611ece565b602060405180830381865afa158015610564573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906105889190611f81565b146105bf576040517f3b03644900000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663aad3ec96610605611b60565b836040518363ffffffff1660e01b8152600401610623929190611fae565b600060405180830381600087803b15801561063d57600080fd5b505af1158015610651573d6000803e3d6000fd5b5050505061065d611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f8420685f160085bdc75c7d5265ef561ea88eb1ab5b58b0cd38b68babcf537cb560405160405180910390a350565b6106ab611b60565b73ffffffffffffffffffffffffffffffffffffffff166106c9610e16565b73ffffffffffffffffffffffffffffffffffffffff161461071f576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161071690612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1603610785576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600560006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6107d1611b60565b73ffffffffffffffffffffffffffffffffffffffff166107ef610e16565b73ffffffffffffffffffffffffffffffffffffffff1614610845576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161083c90612034565b60405180910390fd5b806001600084815260200190815260200160002060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505050565b600260009054906101000a900460ff16156108e2576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663de9951a6610928611b60565b8585856040518563ffffffff1660e01b815260040161094a94939291906120a1565b600060405180830381600087803b15801561096457600080fd5b505af1158015610978573d6000803e3d6000fd5b50505050610984611b60565b73ffffffffffffffffffffffffffffffffffffffff16837f3523d3f08d443a3de3a7a5e0213c8b3728df4dcaa7ce5182097cadd88689766d60405160405180910390a3505050565b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663e78daa75610a12611b60565b836040518363ffffffff1660e01b8152600401610a30929190611fae565b600060405180830381600087803b158015610a4a57600080fd5b505af1158015610a5e573d6000803e3d6000fd5b50505050610a6a611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f2ce8d0b5aac2aac75df5d055eba39e1a943c8ee924ac71efd94de57b4b6fa49b60405160405180910390a350565b610ab8611b60565b73ffffffffffffffffffffffffffffffffffffffff16610ad6610e16565b73ffffffffffffffffffffffffffffffffffffffff1614610b2c576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610b2390612034565b60405180910390fd5b610b366000611b68565b565b600080600260019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663dab6dbce610b81611b60565b87876040518463ffffffff1660e01b8152600401610ba1939291906120e1565b6020604051808303816000875af1158015610bc0573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610be49190611f81565b9050600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663186a8131610c2c611b60565b836040518363ffffffff1660e01b8152600401610c4a929190611fae565b600060405180830381600087803b158015610c6457600080fd5b505af1158015610c78573d6000803e3d6000fd5b50505050600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d257d16d8287876040518463ffffffff1660e01b8152600401610cdb93929190612113565b600060405180830381600087803b158015610cf557600080fd5b505af1158015610d09573d6000803e3d6000fd5b50505050600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663701776f782856040518363ffffffff1660e01b8152600401610d6a929190612145565b600060405180830381600087803b158015610d8457600080fd5b505af1158015610d98573d6000803e3d6000fd5b50505050610da4611b60565b73ffffffffffffffffffffffffffffffffffffffff16817fe507074282a0f805a6f370a3dfca4b5578056337d6fe37524243a02ca7a3cae160405160405180910390a3809150509392505050565b7fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c2177581565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60007f104852406e94df2c5112860c28c2d2e43c02e322bc0cf95e2d0159faf296d7fb610e6b81611a70565b6000600260019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663dab6dbce610eb3611b60565b88886040518463ffffffff1660e01b8152600401610ed3939291906120e1565b6020604051808303816000875af1158015610ef2573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610f169190611f81565b9050600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663d257d16d8288886040518463ffffffff1660e01b8152600401610f7793929190612113565b600060405180830381600087803b158015610f9157600080fd5b505af1158015610fa5573d6000803e3d6000fd5b50505050600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663701776f782866040518363ffffffff1660e01b8152600401611006929190612145565b600060405180830381600087803b15801561102057600080fd5b505af1158015611034573d6000803e3d6000fd5b50505050600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc4ef119826040518263ffffffff1660e01b81526004016110939190611ece565b600060405180830381600087803b1580156110ad57600080fd5b505af11580156110c1573d6000803e3d6000fd5b505050506110cd611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f83a97ccca8e136a4d58fd664739225fcfe9db9a5b0bebf35df44614f2aa9b63a60405160405180910390a380925050509392505050565b611124611b60565b73ffffffffffffffffffffffffffffffffffffffff16611142610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611198576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161118f90612034565b60405180910390fd5b600260009054906101000a900460ff16156111df576040517f77e9811b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663ecf24b31826040518263ffffffff1660e01b815260040161123a9190611ece565b600060405180830381600087803b15801561125457600080fd5b505af1158015611268573d6000803e3d6000fd5b50505050611274611b60565b73ffffffffffffffffffffffffffffffffffffffff16817ff71fc70f190ad1360e34d483a2c00ef97b0da48cf5c510686ff1b3961176db1360405160405180910390a350565b6112c2611b60565b73ffffffffffffffffffffffffffffffffffffffff166112e0610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611336576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161132d90612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff160361139c576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600260016101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6113e8611b60565b73ffffffffffffffffffffffffffffffffffffffff16600260019054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663710bc3cd836040518263ffffffff1660e01b81526004016114599190611ece565b602060405180830381865afa158015611476573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061149a9190612183565b73ffffffffffffffffffffffffffffffffffffffff16036114e7576040517f549bb9b900000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166324d6d60161152d611b60565b836040518363ffffffff1660e01b815260040161154b929190611fae565b600060405180830381600087803b15801561156557600080fd5b505af1158015611579573d6000803e3d6000fd5b50505050600560009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663708f7c7d6115c3611b60565b836040518363ffffffff1660e01b81526004016115e1929190611fae565b600060405180830381600087803b1580156115fb57600080fd5b505af115801561160f573d6000803e3d6000fd5b5050505061161b611b60565b73ffffffffffffffffffffffffffffffffffffffff16817f2d41d13a6e38ae738043e6c4811b1f16f9608295287f54de44621ed6e4b4505660405160405180910390a350565b7f104852406e94df2c5112860c28c2d2e43c02e322bc0cf95e2d0159faf296d7fb81565b61168d611b60565b73ffffffffffffffffffffffffffffffffffffffff166116ab610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611701576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016116f890612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff1603611767576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6117b3611b60565b73ffffffffffffffffffffffffffffffffffffffff166117d1610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611827576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161181e90612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff160361188d576040517fe6c4247b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050565b6118d9611b60565b73ffffffffffffffffffffffffffffffffffffffff166118f7610e16565b73ffffffffffffffffffffffffffffffffffffffff161461194d576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161194490612034565b60405180910390fd5b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16036119bc576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016119b390612222565b60405180910390fd5b6119c581611b68565b50565b6119d0611b60565b73ffffffffffffffffffffffffffffffffffffffff166119ee610e16565b73ffffffffffffffffffffffffffffffffffffffff1614611a44576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401611a3b90612034565b60405180910390fd5b600260009054906101000a900460ff1615600260006101000a81548160ff021916908315150217905550565b60006001600083815260200190815260200160002060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231611ac9611b60565b6040518263ffffffff1660e01b8152600401611ae59190611f22565b602060405180830381865afa158015611b02573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190611b269190611f81565b03611b5d576040517fbddc845600000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b50565b600033905090565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff169050816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508173ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a35050565b600080fd5b600080fd5b6000819050919050565b611c4981611c36565b8114611c5457600080fd5b50565b600081359050611c6681611c40565b92915050565b600060208284031215611c8257611c81611c2c565b5b6000611c9084828501611c57565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b6000611cc482611c99565b9050919050565b611cd481611cb9565b8114611cdf57600080fd5b50565b600081359050611cf181611ccb565b92915050565b600060208284031215611d0d57611d0c611c2c565b5b6000611d1b84828501611ce2565b91505092915050565b6000819050919050565b611d3781611d24565b8114611d4257600080fd5b50565b600081359050611d5481611d2e565b92915050565b60008060408385031215611d7157611d70611c2c565b5b6000611d7f85828601611d45565b9250506020611d9085828601611ce2565b9150509250929050565b600080fd5b600080fd5b600080fd5b60008083601f840112611dbf57611dbe611d9a565b5b8235905067ffffffffffffffff811115611ddc57611ddb611d9f565b5b602083019150836001820283011115611df857611df7611da4565b5b9250929050565b600080600060408486031215611e1857611e17611c2c565b5b6000611e2686828701611c57565b935050602084013567ffffffffffffffff811115611e4757611e46611c31565b5b611e5386828701611da9565b92509250509250925092565b600080600060408486031215611e7857611e77611c2c565b5b600084013567ffffffffffffffff811115611e9657611e95611c31565b5b611ea286828701611da9565b93509350506020611eb586828701611c57565b9150509250925092565b611ec881611c36565b82525050565b6000602082019050611ee36000830184611ebf565b92915050565b611ef281611d24565b82525050565b6000602082019050611f0d6000830184611ee9565b92915050565b611f1c81611cb9565b82525050565b6000602082019050611f376000830184611f13565b92915050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b600081519050611f7b81611c40565b92915050565b600060208284031215611f9757611f96611c2c565b5b6000611fa584828501611f6c565b91505092915050565b6000604082019050611fc36000830185611f13565b611fd06020830184611ebf565b9392505050565b600082825260208201905092915050565b7f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572600082015250565b600061201e602083611fd7565b915061202982611fe8565b602082019050919050565b6000602082019050818103600083015261204d81612011565b9050919050565b82818337600083830152505050565b6000601f19601f8301169050919050565b60006120808385611fd7565b935061208d838584612054565b61209683612063565b840190509392505050565b60006060820190506120b66000830187611f13565b6120c36020830186611ebf565b81810360408301526120d6818486612074565b905095945050505050565b60006040820190506120f66000830186611f13565b8181036020830152612109818486612074565b9050949350505050565b60006040820190506121286000830186611ebf565b818103602083015261213b818486612074565b9050949350505050565b600060408201905061215a6000830185611ebf565b6121676020830184611ebf565b9392505050565b60008151905061217d81611ccb565b92915050565b60006020828403121561219957612198611c2c565b5b60006121a78482850161216e565b91505092915050565b7f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160008201527f6464726573730000000000000000000000000000000000000000000000000000602082015250565b600061220c602683611fd7565b9150612217826121b0565b604082019050919050565b6000602082019050818103600083015261223b816121ff565b905091905056fea2646970667358221220fe69a1827a2721a78af8ea5da215cc0a54d2bcaacc2cd07affc2db192f4f118564736f6c634300080d0033",
+  "devdoc": {
+    "author": "MetricsDAO team",
+    "kind": "dev",
+    "methods": {
+      "answerQuestion(uint256,string)": {
+        "params": {
+          "answerURL": "THE IPFS hash of the answer.",
+          "questionId": "The questionId of the question to answer."
+        }
+      },
+      "claimQuestion(uint256)": {
+        "params": {
+          "questionId": "The questionId of the question to disqualify"
+        }
+      },
+      "constructor": {
+        "params": {
+          "bountyQuestion": "BountyQuestion contract instance.",
+          "claimController": "The claim controller address.",
+          "costController": "The action cost controller address.",
+          "questionStateController": "The question state controller address."
+        }
+      },
+      "createChallenge(string,uint256)": {
+        "params": {
+          "claimLimit": "The limit for the amount of people that can claim the challenge",
+          "uri": "The IPFS hash of the challenge"
+        },
+        "returns": {
+          "_0": "questionId The question id"
+        }
+      },
+      "createQuestion(string,uint256)": {
+        "params": {
+          "claimLimit": "The limit for the amount of people that can claim the question.",
+          "uri": "The IPFS hash of the question."
+        },
+        "returns": {
+          "_0": "The question id"
+        }
+      },
+      "disqualifyQuestion(uint256)": {
+        "params": {
+          "questionId": "The questionId of the question to disqualify."
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "publishQuestion(uint256)": {
+        "params": {
+          "questionId": "The questionId of the question to publish"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "setClaimController(address)": {
+        "params": {
+          "newQuestion": "The address of the new ClaimController contract."
+        }
+      },
+      "setCostController(address)": {
+        "params": {
+          "newCost": "The address of the new CostController contract."
+        }
+      },
+      "setQuestionProxy(address)": {
+        "params": {
+          "newQuestion": "The address of the new BountyQuestion contract."
+        }
+      },
+      "setQuestionStateController(address)": {
+        "params": {
+          "newQuestion": "The address of the new BountyQuestion contract."
+        }
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      },
+      "unvoteQuestion(uint256)": {
+        "params": {
+          "questionId": "The questionId of the question to upvote."
+        }
+      },
+      "upvoteQuestion(uint256)": {
+        "params": {
+          "questionId": "The questionId of the question to upvote."
+        }
+      }
+    },
+    "title": "MetricsDAO question API",
+    "version": 1
+  },
+  "userdoc": {
+    "errors": {
+      "CannotVoteForOwnQuestion()": [
+        {
+          "notice": "Throw if user tries to vote for own question"
+        }
+      ],
+      "ClaimsNotOpen()": [
+        {
+          "notice": "Throw if analysts tries to claim a question that is not published."
+        }
+      ],
+      "InvalidAddress()": [
+        {
+          "notice": "Throw if address is equal to address(0)."
+        }
+      ],
+      "NotAtBenchmark()": [
+        {
+          "notice": "Throw if a question has not reached the benchmark for being published (yet)."
+        }
+      ]
+    },
+    "events": {
+      "ChallengeCreated(uint256,address)": {
+        "notice": "Emitted when a challenge is created."
+      },
+      "QuestionAnswered(uint256,address)": {
+        "notice": "Emitted when a question is answered."
+      },
+      "QuestionClaimed(uint256,address)": {
+        "notice": "Emitted when a question is claimed."
+      },
+      "QuestionCreated(uint256,address)": {
+        "notice": "Emitted when a question is created."
+      },
+      "QuestionDisqualified(uint256,address)": {
+        "notice": "Emitted when a question is disqualified."
+      },
+      "QuestionPublished(uint256,address)": {
+        "notice": "Emitted when a question is published."
+      },
+      "QuestionUnvoted(uint256,address)": {
+        "notice": "Emitted when a question is unvoted."
+      },
+      "QuestionUpvoted(uint256,address)": {
+        "notice": "Emitted when a question is upvoted."
+      }
+    },
+    "kind": "user",
+    "methods": {
+      "answerQuestion(uint256,string)": {
+        "notice": "Allows a claimed question to be answered by an analyst."
+      },
+      "claimQuestion(uint256)": {
+        "notice": "Allows anm analyst to claim a question and submit an answer before the dealine."
+      },
+      "constructor": {
+        "notice": "Constructor sets the question state controller, claim controller, and action cost controller."
+      },
+      "createChallenge(string,uint256)": {
+        "notice": "Directly creates a challenge, this is an optional feature for program managers that would like to create challenges directly (skipping the voting stage)."
+      },
+      "createQuestion(string,uint256)": {
+        "notice": "Creates a question."
+      },
+      "disqualifyQuestion(uint256)": {
+        "notice": "Allows the owner to disqualify a question."
+      },
+      "publishQuestion(uint256)": {
+        "notice": "Publishes a question and allows it to be claimed and receive answers."
+      },
+      "setClaimController(address)": {
+        "notice": "Allows the owner to set the ClaimController contract address."
+      },
+      "setCostController(address)": {
+        "notice": "Allows the owner to set the CostController contract address."
+      },
+      "setQuestionProxy(address)": {
+        "notice": "Allows the owner to set the BountyQuestion contract address."
+      },
+      "setQuestionStateController(address)": {
+        "notice": "Allows the owner to set the QuestionStateController contract address."
+      },
+      "unvoteQuestion(uint256)": {
+        "notice": "Unvotes a question."
+      },
+      "upvoteQuestion(uint256)": {
+        "notice": "Upvotes a question."
+      }
+    },
+    "notice": "This contract is an API for MetricsDAO that allows for interacting with questions & challenges.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 7,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 5437,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "_nfts",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_address)"
+      },
+      {
+        "astId": 5394,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "isLocked",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_bool"
+      },
+      {
+        "astId": 3810,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "_question",
+        "offset": 1,
+        "slot": "2",
+        "type": "t_contract(BountyQuestion)3522"
+      },
+      {
+        "astId": 3813,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "_questionStateController",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_contract(IQuestionStateController)5387"
+      },
+      {
+        "astId": 3816,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "_claimController",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_contract(IClaimController)5340"
+      },
+      {
+        "astId": 3819,
+        "contract": "src/contracts/Protocol/QuestionAPI.sol:QuestionAPI",
+        "label": "_costController",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_contract(IActionCostController)5314"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(BountyQuestion)3522": {
+        "encoding": "inplace",
+        "label": "contract BountyQuestion",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IActionCostController)5314": {
+        "encoding": "inplace",
+        "label": "contract IActionCostController",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IClaimController)5340": {
+        "encoding": "inplace",
+        "label": "contract IClaimController",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IQuestionStateController)5387": {
+        "encoding": "inplace",
+        "label": "contract IQuestionStateController",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_bytes32,t_address)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      }
+    }
+  }
+}

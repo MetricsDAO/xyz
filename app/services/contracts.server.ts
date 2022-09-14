@@ -1,4 +1,5 @@
 import { ethers, providers } from "ethers";
+import type { ContractContext } from "~/types/generated/BountyQuestion";
 
 export type Contracts = ReturnType<typeof getContracts>;
 
@@ -16,7 +17,7 @@ export function getContracts() {
     bountyQuestionJson.address,
     bountyQuestionJson.abi,
     new providers.AnkrProvider("matic") //TODO: which provider?
-  );
+  ) as unknown as ContractContext;
 
   return {
     xMetricJson,
