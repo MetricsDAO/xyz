@@ -2,7 +2,14 @@ const fs = require("fs");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const CONTRACTS = ["QuestionAPI", "QuestionStateController", "BountyQuestion", "ActionCostController", "Vault"];
+const CONTRACTS = [
+  "QuestionAPI",
+  "QuestionStateController",
+  "BountyQuestion",
+  "ActionCostController",
+  "Vault",
+  "Xmetric",
+];
 
 const network = process.env.NETWORK ?? "localhost";
 for (const c of CONTRACTS) {

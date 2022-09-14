@@ -4,14 +4,12 @@ import type { ContractContext } from "~/types/generated/BountyQuestion";
 export type Contracts = ReturnType<typeof getContracts>;
 
 export function getContracts() {
-  const network = process.env.NETWORK ?? "localhost";
-
-  let xMetricJson = require(`core-evm-contracts/deployments/${network}/Xmetric.json`);
-  let questionAPIJson = require(`core-evm-contracts/deployments/${network}/QuestionAPI.json`);
-  let questionStateController = require(`core-evm-contracts/deployments/${network}/QuestionStateController.json`);
-  let bountyQuestionJson = require(`core-evm-contracts/deployments/${network}/BountyQuestion.json`);
-  let costController = require(`core-evm-contracts/deployments/${network}/ActionCostController.json`);
-  let vaultJson = require(`core-evm-contracts/deployments/${network}/Vault.json`);
+  let xMetricJson = require(`contracts/Xmetric.json`);
+  let questionAPIJson = require(`contracts/QuestionAPI.json`);
+  let questionStateController = require(`contracts/QuestionStateController.json`);
+  let bountyQuestionJson = require(`contracts/BountyQuestion.json`);
+  let costController = require(`contracts/ActionCostController.json`);
+  let vaultJson = require(`contracts/Vault.json`);
 
   const bountyQuestionContract = new ethers.Contract(
     bountyQuestionJson.address,
