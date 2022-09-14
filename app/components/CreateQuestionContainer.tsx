@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useContractWrite, usePrepareContractWrite, useSigner } from "wagmi";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
 import { TransactionStatus } from "~/utils/helpers";
 import { BigNumber } from "ethers";
+import { connect } from "@tableland/sdk";
 
 import { Listbox, Transition } from "@headlessui/react";
 
@@ -39,6 +40,7 @@ export default function CreateQuestion({
 
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
+  const { data: signer, isError, isLoading } = useSigner();
 
   const { config, isSuccess } = usePrepareContractWrite({
     addressOrName: questionAPI.address,
@@ -95,6 +97,22 @@ export default function CreateQuestion({
   }, [isSuccess, writeAsync, fileUrl]);
 
   async function ipfsUpload() {
+    const tableland = await connect({
+      network: "testnet",
+      chain: "polygon",
+      signer: await signer,
+    });
+    console.log(tableland);
+    // await tableland.siwe();
+
+    const { name } = await tableland.create(`id int primary key, name text`, `quickstart`);
+    console.log(name);
+
+    const writeRes = await tableland.write(`INSERT INTO ${name} VALUES (0, 'Bobby Tables');`);
+    const readRes = await tableland.read(`SELECT * FROM ${name}`);
+
+    console.log(readRes);
+
     const questionBodyValue = questionBody.current?.value ?? "";
     const questionTitleValue = questionTitle.current?.value ?? "";
     if (questionTitleValue?.length < 1 || questionBodyValue?.length < 10) {
