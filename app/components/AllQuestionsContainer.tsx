@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-import { useContractRead } from "wagmi";
-import { BigNumber } from "ethers";
-
 import AllQuestionsByState from "~/components/AllQuestionsByState";
 
 export default function AllQuestionContainer({
@@ -11,6 +7,7 @@ export default function AllQuestionContainer({
   questionStateController,
   bountyQuestion,
   networkMatchesWallet,
+  currentQuestion,
 }: {
   address?: string;
   questionAPI: Record<string, string>;
@@ -18,36 +15,15 @@ export default function AllQuestionContainer({
   questionStateController: Record<string, string>;
   bountyQuestion: Record<string, string>;
   networkMatchesWallet: boolean;
+  currentQuestion?: number;
 }) {
-  const [latestTokenId, setLatestTokenId] = useState<number>(0);
-
-  const { data: currentQuestion } = useContractRead(
-    {
-      addressOrName: bountyQuestion.address,
-      contractInterface: bountyQuestion.abi,
-    },
-    "getMostRecentQuestion",
-    {
-      onError: (err) => {
-        console.error(err);
-      },
-    }
-  );
-
-  useEffect(() => {
-    if (BigNumber.isBigNumber(currentQuestion)) {
-      // console.log("latest question ID", currentQuestion.toNumber());
-      setLatestTokenId(currentQuestion.toNumber());
-    }
-  }, [currentQuestion]);
-
   return (
     <>
       <section className="tw-mx-auto tw-mb-7 tw-container">
-        {latestTokenId && (
+        {currentQuestion && (
           <AllQuestionsByState
             questionAPI={questionAPI}
-            latestQuestion={latestTokenId}
+            latestQuestion={currentQuestion}
             questionStateController={questionStateController}
             networkMatchesWallet={networkMatchesWallet}
           />

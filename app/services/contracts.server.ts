@@ -1,42 +1,30 @@
+import { ethers, providers } from "ethers";
+
+export type Contracts = ReturnType<typeof getContracts>;
 
 export function getContracts() {
-    let xMetricJson;
-    let questionAPIJson;
-    let questionStateController;
-    let bountyQuestionJson;
-    let costController;
-    let vaultJson;
+  const network = process.env.NETWORK ?? "localhost";
 
+  let xMetricJson = require(`core-evm-contracts/deployments/${network}/Xmetric.json`);
+  let questionAPIJson = require(`core-evm-contracts/deployments/${network}/QuestionAPI.json`);
+  let questionStateController = require(`core-evm-contracts/deployments/${network}/QuestionStateController.json`);
+  let bountyQuestionJson = require(`core-evm-contracts/deployments/${network}/BountyQuestion.json`);
+  let costController = require(`core-evm-contracts/deployments/${network}/ActionCostController.json`);
+  let vaultJson = require(`core-evm-contracts/deployments/${network}/Vault.json`);
 
-if (process.env.NETWORK === "ropsten") {
-    xMetricJson = require(`core-evm-contracts/deployments/ropsten/Xmetric.json`);
-    questionAPIJson = require(`core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
-    questionStateController = require(`core-evm-contracts/deployments/ropsten/QuestionStateController.json`);
-    bountyQuestionJson = require(`core-evm-contracts/deployments/ropsten/BountyQuestion.json`);
-    costController = require(`core-evm-contracts/deployments/ropsten/ActionCostController.json`);
-    vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
-    } else if (process.env.NETWORK === "polygon") {
-        xMetricJson = require(`core-evm-contracts/deployments/polygon/Xmetric.json`);
-        questionAPIJson = require(`core-evm-contracts/deployments/polygon/QuestionAPI.json`);
-        questionStateController = require(`core-evm-contracts/deployments/polygon/QuestionStateController.json`);
-        bountyQuestionJson = require(`core-evm-contracts/deployments/polygon/BountyQuestion.json`);
-        costController = require(`core-evm-contracts/deployments/polygon/ActionCostController.json`);
-        vaultJson = require(`core-evm-contracts/deployments/polygon/Vault.json`);
-    } else { //localhost
-        xMetricJson = require(`core-evm-contracts/deployments/localhost/Xmetric.json`);
-        questionAPIJson = require(`core-evm-contracts/deployments/localhost/QuestionAPI.json`);
-        questionStateController = require(`core-evm-contracts/deployments/localhost/QuestionStateController.json`);
-        bountyQuestionJson = require(`core-evm-contracts/deployments/localhost/BountyQuestion.json`);
-        costController = require(`core-evm-contracts/deployments/localhost/ActionCostController.json`);
-        vaultJson = require(`core-evm-contracts/deployments/localhost/Vault.json`);
-    }
+  const bountyQuestionContract = new ethers.Contract(
+    bountyQuestionJson.address,
+    bountyQuestionJson.abi,
+    new providers.AnkrProvider("matic") //TODO: which provider?
+  );
 
-    return {
-        xMetricJson,
-        questionAPIJson,
-        questionStateController,
-        bountyQuestionJson,
-        costController,
-        vaultJson
-    }
+  return {
+    xMetricJson,
+    questionAPIJson,
+    questionStateController,
+    bountyQuestionJson,
+    costController,
+    vaultJson,
+    bountyQuestionContract,
+  };
 }

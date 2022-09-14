@@ -2,26 +2,26 @@ import type { SetStateAction, Dispatch } from "react";
 import { useLoaderData } from "@remix-run/react";
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
-import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 import { filteredNetwork } from "~/utils/helpers";
 
 import { getContracts } from "~/services/contracts.server";
+import { withServices } from "~/services/with-services";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 
-export async function loader() {
-  const {
-    // xMetricJson,
-    questionAPIJson,
-    questionStateController,
-    bountyQuestionJson,
-  } = getContracts();
-  return {
-    // xMetricJson,
-    questionAPIJson,
-    questionStateController,
-    bountyQuestionJson,
-    network: process.env.NETWORK,
-  };
-}
+export const loader = async (data: DataFunctionArgs) => {
+  return withServices(data, async ({ bountyQuestion }) => {
+    const currentQuestion = await bountyQuestion.getCurrentQuestion();
+    const { questionAPIJson, questionStateController, bountyQuestionJson } = getContracts();
+    return {
+      questionAPIJson,
+      questionStateController,
+      bountyQuestionJson,
+      network: process.env.NETWORK ?? "localhost",
+      currentQuestion,
+    };
+  });
+};
 
 export default function Index() {
   const {
@@ -30,7 +30,8 @@ export default function Index() {
     questionStateController,
     bountyQuestionJson,
     network,
-  } = useLoaderData();
+    currentQuestion,
+  } = useLoaderData<ReturnType<typeof loader>>();
 
   // const xMETRICAbiAndAddress = {
   //   abi: xMetricJson.abi,
@@ -72,6 +73,7 @@ export default function Index() {
           // xmetric={xMETRICAbiAndAddress}
           bountyQuestion={bountyQuestionAbiAndAddress}
           networkMatchesWallet={chainName?.toLowerCase() === filteredNetwork(network)}
+          currentQuestion={currentQuestion}
         />
       </section>
     );
