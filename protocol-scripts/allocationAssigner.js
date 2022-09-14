@@ -2,7 +2,7 @@ const { ethers } = require("ethers");
 require('dotenv').config();
 const metricJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/MetricToken.json`);
 const topChefJson = require(`core-evm-contracts/deployments/${process.env.NETWORK}/TopChef.json`);
-const allocationGroups = require('../allocationGroups.json');
+const allocationGroups = require('./allocationGroups.json');
 
 // TODO change this to whatever provider is available based on env variables
 const provider = new ethers.providers.JsonRpcProvider();
@@ -17,10 +17,10 @@ async function init() {
     await metricToken.transfer(topChefJson.address, await metricToken.totalSupply())
 
     const alocGrps = allocationGroups;
-    for (let i=0; i<allocationGroups.length; i++) {
+    for (let i = 0; i < allocationGroups.length; i++) {
         try {
-        await topChef.addAllocationGroup(alocGrps[i].address, alocGrps[i].shares, alocGrps[i].autoDistribute);
-        } catch(error) {
+            await topChef.addAllocationGroup(alocGrps[i].address, alocGrps[i].shares);
+        } catch (error) {
             console.log("ERROR", error);
         }
     }

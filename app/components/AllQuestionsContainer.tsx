@@ -21,18 +21,14 @@ export default function AllQuestionContainer({
 }) {
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
 
-  const { data: currentQuestion } = useContractRead(
-    {
-      addressOrName: bountyQuestion.address,
-      contractInterface: bountyQuestion.abi,
+  const { data: currentQuestion } = useContractRead({
+    addressOrName: bountyQuestion.address,
+    contractInterface: bountyQuestion.abi,
+    functionName: "getMostRecentQuestion",
+    onError(err) {
+      console.error(err);
     },
-    "getMostRecentQuestion",
-    {
-      onError: (err) => {
-        console.error(err);
-      },
-    }
-  );
+  });
 
   useEffect(() => {
     if (BigNumber.isBigNumber(currentQuestion)) {
