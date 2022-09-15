@@ -10,7 +10,7 @@
     "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
     "dev": "concurrently \"npm run dev:css\" \"remix dev\"",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
-    "postinstall": "patch-package && remix setup node"
+    "postinstall": "patch-package && remix setup node && npm run generate:contracts"
   },
   "dependencies": {
     "@carbon/icons-react": "^10.44.0",
