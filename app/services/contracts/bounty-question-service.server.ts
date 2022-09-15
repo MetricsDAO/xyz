@@ -3,7 +3,7 @@ import { BigNumber, ethers } from "ethers";
 import type { ContractContext } from "~/types/generated/BountyQuestion";
 
 export default class BountyQuestionService {
-  bountyQuestionContract: ContractContext;
+  private bountyQuestionContract: ContractContext;
 
   constructor(provider: ethers.providers.Provider) {
     this.bountyQuestionContract = new ethers.Contract(
