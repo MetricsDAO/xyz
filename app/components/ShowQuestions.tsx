@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { usePrevious } from "~/utils/helpers";
+import { protocols, usePrevious } from "~/utils/helpers";
 
 import PaginatedItems from "./PaginatedItems";
 
@@ -26,9 +26,13 @@ export default function ShowQuestions({
   const previousQuestions = usePrevious(questions);
   const prevSelected = usePrevious(selected);
 
+  const selectAll = !protocols.reduce((acc, protocol) => {
+    return acc || selectedProgram[protocol.name];
+  }, false);
+
   if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions || prevSelected !== selected) {
     const property = selected === "Votes" ? "totalVotes" : "questionId";
-    if (selectedProgram["All"]) {
+    if (selectAll) {
       sorted = questions.sort((a: QuestionData, b: QuestionData) => {
         return a[property] < b[property] ? 1 : -1;
       });
