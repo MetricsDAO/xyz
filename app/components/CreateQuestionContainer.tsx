@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { useContractWrite } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
 import { TransactionStatus } from "~/utils/helpers";
 import { BigNumber } from "ethers";
@@ -34,39 +34,65 @@ export default function CreateQuestion({
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
   const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
-  const [fileUrl, setFileUrl] = useState<string>("");
+  const [fileUrl, setFileUrl] = useState<string>();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
-  const createQuestion = useContractWrite(
-    {
-      addressOrName: questionAPI.address,
-      contractInterface: questionAPI.abi,
+  const { config, isSuccess } = usePrepareContractWrite({
+    addressOrName: questionAPI.address,
+    contractInterface: questionAPI.abi,
+    functionName: "createQuestion",
+    args: network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl],
+    enabled: Boolean(fileUrl),
+    onError(err) {
+      console.error(err);
     },
-    "createQuestion",
-    {
-      onError: (err) => {
-        console.error(err);
-      },
-      onSettled(data, error) {
-        console.log("Settled", { data, error });
-        if (error) {
-          setWriteTransactionStatus(TransactionStatus.Failed);
-        }
-      },
-      onSuccess(data) {
-        console.log("Success", data);
-      },
-    }
-  );
+    onSettled(data, error) {
+      console.log("Settled", { data, error });
+      if (error) {
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    },
+    onSuccess(data) {
+      console.log("Success", data);
+    },
+  });
+  const { writeAsync } = useContractWrite(config);
 
   useEffect(() => {
-    if (fileUrl) {
+    async function askQuestion() {
+      console.log("fileURl", fileUrl);
+      setButtonDisabled(true);
+      try {
+        const txnResponse = await writeAsync?.();
+        const confirmation = await txnResponse?.wait();
+        if (confirmation?.blockNumber) {
+          setWriteTransactionStatus(TransactionStatus.Approved);
+          if (questionBody.current) {
+            questionBody.current.value = "";
+          }
+          if (questionTitle.current) {
+            questionTitle.current.value = "";
+          }
+          setSelectedProgram(protocols[0]);
+          setButtonDisabled(false);
+          setTimeout(() => {
+            setAlertContainerStatus(false);
+          }, 9000);
+        }
+      } catch (error) {
+        console.error("ERRRR", error);
+        setButtonDisabled(false);
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    }
+
+    if (isSuccess) {
       askQuestion();
     }
-  }, [fileUrl]);
+  }, [isSuccess, writeAsync, fileUrl]);
 
   async function ipfsUpload() {
     const questionBodyValue = questionBody.current?.value ?? "";
@@ -102,35 +128,6 @@ export default function CreateQuestion({
     } catch (error) {
       console.error("err!", error);
       setFileUrl("");
-    }
-  }
-  async function askQuestion() {
-    console.log("fileURl", fileUrl);
-    setButtonDisabled(true);
-    try {
-      const argumentsForWriteSync = network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl];
-      const txnResponse = await createQuestion.writeAsync({
-        args: argumentsForWriteSync,
-      });
-      const confirmation = await txnResponse.wait();
-      if (confirmation.blockNumber) {
-        setWriteTransactionStatus(TransactionStatus.Approved);
-        if (questionBody.current) {
-          questionBody.current.value = "";
-        }
-        if (questionTitle.current) {
-          questionTitle.current.value = "";
-        }
-        setSelectedProgram(protocols[0]);
-        setButtonDisabled(false);
-        setTimeout(() => {
-          setAlertContainerStatus(false);
-        }, 9000);
-      }
-    } catch (error) {
-      console.error("ERRRR", error);
-      setButtonDisabled(false);
-      setWriteTransactionStatus(TransactionStatus.Failed);
     }
   }
 
