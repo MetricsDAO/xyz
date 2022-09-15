@@ -37,9 +37,15 @@ export default function AllQuestionsByState({
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
 
-  const [selected, setSelected] = useState<Record<string, string>>(sortMethods[0]);
+  const [selected, setSelected] = useState(sortMethods[0].name);
 
-  const [selectedProgram, setSelectedProgram] = useState<Record<string, string>>(protocols[0]);
+  const [selectedProgram, setSelectedProgram] = useState(
+    protocols.reduce((acc, protocol) => {
+      acc[protocol.name] = false;
+      return acc;
+    }, {} as { [key: string]: boolean })
+  );
+
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 
   const [getTotalVotes, setGetTotalVotes] = useState<number>(0);
@@ -238,7 +244,6 @@ export default function AllQuestionsByState({
               selected={selected}
               setSelectedProgram={setSelectedProgram}
               selectedProgram={selectedProgram}
-              questions={questionArray}
             />
           </div>
           <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">
@@ -252,7 +257,10 @@ export default function AllQuestionsByState({
             />
           </div>
           <div className="tw-border tw-basis-1/4 tw-p-2">
-            <button disabled={true} className="tw-p-2"> + Create question </button>
+            <button disabled={true} className="tw-p-2">
+              {" "}
+              + Create question{" "}
+            </button>
             <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
             <div className="tw-p-5">
               <p className="tw-font-bold">Be specific</p>

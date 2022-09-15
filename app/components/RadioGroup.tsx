@@ -1,4 +1,3 @@
-import { Checkbox32, CheckboxChecked32 } from "@carbon/icons-react";
 import { RadioGroup } from "@headlessui/react";
 import type { Dispatch, SetStateAction } from "react";
 import { sortMethods } from "~/utils/helpers";
@@ -7,11 +6,9 @@ export default function MyRadioGroup({
   setSelected,
   selected,
 }: {
-  setSelected: Dispatch<SetStateAction<Record<string, string>>>;
-  selected: Record<string, string>;
+  setSelected: Dispatch<SetStateAction<string>>;
+  selected: string;
 }) {
-  // const [selected, setSelected] = useState(sortMethods[0])
-
   return (
     <div className="tw-mx-auto tw-w-full tw-max-w-md tw-pb-1">
       <RadioGroup value={selected} onChange={setSelected}>
@@ -21,35 +18,30 @@ export default function MyRadioGroup({
             <RadioGroup.Option
               key={plan.name}
               value={plan.name}
-              className={`tw-bg-white tw-relative tw-flex tw-cursor-pointer tw-px-5 tw-py-2 tw-focus:outline-none`
-              }
+              className={`tw-relative tw-flex tw-cursor-pointer tw-px-5 tw-py-2 tw-focus:outline-none ${
+                plan.name == selected ? "tw-bg-[#f0f4fc] " : "tw-bg-white hover:tw-bg-[#f8f4f4]"
+              }`}
             >
-              {({ checked }) => (
-                <>
-                  <div className="tw-flex tw-w-full tw-items-center tw-justify-between">
-                    <div className="tw-flex tw-items-center tw-pr-4">
-                      <div className="text-sm">
-                        <RadioGroup.Label
-                          as="p"
-                          className={`tw-font-medium  ${checked ? "tw-text-[#2563EB]" : "tw-text-gray-900" }`}
-                        >
-                          {plan.name}
-                        </RadioGroup.Label>
-                      </div>
-                    </div>
-                    {checked ? (
-                      <div className="tw-shrink-0 tw-bg-[#2563EB] tw-text-white">
-                        <CheckboxChecked32 className="tw-h-6 tw-w-6" />
-                      </div>
-                    ): (
-                      <div className="tw-shrink-0 tw-text-[#E7E8E9]">
-                        <Checkbox32 className="tw-h-6 tw-w-6" />
-                      </div>
-                    )
-                    }
+              <div className="tw-flex tw-w-full tw-items-center tw-justify-between">
+                <div className="tw-flex tw-items-center tw-pr-4">
+                  <div className="text-sm">
+                    <RadioGroup.Label
+                      as="p"
+                      className={`tw-font-medium  ${plan.name == selected ? "tw-text-[#2563EB]" : "tw-text-gray-900"}`}
+                    >
+                      {plan.name}
+                    </RadioGroup.Label>
                   </div>
-                </>
-              )}
+                </div>
+                <input
+                  type="checkbox"
+                  id={plan.name}
+                  value={plan.name}
+                  name={plan.name}
+                  checked={plan.name == selected}
+                  className="tw-h-6 tw-w-6 tw-absolute tw-right-5"
+                />
+              </div>
             </RadioGroup.Option>
           ))}
         </div>

@@ -16,8 +16,8 @@ export default function ShowQuestions({
 }: {
   questions: QuestionData[];
   initUpVoteQuestion: (questionID: number) => {};
-  selected: Record<string, string>;
-  selectedProgram: Record<string, string>;
+  selected: string;
+  selectedProgram: { [key: string]: boolean };
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
 }) {
@@ -27,8 +27,8 @@ export default function ShowQuestions({
   const prevSelected = usePrevious(selected);
 
   if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions || prevSelected !== selected) {
-    const property = selected.name === "Votes" ? "totalVotes" : "questionId";
-    if (selectedProgram.name === "All") {
+    const property = selected === "Votes" ? "totalVotes" : "questionId";
+    if (selectedProgram["All"]) {
       sorted = questions.sort((a: QuestionData, b: QuestionData) => {
         return a[property] < b[property] ? 1 : -1;
       });
@@ -36,7 +36,7 @@ export default function ShowQuestions({
       //filter then sort it
       sorted = questions
         .filter((obj: QuestionData) => {
-          return obj.program == selectedProgram.name;
+          return selectedProgram[obj.program];
         })
         .sort((a: QuestionData, b: QuestionData) => {
           return a[property] < b[property] ? 1 : -1;
@@ -64,7 +64,7 @@ export default function ShowQuestions({
         buttonDisabled={buttonDisabled}
         itemsPerPage={PAGINATION_AMOUNT}
         initUpVoteQuestion={initUpVoteQuestion}
-        name={selected.name}
+        name={selected}
       />
     );
   }
