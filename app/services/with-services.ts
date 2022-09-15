@@ -9,9 +9,9 @@ type Services = {
 const contracts = getContracts();
 
 function withServices<T>(data: DataFunctionArgs, fn: (services: Services) => Promise<T>) {
-  const bountyQuestionContract = new BountyQuestionService(contracts.bountyQuestionContract);
+  const bountyQuestionService = new BountyQuestionService(contracts.bountyQuestionContract);
   return fn({
-    bountyQuestion: bountyQuestionContract,
+    bountyQuestion: bountyQuestionService,
   });
 }
 
