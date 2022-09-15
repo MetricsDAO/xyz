@@ -37,17 +37,17 @@ export default function Index() {
   // };
 
   const questionAPIAbiAndAddress = {
-    abi: questionAPIJson.abi,
+    abi: questionAPIJson.abi as unknown as string,
     address: questionAPIJson.address,
   };
 
   const questionStateControllerAbiandAddress = {
-    abi: questionStateController.abi,
+    abi: questionStateController.abi as unknown as string,
     address: questionStateController.address,
   };
 
   const bountyQuestionAbiAndAddress = {
-    abi: bountyQuestionJson.abi,
+    abi: bountyQuestionJson.abi as unknown as string,
     address: bountyQuestionJson.address,
   };
 
