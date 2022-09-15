@@ -14,7 +14,7 @@ export function getContracts() {
   const bountyQuestionContract = new ethers.Contract(
     bountyQuestionJson.address,
     bountyQuestionJson.abi,
-    new providers.AnkrProvider("matic") //TODO: which provider?
+    providers.getDefaultProvider(process.env.NETWORK === "polygon" ? "matic" : undefined)
   ) as unknown as ContractContext;
 
   return {
