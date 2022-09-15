@@ -4,19 +4,17 @@ import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
 import { filteredNetwork } from "~/utils/helpers";
 
-import { getContracts } from "~/services/contracts.server";
 import { withServices } from "~/services/with-services";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 
 export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async ({ bountyQuestion }) => {
+  return withServices(data, async ({ bountyQuestion, contracts }) => {
     const currentQuestion = await bountyQuestion.getCurrentQuestion();
-    const { questionAPIJson, questionStateControllerJson, bountyQuestionJson } = getContracts();
     return {
-      questionAPIJson,
-      questionStateController: questionStateControllerJson,
-      bountyQuestionJson,
+      questionAPIJson: contracts.questionAPIJson,
+      questionStateController: contracts.questionStateControllerJson,
+      bountyQuestionJson: contracts.bountyQuestionJson,
       network: process.env.NETWORK ?? "localhost",
       currentQuestion,
     };

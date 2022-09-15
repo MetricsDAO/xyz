@@ -6,19 +6,20 @@ import Wrapper from "~/components/Wrapper";
 import ConnectWalletButton from "~/components/ConnectWalletButton";
 import CreateQuestionContainer from "~/components/CreateQuestionContainer";
 
-import { getContracts } from "~/services/contracts.server";
-
 import NetworkRender from "~/components/NetworkRender";
+import { withServices } from "~/services/with-services";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
 
-export async function loader() {
-  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts();
-  return {
-    xMetricJson,
-    questionAPIJson,
-    vaultJson,
-    costController,
-    network: process.env.NETWORK,
-  };
+export async function loader(data: DataFunctionArgs) {
+  return withServices(data, async ({ contracts }) => {
+    return {
+      xMetricJson: contracts.xMetricJson,
+      questionAPIJson: contracts.questionAPIJson,
+      vaultJson: contracts.vaultJson,
+      costController: contracts.costControllerJson,
+      network: process.env.NETWORK,
+    };
+  });
 }
 
 export default function Index() {
