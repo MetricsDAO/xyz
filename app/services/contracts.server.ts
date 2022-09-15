@@ -1,29 +1,36 @@
 import { ethers, providers } from "ethers";
-import type { ContractContext } from "~/types/generated/BountyQuestion";
+import type { ContractContext as BountyQuestionContractContext } from "~/types/generated/BountyQuestion";
 
 export type Contracts = ReturnType<typeof getContracts>;
 
 export function getContracts() {
-  let xMetricJson = require(`contracts/Xmetric.json`);
-  let questionAPIJson = require(`contracts/QuestionAPI.json`);
-  let questionStateController = require(`contracts/QuestionStateController.json`);
-  let bountyQuestionJson = require(`contracts/BountyQuestion.json`);
-  let costController = require(`contracts/ActionCostController.json`);
-  let vaultJson = require(`contracts/Vault.json`);
-
-  const bountyQuestionContract = new ethers.Contract(
-    bountyQuestionJson.address,
-    bountyQuestionJson.abi,
-    providers.getDefaultProvider(process.env.NETWORK === "polygon" ? "matic" : undefined)
-  ) as unknown as ContractContext;
+  const xMetricJson = require(`contracts/Xmetric.json`);
+  const questionAPIJson = require(`contracts/QuestionAPI.json`);
+  const questionStateControllerJson = require(`contracts/QuestionStateController.json`);
+  const bountyQuestionJson = require(`contracts/BountyQuestion.json`);
+  const costControllerJson = require(`contracts/ActionCostController.json`);
+  const vaultJson = require(`contracts/Vault.json`);
 
   return {
     xMetricJson,
     questionAPIJson,
-    questionStateController,
+    questionStateControllerJson,
     bountyQuestionJson,
-    costController,
+    costControllerJson,
     vaultJson,
+  };
+}
+
+export function getEthersContracts(contracts: Contracts) {
+  const provider = providers.getDefaultProvider(process.env.NETWORK === "polygon" ? "matic" : undefined);
+
+  const bountyQuestionContract = new ethers.Contract(
+    contracts.bountyQuestionJson.address,
+    contracts.bountyQuestionJson.abi,
+    provider
+  ) as unknown as BountyQuestionContractContext;
+
+  return {
     bountyQuestionContract,
   };
 }

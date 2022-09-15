@@ -12,10 +12,10 @@ import AllQuestionsContainer from "~/components/AllQuestionsContainer";
 export const loader = async (data: DataFunctionArgs) => {
   return withServices(data, async ({ bountyQuestion }) => {
     const currentQuestion = await bountyQuestion.getCurrentQuestion();
-    const { questionAPIJson, questionStateController, bountyQuestionJson } = getContracts();
+    const { questionAPIJson, questionStateControllerJson, bountyQuestionJson } = getContracts();
     return {
       questionAPIJson,
-      questionStateController,
+      questionStateController: questionStateControllerJson,
       bountyQuestionJson,
       network: process.env.NETWORK ?? "localhost",
       currentQuestion,
