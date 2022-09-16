@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useContractRead, useContractWrite, useContract, useProvider } from "wagmi";
+import { useContractRead, useContractWrite, usePrepareContractWrite, useContract, useProvider } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AlertBanner from "~/components/AlertBanner";
@@ -47,51 +47,48 @@ export default function AllQuestionsByState({
   );
 
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+  const [questionIdToVote, setQuestionIdToVote] = useState<number>();
 
   const [getTotalVotes, setGetTotalVotes] = useState<number>(0);
 
   const prevTokenId = usePrevious(latestQuestion);
   const provider = useProvider();
 
-  const { data: questionData } = useContractRead(
-    {
-      addressOrName: questionStateController.address,
-      contractInterface: questionStateController.abi,
+  const { data: questionData } = useContractRead({
+    addressOrName: questionStateController.address,
+    contractInterface: questionStateController.abi,
+    functionName: "getQuestionsByState",
+    args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
+    enabled: true,
+    cacheOnBlock: true,
+    onError: (err) => {
+      console.error(err);
     },
-    "getQuestionsByState",
-    {
-      args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
-      enabled: true,
-      cacheOnBlock: true,
-      onError: (err) => {
-        console.error(err);
-      },
-    }
-  );
+  });
 
   const prevQuestionData = usePrevious(questionData);
 
-  const upVoteQuestion = useContractWrite(
-    {
-      addressOrName: questionAPI.address,
-      contractInterface: questionAPI.abi,
+  const { config, isSuccess } = usePrepareContractWrite({
+    addressOrName: questionAPI.address,
+    contractInterface: questionAPI.abi,
+    functionName: "upvoteQuestion",
+    args: questionIdToVote ? [BigNumber.from(questionIdToVote)] : [],
+    enabled: Boolean(questionIdToVote),
+    onError(err) {
+      console.error(err);
     },
-    "upvoteQuestion",
-    {
-      onError: (err) => {
-        console.error(err);
-      },
-      onSettled(data, error) {
-        console.log("Settled", { data, error });
-        if (error) {
-          setWriteTransactionStatus(TransactionStatus.Failed);
-        }
-      },
-      onSuccess(data) {
-        console.log("Success", data);
-      },
-    }
-  );
+    onSettled(data, error) {
+      console.log("Settled", { data, error });
+      if (error) {
+        setWriteTransactionStatus(TransactionStatus.Failed);
+      }
+    },
+    onSuccess(data) {
+      console.log("Success", data);
+    },
+  });
+
+  const { writeAsync } = useContractWrite(config);
 
   const questionAPIContract = useContract({
     addressOrName: questionStateController.address,
@@ -205,31 +202,34 @@ export default function AllQuestionsByState({
     }
   }, [getTotalVotes, questionAPIContract]);
 
-  async function initUpVoteQuestion(questionId: number) {
-    setWriteTransactionStatus(TransactionStatus.Pending);
-    setAlertContainerStatus(true);
-    setButtonDisabled(true);
-    try {
-      const approvetxnResponse = await upVoteQuestion.writeAsync({
-        args: [BigNumber.from(questionId)],
-      });
-      console.log("approvetxnResponse", approvetxnResponse);
-      const approveconfirmation = await approvetxnResponse.wait();
-      console.log("approveconfirmation", approveconfirmation);
-      if (approveconfirmation.blockNumber) {
-        setWriteTransactionStatus(TransactionStatus.Approved);
+  useEffect(() => {
+    async function initUpVoteQuestion() {
+      if (!isSuccess || !questionIdToVote) return
+
+      setWriteTransactionStatus(TransactionStatus.Pending);
+      setAlertContainerStatus(true);
+      setButtonDisabled(true);
+      try {
+        const approvetxnResponse = await writeAsync?.();
+        const approveconfirmation = await approvetxnResponse?.wait();
+        if (approveconfirmation?.blockNumber) {
+          setWriteTransactionStatus(TransactionStatus.Approved);
+          setButtonDisabled(false);
+          setGetTotalVotes(questionIdToVote);
+          setTimeout(async () => {
+            setAlertContainerStatus(false);
+          }, 9000);
+        }
+      } catch (error) {
+        console.error("ERRR", error);
+        setWriteTransactionStatus(TransactionStatus.Failed);
         setButtonDisabled(false);
-        setGetTotalVotes(questionId);
-        setTimeout(async () => {
-          setAlertContainerStatus(false);
-        }, 9000);
       }
-    } catch (error) {
-      console.error("ERRR", error);
-      setWriteTransactionStatus(TransactionStatus.Failed);
-      setButtonDisabled(false);
     }
-  }
+
+    initUpVoteQuestion();
+  }, [isSuccess, writeAsync, questionIdToVote])
+
 
   return (
     <>
@@ -251,7 +251,7 @@ export default function AllQuestionsByState({
               selected={selected}
               selectedProgram={selectedProgram}
               questions={questionArray}
-              initUpVoteQuestion={initUpVoteQuestion}
+              setQuestionIdToVote={setQuestionIdToVote}
               networkMatchesWallet={networkMatchesWallet}
               buttonDisabled={buttonDisabled}
             />

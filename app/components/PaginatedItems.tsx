@@ -6,14 +6,14 @@ import { CaretUp32 } from "@carbon/icons-react";
 import type { QuestionData } from "~/utils/types";
 export default function PaginatedItems({
   questions,
-  initUpVoteQuestion,
+  setQuestionIdToVote,
   networkMatchesWallet,
   buttonDisabled,
   itemsPerPage,
   name,
 }: {
   questions: QuestionData[];
-  initUpVoteQuestion: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
   itemsPerPage: number;
@@ -38,7 +38,7 @@ export default function PaginatedItems({
     <>
       <Items
         currentItems={currentItems}
-        initUpVoteQuestion={initUpVoteQuestion}
+        setQuestionIdToVote={setQuestionIdToVote}
         networkMatchesWallet={networkMatchesWallet}
         buttonDisabled={buttonDisabled}
       />
@@ -57,12 +57,12 @@ export default function PaginatedItems({
 
 function Items({
   currentItems,
-  initUpVoteQuestion,
+  setQuestionIdToVote,
   networkMatchesWallet,
   buttonDisabled,
 }: {
   currentItems: QuestionData[];
-  initUpVoteQuestion: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
 }) {
@@ -73,7 +73,7 @@ function Items({
           return (
             <FilteredQuestions
               key={questionObj.questionId}
-              initUpVoteQuestion={initUpVoteQuestion}
+              setQuestionIdToVote={setQuestionIdToVote}
               question={questionObj}
               networkMatchesWallet={networkMatchesWallet}
               buttonDisabled={buttonDisabled}
@@ -86,12 +86,12 @@ function Items({
 
 export function FilteredQuestions({
   question,
-  initUpVoteQuestion,
+  setQuestionIdToVote,
   networkMatchesWallet,
   buttonDisabled,
 }: {
   question: QuestionData;
-  initUpVoteQuestion: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
 }) {
@@ -115,7 +115,7 @@ export function FilteredQuestions({
               className={`${buttonDisabled ? "tw-cursor-default tw-opacity-25 " : "tw-cursor-pointer tw-opacity-100"}`}
               onClick={() => {
                 if (buttonDisabled) return false;
-                initUpVoteQuestion(question.questionId);
+                setQuestionIdToVote(question.questionId);
               }}
             />
             <span>{question.totalVotes}</span>

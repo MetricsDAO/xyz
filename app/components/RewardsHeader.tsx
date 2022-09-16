@@ -26,7 +26,7 @@ export default function RewardsHeader({
   address: string | undefined;
   disconnect: () => void;
   network: string;
-  chainId: number;
+  chainId?: number;
   switchNetwork?: (chainId?: number) => void;
   chainName?: string;
   activeConnector?: string | undefined;

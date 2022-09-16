@@ -8,14 +8,14 @@ import { PAGINATION_AMOUNT } from "~/utils/helpers";
 
 export default function ShowQuestions({
   questions,
-  initUpVoteQuestion,
+  setQuestionIdToVote,
   selected,
   selectedProgram,
   networkMatchesWallet,
   buttonDisabled,
 }: {
   questions: QuestionData[];
-  initUpVoteQuestion: (questionID: number) => {};
+  setQuestionIdToVote: (questionID?: number) => void;
   selected: string;
   selectedProgram: { [key: string]: boolean };
   networkMatchesWallet: boolean;
@@ -66,8 +66,8 @@ export default function ShowQuestions({
         networkMatchesWallet={networkMatchesWallet}
         buttonDisabled={buttonDisabled}
         itemsPerPage={PAGINATION_AMOUNT}
-        initUpVoteQuestion={initUpVoteQuestion}
-        name={selected}
+        setQuestionIdToVote={setQuestionIdToVote}
+        name={selected.name}
       />
     );
   }

@@ -2,7 +2,7 @@ import { useConnect } from "wagmi";
 import { getIcon } from "~/utils/helpers";
 import { ChevronRight16 } from "@carbon/icons-react";
 export default function SelectWallet() {
-  const { connect, connectors, error, isConnecting, pendingConnector } =
+  const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
 
   return (
@@ -11,7 +11,7 @@ export default function SelectWallet() {
         <button
           disabled={!connector.ready}
           key={connector.id}
-          onClick={() => connect(connector)}
+          onClick={() => connect({ connector })}
           className="tw-p-5 tw-mb-4 tw-border tw-rounded-lg tw-border-gray-300 tw-flex tw-items-center"
         >
           <img
@@ -24,7 +24,7 @@ export default function SelectWallet() {
           <span>
             {connector.name === "Injected" ? "Browser Wallet" : connector.name}
             {!connector.ready && " (unsupported)"}
-            {isConnecting &&
+            {isLoading &&
               connector.id === pendingConnector?.id &&
               " (connecting)"}
           </span>
