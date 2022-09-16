@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react";
 import type { ReactElement } from "react";
-import { useEffect, useState, cloneElement, isValidElement } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { Buffer } from "buffer";
 import Modal from "./Modal";
@@ -65,7 +65,7 @@ export default function Wrapper({ children, network }: { children?: ReactElement
         activeConnector={activeConnectorName}
       />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen} selectWallet={true} />
-      {isValidElement(children) && cloneElement(children, { setIsOpen, address, chainName, chainId, switchNetwork })}
+      {children}
     </div>
   );
 }

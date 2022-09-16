@@ -1,29 +1,33 @@
 import { useEffect, useState } from "react";
-import { useContractRead } from "wagmi";
+import { useContractRead, useNetwork } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
+import { useContracts } from "~/hooks/useContracts";
 
-export default function AllQuestionContainer({
-  address,
-  questionAPI,
-  xmetric,
-  questionStateController,
-  bountyQuestion,
-  networkMatchesWallet,
-}: {
-  address?: string;
-  questionAPI: Record<string, string>;
-  xmetric?: Record<string, string>;
-  questionStateController: Record<string, string>;
-  bountyQuestion: Record<string, string>;
-  networkMatchesWallet: boolean;
-}) {
+export default function AllQuestionContainer() {
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
+  const { chain } = useNetwork();
+  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ chainId: chain?.id });
+
+  const questionAPIAbiAndAddress = {
+    abi: questionAPIJson?.abi,
+    address: questionAPIJson?.address,
+  };
+
+  const questionStateControllerAbiandAddress = {
+    abi: questionStateController?.abi,
+    address: questionStateController?.address,
+  };
+
+  const bountyQuestionAbiAndAddress = {
+    abi: bountyQuestionJson?.abi,
+    address: bountyQuestionJson?.address,
+  };
 
   const { data: currentQuestion } = useContractRead({
-    addressOrName: bountyQuestion.address,
-    contractInterface: bountyQuestion.abi,
+    addressOrName: bountyQuestionAbiAndAddress?.address,
+    contractInterface: bountyQuestionAbiAndAddress?.abi,
     functionName: "getMostRecentQuestion",
     onError(err) {
       console.error(err);
@@ -37,15 +41,20 @@ export default function AllQuestionContainer({
     }
   }, [currentQuestion]);
 
+  // TODO
+  if (!bountyQuestionJson) {
+    return <>Chain not supported yet</>;
+  }
+
   return (
     <>
       <section className="tw-mx-auto tw-mb-7 tw-container">
         {latestTokenId && (
           <AllQuestionsByState
-            questionAPI={questionAPI}
+            questionAPI={questionAPIAbiAndAddress}
             latestQuestion={latestTokenId}
-            questionStateController={questionStateController}
-            networkMatchesWallet={networkMatchesWallet}
+            questionStateController={questionStateControllerAbiandAddress}
+            networkMatchesWallet={false}
           />
         )}
       </section>
