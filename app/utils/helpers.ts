@@ -80,3 +80,14 @@ export function filterSortCsvData(questionArray: QuestionData[]) {
     return obj;
   });
 }
+
+export enum chainNameToId {
+    "polygon" = 137,
+    "hardhat" = 31337,
+    "localhost" = 31337,
+    "ropsten" = 3
+}
+
+export function desiredChainId(chainName: string) {
+  return chainNameToId[chainName as keyof typeof chainNameToId];
+} 

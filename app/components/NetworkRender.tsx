@@ -23,7 +23,7 @@ export default function NetworkRender({
           >
             <p className="tw-mb-2"> You are currently connected to {chainName}</p>
             <button
-              onClick={() => switchNetwork(chainId)}
+              onClick={() => switchNetwork()}
               className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
             >
               switch network

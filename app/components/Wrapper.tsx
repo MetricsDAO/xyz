@@ -3,19 +3,20 @@ import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { Buffer } from "buffer";
+import { desiredChainId } from "~/utils/helpers";
 import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
 
 export default function Wrapper({ children, network }: { children?: ReactElement; network: string }) {
   let link: string;
   let linkText: string;
-
+  
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchNetwork } = useSwitchNetwork({ chainId: desiredChainId(network) });
 
   useEffect(() => {
     if (address && isOpen) {
