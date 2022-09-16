@@ -14,6 +14,7 @@ export default function MultiSelect({
 
   return (
     <div className="tw-mx-auto tw-w-full tw-max-w-md tw-pb-1">
+      <label className="tw-px-5 tw-py-2 tw-text-[#A3A3A3]">Projects</label>
       {protocols.map((plan) => (
         <div
           onChange={(checked) => handleCheckbox(plan.name)}
