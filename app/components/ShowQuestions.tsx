@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { protocols, usePrevious } from "~/utils/helpers";
+import { usePrevious } from "~/utils/helpers";
 
 import PaginatedItems from "./PaginatedItems";
 
