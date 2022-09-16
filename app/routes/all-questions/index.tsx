@@ -16,7 +16,7 @@ export default function Index() {
     <WalletProvider network={network}>
       <Wrapper network={network}>
         <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
-          <AllQuestionsContainer />
+          <AllQuestionsContainer network={network} />
         </section>
       </Wrapper>
     </WalletProvider>

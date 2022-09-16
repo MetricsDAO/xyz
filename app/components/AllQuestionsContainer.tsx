@@ -4,11 +4,12 @@ import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
 import { useContracts } from "~/hooks/useContracts";
+import { desiredChainId } from "~/utils/helpers"
 
-export default function AllQuestionContainer() {
+export default function AllQuestionContainer({network}: {network: string}) {
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
-  const { chain } = useNetwork();
-  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ chainId: chain?.id });
+  const chainId = desiredChainId(network);
+  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ chainId: chainId });
 
   const questionAPIAbiAndAddress = {
     abi: questionAPIJson?.abi,
