@@ -26,9 +26,8 @@ export default function ShowQuestions({
   const previousQuestions = usePrevious(questions);
   const prevSelected = usePrevious(selected);
 
-  const selectAll = !protocols.reduce((acc, protocol) => {
-    return acc || selectedProgram[protocol.name];
-  }, false);
+  // If no checkbox selected, show all questions
+  const selectAll = !Object.keys(selectedProgram).find((key) => selectedProgram[key] === true);
 
   if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions || prevSelected !== selected) {
     const property = selected === "Votes" ? "totalVotes" : "questionId";

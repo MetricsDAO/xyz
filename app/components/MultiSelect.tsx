@@ -18,6 +18,7 @@ export default function MultiSelect({
         <div
           onChange={(checked) => handleCheckbox(plan.name)}
           className={` ${selectedProgram[plan.name] ? "tw-bg-[#f0f4fc] " : "tw-bg-white hover:tw-bg-[#f8f4f4]"}`}
+          key={plan.name}
         >
           <label
             className={`tw-relative tw-w-full tw-flex tw-cursor-pointer tw-px-5 tw-py-2 tw-focus:outline-none
