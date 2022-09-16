@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Chain } from "wagmi";
 
 export function useContracts({ chainId }: { chainId?: Chain["id"] }) {
-  console.log("useContracts", chainId);
-  const [{ xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, costController, vaultJson }] =
-    useState(getContracts(chainId));
+  const [
+    { xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, costController, vaultJson },
+    setContracts,
+  ] = useState(getContracts(chainId));
+
+  useEffect(() => {
+    setContracts(getContracts(chainId));
+  }, [chainId]);
 
   return {
     xMetricJson,
