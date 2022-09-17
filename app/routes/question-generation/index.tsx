@@ -77,12 +77,7 @@ export default function Index() {
             />
           </NetworkRender>
         ) : (
-          // <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
-          // TODO: I currently cannot think of a great way to include the connection Modal when all the state vars needed
-          // are inside of the wrapper component. We cannot access wagmi hooks without being inside of 
-          // WalletProvider either, so a different heirarchy is needed. My current solution is to put WalletProvider 
-          // and Wrapper outside of the Router. Any comment or alternative to this is welcomed.
-          <h1 className="tw-text-center">Connect your wallet to create a question.</h1>
+          <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
         )}
       </section>
     );

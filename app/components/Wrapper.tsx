@@ -1,9 +1,9 @@
 import { useLocation } from "@remix-run/react";
 import type { ReactElement } from "react";
+import { cloneElement, isValidElement } from "react";
 import { useEffect, useState } from "react";
-import { useAccount, useDisconnect, useNetwork, useSwitchNetwork, useProvider, useSigner } from "wagmi";
+import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { Buffer } from "buffer";
-import { BigNumber } from "ethers";
 import { desiredChainId } from "~/utils/helpers";
 import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
@@ -16,12 +16,7 @@ export default function Wrapper({ children, network }: { children?: ReactElement
   const location = useLocation();
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
-  const { chain, chains } = useNetwork();
-  
-  const provider = useProvider();
-  const desiredChain = chains.filter(chainObj => {
-    return chainObj.name.toLowerCase() === network
-  })[0]
+  const { chain } = useNetwork();
 
   const { switchNetwork } = useSwitchNetwork({ 
     chainId: desiredChainId(network),
@@ -97,7 +92,7 @@ export default function Wrapper({ children, network }: { children?: ReactElement
         activeConnector={activeConnectorName}
       />
       <Modal isOpen={isOpen} setIsOpen={setIsOpen} selectWallet={true} />
-      {children}
+      {isValidElement(children) && cloneElement(children, { setIsOpen, address, chainName, chainId, switchNetwork })}
     </div>
   );
 }
