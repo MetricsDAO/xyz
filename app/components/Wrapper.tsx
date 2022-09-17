@@ -4,7 +4,6 @@ import { cloneElement, isValidElement } from "react";
 import { useEffect, useState } from "react";
 import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { Buffer } from "buffer";
-import { desiredChainId } from "~/utils/helpers";
 import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
 
@@ -16,33 +15,53 @@ export default function Wrapper({ children, network }: { children?: ReactElement
   const location = useLocation();
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
-  const { chain } = useNetwork();
+  const { chain, chains } = useNetwork();
+  
+  const primaryChainObj = chains.filter(chainObj => {
+    return chainObj.name.toLowerCase() === network
+  })[0]
 
   const { switchNetwork } = useSwitchNetwork({ 
-    chainId: desiredChainId(network),
-    onError(error) {
-      console.log("Network switch error", error)
-      if (error.toString() == "AddChainError: Error adding chain") {
-        console.log("Trying to add network to wallet...");
-        // TODO: Some chains are not configured within Metamask and cannot switch without an RPC
-        //       wallet_addEthereumChain call. The code below half works, but only for Metamask.
-        //       There has got to be a better solution, however it is not completely necessary as
-        //       the only chain I've noticed an issue with is hardhat/localhost.
-        // try {
-        //    window?.ethereum?.request({
-        //     method: 'wallet_addEthereumChain',
-        //     params: [{
-        //       chainId: BigNumber.from(desiredChain.id).toHexString(),
-        //       rpcUrls: [desiredChain.rpcUrls.default]
-        //     }]
-        //   });
-        // }
-        // catch(error) {
-        //   console.log("error adding chain", error);
-        // }
-      }
+    chainId: primaryChainObj.id,
+    onError() {
+        tryRPCSwitchNetwork();
     }
   });
+
+  async function tryRPCSwitchNetwork() {
+    try {
+      console.log("Trying RPC switch chain");
+      await window?.ethereum?.request({
+        method: 'wallet_switchEthereumChain', 
+        params: [{ 
+          chainId: primaryChainObj.id.toString(16),
+        }]
+      })
+    }
+    catch (error) {
+      console.log("Error with RPC switch. Attempting to add chain with RPC.", error);
+      // TODO: Some chains are not configured within Metamask and cannot switch without an RPC
+      // wallet_addEthereumChain call. The switch chain RPC call works but this add chain
+      // does not, despite being copy pasta'd from multiple documentations. This is mainly
+      // reproduced when the primary chain is hardhat/localhost.
+      // TODO: Linting issues?
+      // try {
+      //   await window?.ethereum?.request({
+      //     method: 'wallet_addEthereumChain',
+      //     params: [{
+      //       chainId: primaryChainObj.id.toString(16),
+      //       rpcUrls: [primaryChainObj.rpcUrls.default],
+      //       chainName: primaryChainObj.name,
+      //       nativeCurrency: primaryChainObj.nativeCurrency,
+      //       blockExplorerUrls: [primaryChainObj.blockExplorers],
+      //     }]
+      //   });
+      // }
+      // catch (error) {
+      //   console.log("Could not add chain", error)
+      // }
+    }
+  }
 
   useEffect(() => {
     if (address && isOpen) {

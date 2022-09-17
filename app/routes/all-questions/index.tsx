@@ -5,20 +5,21 @@ import Wrapper from "~/components/Wrapper";
 
 export async function loader() {
   return {
-    network: process.env.NETWORK,
+    primaryNetwork: process.env.NETWORK,
   };
 }
 
 export default function Index() {
-  const { network } = useLoaderData();
+  const { primaryNetwork } = useLoaderData();
 
   return (
-    <WalletProvider network={network}>
-      <Wrapper network={network}>
+    <WalletProvider network={primaryNetwork}>
+      <>
+        <Wrapper network={primaryNetwork} />
         <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
-          <AllQuestionsContainer network={network} />
+          <AllQuestionsContainer primaryNetwork={primaryNetwork} />
         </section>
-      </Wrapper>
+      </>
     </WalletProvider>
   );
 }

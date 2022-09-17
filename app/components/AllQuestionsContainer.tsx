@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
-import { useContractRead } from "wagmi";
+import { useContractRead, useNetwork } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
 import { useContracts } from "~/hooks/useContracts";
 import { desiredChainId } from "~/utils/helpers"
 
-export default function AllQuestionContainer({network}: {network: string}) {
+export default function AllQuestionContainer({
+  primaryNetwork, 
+}: {
+  primaryNetwork: string;
+}) {
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
-  const chainId = desiredChainId(network);
-  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ network: network });
+  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ network: primaryNetwork });
+  const { chain } = useNetwork();
+  const primaryChainId = desiredChainId(primaryNetwork);
 
   const questionAPIAbiAndAddress = {
     abi: questionAPIJson?.abi,
@@ -30,7 +35,7 @@ export default function AllQuestionContainer({network}: {network: string}) {
     addressOrName: bountyQuestionAbiAndAddress?.address,
     contractInterface: bountyQuestionAbiAndAddress?.abi,
     functionName: "getMostRecentQuestion",
-    chainId: chainId,
+    chainId: primaryChainId,
     onError(err) {
       console.error(err);
     },
@@ -56,8 +61,8 @@ export default function AllQuestionContainer({network}: {network: string}) {
             questionAPI={questionAPIAbiAndAddress}
             latestQuestion={latestTokenId}
             questionStateController={questionStateControllerAbiandAddress}
-            networkMatchesWallet={false}
-            chainId={chainId}
+            networkMatchesWallet={primaryChainId === chain?.id}
+            chainId={primaryChainId}
           />
         )}
       </section>
