@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import type { Chain } from "wagmi";
 
-export function useContracts({ chainId }: { chainId?: Chain["id"] }) {
+export function useContracts({ network }: { network: string }) {
   const [
     { xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, costController, vaultJson },
     setContracts,
-  ] = useState(getContracts(chainId));
+  ] = useState(getContracts(network));
 
   useEffect(() => {
-    setContracts(getContracts(chainId));
-  }, [chainId]);
+    setContracts(getContracts(network));
+  }, [network]);
 
   return {
     xMetricJson,
@@ -21,7 +20,7 @@ export function useContracts({ chainId }: { chainId?: Chain["id"] }) {
   };
 }
 
-function getContracts(chainId?: Chain["id"]) {
+function getContracts(network: string) {
   let xMetricJson;
   let questionAPIJson;
   let questionStateController;
@@ -29,7 +28,7 @@ function getContracts(chainId?: Chain["id"]) {
   let costController;
   let vaultJson;
 
-  if (chainId === 137 || !chainId) {
+  if (network === "polygon" || !network) {
     xMetricJson = require(`core-evm-contracts/deployments/polygon/Xmetric.json`);
     questionAPIJson = require(`core-evm-contracts/deployments/polygon/QuestionAPI.json`);
     questionStateController = require(`core-evm-contracts/deployments/polygon/QuestionStateController.json`);
@@ -37,24 +36,33 @@ function getContracts(chainId?: Chain["id"]) {
     costController = require(`core-evm-contracts/deployments/polygon/ActionCostController.json`);
     vaultJson = require(`core-evm-contracts/deployments/polygon/Vault.json`);
   }
-  // TODO: What is going on with the other chains?? Missing contracts?
-  //   if (chainId === 3) {
-  //     xMetricJson = require(`core-evm-contracts/deployments/ropsten/Xmetric.json`);
-  //     questionAPIJson = require(`core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
-  //     questionStateController = require(`core-evm-contracts/deployments/ropsten/QuestionStateController.json`);
-  //     bountyQuestionJson = require(`core-evm-contracts/deployments/ropsten/BountyQuestion.json`);
-  //     costController = require(`core-evm-contracts/deployments/ropsten/ActionCostController.json`);
-  //     vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
-  //   }
-  // else {
-  //   //localhost
-  //   xMetricJson = require(`core-evm-contracts/deployments/localhost/Xmetric.json`);
-  //   questionAPIJson = require(`core-evm-contracts/deployments/localhost/QuestionAPI.json`);
-  //   questionStateController = require(`core-evm-contracts/deployments/localhost/QuestionStateController.json`);
-  //   bountyQuestionJson = require(`core-evm-contracts/deployments/localhost/BountyQuestion.json`);
-  //   costController = require(`core-evm-contracts/deployments/localhost/ActionCostController.json`);
-  //   vaultJson = require(`core-evm-contracts/deployments/localhost/Vault.json`);
-  // }
+  else if (network === "ropsten") {
+    try{
+      xMetricJson = require(`core-evm-contracts/deployments/ropsten/Xmetric.json`);
+      questionAPIJson = require(`core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
+      questionStateController = require(`core-evm-contracts/deployments/ropsten/QuestionStateController.json`);
+      bountyQuestionJson = require(`core-evm-contracts/deployments/ropsten/BountyQuestion.json`);
+      costController = require(`core-evm-contracts/deployments/ropsten/ActionCostController.json`);
+      vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
+    }
+    catch {
+      console.log("No Ropsten ABIs")
+    }
+    }
+  else {
+    //localhost
+    try {
+      xMetricJson = require(`core-evm-contracts/deployments/localhost/Xmetric.json`);
+      questionAPIJson = require(`core-evm-contracts/deployments/localhost/QuestionAPI.json`);
+      questionStateController = require(`core-evm-contracts/deployments/localhost/QuestionStateController.json`);
+      bountyQuestionJson = require(`core-evm-contracts/deployments/localhost/BountyQuestion.json`);
+      costController = require(`core-evm-contracts/deployments/localhost/ActionCostController.json`);
+      vaultJson = require(`core-evm-contracts/deployments/localhost/Vault.json`);
+    }
+    catch {
+      console.log("No localhost ABIs")
+    }
+  }
 
   return {
     xMetricJson,

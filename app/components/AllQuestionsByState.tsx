@@ -25,11 +25,13 @@ export default function AllQuestionsByState({
   questionStateController,
   questionAPI,
   networkMatchesWallet,
+  chainId
 }: {
   latestQuestion: number;
   questionStateController: Record<string, string>;
   questionAPI: Record<string, string>;
   networkMatchesWallet: boolean;
+  chainId: number;
 }) {
   const [questionDataVotingState, setQuestionDataVotingState] = useState<ChainDataQuestion[]>([]);
   const [questionArray, setQuestionArray] = useState<QuestionData[]>([]);
@@ -53,8 +55,7 @@ export default function AllQuestionsByState({
     contractInterface: questionStateController.abi,
     functionName: "getQuestionsByState",
     args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
-    enabled: true,
-    cacheOnBlock: true,
+    chainId: chainId,
     onError: (err) => {
       console.error(err);
     },

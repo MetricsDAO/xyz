@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useContractRead, useNetwork } from "wagmi";
+import { useContractRead } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
@@ -9,7 +9,7 @@ import { desiredChainId } from "~/utils/helpers"
 export default function AllQuestionContainer({network}: {network: string}) {
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
   const chainId = desiredChainId(network);
-  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ chainId: chainId });
+  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ network: network });
 
   const questionAPIAbiAndAddress = {
     abi: questionAPIJson?.abi,
@@ -30,6 +30,7 @@ export default function AllQuestionContainer({network}: {network: string}) {
     addressOrName: bountyQuestionAbiAndAddress?.address,
     contractInterface: bountyQuestionAbiAndAddress?.abi,
     functionName: "getMostRecentQuestion",
+    chainId: chainId,
     onError(err) {
       console.error(err);
     },
@@ -56,6 +57,7 @@ export default function AllQuestionContainer({network}: {network: string}) {
             latestQuestion={latestTokenId}
             questionStateController={questionStateControllerAbiandAddress}
             networkMatchesWallet={false}
+            chainId={chainId}
           />
         )}
       </section>

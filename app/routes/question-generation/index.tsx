@@ -75,7 +75,8 @@ export default function Index() {
             />
           </NetworkRender>
         ) : (
-          <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
+          // <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
+          <h1 className="tw-text-center">Connect your wallet to create a question.</h1>
         )}
       </section>
     );
