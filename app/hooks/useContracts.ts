@@ -29,12 +29,17 @@ function getContracts(network: string) {
   let vaultJson;
 
   if (network === "polygon" || !network) {
-    xMetricJson = require(`core-evm-contracts/deployments/polygon/Xmetric.json`);
-    questionAPIJson = require(`core-evm-contracts/deployments/polygon/QuestionAPI.json`);
-    questionStateController = require(`core-evm-contracts/deployments/polygon/QuestionStateController.json`);
-    bountyQuestionJson = require(`core-evm-contracts/deployments/polygon/BountyQuestion.json`);
-    costController = require(`core-evm-contracts/deployments/polygon/ActionCostController.json`);
-    vaultJson = require(`core-evm-contracts/deployments/polygon/Vault.json`);
+    try {
+      xMetricJson = require(`core-evm-contracts/deployments/polygon/Xmetric.json`);
+      questionAPIJson = require(`core-evm-contracts/deployments/polygon/QuestionAPI.json`);
+      questionStateController = require(`core-evm-contracts/deployments/polygon/QuestionStateController.json`);
+      bountyQuestionJson = require(`core-evm-contracts/deployments/polygon/BountyQuestion.json`);
+      costController = require(`core-evm-contracts/deployments/polygon/ActionCostController.json`);
+      vaultJson = require(`core-evm-contracts/deployments/polygon/Vault.json`);
+    }
+    catch {
+      console.log("Missing Polygon ABIs");
+    }
   }
   else if (network === "ropsten") {
     try{
@@ -46,7 +51,7 @@ function getContracts(network: string) {
       vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
     }
     catch {
-      console.log("No Ropsten ABIs")
+      console.log("Missing Ropsten ABIs");
     }
     }
   else {
@@ -60,7 +65,7 @@ function getContracts(network: string) {
       vaultJson = require(`core-evm-contracts/deployments/localhost/Vault.json`);
     }
     catch {
-      console.log("No localhost ABIs")
+      console.log("Missing Localhost ABIs");
     }
   }
 

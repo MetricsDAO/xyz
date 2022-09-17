@@ -1,8 +1,9 @@
 import { useLocation } from "@remix-run/react";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
-import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useDisconnect, useNetwork, useSwitchNetwork, useProvider, useSigner } from "wagmi";
 import { Buffer } from "buffer";
+import { BigNumber } from "ethers";
 import { desiredChainId } from "~/utils/helpers";
 import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
@@ -15,8 +16,38 @@ export default function Wrapper({ children, network }: { children?: ReactElement
   const location = useLocation();
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
-  const { chain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork({ chainId: desiredChainId(network) });
+  const { chain, chains } = useNetwork();
+  
+  const provider = useProvider();
+  const desiredChain = chains.filter(chainObj => {
+    return chainObj.name.toLowerCase() === network
+  })[0]
+
+  const { switchNetwork } = useSwitchNetwork({ 
+    chainId: desiredChainId(network),
+    onError(error) {
+      console.log("Network switch error", error)
+      if (error.toString() == "AddChainError: Error adding chain") {
+        console.log("Trying to add network to wallet...");
+        // TODO: Some chains are not configured within Metamask and cannot switch without an RPC
+        //       wallet_addEthereumChain call. The code below half works, but only for Metamask.
+        //       There has got to be a better solution, however it is not completely necessary as
+        //       the only chain I've noticed an issue with is hardhat/localhost.
+        // try {
+        //    window?.ethereum?.request({
+        //     method: 'wallet_addEthereumChain',
+        //     params: [{
+        //       chainId: BigNumber.from(desiredChain.id).toHexString(),
+        //       rpcUrls: [desiredChain.rpcUrls.default]
+        //     }]
+        //   });
+        // }
+        // catch(error) {
+        //   console.log("error adding chain", error);
+        // }
+      }
+    }
+  });
 
   useEffect(() => {
     if (address && isOpen) {

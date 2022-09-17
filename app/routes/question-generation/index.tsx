@@ -12,6 +12,7 @@ import NetworkRender from "~/components/NetworkRender";
 
 export async function loader() {
   const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts();
+
   return {
     xMetricJson,
     questionAPIJson,
@@ -23,6 +24,7 @@ export async function loader() {
 
 export default function Index() {
   const { xMetricJson, questionAPIJson, vaultJson, costController, network } = useLoaderData();
+
   const xMETRICAbiAndAddress = {
     abi: xMetricJson.abi,
     address: xMetricJson.address,
@@ -52,7 +54,7 @@ export default function Index() {
     chainName,
   }: {
     setIsOpen?: Dispatch<SetStateAction<boolean>>;
-    address?: string | undefined;
+    address?: string;
     chainId?: number;
     switchNetwork?: (chainId?: number) => void;
     chainName?: string;
@@ -76,6 +78,10 @@ export default function Index() {
           </NetworkRender>
         ) : (
           // <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
+          // TODO: I currently cannot think of a great way to include the connection Modal when all the state vars needed
+          // are inside of the wrapper component. We cannot access wagmi hooks without being inside of 
+          // WalletProvider either, so a different heirarchy is needed. My current solution is to put WalletProvider 
+          // and Wrapper outside of the Router. Any comment or alternative to this is welcomed.
           <h1 className="tw-text-center">Connect your wallet to create a question.</h1>
         )}
       </section>
