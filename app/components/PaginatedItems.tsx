@@ -95,7 +95,6 @@ export function FilteredQuestions({
   networkMatchesWallet: boolean;
   buttonDisabled: boolean;
 }) {
-  console.log("Network matches wallet", networkMatchesWallet)
   return (
     <div
       data-question-id={question.questionId}

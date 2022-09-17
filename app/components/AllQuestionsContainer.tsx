@@ -15,6 +15,7 @@ export default function AllQuestionContainer({
   const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ network: primaryNetwork });
   const { chain } = useNetwork();
   const primaryChainId = desiredChainId(primaryNetwork);
+  const networkMatchesWallet = primaryChainId === chain?.id;
 
   const questionAPIAbiAndAddress = {
     abi: questionAPIJson?.abi,
@@ -61,7 +62,7 @@ export default function AllQuestionContainer({
             questionAPI={questionAPIAbiAndAddress}
             latestQuestion={latestTokenId}
             questionStateController={questionStateControllerAbiandAddress}
-            networkMatchesWallet={primaryChainId === chain?.id}
+            networkMatchesWallet={networkMatchesWallet}
             chainId={primaryChainId}
           />
         )}

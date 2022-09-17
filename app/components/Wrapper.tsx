@@ -18,11 +18,11 @@ export default function Wrapper({ children, network }: { children?: ReactElement
   const { chain, chains } = useNetwork();
   
   const primaryChainObj = chains.filter(chainObj => {
-    return chainObj.name.toLowerCase() === network
+    return chainObj.name?.toLowerCase() === network
   })[0]
 
   const { switchNetwork } = useSwitchNetwork({ 
-    chainId: primaryChainObj.id,
+    chainId: primaryChainObj?.id,
     onError() {
         tryRPCSwitchNetwork();
     }
@@ -34,7 +34,7 @@ export default function Wrapper({ children, network }: { children?: ReactElement
       await window?.ethereum?.request({
         method: 'wallet_switchEthereumChain', 
         params: [{ 
-          chainId: primaryChainObj.id.toString(16),
+          chainId: primaryChainObj?.id?.toString(16),
         }]
       })
     }
