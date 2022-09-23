@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import { ClientOnly } from "remix-utils";
 import { WagmiConfig, createClient, configureChains, chain, defaultChains } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
@@ -6,9 +5,8 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { infuraProvider } from "wagmi/providers/infura";
 
-export default function WalletProvider({ children, network }: { children: ReactElement; network: string }) {
+export default function WalletProvider({ children }: { children: React.ReactNode }) {
   let configureChainObj;
 
   //TODO create config of all chains we support
@@ -55,10 +53,6 @@ export default function WalletProvider({ children, network }: { children: ReactE
   return (
     <ClientOnly>
       {() => {
-        if (!network) {
-          window.alert("Please configure Network");
-          return null;
-        }
         return <WagmiConfig client={client}>{children}</WagmiConfig>;
       }}
     </ClientOnly>

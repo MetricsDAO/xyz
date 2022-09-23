@@ -4,7 +4,7 @@ import { useQuestionsWithIpfsData } from "~/hooks/questions";
 export default function AllQuestionContainer() {
   const { questionsWithIpfsData } = useQuestionsWithIpfsData();
 
-  // TODO
+  // TODO: Better Loading UI
   if (questionsWithIpfsData === undefined) {
     return <>Loading...</>;
   }

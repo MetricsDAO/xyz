@@ -2,7 +2,6 @@ import { useLoaderData } from "@remix-run/react";
 import type { SetStateAction, Dispatch } from "react";
 
 import WalletProvider from "~/components/WalletProvider";
-import Wrapper from "~/components/Wrapper";
 import ConnectWalletButton from "~/components/ConnectWalletButton";
 import CreateQuestionContainer from "~/components/CreateQuestionContainer";
 
@@ -83,9 +82,7 @@ export default function Index() {
 
   return (
     <WalletProvider network={network}>
-      <Wrapper network={network}>
-        <ClaimBody />
-      </Wrapper>
+      <ClaimBody />
     </WalletProvider>
   );
 }
