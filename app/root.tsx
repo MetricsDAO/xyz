@@ -1,11 +1,13 @@
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { ToastContainer } from "react-toastify";
 
 import customStyles from "./styles/custom.css";
 import fontStyles from "./styles/fonts.css";
 import AppFooter from "./components/app-footer";
 import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
+import toastifyStyles from "react-toastify/dist/ReactToastify.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -71,6 +73,7 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: customStyles },
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: algoliaStyles },
+    { rel: "stylesheet", href: toastifyStyles },
   ];
 };
 
@@ -94,6 +97,7 @@ export default function App() {
         ></script>
       </head>
       <body>
+        <ToastContainer />
         <Outlet />
         <AppFooter />
         <ScrollRestoration />

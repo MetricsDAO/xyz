@@ -15,12 +15,8 @@ export default function AllQuestionsByState({ questions }: { questions: Question
     }, {} as { [key: string]: boolean })
   );
 
-  // TODO: toast notifications hook
   return (
     <>
-      {/* {alertContainerStatus && (
-        <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
-      )} */}
       <div className="tw-flex tw-px-4 tw-flex-row justify-center tw-space-x-4">
         <div className="tw-block tw-border tw-p-2">
           <QuestionControls

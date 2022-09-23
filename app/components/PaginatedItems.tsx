@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { CaretUp32 } from "@carbon/icons-react";
 import ReactPaginate from "react-paginate";
+import { toast } from "react-toastify";
 
 import { useUpvoteQuestion } from "~/hooks/questions";
 import type { QuestionData } from "~/utils/types";
@@ -50,8 +51,18 @@ function Items({ currentItems }: { currentItems: QuestionData[] }) {
 }
 
 export function FilteredQuestions({ question }: { question: QuestionData }) {
-  const { writeAsync, isLoading } = useUpvoteQuestion({ questionId: question.questionId });
+  const { writeAsync, isLoading, isSuccess, error } = useUpvoteQuestion({ questionId: question.questionId });
   const isUpvoteDisabled = isLoading;
+
+  useEffect(() => {
+    if (isLoading) {
+      toast.info(`Pending upvote for "${question.metadata.data?.name}"`, { autoClose: false });
+    } else if (isSuccess) {
+      toast.success(`Successfully upvoted "${question.metadata.data?.name}"`, { autoClose: false });
+    } else if (error) {
+      toast.error(`Error upvoting "${question.metadata.data?.name}"`, { autoClose: false });
+    }
+  }, [isLoading, isSuccess, error, question.metadata.data?.name]);
 
   let name = question.metadata.data?.name;
   let program = question.metadata.data?.program;
@@ -85,9 +96,9 @@ export function FilteredQuestions({ question }: { question: QuestionData }) {
               className={`${
                 isUpvoteDisabled ? "tw-cursor-default tw-opacity-25 " : "tw-cursor-pointer tw-opacity-100"
               }`}
-              onClick={() => {
+              onClick={async () => {
                 if (isUpvoteDisabled) return false;
-                writeAsync?.();
+                await writeAsync?.();
               }}
             />
           </>

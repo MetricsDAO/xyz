@@ -14,11 +14,11 @@ export default function Index() {
 
   return (
     <WalletProvider network={network}>
-      <Wrapper network={network}>
-        <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
+      <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
+        <Wrapper network={network}>
           <AllQuestionsContainer />
-        </section>
-      </Wrapper>
+        </Wrapper>
+      </section>
     </WalletProvider>
   );
 }
