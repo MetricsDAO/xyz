@@ -25,17 +25,16 @@ export interface InputsEntityOrOutputsEntityOrComponentsEntity {
   name: string;
   type: string;
 }
-
+export type IpfsData = { date: number; name: string; description: string; program: string };
 export interface QuestionData {
-  name: string;
-  program: string;
-  description: string;
-  uri: string;
   questionId: number;
+  uri: string;
   totalVotes: number;
-  date: string;
-  loading: boolean | undefined;
-  unavailable: boolean | undefined;
+  metadata: {
+    isLoading: boolean;
+    isError: boolean;
+    data?: IpfsData;
+  };
 }
 
 export interface ChainDataQuestion {

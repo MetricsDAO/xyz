@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { useEffect, useReducer, useState } from "react";
 import { useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi";
 import { iPFSdomain, questionStateEnum } from "~/utils/helpers";
-import type { QuestionData } from "~/utils/types";
+import type { IpfsData, QuestionData } from "~/utils/types";
 import { useBountyQuestionContract, useContracts, useQuestionStateControllerContract } from "./useContracts";
 
 export type getQuestionsByStateResult = {
@@ -46,21 +46,21 @@ function reducer(
   state: { questionData: QuestionData[] | undefined },
   action:
     | { type: "init"; payload: QuestionData[] }
-    | { type: "update"; payload: { questionId: number; ipfsData: IpfsData } }
+    | { type: "update"; payload: { questionId: number; isError: boolean; ipfsData?: IpfsData } }
 ) {
   switch (action.type) {
     case "init":
       return { questionData: action.payload };
     case "update":
-      const ipfsData = action.payload.ipfsData;
       const newQuestionData = state.questionData?.map((question) => {
         if (question.questionId === action.payload.questionId) {
           return {
             ...question,
-            name: ipfsData.name,
-            program: ipfsData.program,
-            description: ipfsData.description,
-            loading: false,
+            metadata: {
+              isLoading: false,
+              isError: action.payload.isError,
+              data: action.payload.ipfsData,
+            },
           };
         }
         return question;
@@ -80,28 +80,31 @@ export function useQuestionsWithIpfsData() {
       if (questions) {
         const loadingQuestions = questions.map((question) => {
           return {
-            name: "Loading",
-            program: "Loading",
-            description: "Loading",
             uri: question.uri,
             questionId: question.questionId.toNumber(),
             totalVotes: question.totalVotes.toNumber(),
-            date: "Loading",
-            loading: true,
-            unavailable: false,
+            metadata: {
+              isLoading: true,
+              isError: false,
+            },
           };
         });
         dispatch({ type: "init", payload: loadingQuestions });
-        fetchIpfsData(loadingQuestions);
+        getIpfsData(loadingQuestions);
       }
     };
     fetch();
   }, [questions]);
 
-  const fetchIpfsData = async (questionData: QuestionData[]) => {
+  const getIpfsData = async (questionData: QuestionData[]) => {
     questionData.forEach(async (q) => {
-      const ipfsData = await getIpfsdata(q.uri);
-      dispatch({ type: "update", payload: { questionId: q.questionId, ipfsData } });
+      try {
+        const ipfsData = await fetchIpfsData(q.uri);
+        dispatch({ type: "update", payload: { isError: false, questionId: q.questionId, ipfsData } });
+      } catch (e) {
+        console.error(e);
+        dispatch({ type: "update", payload: { isError: true, questionId: q.questionId } });
+      }
     });
   };
 
@@ -110,15 +113,15 @@ export function useQuestionsWithIpfsData() {
   };
 }
 
-type IpfsData = { date: number; name: string; description: string; program: string };
-
-async function getIpfsdata(uriOrUrl: string) {
+async function fetchIpfsData(uriOrUrl: string) {
   // TODO: We had some bad data at some point by the looks of it. Can't delete from blockchain?...
-  const domain = uriOrUrl.includes("https") ? uriOrUrl : iPFSdomain + uriOrUrl;
-  const response = await fetch(domain);
-  // TODO: can we guarantee this type?
-  const ipfsData: IpfsData = await response.json();
-  return ipfsData;
+  const url = uriOrUrl.includes("https") ? uriOrUrl : iPFSdomain + uriOrUrl;
+  const response = await fetch(url);
+  if (response.ok) {
+    const ipfsData: IpfsData = await response.json();
+    return ipfsData;
+  }
+  throw new Error(`Something went wrong fetching ipfs data from ${url}`);
 }
 
 export function useUpvoteQuestion({ questionId }: { questionId: number }) {

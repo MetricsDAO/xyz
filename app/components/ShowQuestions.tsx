@@ -12,32 +12,26 @@ export default function ShowQuestions({
   selected: string;
   selectedProgram: { [key: string]: boolean };
 }) {
-  let sorted: QuestionData[];
-
   // If no checkbox selected, show all questions
   const selectAll = !Object.keys(selectedProgram).find((key) => selectedProgram[key] === true);
-
   const property = selected === "Votes" ? "totalVotes" : "questionId";
-  if (selectAll) {
-    sorted = questions.sort((a: QuestionData, b: QuestionData) => {
+
+  const filteredAndSorted: QuestionData[] = questions
+    .filter((obj: QuestionData) => {
+      if (selectAll) {
+        return true;
+      }
+      if (obj.metadata.data?.program) {
+        return selectedProgram[obj.metadata.data?.program];
+      }
+      return false;
+    })
+    .sort((a: QuestionData, b: QuestionData) => {
       return a[property] < b[property] ? 1 : -1;
     });
-  } else {
-    //filter then sort it
-    sorted = questions
-      .filter((obj: QuestionData) => {
-        return selectedProgram[obj.program];
-      })
-      .sort((a: QuestionData, b: QuestionData) => {
-        return a[property] < b[property] ? 1 : -1;
-      });
-  }
 
-  function render() {
-    if (!sorted.length) {
-      return <h1>No Questions to display</h1>;
-    }
-    return <PaginatedItems questions={sorted} itemsPerPage={PAGINATION_AMOUNT} name={selected.name} />;
+  if (!filteredAndSorted.length) {
+    return <h1>No Questions to display</h1>;
   }
-  return render();
+  return <PaginatedItems questions={filteredAndSorted} itemsPerPage={PAGINATION_AMOUNT} />;
 }
