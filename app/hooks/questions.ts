@@ -17,19 +17,24 @@ export function useQuestions() {
   const bountyQuestionContract = useBountyQuestionContract();
   const questionStateControllerContract = useQuestionStateControllerContract();
 
-  const [questions, setQuestions] = useState<getQuestionsByStateResult>();
+  const [questions, setQuestions] = useState<getQuestionsByStateResult | null>(null);
 
   // Get chain data
   useEffect(() => {
     const fetch = async () => {
-      const recentQuestionId = await bountyQuestionContract.getMostRecentQuestion();
-      if (BigNumber.isBigNumber(recentQuestionId)) {
-        const questions: getQuestionsByStateResult = await questionStateControllerContract.getQuestionsByState(
-          BigNumber.from(questionStateEnum.VOTING),
-          recentQuestionId,
-          BigNumber.from(1000)
-        );
-        setQuestions(questions);
+      try {
+        const recentQuestionId = await bountyQuestionContract.getMostRecentQuestion();
+        if (BigNumber.isBigNumber(recentQuestionId)) {
+          const questions: getQuestionsByStateResult = await questionStateControllerContract.getQuestionsByState(
+            BigNumber.from(questionStateEnum.VOTING),
+            recentQuestionId,
+            BigNumber.from(1000)
+          );
+          setQuestions(questions);
+        }
+      } catch (e) {
+        console.error(e);
+        setQuestions(null);
       }
     };
     fetch();
@@ -47,8 +52,11 @@ function reducer(
   action:
     | { type: "init"; payload: QuestionData[] }
     | { type: "update"; payload: { questionId: number; isError: boolean; ipfsData?: IpfsData } }
+    | { type: "reset" }
 ) {
   switch (action.type) {
+    case "reset":
+      return { questionData: undefined };
     case "init":
       return { questionData: action.payload };
     case "update":
@@ -91,6 +99,8 @@ export function useQuestionsWithIpfsData() {
         });
         dispatch({ type: "init", payload: loadingQuestions });
         getIpfsData(loadingQuestions);
+      } else {
+        dispatch({ type: "reset" });
       }
     };
     fetch();
