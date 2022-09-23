@@ -9,13 +9,16 @@ export default function ShowQuestions({
   selectedProgram,
 }: {
   questions: QuestionData[];
-  selected: Record<string, string>;
-  selectedProgram: Record<string, string>;
+  selected: string;
+  selectedProgram: { [key: string]: boolean };
 }) {
   let sorted: QuestionData[];
 
-  const property = selected.name === "Votes" ? "totalVotes" : "questionId";
-  if (selectedProgram.name === "All") {
+  // If no checkbox selected, show all questions
+  const selectAll = !Object.keys(selectedProgram).find((key) => selectedProgram[key] === true);
+
+  const property = selected === "Votes" ? "totalVotes" : "questionId";
+  if (selectAll) {
     sorted = questions.sort((a: QuestionData, b: QuestionData) => {
       return a[property] < b[property] ? 1 : -1;
     });
@@ -23,7 +26,7 @@ export default function ShowQuestions({
     //filter then sort it
     sorted = questions
       .filter((obj: QuestionData) => {
-        return obj.program == selectedProgram.name;
+        return selectedProgram[obj.program];
       })
       .sort((a: QuestionData, b: QuestionData) => {
         return a[property] < b[property] ? 1 : -1;

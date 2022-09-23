@@ -7,8 +7,13 @@ import type { QuestionData } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
 
 export default function AllQuestionsByState({ questions }: { questions: QuestionData[] }) {
-  const [selected, setSelected] = useState<Record<string, string>>(sortMethods[0]);
-  const [selectedProgram, setSelectedProgram] = useState<Record<string, string>>(protocols[0]);
+  const [selected, setSelected] = useState(sortMethods[0].name);
+  const [selectedProgram, setSelectedProgram] = useState(
+    protocols.reduce((acc, protocol) => {
+      acc[protocol.name] = false;
+      return acc;
+    }, {} as { [key: string]: boolean })
+  );
 
   // TODO: toast notifications hook
   return (
@@ -23,7 +28,6 @@ export default function AllQuestionsByState({ questions }: { questions: Question
             selected={selected}
             setSelectedProgram={setSelectedProgram}
             selectedProgram={selectedProgram}
-            questions={questions}
           />
         </div>
         <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">

@@ -64,7 +64,6 @@ export const sortMethods = [
 // TODO How to get protocols
 
 export const protocols = [
-  { name: "All" },
   { name: "Ethereum" },
   { name: "Flow" },
   { name: "Algorand" },

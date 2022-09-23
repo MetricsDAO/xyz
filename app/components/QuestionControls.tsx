@@ -1,36 +1,24 @@
-import { CSVLink } from "react-csv";
 import MyRadioGroup from "~/components/RadioGroup";
-import DropDown from "~/components/DropDownAllQuestions";
-import { Download16 } from "@carbon/icons-react";
-import { filterSortCsvData } from "~/utils/helpers";
-import type { QuestionData } from "~/utils/types";
+import MultiSelect from "./MultiSelect";
+import type { Dispatch, SetStateAction } from "react";
+
 
 export default function QuestionControls({
   setSelected,
   selected,
   setSelectedProgram,
   selectedProgram,
-  questions,
 }: {
-  setSelected: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-  selected: Record<string, string>;
-  setSelectedProgram: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-  selectedProgram: Record<string, string>;
-  questions: QuestionData[];
+  setSelected: Dispatch<SetStateAction<string>>;
+  selected: string;
+  setSelectedProgram: React.Dispatch<{ (prev: any): any }>;
+  selectedProgram: { [key: string]: boolean };
 }) {
   return (
-    <div className="md:tw-w-[330px] tw-px-4">
+    <div className="md:tw-w-[330px] tw-border tw-rounded-md tw-bg-white">
       <MyRadioGroup setSelected={setSelected} selected={selected} />
-      <DropDown setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
-      <CSVLink
-        data={filterSortCsvData(questions)}
-        className="blue-button tw-bg-[#21C5F2] tw-mt-8 tw-flex tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
-        filename={"question-data.csv"}
-        target="_blank"
-      >
-        <span className="tw-mr-3">Download CSV </span>
-        <Download16 />
-      </CSVLink>
+      <hr className="solid tw-bg-[#A3A3A3]" />
+      <MultiSelect setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />
     </div>
   );
 }
