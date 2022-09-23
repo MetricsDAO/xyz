@@ -1,5 +1,5 @@
 import AllQuestionsByState from "~/components/AllQuestionsByState";
-import { useQuestionsWithIpfsData } from "~/hooks/question";
+import { useQuestionsWithIpfsData } from "~/hooks/questions";
 
 export default function AllQuestionContainer() {
   const { questionsWithIpfsData } = useQuestionsWithIpfsData();

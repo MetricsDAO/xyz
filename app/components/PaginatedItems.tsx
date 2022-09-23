@@ -4,7 +4,7 @@ import ReactPaginate from "react-paginate";
 import { CaretUp32 } from "@carbon/icons-react";
 
 import type { QuestionData } from "~/utils/types";
-import { useUpvoteQuestion } from "~/hooks/question";
+import { useUpvoteQuestion } from "~/hooks/questions";
 export default function PaginatedItems({
   questions,
   itemsPerPage,
