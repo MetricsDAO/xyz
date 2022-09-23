@@ -55,7 +55,13 @@ function reducer(
       const ipfsData = action.payload.ipfsData;
       const newQuestionData = state.questionData?.map((question) => {
         if (question.questionId === action.payload.questionId) {
-          return { ...question, name: ipfsData.name, program: ipfsData.program, description: ipfsData.description };
+          return {
+            ...question,
+            name: ipfsData.name,
+            program: ipfsData.program,
+            description: ipfsData.description,
+            loading: false,
+          };
         }
         return question;
       });
