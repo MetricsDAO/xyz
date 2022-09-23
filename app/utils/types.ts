@@ -30,7 +30,7 @@ export interface QuestionData {
   name: string;
   program: string;
   description: string;
-  url: string;
+  uri: string;
   questionId: number;
   totalVotes: number;
   date: string;

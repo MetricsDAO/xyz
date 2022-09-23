@@ -4,18 +4,13 @@ import ReactPaginate from "react-paginate";
 import { CaretUp32 } from "@carbon/icons-react";
 
 import type { QuestionData } from "~/utils/types";
+import { useUpvoteQuestion } from "~/hooks/question";
 export default function PaginatedItems({
   questions,
-  setQuestionIdToVote,
-  networkMatchesWallet,
-  buttonDisabled,
   itemsPerPage,
   name,
 }: {
   questions: QuestionData[];
-  setQuestionIdToVote: (questionID?: number) => void;
-  networkMatchesWallet: boolean;
-  buttonDisabled: boolean;
   itemsPerPage: number;
   name: string;
 }) {
@@ -36,12 +31,7 @@ export default function PaginatedItems({
 
   return (
     <>
-      <Items
-        currentItems={currentItems}
-        setQuestionIdToVote={setQuestionIdToVote}
-        networkMatchesWallet={networkMatchesWallet}
-        buttonDisabled={buttonDisabled}
-      />
+      <Items currentItems={currentItems} />
       <ReactPaginate
         breakLabel="..."
         nextLabel="next >"
@@ -55,46 +45,20 @@ export default function PaginatedItems({
   );
 }
 
-function Items({
-  currentItems,
-  setQuestionIdToVote,
-  networkMatchesWallet,
-  buttonDisabled,
-}: {
-  currentItems: QuestionData[];
-  setQuestionIdToVote: (questionID?: number) => void;
-  networkMatchesWallet: boolean;
-  buttonDisabled: boolean;
-}) {
+function Items({ currentItems }: { currentItems: QuestionData[] }) {
   return (
     <>
       {currentItems &&
         currentItems.map((questionObj: QuestionData) => {
-          return (
-            <FilteredQuestions
-              key={questionObj.questionId}
-              setQuestionIdToVote={setQuestionIdToVote}
-              question={questionObj}
-              networkMatchesWallet={networkMatchesWallet}
-              buttonDisabled={buttonDisabled}
-            />
-          );
+          return <FilteredQuestions key={questionObj.questionId} question={questionObj} />;
         })}
     </>
   );
 }
 
-export function FilteredQuestions({
-  question,
-  setQuestionIdToVote,
-  networkMatchesWallet,
-  buttonDisabled,
-}: {
-  question: QuestionData;
-  setQuestionIdToVote: (questionID?: number) => void;
-  networkMatchesWallet: boolean;
-  buttonDisabled: boolean;
-}) {
+export function FilteredQuestions({ question }: { question: QuestionData }) {
+  const { writeAsync, isLoading } = useUpvoteQuestion({ questionId: question.questionId });
+  const buttonDisabled = isLoading;
   return (
     <div
       data-question-id={question.questionId}
@@ -104,7 +68,7 @@ export function FilteredQuestions({
         data-id="post-votes"
         className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center"
       >
-        {question.unavailable || question.loading || !networkMatchesWallet ? (
+        {question.unavailable || question.loading ? (
           <>
             <span className="tw-opacity-25">N/A</span>
             <span className="tw-opacity-25">{question.totalVotes}</span>
@@ -115,7 +79,7 @@ export function FilteredQuestions({
               className={`${buttonDisabled ? "tw-cursor-default tw-opacity-25 " : "tw-cursor-pointer tw-opacity-100"}`}
               onClick={() => {
                 if (buttonDisabled) return false;
-                setQuestionIdToVote(question.questionId);
+                writeAsync?.();
               }}
             />
             <span>{question.totalVotes}</span>

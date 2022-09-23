@@ -1,72 +1,40 @@
-import { useEffect, useState } from "react";
-import { usePrevious } from "~/utils/helpers";
-
 import PaginatedItems from "./PaginatedItems";
 
-import type { QuestionData } from "~/utils/types";
 import { PAGINATION_AMOUNT } from "~/utils/helpers";
+import type { QuestionData } from "~/utils/types";
 
 export default function ShowQuestions({
   questions,
-  setQuestionIdToVote,
   selected,
   selectedProgram,
-  networkMatchesWallet,
-  buttonDisabled,
 }: {
   questions: QuestionData[];
-  setQuestionIdToVote: (questionID?: number) => void;
   selected: Record<string, string>;
   selectedProgram: Record<string, string>;
-  networkMatchesWallet: boolean;
-  buttonDisabled: boolean;
 }) {
   let sorted: QuestionData[];
-  const prevSelectedProgram = usePrevious(selectedProgram);
-  const previousQuestions = usePrevious(questions);
-  const prevSelected = usePrevious(selected);
 
-  if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions || prevSelected !== selected) {
-    const property = selected.name === "Votes" ? "totalVotes" : "questionId";
-    if (selectedProgram.name === "All") {
-      sorted = questions.sort((a: QuestionData, b: QuestionData) => {
+  const property = selected.name === "Votes" ? "totalVotes" : "questionId";
+  if (selectedProgram.name === "All") {
+    sorted = questions.sort((a: QuestionData, b: QuestionData) => {
+      return a[property] < b[property] ? 1 : -1;
+    });
+  } else {
+    //filter then sort it
+    sorted = questions
+      .filter((obj: QuestionData) => {
+        return obj.program == selectedProgram.name;
+      })
+      .sort((a: QuestionData, b: QuestionData) => {
         return a[property] < b[property] ? 1 : -1;
       });
-    } else {
-      //filter then sort it
-      sorted = questions
-        .filter((obj: QuestionData) => {
-          return obj.program == selectedProgram.name;
-        })
-        .sort((a: QuestionData, b: QuestionData) => {
-          return a[property] < b[property] ? 1 : -1;
-        });
-    }
-  } else {
-    sorted = previousQuestions;
   }
-  const [sortedQuestions, setSortedQuestions] = useState(sorted);
-
-  useEffect(() => {
-    if (selectedProgram !== prevSelectedProgram || previousQuestions !== questions || prevSelected !== selected) {
-      setSortedQuestions(sorted);
-    }
-  }, [selectedProgram, prevSelectedProgram, sorted, previousQuestions, questions, prevSelected, selected]);
 
   function render() {
-    if (!sortedQuestions.length) {
+    if (!sorted.length) {
       return <h1>No Questions to display</h1>;
     }
-    return (
-      <PaginatedItems
-        questions={sortedQuestions}
-        networkMatchesWallet={networkMatchesWallet}
-        buttonDisabled={buttonDisabled}
-        itemsPerPage={PAGINATION_AMOUNT}
-        setQuestionIdToVote={setQuestionIdToVote}
-        name={selected.name}
-      />
-    );
+    return <PaginatedItems questions={sorted} itemsPerPage={PAGINATION_AMOUNT} name={selected.name} />;
   }
   return render();
 }
