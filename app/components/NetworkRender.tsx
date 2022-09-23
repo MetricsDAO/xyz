@@ -4,7 +4,7 @@ import { filteredNetwork } from "~/utils/helpers";
 export default function NetworkRender() {
   const { chain } = useNetwork();
   // TODO: switch to other chains?
-  const { switchNetwork } = useSwitchNetwork({ chainId: 137 });
+  const { switchNetwork } = useSwitchNetwork({ chainId: chain?.id === 1 ? 137 : 1 });
   const chainName = chain?.name;
 
   // TODO: Probably don't need this if/else
@@ -16,7 +16,7 @@ export default function NetworkRender() {
           onClick={() => switchNetwork()}
           className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
         >
-          switch network
+          Switch to {chain?.id === 1 ? "Polygon" : "Ethereum Mainnet"}
         </button>
       </div>
     );
