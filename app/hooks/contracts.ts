@@ -1,23 +1,19 @@
-import { useEffect, useState } from "react";
-import type { Chain } from "wagmi";
-import { useContract, useNetwork, useProvider } from "wagmi";
-import * as PolygonxMetricJson from "core-evm-contracts/deployments/polygon/Xmetric.json";
+import * as PolygonCostControllerJson from "core-evm-contracts/deployments/polygon/ActionCostController.json";
+import * as PolygonBountyQuestionJson from "core-evm-contracts/deployments/polygon/BountyQuestion.json";
 import * as PolygonQuestionAPIJson from "core-evm-contracts/deployments/polygon/QuestionAPI.json";
 import * as PolygonQuestionStateControllerJson from "core-evm-contracts/deployments/polygon/QuestionStateController.json";
-import * as PolygonBountyQuestionJson from "core-evm-contracts/deployments/polygon/BountyQuestion.json";
-import * as PolygonCostControllerJson from "core-evm-contracts/deployments/polygon/ActionCostController.json";
 import * as PolygonVaultJson from "core-evm-contracts/deployments/polygon/Vault.json";
+import * as PolygonxMetricJson from "core-evm-contracts/deployments/polygon/Xmetric.json";
 import invariant from "invariant";
+import { useMemo } from "react";
+import type { Chain } from "wagmi";
+import { useContract, useNetwork, useProvider } from "wagmi";
 
 export function useContracts({ chainId }: { chainId?: Chain["id"] }) {
-  const [
-    { xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, costController, vaultJson },
-    setContracts,
-  ] = useState(getContracts(chainId));
-
-  useEffect(() => {
-    setContracts(getContracts(chainId));
-  }, [chainId]);
+  const { xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, costController, vaultJson } =
+    useMemo(() => {
+      return getContracts(chainId);
+    }, [chainId]);
 
   return {
     xMetricJson,
