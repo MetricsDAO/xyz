@@ -1,9 +1,9 @@
 import { BigNumber } from "ethers";
 import { useEffect, useReducer, useState } from "react";
-import { useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi";
+import { useContractRead, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi";
 import { iPFSdomain, questionStateEnum } from "~/utils/helpers";
 import type { IpfsData, QuestionData } from "~/utils/types";
-import { useBountyQuestionContract, useContracts, useQuestionStateControllerContract } from "./useContracts";
+import { useBountyQuestionContract, useContracts, useQuestionStateControllerContract } from "./contracts";
 
 export type getQuestionsByStateResult = {
   questionId: BigNumber;
@@ -135,4 +135,17 @@ export function useUpvoteQuestion({ questionId }: { questionId: number }) {
   });
 
   return useContractWrite(config);
+}
+
+export function useGetQuestionsByState({ questionId }: { questionId: number }) {
+  console.log("useGetQuestionsByState", questionId);
+  const { chain } = useNetwork();
+  const { questionStateController } = useContracts({ chainId: chain?.id });
+  return useContractRead({
+    addressOrName: questionStateController.address,
+    contractInterface: questionStateController.abi,
+    functionName: "getQuestionsByState",
+    enabled: false,
+    args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(6), BigNumber.from(1)],
+  });
 }
