@@ -1,15 +1,14 @@
 import { useEffect, useState, useRef, Fragment, useContext } from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
-import { TransactionStatus } from "~/utils/helpers";
+import { TransactionStatus, protocols } from "~/utils/helpers";
+import type { ContractContextEntity } from "~/utils/types"
 import { BigNumber } from "ethers";
 
 import { Listbox, Transition } from "@headlessui/react";
 
 import AlertBanner from "~/components/AlertBanner";
 import { ContractContext } from "~/components/ContractContextWrapper"
-import type { IContractContext } from "~/components/ContractContextWrapper"
-import { protocols } from "~/utils/helpers";
 
 // TODO - paid endpoint
 
@@ -32,7 +31,7 @@ export default function CreateQuestion({
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
-  const { contracts, network }: IContractContext = useContext(ContractContext);
+  const { contracts, network }: ContractContextEntity = useContext(ContractContext);
   
   const { config, isSuccess } = usePrepareContractWrite({
     addressOrName: contracts.questionAPI.address,

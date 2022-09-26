@@ -3,12 +3,12 @@ import { useContractRead, useNetwork } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
-import type { ContractContextType } from "~/components/ContractContextWrapper";
-import { ContractContext } from "~/components/ContractContextWrapper"
-import { desiredChainId } from "~/utils/helpers"
+import type { ContractContextEntity } from "~/utils/types";
+import { ContractContext } from "~/components/ContractContextWrapper";
+import { desiredChainId } from "~/utils/helpers";
 
 export default function AllQuestionContainer() {
-  const { contracts, network }: ContractContextType = useContext(ContractContext);
+  const { contracts, network }: ContractContextEntity = useContext(ContractContext);
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
   const { chain } = useNetwork();
   const primaryChainId = desiredChainId(network);

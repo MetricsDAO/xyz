@@ -14,7 +14,7 @@ import {
   protocols,
 } from "~/utils/helpers";
 
-import type { QuestionData, ChainDataQuestion } from "~/utils/types";
+import type { QuestionData, ChainDataQuestion, ContractEntity } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -28,8 +28,8 @@ export default function AllQuestionsByState({
   chainId
 }: {
   latestQuestion: number;
-  questionStateController: Record<string, string>;
-  questionAPI: Record<string, string>;
+  questionStateController: ContractEntity;
+  questionAPI: ContractEntity;
   networkMatchesWallet: boolean;
   chainId: number;
 }) {

@@ -1,18 +1,9 @@
 import { createContext } from "react";
 import type { ReactElement } from "react";
-
-export interface IContract {
-    abi: string;
-    address: string;
-}
-
-export interface IContractContext {
-    contracts: Record<string, IContract>,
-    network: string
-}
+import type { ContractContextEntity } from "~/utils/types";
 
 // TODO: Improve the typings and init context
-export const ContractContext = createContext<IContractContext>({
+export const ContractContext = createContext<ContractContextEntity>({
     contracts: {
         bountyQuestion: {address: "", abi: ""},
         questionAPI: {address: "", abi: ""},
