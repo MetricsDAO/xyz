@@ -4,10 +4,8 @@ import * as PolygonQuestionAPIJson from "core-evm-contracts/deployments/polygon/
 import * as PolygonQuestionStateControllerJson from "core-evm-contracts/deployments/polygon/QuestionStateController.json";
 import * as PolygonVaultJson from "core-evm-contracts/deployments/polygon/Vault.json";
 import * as PolygonxMetricJson from "core-evm-contracts/deployments/polygon/Xmetric.json";
-import invariant from "invariant";
 import { useMemo } from "react";
 import type { Chain } from "wagmi";
-import { useContract, useNetwork, useProvider } from "wagmi";
 
 export function useContracts({ chainId }: { chainId?: Chain["id"] }) {
   const { xMetricJson, questionAPIJson, questionStateController, bountyQuestionJson, costController, vaultJson } =
@@ -52,30 +50,4 @@ function getContracts(chainId?: Chain["id"]) {
     costController,
     vaultJson,
   };
-}
-
-export function useBountyQuestionContract() {
-  const { chain } = useNetwork();
-  const provider = useProvider({ chainId: chain?.id });
-  const { bountyQuestionJson } = useContracts({ chainId: chain?.id });
-  invariant(bountyQuestionJson, "BountyQuestion contract not found");
-  const contract = useContract({
-    addressOrName: bountyQuestionJson.address,
-    contractInterface: bountyQuestionJson.abi,
-    signerOrProvider: provider,
-  });
-  return contract;
-}
-
-export function useQuestionStateControllerContract() {
-  const { chain } = useNetwork();
-  const provider = useProvider({ chainId: chain?.id });
-  const { questionStateController } = useContracts({ chainId: chain?.id });
-  invariant(questionStateController, "QuestionStateController contract not found");
-  const contract = useContract({
-    addressOrName: questionStateController.address,
-    contractInterface: questionStateController.abi,
-    signerOrProvider: provider,
-  });
-  return contract;
 }

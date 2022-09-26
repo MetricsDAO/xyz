@@ -3,7 +3,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useContractRead, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi";
 import { iPFSdomain, questionStateEnum } from "~/utils/helpers";
 import type { IpfsData, QuestionData } from "~/utils/types";
-import { useBountyQuestionContract, useContracts, useQuestionStateControllerContract } from "./contracts";
+import { useContracts } from "./contracts";
 
 export type getQuestionsByStateResult = {
   questionId: BigNumber;
@@ -13,35 +13,49 @@ export type getQuestionsByStateResult = {
   voters: string[];
 }[];
 
+function useGetMostRecentQuestion() {
+  const { chain } = useNetwork();
+  const { bountyQuestionJson } = useContracts({ chainId: chain?.id });
+
+  return useContractRead({
+    addressOrName: bountyQuestionJson.address,
+    contractInterface: bountyQuestionJson.abi,
+    functionName: "getMostRecentQuestion",
+  });
+}
+
+function useGetQuestionsByState() {
+  const { chain } = useNetwork();
+  const { questionStateController } = useContracts({ chainId: chain?.id });
+
+  const [questionId, setQuestionId] = useState<BigNumber>();
+  const contractRead = useContractRead({
+    addressOrName: questionStateController.address,
+    contractInterface: questionStateController.abi,
+    functionName: "getQuestionsByState",
+    enabled: questionId === undefined ? false : true,
+    args: [BigNumber.from(questionStateEnum.VOTING), questionId, BigNumber.from(1000)],
+  });
+  return {
+    setQuestionId,
+    contractRead,
+  };
+}
+
 export function useQuestions() {
-  const bountyQuestionContract = useBountyQuestionContract();
-  const questionStateControllerContract = useQuestionStateControllerContract();
+  const { data: getMostRecentQuestionResult } = useGetMostRecentQuestion();
+  const { contractRead, setQuestionId } = useGetQuestionsByState();
 
-  const [questions, setQuestions] = useState<getQuestionsByStateResult | null>(null);
-
-  // Get chain data
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const recentQuestionId = await bountyQuestionContract.getMostRecentQuestion();
-        if (BigNumber.isBigNumber(recentQuestionId)) {
-          const questions: getQuestionsByStateResult = await questionStateControllerContract.getQuestionsByState(
-            BigNumber.from(questionStateEnum.VOTING),
-            recentQuestionId,
-            BigNumber.from(1000)
-          );
-          setQuestions(questions);
-        }
-      } catch (e) {
-        console.error(e);
-        setQuestions(null);
+    if (getMostRecentQuestionResult) {
+      if (BigNumber.isBigNumber(getMostRecentQuestionResult)) {
+        setQuestionId(getMostRecentQuestionResult);
       }
-    };
-    fetch();
-  }, [bountyQuestionContract, questionStateControllerContract]);
+    }
+  }, [getMostRecentQuestionResult, setQuestionId]);
 
   return {
-    questions,
+    contractRead,
   };
 }
 
@@ -80,13 +94,13 @@ function reducer(
 }
 
 export function useQuestionsWithIpfsData() {
-  const { questions } = useQuestions();
+  const { contractRead } = useQuestions();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     const fetch = async () => {
-      if (questions) {
-        const loadingQuestions = questions.map((question) => {
+      if (contractRead.status === "success" && contractRead.data) {
+        const loadingQuestions = contractRead.data.map((question) => {
           return {
             uri: question.uri,
             questionId: question.questionId.toNumber(),
@@ -99,12 +113,13 @@ export function useQuestionsWithIpfsData() {
         });
         dispatch({ type: "init", payload: loadingQuestions });
         getIpfsData(loadingQuestions);
-      } else {
+      } else if (contractRead.status === "error") {
         dispatch({ type: "reset" });
       }
     };
     fetch();
-  }, [questions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractRead.status]);
 
   const getIpfsData = async (questionData: QuestionData[]) => {
     questionData.forEach(async (q) => {
@@ -145,17 +160,4 @@ export function useUpvoteQuestion({ questionId }: { questionId: number }) {
   });
 
   return useContractWrite(config);
-}
-
-export function useGetQuestionsByState({ questionId }: { questionId: number }) {
-  console.log("useGetQuestionsByState", questionId);
-  const { chain } = useNetwork();
-  const { questionStateController } = useContracts({ chainId: chain?.id });
-  return useContractRead({
-    addressOrName: questionStateController.address,
-    contractInterface: questionStateController.abi,
-    functionName: "getQuestionsByState",
-    enabled: false,
-    args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(6), BigNumber.from(1)],
-  });
 }
