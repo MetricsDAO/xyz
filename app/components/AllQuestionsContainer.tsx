@@ -1,40 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useContractRead, useNetwork } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
-import { useContracts } from "~/hooks/useContracts";
+import type { ContractContextType } from "~/components/ContractContextWrapper";
+import { ContractContext } from "~/components/ContractContextWrapper"
 import { desiredChainId } from "~/utils/helpers"
 
-export default function AllQuestionContainer({
-  primaryNetwork, 
-}: {
-  primaryNetwork: string;
-}) {
+export default function AllQuestionContainer() {
+  const { contracts, network }: ContractContextType = useContext(ContractContext);
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
-  const { bountyQuestionJson, questionAPIJson, questionStateController } = useContracts({ network: primaryNetwork });
   const { chain } = useNetwork();
-  const primaryChainId = desiredChainId(primaryNetwork);
+  const primaryChainId = desiredChainId(network);
   const networkMatchesWallet = primaryChainId === chain?.id;
 
-  const questionAPIAbiAndAddress = {
-    abi: questionAPIJson?.abi,
-    address: questionAPIJson?.address,
-  };
-
-  const questionStateControllerAbiandAddress = {
-    abi: questionStateController?.abi,
-    address: questionStateController?.address,
-  };
-
-  const bountyQuestionAbiAndAddress = {
-    abi: bountyQuestionJson?.abi,
-    address: bountyQuestionJson?.address,
-  };
-
   const { data: currentQuestion } = useContractRead({
-    addressOrName: bountyQuestionAbiAndAddress?.address,
-    contractInterface: bountyQuestionAbiAndAddress?.abi,
+    addressOrName: contracts.bountyQuestion.address,
+    contractInterface: contracts.bountyQuestion.abi,
     functionName: "getMostRecentQuestion",
     chainId: primaryChainId,
     onError(err) {
@@ -49,19 +31,14 @@ export default function AllQuestionContainer({
     }
   }, [currentQuestion]);
 
-  // TODO
-  if (!bountyQuestionJson) {
-    return <>Chain not supported yet</>;
-  }
-
   return (
     <>
       <section className="tw-mx-auto tw-mb-7 tw-container">
         {latestTokenId && (
           <AllQuestionsByState
-            questionAPI={questionAPIAbiAndAddress}
+            questionAPI={contracts.questionAPI}
             latestQuestion={latestTokenId}
-            questionStateController={questionStateControllerAbiandAddress}
+            questionStateController={contracts.questionStateController}
             networkMatchesWallet={networkMatchesWallet}
             chainId={primaryChainId}
           />

@@ -9,16 +9,18 @@ import CreateQuestionContainer from "~/components/CreateQuestionContainer";
 import { getContracts } from "~/services/contracts.server";
 
 import NetworkRender from "~/components/NetworkRender";
+import ContractContextWrapper from "~/components/ContractContextWrapper";
 
 export async function loader() {
-  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts();
+  const network = process.env.NETWORK || "localhost";
+  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts({network: network});
 
   return {
     xMetricJson,
     questionAPIJson,
     vaultJson,
     costController,
-    network: process.env.NETWORK,
+    network: network,
   };
 }
 
@@ -45,6 +47,13 @@ export default function Index() {
     address: costController.address,
   };
 
+  const contracts = {
+   xmetric: xMETRICAbiAndAddress,
+   questionAPI: questionAPIAbiAndAddress,
+   vault: vaultAbiandAddress,
+   costController: costControllerAbiandAddress
+  }
+
   /* ELEMENT CLONED IN WRAPPER */
   function ClaimBody({
     setIsOpen,
@@ -66,16 +75,11 @@ export default function Index() {
         </div>
         <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question Generation</h1>
         {address ? (
-          <NetworkRender network={network} chainName={chainName} chainId={chainId} switchNetwork={switchNetwork}>
-            <CreateQuestionContainer
-              address={address}
-              questionAPI={questionAPIAbiAndAddress}
-              vault={vaultAbiandAddress}
-              costController={costControllerAbiandAddress}
-              xmetric={xMETRICAbiAndAddress}
-              network={network}
-            />
-          </NetworkRender>
+          <ContractContextWrapper contracts={contracts} network={network}>
+            <NetworkRender network={network} chainName={chainName} chainId={chainId} switchNetwork={switchNetwork}>
+              <CreateQuestionContainer address={address} />
+            </NetworkRender>
+          </ContractContextWrapper>
         ) : (
           <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
         )}

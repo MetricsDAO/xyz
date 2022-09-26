@@ -17,19 +17,6 @@ export default function WalletProvider({ children, network }: { children: ReactE
     [infuraProvider({ apiKey: infuraId }), publicProvider()]
   );
 
-  // TODO: Are we good to delete this? I'm not sure if we necessarily need to configure based on our network
-  //       instead of just configured everything we may need.
-  
-  // if (network === "ropsten") {
-  //   configureChainObj = configureChains(defaultChains, [infuraProvider({ apiKey: infuraId }), publicProvider()]);
-  // } else if (network === "polygon") {
-  //   configureChainObj = configureChains([...defaultChains, chain.polygon], [infuraProvider({ apiKey: infuraId }), publicProvider()]);
-  // } else if (network === "localhost") {
-  //   configureChainObj = configureChains([...defaultChains, chain.polygon, chain.hardhat, chain.localhost], [publicProvider()]);
-  // } else {
-  //   //nothing provided will lead to front end error
-  //   configureChainObj = configureChains(defaultChains, [publicProvider()]);
-  // }
   const { chains, provider, webSocketProvider } = configureChainObj;
 
   // Set up client
