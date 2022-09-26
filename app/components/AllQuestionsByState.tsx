@@ -56,6 +56,7 @@ export default function AllQuestionsByState({
     functionName: "getQuestionsByState",
     args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
     chainId: chainId,
+    cacheOnBlock: true,
     onError: (err) => {
       console.error(err);
     },
