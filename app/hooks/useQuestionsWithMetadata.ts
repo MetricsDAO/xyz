@@ -1,6 +1,7 @@
 import { BigNumber } from "ethers";
+import type { Result } from "ethers/lib/utils";
 import _ from "lodash";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useContractRead, useNetwork } from "wagmi";
 import create from "zustand";
 import { iPFSdomain, questionStateEnum } from "~/utils/helpers";
@@ -63,66 +64,43 @@ const useQuestionStore = create<QuestionStore>((set, get) => ({
  * Wrapper for useQuestionStore to be able to get chain data using wagmi hooks
  */
 export function useQuestionsWithMetaData() {
-  const { contractRead } = useQuestions();
   const store = useQuestionStore();
 
-  useEffect(() => {
-    const fetch = async () => {
-      if (contractRead.status === "success" && contractRead.data) {
-        store.initializeQuestions(contractRead.data as GetQuestionsByState[]);
-        store.fetchIpfsData();
-      }
-    };
-    fetch();
-  }, [contractRead.status]);
+  const onSuccess = (data: Result) => {
+    store.initializeQuestions(data as GetQuestionsByState[]);
+    store.fetchIpfsData();
+  };
+
+  useContractQuestions({ onSuccess });
 
   return store;
 }
 
-function useQuestions() {
-  const { data: getMostRecentQuestionResult } = useGetMostRecentQuestion();
-  const { contractRead, setQuestionId } = useGetQuestionsByState();
-
-  useEffect(() => {
-    if (getMostRecentQuestionResult) {
-      if (BigNumber.isBigNumber(getMostRecentQuestionResult)) {
-        setQuestionId(getMostRecentQuestionResult);
-      }
-    }
-  }, [getMostRecentQuestionResult, setQuestionId]);
-
-  return {
-    contractRead,
-  };
-}
-
-function useGetMostRecentQuestion() {
+// Get "the most recent question" id and then use that to get a list of the questions relative to that id.
+function useContractQuestions({ onSuccess }: { onSuccess?: (data: Result) => void }) {
   const { chain } = useNetwork();
-  const { bountyQuestionJson } = useContracts({ chainId: chain?.id });
-
-  return useContractRead({
-    addressOrName: bountyQuestionJson.address,
-    contractInterface: bountyQuestionJson.abi,
-    functionName: "getMostRecentQuestion",
-  });
-}
-
-function useGetQuestionsByState() {
-  const { chain } = useNetwork();
-  const { questionStateController } = useContracts({ chainId: chain?.id });
+  const { bountyQuestionJson, questionStateController } = useContracts({ chainId: chain?.id });
 
   const [questionId, setQuestionId] = useState<BigNumber>();
-  const contractRead = useContractRead({
+  useContractRead({
     addressOrName: questionStateController.address,
     contractInterface: questionStateController.abi,
     functionName: "getQuestionsByState",
     enabled: questionId === undefined ? false : true,
     args: [BigNumber.from(questionStateEnum.VOTING), questionId, BigNumber.from(1000)],
+    onSuccess,
   });
-  return {
-    setQuestionId,
-    contractRead,
-  };
+
+  useContractRead({
+    addressOrName: bountyQuestionJson.address,
+    contractInterface: bountyQuestionJson.abi,
+    functionName: "getMostRecentQuestion",
+    onSuccess: (data: Result) => {
+      if (BigNumber.isBigNumber(data)) {
+        setQuestionId(data);
+      }
+    },
+  });
 }
 
 async function fetchIpfsData(uriOrUrl: string) {
