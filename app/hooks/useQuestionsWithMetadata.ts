@@ -9,6 +9,7 @@ import type { IpfsData } from "~/utils/types";
 import { useContracts } from "./useContracts";
 
 const DEBOUNCE_IPFS_FETCH = 1000;
+const QUESTION_LIMIT = 1000;
 
 export type GetQuestionsByState = {
   questionId: BigNumber;
@@ -60,9 +61,7 @@ const useQuestionStore = create<QuestionStore>((set, get) => ({
   },
 }));
 
-/**
- * Wrapper for useQuestionStore to be able to get chain data using wagmi hooks
- */
+// Wrapper for useQuestionStore to be able to get chain data using wagmi hooks
 export function useQuestionsWithMetaData() {
   const store = useQuestionStore();
 
@@ -87,7 +86,7 @@ function useContractQuestions({ onSuccess }: { onSuccess?: (data: Result) => voi
     contractInterface: questionStateController.abi,
     functionName: "getQuestionsByState",
     enabled: questionId === undefined ? false : true,
-    args: [BigNumber.from(questionStateEnum.VOTING), questionId, BigNumber.from(1000)],
+    args: [BigNumber.from(questionStateEnum.VOTING), questionId, BigNumber.from(QUESTION_LIMIT)],
     onSuccess,
   });
 
