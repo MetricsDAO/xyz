@@ -1,30 +1,24 @@
-import { useEffect, useState } from "react";
-import { useContractRead } from "wagmi";
+import { useEffect, useState, useContext } from "react";
+import { useContractRead, useNetwork } from "wagmi";
 import { BigNumber } from "ethers";
 
 import AllQuestionsByState from "~/components/AllQuestionsByState";
+import type { ContractContextEntity } from "~/utils/types";
+import { ContractContext } from "~/components/ContractContextWrapper";
+import { desiredChainId } from "~/utils/helpers";
 
-export default function AllQuestionContainer({
-  address,
-  questionAPI,
-  xmetric,
-  questionStateController,
-  bountyQuestion,
-  networkMatchesWallet,
-}: {
-  address?: string;
-  questionAPI: Record<string, string>;
-  xmetric?: Record<string, string>;
-  questionStateController: Record<string, string>;
-  bountyQuestion: Record<string, string>;
-  networkMatchesWallet: boolean;
-}) {
+export default function AllQuestionContainer() {
+  const { contracts, network }: ContractContextEntity = useContext(ContractContext);
   const [latestTokenId, setLatestTokenId] = useState<number>(0);
+  const { chain } = useNetwork();
+  const primaryChainId = desiredChainId(network);
+  const networkMatchesWallet = primaryChainId === chain?.id;
 
   const { data: currentQuestion } = useContractRead({
-    addressOrName: bountyQuestion.address,
-    contractInterface: bountyQuestion.abi,
+    addressOrName: contracts.bountyQuestion.address,
+    contractInterface: contracts.bountyQuestion.abi,
     functionName: "getMostRecentQuestion",
+    chainId: primaryChainId,
     onError(err) {
       console.error(err);
     },
@@ -42,10 +36,11 @@ export default function AllQuestionContainer({
       <section className="tw-mx-auto tw-mb-7 tw-container">
         {latestTokenId && (
           <AllQuestionsByState
-            questionAPI={questionAPI}
+            questionAPI={contracts.questionAPI}
             latestQuestion={latestTokenId}
-            questionStateController={questionStateController}
+            questionStateController={contracts.questionStateController}
             networkMatchesWallet={networkMatchesWallet}
+            chainId={primaryChainId}
           />
         )}
       </section>

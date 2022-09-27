@@ -1,5 +1,5 @@
 
-export function getContracts() {
+export function getContracts({ network }: { network: string }) {
     let xMetricJson;
     let questionAPIJson;
     let questionStateController;
@@ -8,14 +8,14 @@ export function getContracts() {
     let vaultJson;
 
 
-if (process.env.NETWORK === "ropsten") {
-    xMetricJson = require(`core-evm-contracts/deployments/ropsten/Xmetric.json`);
-    questionAPIJson = require(`core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
-    questionStateController = require(`core-evm-contracts/deployments/ropsten/QuestionStateController.json`);
-    bountyQuestionJson = require(`core-evm-contracts/deployments/ropsten/BountyQuestion.json`);
-    costController = require(`core-evm-contracts/deployments/ropsten/ActionCostController.json`);
-    vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
-    } else if (process.env.NETWORK === "polygon") {
+    if (network === "ropsten") {
+        xMetricJson = require(`core-evm-contracts/deployments/ropsten/Xmetric.json`);
+        questionAPIJson = require(`core-evm-contracts/deployments/ropsten/QuestionAPI.json`);
+        questionStateController = require(`core-evm-contracts/deployments/ropsten/QuestionStateController.json`);
+        bountyQuestionJson = require(`core-evm-contracts/deployments/ropsten/BountyQuestion.json`);
+        costController = require(`core-evm-contracts/deployments/ropsten/ActionCostController.json`);
+        vaultJson = require(`core-evm-contracts/deployments/ropsten/Vault.json`);
+    } else if (network === "polygon") {
         xMetricJson = require(`core-evm-contracts/deployments/polygon/Xmetric.json`);
         questionAPIJson = require(`core-evm-contracts/deployments/polygon/QuestionAPI.json`);
         questionStateController = require(`core-evm-contracts/deployments/polygon/QuestionStateController.json`);
@@ -30,6 +30,8 @@ if (process.env.NETWORK === "ropsten") {
         costController = require(`core-evm-contracts/deployments/localhost/ActionCostController.json`);
         vaultJson = require(`core-evm-contracts/deployments/localhost/Vault.json`);
     }
+
+    console.log("Getting abis")
 
     return {
         xMetricJson,

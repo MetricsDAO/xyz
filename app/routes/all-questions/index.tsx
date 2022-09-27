@@ -1,87 +1,42 @@
-import type { SetStateAction, Dispatch } from "react";
 import { useLoaderData } from "@remix-run/react";
+import AllQuestionsContainer from "~/components/AllQuestionsContainer";
+import ContractContextWrapper from "~/components/ContractContextWrapper";
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
-import AllQuestionsContainer from "~/components/AllQuestionsContainer";
-import { filteredNetwork } from "~/utils/helpers";
-
 import { getContracts } from "~/services/contracts.server";
 
 export async function loader() {
-  const {
-    // xMetricJson,
-    questionAPIJson,
-    questionStateController,
-    bountyQuestionJson,
-  } = getContracts();
+  const network = process.env.NETWORK || "localhost";
+  const { bountyQuestionJson, questionAPIJson, questionStateController } = getContracts({network: network});
+
   return {
-    // xMetricJson,
+    bountyQuestionJson,
     questionAPIJson,
     questionStateController,
-    bountyQuestionJson,
-    network: process.env.NETWORK,
+    network: network,
   };
 }
 
+
 export default function Index() {
-  const {
-    // xMetricJson,
-    questionAPIJson,
-    questionStateController,
-    bountyQuestionJson,
-    network,
-  } = useLoaderData();
+  const { network, bountyQuestionJson, questionAPIJson, questionStateController } = useLoaderData();
 
-  // const xMETRICAbiAndAddress = {
-  //   abi: xMetricJson.abi,
-  //   address: xMetricJson.address,
-  // };
-
-  const questionAPIAbiAndAddress = {
-    abi: questionAPIJson.abi,
-    address: questionAPIJson.address,
-  };
-
-  const questionStateControllerAbiandAddress = {
-    abi: questionStateController.abi,
-    address: questionStateController.address,
-  };
-
-  const bountyQuestionAbiAndAddress = {
-    abi: bountyQuestionJson.abi,
-    address: bountyQuestionJson.address,
-  };
-
-  /* ELEMENT CLONED IN WRAPPER */
-  function ClaimBody({
-    setIsOpen,
-    address,
-    chainName,
-  }: {
-    setIsOpen?: Dispatch<SetStateAction<boolean>>;
-    address?: string | undefined;
-    chainName?: string;
-  }) {
-    // console.log("chainName", chainName?.toLowerCase(), "network", network, chainName?.toLowerCase() === network);
-    return (
-      <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
-        <AllQuestionsContainer
-          // address={address}
-          questionAPI={questionAPIAbiAndAddress}
-          questionStateController={questionStateControllerAbiandAddress}
-          // xmetric={xMETRICAbiAndAddress}
-          bountyQuestion={bountyQuestionAbiAndAddress}
-          networkMatchesWallet={chainName?.toLowerCase() === filteredNetwork(network)}
-        />
-      </section>
-    );
+  const contracts = {
+    bountyQuestion: bountyQuestionJson,
+    questionAPI: questionAPIJson,
+    questionStateController: questionStateController
   }
 
   return (
     <WalletProvider network={network}>
-      <Wrapper network={network}>
-        <ClaimBody />
-      </Wrapper>
+      <ContractContextWrapper network={network} contracts={contracts}>
+        <>
+          <Wrapper network={network} />
+          <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
+            <AllQuestionsContainer />
+          </section>
+        </>
+      </ContractContextWrapper>
     </WalletProvider>
   );
 }

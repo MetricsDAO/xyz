@@ -1,13 +1,14 @@
-import { useEffect, useState, useRef, Fragment } from "react";
+import { useEffect, useState, useRef, Fragment, useContext } from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
-import { TransactionStatus } from "~/utils/helpers";
+import { TransactionStatus, protocols } from "~/utils/helpers";
+import type { ContractContextEntity } from "~/utils/types"
 import { BigNumber } from "ethers";
 
 import { Listbox, Transition } from "@headlessui/react";
 
 import AlertBanner from "~/components/AlertBanner";
-import { protocols } from "~/utils/helpers";
+import { ContractContext } from "~/components/ContractContextWrapper"
 
 // TODO - paid endpoint
 
@@ -18,18 +19,8 @@ import { protocols } from "~/utils/helpers";
 
 export default function CreateQuestion({
   address,
-  questionAPI,
-  xmetric,
-  costController,
-  vault,
-  network,
 }: {
   address: string;
-  questionAPI: Record<string, string>;
-  xmetric: Record<string, string>;
-  costController: Record<string, string>;
-  vault: Record<string, string>;
-  network: string;
 }) {
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
@@ -40,9 +31,11 @@ export default function CreateQuestion({
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
+  const { contracts, network }: ContractContextEntity = useContext(ContractContext);
+  
   const { config, isSuccess } = usePrepareContractWrite({
-    addressOrName: questionAPI.address,
-    contractInterface: questionAPI.abi,
+    addressOrName: contracts.questionAPI.address,
+    contractInterface: contracts.questionAPI.abi,
     functionName: "createQuestion",
     args: network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl],
     enabled: Boolean(fileUrl),
