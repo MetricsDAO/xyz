@@ -1,14 +1,16 @@
 import PaginatedItems from "./PaginatedItems";
 
 import { PAGINATION_AMOUNT } from "~/utils/helpers";
-import type { QuestionData } from "~/utils/types";
+import type { GetQuestionsByState, MetadataByQuestionId } from "~/hooks/useQuestionsWithMetadata";
 
 export default function ShowQuestions({
   questions,
+  ipfsDataByQuestionId,
   selected,
   selectedProgram,
 }: {
-  questions: QuestionData[];
+  questions: GetQuestionsByState[];
+  ipfsDataByQuestionId: MetadataByQuestionId;
   selected: string;
   selectedProgram: { [key: string]: boolean };
 }) {
@@ -16,22 +18,29 @@ export default function ShowQuestions({
   const selectAll = !Object.keys(selectedProgram).find((key) => selectedProgram[key] === true);
   const property = selected === "Votes" ? "totalVotes" : "questionId";
 
-  const filteredAndSorted: QuestionData[] = questions
-    .filter((obj: QuestionData) => {
+  const filteredAndSorted: GetQuestionsByState[] = questions
+    .filter((obj: GetQuestionsByState) => {
       if (selectAll) {
         return true;
       }
-      if (obj.metadata.data?.program) {
-        return selectedProgram[obj.metadata.data?.program];
+      const program = ipfsDataByQuestionId[obj.questionId.toNumber()].data?.program;
+      if (program) {
+        return selectedProgram[program];
       }
       return false;
     })
-    .sort((a: QuestionData, b: QuestionData) => {
-      return a[property] < b[property] ? 1 : -1;
+    .sort((a: GetQuestionsByState, b: GetQuestionsByState) => {
+      return a[property].toNumber() < b[property].toNumber() ? 1 : -1;
     });
 
   if (!filteredAndSorted.length) {
     return <h1>No Questions to display</h1>;
   }
-  return <PaginatedItems questions={filteredAndSorted} itemsPerPage={PAGINATION_AMOUNT} />;
+  return (
+    <PaginatedItems
+      questions={filteredAndSorted}
+      ipfsDataByQuestionId={ipfsDataByQuestionId}
+      itemsPerPage={PAGINATION_AMOUNT}
+    />
+  );
 }

@@ -4,13 +4,15 @@ import { CaretUp32 } from "@carbon/icons-react";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 
-import { useUpvoteQuestion } from "~/hooks/questions";
-import type { QuestionData } from "~/utils/types";
+import { useUpvoteQuestion } from "~/hooks/useUpvoteQuestion";
+import type { GetQuestionsByState, MetadataByQuestionId, Metadata } from "~/hooks/useQuestionsWithMetadata";
 export default function PaginatedItems({
   questions,
+  ipfsDataByQuestionId,
   itemsPerPage,
 }: {
-  questions: QuestionData[];
+  questions: GetQuestionsByState[];
+  ipfsDataByQuestionId: MetadataByQuestionId;
   itemsPerPage: number;
 }) {
   const [itemOffset, setItemOffset] = useState(0);
@@ -26,7 +28,7 @@ export default function PaginatedItems({
 
   return (
     <>
-      <Items currentItems={currentItems} />
+      <Items currentItems={currentItems} ipfsDataByQuestionId={ipfsDataByQuestionId} />
       <ReactPaginate
         breakLabel="..."
         nextLabel="next >"
@@ -40,53 +42,63 @@ export default function PaginatedItems({
   );
 }
 
-function Items({ currentItems }: { currentItems: QuestionData[] }) {
+function Items({
+  currentItems,
+  ipfsDataByQuestionId,
+}: {
+  currentItems: GetQuestionsByState[];
+  ipfsDataByQuestionId: MetadataByQuestionId;
+}) {
   return (
     <>
-      {currentItems.map((questionObj: QuestionData) => {
-        return <FilteredQuestions key={questionObj.questionId} question={questionObj} />;
+      {currentItems.map((questionObj: GetQuestionsByState) => {
+        return (
+          <FilteredQuestions
+            key={questionObj.questionId.toNumber()}
+            question={questionObj}
+            metaData={ipfsDataByQuestionId[questionObj.questionId.toNumber()]}
+          />
+        );
       })}
     </>
   );
 }
 
-export function FilteredQuestions({ question }: { question: QuestionData }) {
-  const { writeAsync, isLoading, isSuccess, error } = useUpvoteQuestion({ questionId: question.questionId });
+export function FilteredQuestions({ question, metaData }: { question: GetQuestionsByState; metaData?: Metadata }) {
+  const { writeAsync, isLoading, isSuccess, error } = useUpvoteQuestion({ questionId: question.questionId.toNumber() });
   const isUpvoteDisabled = isLoading;
 
   useEffect(() => {
     if (isLoading) {
-      toast.info(`Pending upvote for "${question.metadata.data?.name}"`, { autoClose: false });
+      toast.info(`Pending upvote for "${metaData?.data?.name}"`, { autoClose: false });
     } else if (isSuccess) {
-      toast.success(`Successfully upvoted "${question.metadata.data?.name}"`, { autoClose: false });
+      toast.success(`Successfully upvoted "${metaData?.data?.name}"`, { autoClose: false });
     } else if (error) {
-      toast.error(`Error upvoting "${question.metadata.data?.name}"`, { autoClose: false });
+      toast.error(`Error upvoting "${metaData?.data?.name}"`, { autoClose: false });
     }
-  }, [isLoading, isSuccess, error, question.metadata.data?.name]);
+  }, [isLoading, isSuccess, error, metaData?.data?.name]);
 
-  let name = question.metadata.data?.name;
-  let program = question.metadata.data?.program;
-  let description = question.metadata.data?.description;
-  if (question.metadata.isLoading) {
+  let name = metaData?.data?.name;
+  let program = metaData?.data?.program;
+  let description = metaData?.data?.description;
+  if (!metaData) {
     name = "Loading...";
     program = "";
     description = "Loading...";
-  } else if (question.metadata.isError) {
+  } else if (metaData.isError) {
     name = "Currently Unavailable";
   }
 
   return (
     <div
       data-question-id={question.questionId}
-      className={`tw-flex tw-mb-10 ${
-        question.metadata.isLoading || question.metadata.isError ? "tw-opacity-25" : "tw-opacity-100"
-      }`}
+      className={`tw-flex tw-mb-10 ${!metaData || metaData.isError ? "tw-opacity-25" : "tw-opacity-100"}`}
     >
       <div
         data-id="post-votes"
         className="tw-self-start tw-mr-5 tw-border tw-rounded-md tw-w-10 tw-flex tw-flex-col tw-items-center"
       >
-        {question.metadata.isLoading || question.metadata.isError ? (
+        {!metaData || metaData.isError ? (
           <>
             <span>N/A</span>
           </>
@@ -103,7 +115,7 @@ export function FilteredQuestions({ question }: { question: QuestionData }) {
             />
           </>
         )}
-        <span>{question.totalVotes}</span>
+        <span>{question.totalVotes.toNumber()}</span>
       </div>
       <div className="tw-flex tw-flex-col">
         <h4 className="tw-font-bold tw-text-xl"> {name}</h4>

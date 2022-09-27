@@ -1,12 +1,18 @@
 import { useState } from "react";
 
 import ShowQuestions from "~/components/ShowQuestions";
+import type { GetQuestionsByState, MetadataByQuestionId } from "~/hooks/useQuestionsWithMetadata";
 import { protocols, sortMethods } from "~/utils/helpers";
 
-import type { QuestionData } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
 
-export default function AllQuestionsByState({ questions }: { questions: QuestionData[] }) {
+export default function AllQuestionsByState({
+  questions,
+  ipfsDataByQuestionId,
+}: {
+  questions: GetQuestionsByState[];
+  ipfsDataByQuestionId: MetadataByQuestionId;
+}) {
   const [selected, setSelected] = useState(sortMethods[0].name);
   const [selectedProgram, setSelectedProgram] = useState(
     protocols.reduce((acc, protocol) => {
@@ -27,7 +33,12 @@ export default function AllQuestionsByState({ questions }: { questions: Question
           />
         </div>
         <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">
-          <ShowQuestions selected={selected} selectedProgram={selectedProgram} questions={questions} />
+          <ShowQuestions
+            selected={selected}
+            selectedProgram={selectedProgram}
+            questions={questions}
+            ipfsDataByQuestionId={ipfsDataByQuestionId}
+          />
         </div>
         <div className="tw-border tw-basis-1/4 tw-p-2">
           <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
