@@ -67,7 +67,7 @@ export default function ShowQuestions({
         buttonDisabled={buttonDisabled}
         itemsPerPage={PAGINATION_AMOUNT}
         setQuestionIdToVote={setQuestionIdToVote}
-        name={selected.name}
+        name={selected}
       />
     );
   }
