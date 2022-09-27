@@ -1,14 +1,15 @@
 import { useLoaderData } from "@remix-run/react";
-import type { SetStateAction, Dispatch } from "react";
+import { SetStateAction, Dispatch, useState } from "react";
 
 import WalletProvider from "~/components/WalletProvider";
 import Wrapper from "~/components/Wrapper";
-import ConnectWalletButton from "~/components/ConnectWalletButton";
+
 import CreateQuestionContainer from "~/components/CreateQuestionContainer";
 
 import { getContracts } from "~/services/contracts.server";
-
-import NetworkRender from "~/components/NetworkRender";
+import QuestionControls from "~/components/QuestionControls";
+import { protocols, sortMethods } from "~/utils/helpers";
+import SearchInput from "~/components/SearchInput";
 
 export async function loader() {
   const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts();
@@ -27,6 +28,15 @@ export default function Index() {
     abi: xMetricJson.abi,
     address: xMetricJson.address,
   };
+
+  const [selected, setSelected] = useState(sortMethods[0].name);
+
+  const [selectedProgram, setSelectedProgram] = useState(
+    protocols.reduce((acc, protocol) => {
+      acc[protocol.name] = false;
+      return acc;
+    }, {} as { [key: string]: boolean })
+  );
 
   const questionAPIAbiAndAddress = {
     abi: questionAPIJson.abi,
@@ -58,13 +68,18 @@ export default function Index() {
     chainName?: string;
   }) {
     return (
-      <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
-        <div className="tw-bg-white tw-rounded-full tw-w-[120px] tw-h-[120px] tw-flex tw-flex-col tw-justify-center tw-mx-auto">
-          <img src="img/color-mark@2x.png" className="tw-mx-auto" alt="MetricsDAO" width="62" />
+      <div className="tw-flex tw-px-4 tw-flex-row justify-center tw-space-x-4">
+        <div className="tw-block tw-border tw-p-2">
+          <QuestionControls
+            setSelected={setSelected}
+            selected={selected}
+            setSelectedProgram={setSelectedProgram}
+            selectedProgram={selectedProgram}
+          />
         </div>
-        <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question Generation</h1>
-        {address ? (
-          <NetworkRender network={network} chainName={chainName} chainId={chainId} switchNetwork={switchNetwork}>
+        <div className="tw-basis-1/2">
+          <SearchInput />
+          <div className="tw-bg-[#FAFAFA] tw-p-6 tw-rounded-lg gap-2 tw-mt-3 tw-border">
             <CreateQuestionContainer
               address={address}
               questionAPI={questionAPIAbiAndAddress}
@@ -72,12 +87,29 @@ export default function Index() {
               costController={costControllerAbiandAddress}
               xmetric={xMETRICAbiAndAddress}
               network={network}
+              chainId={chainId}
+              switchNetwork={switchNetwork}
+              chainName={chainName}
+              setIsOpen={setIsOpen}
             />
-          </NetworkRender>
-        ) : (
-          <ConnectWalletButton marginAuto buttonText="Connect Wallet" connectWallet={setIsOpen} />
-        )}
-      </section>
+          </div>
+        </div>
+        <div className="tw-border tw-basis-1/4 tw-p-2">
+          <button disabled={true} className="tw-p-2">
+            {" "}
+            + Create question{" "}
+          </button>
+          <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
+          <div className="tw-p-5">
+            <p className="tw-font-bold">Be specific</p>
+            <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">tips</p>
+          </div>
+          <div className="tw-p-5">
+            <p className="tw-font-bold">Examples of good writing</p>
+            <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">examples</p>
+          </div>
+        </div>
+      </div>
     );
   }
 

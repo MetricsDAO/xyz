@@ -1,11 +1,12 @@
-import { useEffect, useState, useRef, Fragment } from "react";
+import { useEffect, useState, useRef, Fragment, Dispatch, SetStateAction } from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
-import { CheckmarkFilled32, CaretDown32 } from "@carbon/icons-react";
-import { TransactionStatus } from "~/utils/helpers";
+import { ArrowLeft32, ChevronDown32 } from "@carbon/icons-react";
+import { TransactionStatus, truncateAddress } from "~/utils/helpers";
 import { BigNumber } from "ethers";
 
 import { Listbox, Transition } from "@headlessui/react";
 
+import ConnectWalletButton from "~/components/ConnectWalletButton";
 import AlertBanner from "~/components/AlertBanner";
 import { protocols } from "~/utils/helpers";
 
@@ -23,13 +24,21 @@ export default function CreateQuestion({
   costController,
   vault,
   network,
+  chainId,
+  switchNetwork,
+  chainName,
+  setIsOpen,
 }: {
-  address: string;
+  address?: string;
   questionAPI: Record<string, string>;
   xmetric: Record<string, string>;
   costController: Record<string, string>;
   vault: Record<string, string>;
   network: string;
+  chainId?: number;
+  switchNetwork?: (chainId?: number) => void;
+  chainName?: string;
+  setIsOpen?: Dispatch<SetStateAction<boolean>>;
 }) {
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
@@ -138,89 +147,102 @@ export default function CreateQuestion({
       )}
 
       <section>
-        <p className="tw-text-center tw-mb-8">Create question below</p>
-        <div className="tw-mx-auto tw-max-w-md tw-mb-4">
-          <label className="tw-block tw-text-gray-700 tw-text-sm tw-font-bold tw-mb-2" htmlFor="program-type">
-            Program Type:
-          </label>
-          <div className="">
-            <Listbox data-id="program-type" value={selectedProgram} onChange={setSelectedProgram}>
-              <div className="tw-relative tw-mt-1">
-                <Listbox.Button className="tw-relative tw-w-full tw-cursor-default tw-rounded-lg tw-bg-white tw-py-2 tw-pl-3 tw-pr-10 tw-text-left tw-shadow-md tw-focus:outline-none tw-focus-visible:border-indigo-500 tw-focus-visible:ring-2 tw-focus-visible:ring-white tw-focus-visible:ring-opacity-75 tw-focus-visible:ring-offset-2 tw-focus-visible:ring-offset-orange-300 tw-sm:text-sm">
-                  <span className="tw-block tw-truncate">{selectedProgram.name}</span>
-                  <span className="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center tw-pr-2">
-                    <CaretDown32 className="tw-h-5 tw-w-5 tw-text-gray-400" aria-hidden="true" />
-                  </span>
-                </Listbox.Button>
-                <Transition
-                  as={Fragment}
-                  leave="transition ease-in duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <Listbox.Options className="tw-absolute tw-mt-1 tw-max-h-60 tw-w-full tw-overflow-auto tw-rounded-md tw-bg-white tw-py-1 tw-text-base tw-shadow-lg tw-ring-1 tw-ring-black tw-ring-opacity-5 tw-focus:outline-none tw-sm:text-sm">
-                    {protocols.map((protocol, index) => (
-                      <Listbox.Option
-                        key={index}
-                        className={({ active }) =>
-                          `tw-relative tw-cursor-default tw-select-none tw-py-2 tw-pl-10 tw-pr-4 ${
-                            active ? "tw-bg-amber-100 tw-text-amber-900" : "tw-text-gray-900"
-                          }`
-                        }
-                        value={protocol}
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span className={`tw-block tw-truncate ${selected ? "tw-font-medium" : "tw-font-normal"}`}>
-                              {protocol.name}
-                            </span>
-                            {selected ? (
-                              <span className="tw-absolute tw-items-center tw-inset-y-0 tw-left-0 tw-flex tw-tems-center tw-pl-3 tw-text-amber-600">
-                                <CheckmarkFilled32 className="tw-h-5 tw-w-5" aria-hidden="true" />
-                              </span>
-                            ) : null}
-                          </>
-                        )}
-                      </Listbox.Option>
-                    ))}
-                  </Listbox.Options>
-                </Transition>
+        <div className="tw-flex">
+          <ArrowLeft32 className="tw-text-[#454F5B] tw-mr-5" />
+          <div className="tw-flex tw-flex-col tw-justify-start tw-basis-3/4">
+            <div className="tw-flex tw-flex-row">
+              <p className="tw-text-left tw-mb-8 tw-text-black tw-text-3xl tw-font-bold tw-pr-5">Create question</p>
+              {address ? (
+                <span className="tw-text-sm tw-text-[#637381] tw-mt-3">{truncateAddress(address)}</span>
+              ) : (
+                <p></p>
+              )}
+            </div>
+            <div className="tw-mb-4">
+              <label className="tw-block tw-text-[#2C2E30] tw-text-sm tw-font-bold tw-mb-2" htmlFor="question-title">
+                Question Title:
+              </label>
+              <input
+                ref={questionTitle}
+                className="tw-block tw-w-full tw-appearance-none tw-border tw-rounded tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline"
+                id="question-title"
+                type="text"
+                placeholder="Title name"
+              />
+            </div>
+            <div className="tw-mb-4">
+              <label className="tw-block tw-text-[#2C2E30] tw-text-sm tw-font-bold tw-mb-2" htmlFor="program-type">
+                Project:
+              </label>
+              <div>
+                <Listbox data-id="program-type" value={selectedProgram} onChange={setSelectedProgram}>
+                  <div className="tw-relative tw-mt-1">
+                    <Listbox.Button className="tw-relative tw-w-full tw-border tw-cursor-default tw-rounded-lg tw-bg-white tw-py-2 tw-pl-3 tw-pr-10 tw-text-left tw-focus:outline-none tw-focus-visible:border-indigo-500 tw-focus-visible:ring-2 tw-focus-visible:ring-white tw-focus-visible:ring-opacity-75 tw-focus-visible:ring-offset-2 tw-focus-visible:ring-offset-orange-300 tw-sm:text-sm">
+                      <span className="tw-block tw-truncate">{selectedProgram.name}</span>
+                      <span className="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center tw-pr-2">
+                        <ChevronDown32 className="tw-h-5 tw-w-5 tw-text-gray-400" aria-hidden="true" />
+                      </span>
+                    </Listbox.Button>
+                    <Transition
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <Listbox.Options className="tw-absolute tw-mt-1 tw-max-h-60 tw-w-full tw-overflow-auto tw-rounded-md tw-bg-white tw-py-1 tw-text-base tw-ring-1 tw-ring-black tw-ring-opacity-5 tw-focus:outline-none tw-sm:text-sm">
+                        {protocols.map((protocol, index) => (
+                          <Listbox.Option
+                            key={index}
+                            className={({ active }) =>
+                              `tw-relative tw-cursor-default tw-select-none tw-py-2 tw-pl-10 tw-pr-4 ${
+                                active ? "tw-bg-[#f0f4fc] tw-text-[#2563EB]" : "tw-text-gray-900"
+                              }`
+                            }
+                            value={protocol}
+                          >
+                            {({ selected }) => (
+                              <>
+                                <span
+                                  className={`tw-block tw-truncate ${selected ? "tw-font-medium" : "tw-font-normal"}`}
+                                >
+                                  {protocol.name}
+                                </span>
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </Listbox>
               </div>
-            </Listbox>
+            </div>
+            <div className="tw-mb-4">
+              <label className="tw-block tw-text-[#2C2E30] tw-text-sm tw-font-bold tw-mb-2" htmlFor="question-body">
+                Question:
+              </label>
+              <textarea
+                ref={questionBody}
+                rows={4}
+                className="tw-block tw-appearance-none tw-border tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline"
+                id="question-body"
+                placeholder="Type to get started"
+              />
+            </div>
+            <p className="tw-text-[#A0A3A6] tw-text-sm tw-mb-8">
+              Remember to be specific with your question. Never assume that someone will “Know what you mean.” Be
+              specific, Define metrics, specifiy time boundaries.
+            </p>
+            <div className="tw-mb-8">
+              <button
+                disabled={!address}
+                onClick={ipfsUpload}
+                className="tw-bg-black tw-w-full tw-py-3 tw-text-sm tw-rounded-lg tw-text-white disabled:opacity-25"
+              >
+                Submit
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="tw-mx-auto tw-max-w-md tw-mb-4">
-          <label className="tw-block tw-text-gray-700 tw-text-sm tw-font-bold tw-mb-2" htmlFor="question-title">
-            Question Title:
-          </label>
-          <input
-            ref={questionTitle}
-            className="tw-block tw-shadow tw-appearance-none tw-border tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline"
-            id="question-title"
-            type="text"
-            placeholder="e.g. L2's on Ethereum"
-          />
-        </div>
-        <div className="tw-mx-auto tw-max-w-md tw-mb-4">
-          <label className="tw-block tw-text-gray-700 tw-text-sm tw-font-bold tw-mb-2" htmlFor="question-body">
-            Question Body:
-          </label>
-          <textarea
-            ref={questionBody}
-            rows={4}
-            className="tw-block tw-shadow tw-appearance-none tw-border tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline"
-            id="question-body"
-            placeholder="e.g. Which tokens are most popular on the top 3 L2's by market share?"
-          />
-        </div>
-        <div className="tw-mx-auto tw-max-w-md tw-mb-4">
-          <button
-            disabled={buttonDisabled}
-            onClick={ipfsUpload}
-            className="tw-bg-[#21C5F2] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white disabled:opacity-25"
-          >
-            Create Question
-          </button>
         </div>
       </section>
     </>

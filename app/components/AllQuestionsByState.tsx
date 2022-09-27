@@ -16,6 +16,7 @@ import {
 
 import type { QuestionData, ChainDataQuestion } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
+import SearchInput from "./SearchInput";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -204,7 +205,7 @@ export default function AllQuestionsByState({
 
   useEffect(() => {
     async function initUpVoteQuestion() {
-      if (!isSuccess || !questionIdToVote) return
+      if (!isSuccess || !questionIdToVote) return;
 
       setWriteTransactionStatus(TransactionStatus.Pending);
       setAlertContainerStatus(true);
@@ -228,8 +229,7 @@ export default function AllQuestionsByState({
     }
 
     initUpVoteQuestion();
-  }, [isSuccess, writeAsync, questionIdToVote])
-
+  }, [isSuccess, writeAsync, questionIdToVote]);
 
   return (
     <>
@@ -246,15 +246,18 @@ export default function AllQuestionsByState({
               selectedProgram={selectedProgram}
             />
           </div>
-          <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">
-            <ShowQuestions
-              selected={selected}
-              selectedProgram={selectedProgram}
-              questions={questionArray}
-              setQuestionIdToVote={setQuestionIdToVote}
-              networkMatchesWallet={networkMatchesWallet}
-              buttonDisabled={buttonDisabled}
-            />
+          <div className="tw-basis-1/2">
+            <SearchInput />
+            <div className="bg-white tw-p-6 tw-rounded-lg gap-2 tw-mt-3">
+              <ShowQuestions
+                selected={selected}
+                selectedProgram={selectedProgram}
+                questions={questionArray}
+                setQuestionIdToVote={setQuestionIdToVote}
+                networkMatchesWallet={networkMatchesWallet}
+                buttonDisabled={buttonDisabled}
+              />
+            </div>
           </div>
           <div className="tw-border tw-basis-1/4 tw-p-2">
             <button disabled={true} className="tw-p-2">
