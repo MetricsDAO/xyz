@@ -49,3 +49,14 @@ export interface ChainDataQuestion {
 export interface FCProps {
   className?: string;
 }
+
+export interface ContractEntity {
+  abi: string;
+  address: string;
+}
+
+export interface ContractContextEntity {
+  contracts: Record<string, ContractEntity>;
+  network: string;
+}
+

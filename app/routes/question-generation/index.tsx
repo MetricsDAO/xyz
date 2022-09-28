@@ -11,19 +11,23 @@ import QuestionControls from "~/components/QuestionControls";
 import { protocols, sortMethods } from "~/utils/helpers";
 import SearchInput from "~/components/SearchInput";
 
+
 export async function loader() {
-  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts();
+  const network = process.env.NETWORK || "localhost";
+  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts({network: network});
+
   return {
     xMetricJson,
     questionAPIJson,
     vaultJson,
     costController,
-    network: process.env.NETWORK,
+    network: network,
   };
 }
 
 export default function Index() {
   const { xMetricJson, questionAPIJson, vaultJson, costController, network } = useLoaderData();
+
   const xMETRICAbiAndAddress = {
     abi: xMetricJson.abi,
     address: xMetricJson.address,
@@ -53,6 +57,13 @@ export default function Index() {
     address: costController.address,
   };
 
+  const contracts = {
+   xmetric: xMETRICAbiAndAddress,
+   questionAPI: questionAPIAbiAndAddress,
+   vault: vaultAbiandAddress,
+   costController: costControllerAbiandAddress
+  }
+
   /* ELEMENT CLONED IN WRAPPER */
   function ClaimBody({
     setIsOpen,
@@ -62,7 +73,7 @@ export default function Index() {
     chainName,
   }: {
     setIsOpen?: Dispatch<SetStateAction<boolean>>;
-    address?: string | undefined;
+    address?: string;
     chainId?: number;
     switchNetwork?: (chainId?: number) => void;
     chainName?: string;
@@ -110,6 +121,7 @@ export default function Index() {
           </div>
         </div>
       </div>
+
     );
   }
 

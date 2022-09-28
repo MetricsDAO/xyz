@@ -14,7 +14,7 @@ import {
   protocols,
 } from "~/utils/helpers";
 
-import type { QuestionData, ChainDataQuestion } from "~/utils/types";
+import type { QuestionData, ChainDataQuestion, ContractEntity } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
 import SearchInput from "./SearchInput";
 
@@ -26,11 +26,13 @@ export default function AllQuestionsByState({
   questionStateController,
   questionAPI,
   networkMatchesWallet,
+  chainId
 }: {
   latestQuestion: number;
-  questionStateController: Record<string, string>;
-  questionAPI: Record<string, string>;
+  questionStateController: ContractEntity;
+  questionAPI: ContractEntity;
   networkMatchesWallet: boolean;
+  chainId: number;
 }) {
   const [questionDataVotingState, setQuestionDataVotingState] = useState<ChainDataQuestion[]>([]);
   const [questionArray, setQuestionArray] = useState<QuestionData[]>([]);
@@ -60,7 +62,7 @@ export default function AllQuestionsByState({
     contractInterface: questionStateController.abi,
     functionName: "getQuestionsByState",
     args: [BigNumber.from(questionStateEnum.VOTING), BigNumber.from(latestQuestion), BigNumber.from(OFFSET)],
-    enabled: true,
+    chainId: chainId,
     cacheOnBlock: true,
     onError: (err) => {
       console.error(err);

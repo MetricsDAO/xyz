@@ -1,14 +1,15 @@
-import { useEffect, useState, useRef, Fragment, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, useRef, Fragment, Dispatch, SetStateAction, useContext  } from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { ArrowLeft32, ChevronDown32 } from "@carbon/icons-react";
-import { TransactionStatus, truncateAddress } from "~/utils/helpers";
+import { TransactionStatus, protocols, truncateAddress } from "~/utils/helpers";
+import type { ContractContextEntity } from "~/utils/types"
 import { BigNumber } from "ethers";
 
 import { Listbox, Transition } from "@headlessui/react";
 
 import ConnectWalletButton from "~/components/ConnectWalletButton";
 import AlertBanner from "~/components/AlertBanner";
-import { protocols } from "~/utils/helpers";
+import { ContractContext } from "~/components/ContractContextWrapper"
 
 // TODO - paid endpoint
 
@@ -19,26 +20,8 @@ import { protocols } from "~/utils/helpers";
 
 export default function CreateQuestion({
   address,
-  questionAPI,
-  xmetric,
-  costController,
-  vault,
-  network,
-  chainId,
-  switchNetwork,
-  chainName,
-  setIsOpen,
 }: {
-  address?: string;
-  questionAPI: Record<string, string>;
-  xmetric: Record<string, string>;
-  costController: Record<string, string>;
-  vault: Record<string, string>;
-  network: string;
-  chainId?: number;
-  switchNetwork?: (chainId?: number) => void;
-  chainName?: string;
-  setIsOpen?: Dispatch<SetStateAction<boolean>>;
+  address: string;
 }) {
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
@@ -49,9 +32,11 @@ export default function CreateQuestion({
   const questionBody = useRef<HTMLTextAreaElement | null>(null);
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
+  const { contracts, network }: ContractContextEntity = useContext(ContractContext);
+  
   const { config, isSuccess } = usePrepareContractWrite({
-    addressOrName: questionAPI.address,
-    contractInterface: questionAPI.abi,
+    addressOrName: contracts.questionAPI.address,
+    contractInterface: contracts.questionAPI.abi,
     functionName: "createQuestion",
     args: network === "polygon" ? [fileUrl, BigNumber.from("10")] : [fileUrl],
     enabled: Boolean(fileUrl),
