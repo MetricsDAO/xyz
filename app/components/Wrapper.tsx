@@ -108,7 +108,6 @@ export default function Wrapper({ children, network }: { children?: ReactElement
         address={address}
         disconnect={disconnect}
         chainName={chainName}
-        chainId={chainId}
         switchNetwork={switchNetwork}
         activeConnector={activeConnectorName}
       />

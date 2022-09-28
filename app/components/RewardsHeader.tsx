@@ -16,7 +16,6 @@ export default function RewardsHeader({
   activeConnector,
   network,
   disconnect,
-  chainId,
   switchNetwork,
   chainName,
 }: {
@@ -26,8 +25,7 @@ export default function RewardsHeader({
   address: string | undefined;
   disconnect: () => void;
   network: string;
-  chainId?: number;
-  switchNetwork?: (chainId?: number) => void;
+  switchNetwork?: () => void;
   chainName?: string;
   activeConnector?: string | undefined;
 }) {
@@ -105,7 +103,7 @@ export default function RewardsHeader({
               </Menu.Items>
             </Transition>
           </Menu>
-          <NetworkRender network={network} chainName={chainName} chainId={chainId} switchNetwork={switchNetwork} />
+          <NetworkRender network={network} chainName={chainName} switchNetwork={switchNetwork} />
         </div>
       ) : (
         <ConnectWalletButton buttonText="Connect Wallet" connectWallet={connectWallet} />
