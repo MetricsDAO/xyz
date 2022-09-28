@@ -10,11 +10,11 @@ import { getContracts } from "~/services/contracts.server";
 import QuestionControls from "~/components/QuestionControls";
 import { protocols, sortMethods } from "~/utils/helpers";
 import SearchInput from "~/components/SearchInput";
-
+import WritingTips from "~/components/WritingTips";
 
 export async function loader() {
   const network = process.env.NETWORK || "localhost";
-  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts({network: network});
+  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts({ network: network });
 
   return {
     xMetricJson,
@@ -58,11 +58,11 @@ export default function Index() {
   };
 
   const contracts = {
-   xmetric: xMETRICAbiAndAddress,
-   questionAPI: questionAPIAbiAndAddress,
-   vault: vaultAbiandAddress,
-   costController: costControllerAbiandAddress
-  }
+    xmetric: xMETRICAbiAndAddress,
+    questionAPI: questionAPIAbiAndAddress,
+    vault: vaultAbiandAddress,
+    costController: costControllerAbiandAddress,
+  };
 
   /* ELEMENT CLONED IN WRAPPER */
   function ClaimBody({
@@ -79,7 +79,7 @@ export default function Index() {
     chainName?: string;
   }) {
     return (
-      <div className="tw-flex tw-flex-row tw-justify-center tw-space-x-4">
+      <div className="tw-flex tw-flex-row tw-justify-center">
         <div className="tw-block tw-border tw-basis-1/4">
           <QuestionControls
             setSelected={setSelected}
@@ -88,40 +88,16 @@ export default function Index() {
             selectedProgram={selectedProgram}
           />
         </div>
-        <div className="tw-basis-1/2 tw-mt-3">
+        <div className="tw-border tw-basis-1/2 tw-p-5">
           <SearchInput />
-          <div className="tw-bg-[#FAFAFA] tw-p-6 tw-rounded-lg gap-2 tw-mt-3 tw-border">
-            <CreateQuestionContainer
-              address={address}
-              questionAPI={questionAPIAbiAndAddress}
-              vault={vaultAbiandAddress}
-              costController={costControllerAbiandAddress}
-              xmetric={xMETRICAbiAndAddress}
-              network={network}
-              chainId={chainId}
-              switchNetwork={switchNetwork}
-              chainName={chainName}
-              setIsOpen={setIsOpen}
-            />
+          <div className="tw-bg-[#FAFAFA] tw-p-6 tw-rounded-lg gap-2 tw-mt-6 tw-border">
+            <CreateQuestionContainer address={address} />
           </div>
         </div>
         <div className="tw-border tw-basis-1/4 tw-p-2">
-          <button disabled={true} className="tw-p-2">
-            {" "}
-            + Create question{" "}
-          </button>
-          <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
-          <div className="tw-p-5">
-            <p className="tw-font-bold">Be specific</p>
-            <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">tips</p>
-          </div>
-          <div className="tw-p-5">
-            <p className="tw-font-bold">Examples of good writing</p>
-            <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">examples</p>
-          </div>
+          <WritingTips />
         </div>
       </div>
-
     );
   }
 

@@ -17,6 +17,7 @@ import {
 import type { QuestionData, ChainDataQuestion, ContractEntity } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
 import SearchInput from "./SearchInput";
+import WritingTips from "./WritingTips";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -26,7 +27,7 @@ export default function AllQuestionsByState({
   questionStateController,
   questionAPI,
   networkMatchesWallet,
-  chainId
+  chainId,
 }: {
   latestQuestion: number;
   questionStateController: ContractEntity;
@@ -239,8 +240,8 @@ export default function AllQuestionsByState({
         <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
       )}
       {uxShow === true ? (
-        <div className="tw-flex tw-flex-row tw-justify-center tw-space-x-4">
-          <div className="tw-block tw-border tw-p-2 tw-basis-1/4">
+        <div className="tw-flex tw-flex-row tw-justify-center">
+          <div className="tw-block tw-border tw-basis-1/4">
             <QuestionControls
               setSelected={setSelected}
               selected={selected}
@@ -248,7 +249,7 @@ export default function AllQuestionsByState({
               selectedProgram={selectedProgram}
             />
           </div>
-          <div className="tw-basis-1/2 tw-mt-5">
+          <div className="tw-border tw-basis-1/2 tw-p-5">
             <SearchInput />
             <div className="bg-white tw-p-6 tw-rounded-lg gap-2 tw-mt-3">
               <ShowQuestions
@@ -262,19 +263,7 @@ export default function AllQuestionsByState({
             </div>
           </div>
           <div className="tw-border tw-basis-1/4 tw-p-2">
-            <button disabled={true} className="tw-p-2">
-              {" "}
-              + Create question{" "}
-            </button>
-            <h4 className="tw-font-bold tw-text-xl tw-p-2">Bounty question writing tips</h4>
-            <div className="tw-p-5">
-              <p className="tw-font-bold">Be specific</p>
-              <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">tips</p>
-            </div>
-            <div className="tw-p-5">
-              <p className="tw-font-bold">Examples of good writing</p>
-              <p className="tw-text-sm tw-mb-4 tw-text-[#637381]">examples</p>
-            </div>
+            <WritingTips questionArray={questionArray} />
           </div>
         </div>
       ) : (

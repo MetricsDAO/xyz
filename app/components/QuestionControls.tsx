@@ -14,7 +14,7 @@ export default function QuestionControls({
   selectedProgram: { [key: string]: boolean };
 }) {
   return (
-    <div className="md:tw-w-[330px] tw-border tw-rounded-md tw-bg-white tw-mt-3 tw-mx-auto tw-justify-center">
+    <div className="md:tw-w-[330px] tw-border tw-rounded-md tw-bg-white tw-mx-auto tw-justify-center tw-mt-10">
       <MyRadioGroup setSelected={setSelected} selected={selected} />
       <hr className="solid tw-bg-[#A3A3A3]" />
       <MultiSelect setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />

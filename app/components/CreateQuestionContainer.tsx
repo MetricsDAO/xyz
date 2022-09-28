@@ -1,15 +1,14 @@
-import { useEffect, useState, useRef, Fragment, Dispatch, SetStateAction, useContext  } from "react";
+import { useEffect, useState, useRef, Fragment, useContext } from "react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { ArrowLeft32, ChevronDown32 } from "@carbon/icons-react";
 import { TransactionStatus, protocols, truncateAddress } from "~/utils/helpers";
-import type { ContractContextEntity } from "~/utils/types"
+import type { ContractContextEntity } from "~/utils/types";
 import { BigNumber } from "ethers";
 
 import { Listbox, Transition } from "@headlessui/react";
 
-import ConnectWalletButton from "~/components/ConnectWalletButton";
 import AlertBanner from "~/components/AlertBanner";
-import { ContractContext } from "~/components/ContractContextWrapper"
+import { ContractContext } from "~/components/ContractContextWrapper";
 
 // TODO - paid endpoint
 
@@ -18,11 +17,7 @@ import { ContractContext } from "~/components/ContractContextWrapper"
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 
-export default function CreateQuestion({
-  address,
-}: {
-  address: string;
-}) {
+export default function CreateQuestionContainer({ address }: { address?: string }) {
   const [alertContainerStatus, setAlertContainerStatus] = useState<boolean>(false);
   const [writeTransactionStatus, setWriteTransactionStatus] = useState<string>(TransactionStatus.Pending);
   const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
@@ -33,7 +28,7 @@ export default function CreateQuestion({
   const questionTitle = useRef<HTMLInputElement | null>(null);
 
   const { contracts, network }: ContractContextEntity = useContext(ContractContext);
-  
+
   const { config, isSuccess } = usePrepareContractWrite({
     addressOrName: contracts.questionAPI.address,
     contractInterface: contracts.questionAPI.abi,

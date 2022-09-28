@@ -5,10 +5,10 @@ export default function SearchInput() {
   const fetcher = useFetcher();
 
   return (
-    <>
+    <div className="tw-mt-6">
       <fetcher.Form
         method="get"
-        className="tw-flex tw-flex-row tw-space-x-2 tw-bg-[#F7F7F7] tw-rounded-full tw-h-10 tw-w-full tw-items-center tw-px-3 tw-border"
+        className="tw-flex tw-flex-row tw-space-x-2 tw-bg-[#F7F7F7] tw-rounded-full tw-h-11 tw-w-full tw-items-center tw-px-3 tw-border"
       >
         <Search16 className="tw-fill-[#4D4D4D]" data-test-id="search-submissions-icon" />
         <input
@@ -18,6 +18,6 @@ export default function SearchInput() {
           placeholder="Search questions"
         />
       </fetcher.Form>
-    </>
+    </div>
   );
 }
