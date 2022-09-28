@@ -148,12 +148,12 @@ export default function CreateQuestion({
 
       <section>
         <div className="tw-flex">
-          <ArrowLeft32 className="tw-text-[#454F5B] tw-mr-5" />
+          <ArrowLeft32 className="tw-text-[#454F5B] tw-mr-5 tw-mt-0.5" />
           <div className="tw-flex tw-flex-col tw-justify-start tw-basis-3/4">
             <div className="tw-flex tw-flex-row">
-              <p className="tw-text-left tw-mb-8 tw-text-black tw-text-3xl tw-font-bold tw-pr-5">Create question</p>
+              <p className="tw-text-left tw-mb-3 tw-text-black tw-text-3xl tw-font-bold tw-pr-5">Create question</p>
               {address ? (
-                <span className="tw-text-sm tw-text-[#637381] tw-mt-3">{truncateAddress(address)}</span>
+                <span className="tw-text-sm tw-text-[#637381] tw-mt-3 tw-ml-auto">{truncateAddress(address)}</span>
               ) : (
                 <p></p>
               )}
@@ -224,16 +224,16 @@ export default function CreateQuestion({
               <textarea
                 ref={questionBody}
                 rows={4}
-                className="tw-block tw-appearance-none tw-border tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline"
+                className="tw-block tw-appearance-none tw-border tw-resize-none tw-rounded tw-w-full tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight tw-focus:outline-none tw-focus:shadow-outline"
                 id="question-body"
                 placeholder="Type to get started"
               />
             </div>
-            <p className="tw-text-[#A0A3A6] tw-text-sm tw-mb-8">
+            <p className="tw-text-[#A0A3A6] tw-text-sm tw-mb-10">
               Remember to be specific with your question. Never assume that someone will “Know what you mean.” Be
               specific, Define metrics, specifiy time boundaries.
             </p>
-            <div className="tw-mb-8">
+            <div className="tw-mb-12">
               <button
                 disabled={!address}
                 onClick={ipfsUpload}

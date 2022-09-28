@@ -237,8 +237,8 @@ export default function AllQuestionsByState({
         <AlertBanner transactionStatus={writeTransactionStatus} setAlertContainerStatus={setAlertContainerStatus} />
       )}
       {uxShow === true ? (
-        <div className="tw-flex tw-px-4 tw-flex-row justify-center tw-space-x-4">
-          <div className="tw-block tw-border tw-p-2">
+        <div className="tw-flex tw-flex-row tw-justify-center tw-space-x-4">
+          <div className="tw-block tw-border tw-p-2 tw-basis-1/4">
             <QuestionControls
               setSelected={setSelected}
               selected={selected}
@@ -246,7 +246,7 @@ export default function AllQuestionsByState({
               selectedProgram={selectedProgram}
             />
           </div>
-          <div className="tw-basis-1/2">
+          <div className="tw-basis-1/2 tw-mt-5">
             <SearchInput />
             <div className="bg-white tw-p-6 tw-rounded-lg gap-2 tw-mt-3">
               <ShowQuestions

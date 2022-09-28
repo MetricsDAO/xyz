@@ -64,7 +64,7 @@ export default function Index() {
   }) {
     // console.log("chainName", chainName?.toLowerCase(), "network", network, chainName?.toLowerCase() === network);
     return (
-      <section className="tw-flex tw-flex-col tw-justify-center tw-bg-[#F3F5FA] tw-py-20">
+      <section className="tw-flex tw-flex-col tw-justify-center tw-bg-white">
         <AllQuestionsContainer
           // address={address}
           questionAPI={questionAPIAbiAndAddress}

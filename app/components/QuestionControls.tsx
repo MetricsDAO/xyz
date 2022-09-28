@@ -2,7 +2,6 @@ import MyRadioGroup from "~/components/RadioGroup";
 import MultiSelect from "./MultiSelect";
 import type { Dispatch, SetStateAction } from "react";
 
-
 export default function QuestionControls({
   setSelected,
   selected,
@@ -15,7 +14,7 @@ export default function QuestionControls({
   selectedProgram: { [key: string]: boolean };
 }) {
   return (
-    <div className="md:tw-w-[330px] tw-border tw-rounded-md tw-bg-white">
+    <div className="md:tw-w-[330px] tw-border tw-rounded-md tw-bg-white tw-mt-3 tw-mx-auto tw-justify-center">
       <MyRadioGroup setSelected={setSelected} selected={selected} />
       <hr className="solid tw-bg-[#A3A3A3]" />
       <MultiSelect setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />

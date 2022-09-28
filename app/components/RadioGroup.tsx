@@ -39,7 +39,7 @@ export default function MyRadioGroup({
                   value={plan.name}
                   name={plan.name}
                   checked={plan.name == selected}
-                  className="tw-h-6 tw-w-6 tw-absolute tw-right-5 tw-cursor-pointer"
+                  className="tw-h-6 tw-w-6 tw-absolute tw-right-5 tw-cursor-pointer tw-drop-shadow-xl"
                 />
               </div>
             </RadioGroup.Option>
