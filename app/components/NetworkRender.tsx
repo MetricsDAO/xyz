@@ -4,19 +4,17 @@ import { filteredNetwork } from "~/utils/helpers";
 export default function NetworkRender({
   network,
   chainName,
-  chainId,
   switchNetwork,
   children,
 }: {
   network: string;
   chainName?: string;
-  chainId?: number;
-  switchNetwork?: (chainId?: number) => void;
+  switchNetwork?: () => void;
   children?: ReactElement;
 }) {
   function getContents() {
     if (filteredNetwork(network) !== chainName?.toLowerCase()) {
-      if (typeof switchNetwork === "function" && filteredNetwork(network) !== "hardhat") {
+      if (typeof switchNetwork === "function") {
         return (
           <div
             className={`tw-flex tw-flex-wrap tw-max-w-xs tw-text-sm tw-mx-auto ${children ? "tw-justify-center" : ""}`}

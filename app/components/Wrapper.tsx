@@ -6,39 +6,41 @@ import { useAccount, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
 import { Buffer } from "buffer";
 import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
+import { filteredNetwork } from "~/utils/helpers";
 
 export default function Wrapper({ children, network }: { children?: ReactElement; network: string }) {
   let link: string;
   let linkText: string;
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { address, connector } = useAccount();
   const { disconnect } = useDisconnect();
   const { chain, chains } = useNetwork();
-  
-  const primaryChainObj = chains.filter(chainObj => {
-    return chainObj.name?.toLowerCase() === network
-  })[0]
 
-  const { switchNetwork } = useSwitchNetwork({ 
+  const primaryChainObj = chains.filter((chainObj) => {
+    return chainObj.name?.toLowerCase() === filteredNetwork(network);
+  })[0];
+
+  const { switchNetwork } = useSwitchNetwork({
     chainId: primaryChainObj?.id,
     onError() {
-        tryRPCSwitchNetwork();
-    }
+      tryRPCSwitchNetwork();
+    },
   });
 
   async function tryRPCSwitchNetwork() {
     try {
       console.log("Trying RPC switch chain");
       await window?.ethereum?.request({
-        method: 'wallet_switchEthereumChain', 
-        params: [{ 
-          chainId: primaryChainObj?.id?.toString(16),
-        }]
-      })
-    }
-    catch (error) {
+        method: "wallet_switchEthereumChain",
+        params: [
+          {
+            chainId: primaryChainObj?.id?.toString(16),
+          },
+        ],
+      });
+    } catch (error) {
       console.log("Error with RPC switch. Attempting to add chain with RPC.", error);
       // TODO: Some chains are not configured within Metamask and cannot switch without an RPC
       // wallet_addEthereumChain call. The switch chain RPC call works but this add chain
@@ -85,7 +87,7 @@ export default function Wrapper({ children, network }: { children?: ReactElement
   }
 
   const chainName = chain?.name;
-  const chainId = chain?.id;
+  const chainId = primaryChainObj?.id;
   const activeConnectorName = connector?.name;
 
   if (!window.Buffer) {
@@ -106,7 +108,6 @@ export default function Wrapper({ children, network }: { children?: ReactElement
         address={address}
         disconnect={disconnect}
         chainName={chainName}
-        chainId={chainId}
         switchNetwork={switchNetwork}
         activeConnector={activeConnectorName}
       />
