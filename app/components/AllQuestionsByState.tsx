@@ -3,7 +3,6 @@ import { useContractRead, useContractWrite, usePrepareContractWrite, useContract
 import { BigNumber } from "ethers";
 
 import AlertBanner from "~/components/AlertBanner";
-import ShowQuestions from "~/components/ShowQuestions";
 import {
   TransactionStatus,
   iPFSdomain,
@@ -16,6 +15,8 @@ import {
 
 import type { QuestionData, ChainDataQuestion, ContractEntity } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
+import QuestionList from "./questionList";
+import ShowQuestions from "./ShowQuestions";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -25,7 +26,7 @@ export default function AllQuestionsByState({
   questionStateController,
   questionAPI,
   networkMatchesWallet,
-  chainId
+  chainId,
 }: {
   latestQuestion: number;
   questionStateController: ContractEntity;
@@ -206,7 +207,7 @@ export default function AllQuestionsByState({
 
   useEffect(() => {
     async function initUpVoteQuestion() {
-      if (!isSuccess || !questionIdToVote) return
+      if (!isSuccess || !questionIdToVote) return;
 
       setWriteTransactionStatus(TransactionStatus.Pending);
       setAlertContainerStatus(true);
@@ -230,8 +231,7 @@ export default function AllQuestionsByState({
     }
 
     initUpVoteQuestion();
-  }, [isSuccess, writeAsync, questionIdToVote])
-
+  }, [isSuccess, writeAsync, questionIdToVote]);
 
   return (
     <>
@@ -248,7 +248,7 @@ export default function AllQuestionsByState({
               selectedProgram={selectedProgram}
             />
           </div>
-          <div className="bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">
+          <div className="tw-bg-white tw-basis-1/2 tw-p-6 tw-rounded-lg tw-space-y-2">
             <ShowQuestions
               selected={selected}
               selectedProgram={selectedProgram}
@@ -258,6 +258,8 @@ export default function AllQuestionsByState({
               buttonDisabled={buttonDisabled}
             />
           </div>
+          {/* <QuestionList /> */}
+
           <div className="tw-border tw-basis-1/4 tw-p-2">
             <button disabled={true} className="tw-p-2">
               {" "}
