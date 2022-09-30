@@ -12,12 +12,14 @@ import {
   OFFSET,
   sortMethods,
   protocols,
+  filterSortCsvData,
 } from "~/utils/helpers";
 
 import type { QuestionData, ChainDataQuestion, ContractEntity } from "~/utils/types";
 import QuestionControls from "./QuestionControls";
 import SearchInput from "./SearchInput";
 import WritingTips from "./WritingTips";
+import { CSVLink } from "react-csv";
 
 // let maxFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
 // let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000) // fallback to 40 gwei
@@ -248,6 +250,14 @@ export default function AllQuestionsByState({
               setSelectedProgram={setSelectedProgram}
               selectedProgram={selectedProgram}
             />
+            <CSVLink
+              data={filterSortCsvData(questionArray)}
+              className="tw-mx-auto tw-justify-center tw-mt-8 tw-bg-[#212B36] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
+              filename={"question-data.csv"}
+              target="_blank"
+            >
+              <span>Download CSV</span>
+            </CSVLink>
           </div>
           <div className="tw-border tw-basis-1/2 tw-p-5">
             <SearchInput />
@@ -263,7 +273,7 @@ export default function AllQuestionsByState({
             </div>
           </div>
           <div className="tw-border tw-basis-1/4 tw-p-2">
-            <WritingTips questionArray={questionArray} />
+            <WritingTips />
           </div>
         </div>
       ) : (

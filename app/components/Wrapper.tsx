@@ -8,9 +8,6 @@ import Modal from "./Modal";
 import RewardsHeader from "./RewardsHeader";
 
 export default function Wrapper({ children, network }: { children?: ReactElement; network: string }) {
-  let link: string;
-  let linkText: string;
-
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { address, connector } = useAccount();

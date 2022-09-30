@@ -13,7 +13,7 @@ export default function SearchInput() {
         <Search16 className="tw-fill-[#4D4D4D]" data-test-id="search-submissions-icon" />
         <input
           data-test-id="search-submissions-header"
-          className="tw-bg-transparent tw-mr-0 tw-min-w-0 tw-text-[#4D4D4D]"
+          className="tw-flex-1 tw-bg-transparent tw-mr-0 tw-min-w-0 tw-text-[#4D4D4D] focus:tw-outline-none"
           name="user-query"
           placeholder="Search questions"
         />

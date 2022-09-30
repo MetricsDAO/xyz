@@ -80,16 +80,8 @@ export default function Index() {
   }) {
     return (
       <div className="tw-flex tw-flex-row tw-justify-center">
-        <div className="tw-block tw-border tw-basis-1/4">
-          <QuestionControls
-            setSelected={setSelected}
-            selected={selected}
-            setSelectedProgram={setSelectedProgram}
-            selectedProgram={selectedProgram}
-          />
-        </div>
+        <div className="tw-block tw-border tw-basis-1/4" />
         <div className="tw-border tw-basis-1/2 tw-p-5">
-          <SearchInput />
           <div className="tw-bg-[#FAFAFA] tw-p-6 tw-rounded-lg gap-2 tw-mt-6 tw-border">
             <CreateQuestionContainer address={address} />
           </div>

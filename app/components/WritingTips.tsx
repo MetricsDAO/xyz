@@ -1,8 +1,4 @@
-import { CSVLink } from "react-csv";
-import { filterSortCsvData } from "~/utils/helpers";
-import type { QuestionData } from "~/utils/types";
-
-export default function WritingTips({ questionArray }: { questionArray?: QuestionData[] }) {
+export default function WritingTips() {
   return (
     <div className="tw-mt-9 tw-ml-2 tw-mr-10">
       <a href="/question-generation" target="_self" rel="noreferrer">
@@ -32,20 +28,6 @@ export default function WritingTips({ questionArray }: { questionArray?: Questio
           <br />
           UPDATED Version: How many addresses actively use the SUSHI token on Ethereum?
         </p>
-      </div>
-      <div className="tw-pl-5 tw-mt-8">
-        {questionArray ? (
-          <CSVLink
-            data={filterSortCsvData(questionArray)}
-            className="tw-bg-[#212B36] tw-px-5 tw-py-3 tw-text-sm tw-rounded-lg tw-text-white"
-            filename={"question-data.csv"}
-            target="_blank"
-          >
-            <span>Download CSV</span>
-          </CSVLink>
-        ) : (
-          <p />
-        )}
       </div>
     </div>
   );
