@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
 import ReactPaginate from "react-paginate";
-import { CaretUp32 } from "@carbon/icons-react";
 
 import type { QuestionData } from "~/utils/types";
 import QuestionRowDisclosure from "./questionRow";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 export default function PaginatedItems({
   questions,
   setQuestionIdToVote,
@@ -44,12 +45,13 @@ export default function PaginatedItems({
         buttonDisabled={buttonDisabled}
       />
       <ReactPaginate
+        className=""
         breakLabel="..."
-        nextLabel="next >"
+        nextLabel={<FontAwesomeIcon className="" icon={faArrowRight} />}
         onPageChange={handlePageClick}
         pageRangeDisplayed={5}
         pageCount={pageCount}
-        previousLabel="< previous"
+        previousLabel={<FontAwesomeIcon className="" icon={faArrowLeft} />}
         containerClassName="pagination"
       />
     </>
@@ -97,7 +99,7 @@ export function FilteredQuestions({
   buttonDisabled: boolean;
 }) {
   return (
-    <QuestionRowDisclosure />
+    <QuestionRowDisclosure question={question} />
     // <div
     //   data-question-id={question.questionId}
     //   className={`tw-flex tw-mb-10 ${question.loading ? "tw-opacity-25" : "tw-opacity-100"}`}
