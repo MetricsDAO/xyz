@@ -4,11 +4,12 @@ import type { QuestionData } from "~/utils/types";
 
 export default function WritingTips({ questionArray }: { questionArray?: QuestionData[] }) {
   return (
-    <div className="tw-mt-9 tw-mx-2">
-      <button className="tw-bg-[#212B36] tw-text-white tw-rounded-lg tw-w-full tw-max-w-md tw-py-3 tw-text-sm">
-        {" "}
-        + Create question{" "}
-      </button>
+    <div className="tw-mt-9 tw-ml-2 tw-mr-10">
+      <a href="/question-generation" target="_self" rel="noreferrer">
+        <button className="tw-bg-[#212B36] tw-text-white tw-rounded-lg tw-w-full tw-max-w-md tw-py-3 tw-text-sm">
+          + Create question
+        </button>
+      </a>
       <h4 className="tw-font-bold tw-text-xl tw-p-2 tw-mt-3">Bounty question writing tips</h4>
       <div className="tw-px-5 tw-mt-2">
         <p className="tw-font-bold">Be specific</p>

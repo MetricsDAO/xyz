@@ -128,7 +128,9 @@ export default function CreateQuestionContainer({ address }: { address?: string 
 
       <section>
         <div className="tw-flex">
-          <ArrowLeft32 className="tw-text-[#454F5B] tw-mr-5 tw-mt-0.5" />
+          <a href="/all-questions" target="_self" rel="noreferrer">
+            <ArrowLeft32 className="tw-text-[#454F5B] tw-mr-5 tw-mt-0.5" />
+          </a>
           <div className="tw-flex tw-flex-col tw-justify-start tw-basis-3/4">
             <div className="tw-flex tw-flex-row">
               <p className="tw-text-left tw-mb-3 tw-text-black tw-text-3xl tw-font-bold tw-pr-5">Create question</p>
