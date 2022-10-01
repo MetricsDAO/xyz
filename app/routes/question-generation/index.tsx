@@ -13,7 +13,27 @@ import ContractContextWrapper from "~/components/ContractContextWrapper";
 
 export async function loader() {
   const network = process.env.NETWORK || "localhost";
-  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts({network: network});
+  const constractData = getContracts({ network: network });
+
+  const xMetricJson = {
+    abi: constractData.xMetricJson.abi,
+    address: constractData.xMetricJson.address,
+  };
+
+  const questionAPIJson = {
+    abi: constractData.questionAPIJson.abi,
+    address: constractData.questionAPIJson.address,
+  };
+
+  const vaultJson = {
+    abi: constractData.vaultJson.abi,
+    address: constractData.vaultJson.address,
+  };
+
+  const costController = {
+    abi: constractData.costController.abi,
+    address: constractData.costController.address,
+  };
 
   return {
     xMetricJson,
@@ -27,32 +47,12 @@ export async function loader() {
 export default function Index() {
   const { xMetricJson, questionAPIJson, vaultJson, costController, network } = useLoaderData();
 
-  const xMETRICAbiAndAddress = {
-    abi: xMetricJson.abi,
-    address: xMetricJson.address,
-  };
-
-  const questionAPIAbiAndAddress = {
-    abi: questionAPIJson.abi,
-    address: questionAPIJson.address,
-  };
-
-  const vaultAbiandAddress = {
-    abi: vaultJson.abi,
-    address: vaultJson.address,
-  };
-
-  const costControllerAbiandAddress = {
-    abi: costController.abi,
-    address: costController.address,
-  };
-
   const contracts = {
-   xmetric: xMETRICAbiAndAddress,
-   questionAPI: questionAPIAbiAndAddress,
-   vault: vaultAbiandAddress,
-   costController: costControllerAbiandAddress
-  }
+    xmetric: xMetricJson,
+    questionAPI: questionAPIJson,
+    vault: vaultJson,
+    costController: costController,
+  };
 
   /* ELEMENT CLONED IN WRAPPER */
   function ClaimBody({
@@ -76,7 +76,7 @@ export default function Index() {
         <h1 className="tw-text-5xl tw-mx-auto tw-pt-10 tw-pb-5 tw-font-bold">Question Generation</h1>
         {address ? (
           <ContractContextWrapper contracts={contracts} network={network}>
-            <NetworkRender network={network} chainName={chainName} chainId={chainId} switchNetwork={switchNetwork}>
+            <NetworkRender network={network} chainName={chainName} switchNetwork={switchNetwork}>
               <CreateQuestionContainer address={address} />
             </NetworkRender>
           </ContractContextWrapper>

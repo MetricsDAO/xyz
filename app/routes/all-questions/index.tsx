@@ -7,7 +7,22 @@ import { getContracts } from "~/services/contracts.server";
 
 export async function loader() {
   const network = process.env.NETWORK || "localhost";
-  const { bountyQuestionJson, questionAPIJson, questionStateController } = getContracts({network: network});
+  const contractData = getContracts({ network: network });
+
+  const bountyQuestionJson = {
+    abi: contractData.bountyQuestionJson.abi,
+    address: contractData.bountyQuestionJson.address,
+  };
+
+  const questionAPIJson = {
+    abi: contractData.questionAPIJson.abi,
+    address: contractData.questionAPIJson.address,
+  };
+
+  const questionStateController = {
+    abi: contractData.questionStateController.abi,
+    address: contractData.questionStateController.address,
+  };
 
   return {
     bountyQuestionJson,
@@ -17,15 +32,14 @@ export async function loader() {
   };
 }
 
-
 export default function Index() {
   const { network, bountyQuestionJson, questionAPIJson, questionStateController } = useLoaderData();
 
   const contracts = {
     bountyQuestion: bountyQuestionJson,
     questionAPI: questionAPIJson,
-    questionStateController: questionStateController
-  }
+    questionStateController: questionStateController,
+  };
 
   return (
     <WalletProvider network={network}>

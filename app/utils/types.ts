@@ -51,7 +51,7 @@ export interface FCProps {
 }
 
 export interface ContractEntity {
-  abi: string;
+  abi: Record<string, string>[];
   address: string;
 }
 
@@ -59,4 +59,3 @@ export interface ContractContextEntity {
   contracts: Record<string, ContractEntity>;
   network: string;
 }
-
