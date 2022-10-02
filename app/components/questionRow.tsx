@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Disclosure, Transition } from "@headlessui/react";
 import type { QuestionData } from "~/utils/types";
 
-export function QuestionRow({ question }: { question: QuestionData }) {
+export default function QuestionRow({ question }: { question: QuestionData }) {
   const date = new Date(question.date).toDateString();
   return (
     <div className="tw-bg-[#FAFAFA] tw-border-[#E6E6E6] tw-border-[1px] tw-space-y-6 tw-basis-1/2 tw-p-6 tw-rounded-lg gap-2">

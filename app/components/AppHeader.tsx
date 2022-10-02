@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 
-export default function DappHeader() {
+export default function AppHeader() {
   return (
     <header className="tw-flex tw-mx-6 tw-py-2 tw-border-b">
       <Link to="/" className="tw-no-underline tw-flex tw-mr-12 tw-items-center">
