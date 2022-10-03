@@ -7,22 +7,7 @@ import { getContracts } from "~/services/contracts.server";
 
 export async function loader() {
   const network = process.env.NETWORK || "localhost";
-  const contractData = getContracts({ network: network });
-
-  const bountyQuestionJson = {
-    abi: contractData.bountyQuestionJson.abi,
-    address: contractData.bountyQuestionJson.address,
-  };
-
-  const questionAPIJson = {
-    abi: contractData.questionAPIJson.abi,
-    address: contractData.questionAPIJson.address,
-  };
-
-  const questionStateController = {
-    abi: contractData.questionStateController.abi,
-    address: contractData.questionStateController.address,
-  };
+  const { bountyQuestionJson, questionAPIJson, questionStateController } = getContracts({ network: network });
 
   return {
     bountyQuestionJson,

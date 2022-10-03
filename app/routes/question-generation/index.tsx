@@ -13,27 +13,7 @@ import ContractContextWrapper from "~/components/ContractContextWrapper";
 
 export async function loader() {
   const network = process.env.NETWORK || "localhost";
-  const constractData = getContracts({ network: network });
-
-  const xMetricJson = {
-    abi: constractData.xMetricJson.abi,
-    address: constractData.xMetricJson.address,
-  };
-
-  const questionAPIJson = {
-    abi: constractData.questionAPIJson.abi,
-    address: constractData.questionAPIJson.address,
-  };
-
-  const vaultJson = {
-    abi: constractData.vaultJson.abi,
-    address: constractData.vaultJson.address,
-  };
-
-  const costController = {
-    abi: constractData.costController.abi,
-    address: constractData.costController.address,
-  };
+  const { xMetricJson, questionAPIJson, vaultJson, costController } = getContracts({ network: network });
 
   return {
     xMetricJson,

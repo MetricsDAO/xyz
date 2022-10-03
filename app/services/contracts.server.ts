@@ -31,11 +31,29 @@ export function getContracts({ network }: { network: string }) {
   }
 
   return {
-    xMetricJson,
-    questionAPIJson,
-    questionStateController,
-    bountyQuestionJson,
-    costController,
-    vaultJson,
+    xMetricJson: {
+      abi: xMetricJson.abi,
+      address: xMetricJson.address,
+    },
+    questionAPIJson: {
+      abi: questionAPIJson.abi,
+      address: questionAPIJson.address,
+    },
+    questionStateController: {
+      abi: questionStateController.abi,
+      address: questionStateController.address,
+    },
+    bountyQuestionJson: {
+      abi: bountyQuestionJson.abi,
+      address: bountyQuestionJson.address,
+    },
+    costController: {
+      abi: costController.abi,
+      address: costController.address,
+    },
+    vaultJson: {
+      abi: vaultJson.abi,
+      address: vaultJson.address,
+    },
   };
 }
