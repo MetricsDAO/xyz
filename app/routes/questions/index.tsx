@@ -1,3 +1,4 @@
+import { useLoaderData } from "@remix-run/react";
 import AppHeader from "~/components/AppHeader";
 import { Layout } from "~/components/AppLayout";
 import DownloadCSV from "~/components/DownloadCSV";
@@ -7,8 +8,13 @@ import SearchInput from "~/components/SearchInput";
 import WalletProvider from "~/components/WalletProvider";
 import WritingTips from "~/components/WritingTips";
 
-export default function Index() {
+export async function loader() {
   const network = process.env.NETWORK || "localhost";
+  return network;
+}
+
+export default function Index() {
+  const network = useLoaderData();
 
   return (
     <>

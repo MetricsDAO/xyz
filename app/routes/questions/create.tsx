@@ -1,11 +1,17 @@
+import { useLoaderData } from "@remix-run/react";
 import AppHeader from "~/components/AppHeader";
 import { Layout } from "~/components/AppLayout";
 import { CreateQuestion } from "~/components/CreateQuestion";
 import WalletProvider from "~/components/WalletProvider";
 import WritingTips from "~/components/WritingTips";
 
-export default function CreateQuestionRoute() {
+export async function loader() {
   const network = process.env.NETWORK || "localhost";
+  return network;
+}
+
+export default function CreateQuestionRoute() {
+  const network = useLoaderData();
 
   return (
     <>
