@@ -32,7 +32,7 @@ export default function MultiSelect({
               id={plan.name}
               value={plan.name}
               name={plan.name}
-              className="tw-h-6 tw-w-6 tw-absolute tw-right-5 tw-cursor-pointer"
+              className="tw-h-6 tw-w-6 tw-absolute tw-right-5 tw-cursor-pointer tw-drop-shadow-xl"
             />
           </label>
         </div>
