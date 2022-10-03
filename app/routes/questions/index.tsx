@@ -1,9 +1,11 @@
+import { CSVLink } from "react-csv";
 import AppHeader from "~/components/AppHeader";
 import { Layout } from "~/components/AppLayout";
 import QuestionList from "~/components/QuestionList";
 import { QuestionListControls } from "~/components/QuestionListControls";
 import SearchInput from "~/components/SearchInput";
 import WritingTips from "~/components/WritingTips";
+import { filterSortCsvData } from "~/utils/helpers";
 
 export default function Index() {
   return (
@@ -12,6 +14,13 @@ export default function Index() {
       <Layout>
         <Layout.LeftPanel>
           <QuestionListControls />
+          <div className="tw-max-w-md tw-mx-auto tw-justify-center">
+            <CSVLink data={filterSortCsvData(QUESTION_DATA)} filename={"question-data.csv"} target="_blank">
+              <button className="tw-bg-[#212B36] tw-rounded-lg tw-mt-8 tw-py-3 tw-w-full tw-max-w-md tw-text-sm tw-text-white">
+                Download CSV
+              </button>
+            </CSVLink>
+          </div>
         </Layout.LeftPanel>
         <Layout.Content>
           <SearchInput />

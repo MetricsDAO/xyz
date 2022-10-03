@@ -13,7 +13,7 @@ export function QuestionListControls() {
   );
 
   return (
-    <div className="tw-border tw-rounded-md tw-bg-white tw-mx-auto tw-justify-center">
+    <div className="tw-border tw-rounded-md tw-max-w-md tw-bg-white tw-mx-auto tw-justify-center">
       <RadioGroup setSelected={setSelected} selected={selected} />
       <hr className="solid tw-bg-[#A3A3A3]" />
       <MultiSelect setSelectedProgram={setSelectedProgram} selectedProgram={selectedProgram} />

@@ -1,11 +1,13 @@
 export default function WritingTips() {
   return (
     <div>
-      <a href="/questions/create" target="_self" rel="noreferrer">
-        <button className="tw-bg-[#212B36] tw-text-white tw-rounded-lg tw-w-full tw-max-w-md tw-py-3 tw-text-sm">
-          + Create question
-        </button>
-      </a>
+      <div className="tw-max-w-md tw-mx-auto tw-justify-center">
+        <a href="/questions/create" target="_self" rel="noreferrer">
+          <button className="tw-bg-[#212B36] tw-text-white tw-rounded-lg tw-w-full tw-max-w-md tw-py-3 tw-text-sm">
+            + Create question
+          </button>
+        </a>
+      </div>
       <h4 className="tw-font-bold tw-text-xl tw-p-2 tw-mt-3">Bounty question writing tips</h4>
       <div className="tw-px-5 tw-mt-2">
         <p className="tw-font-bold">Be specific</p>
