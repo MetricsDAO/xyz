@@ -4,12 +4,17 @@ import DownloadCSV from "~/components/DownloadCSV";
 import QuestionList from "~/components/QuestionList";
 import { QuestionListControls } from "~/components/QuestionListControls";
 import SearchInput from "~/components/SearchInput";
+import WalletProvider from "~/components/WalletProvider";
 import WritingTips from "~/components/WritingTips";
 
 export default function Index() {
+  const network = process.env.NETWORK || "localhost";
+
   return (
     <>
-      <AppHeader />
+      <WalletProvider network={network}>
+        <AppHeader />
+      </WalletProvider>
       <Layout>
         <Layout.LeftPanel>
           <QuestionListControls />

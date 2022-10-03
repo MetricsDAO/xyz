@@ -1,12 +1,17 @@
 import AppHeader from "~/components/AppHeader";
 import { Layout } from "~/components/AppLayout";
 import { CreateQuestion } from "~/components/CreateQuestion";
+import WalletProvider from "~/components/WalletProvider";
 import WritingTips from "~/components/WritingTips";
 
 export default function CreateQuestionRoute() {
+  const network = process.env.NETWORK || "localhost";
+
   return (
     <>
-      <AppHeader />
+      <WalletProvider network={network}>
+        <AppHeader />
+      </WalletProvider>
       <Layout>
         <Layout.LeftPanel>{/* Nothing for now */}</Layout.LeftPanel>
         <Layout.Content>

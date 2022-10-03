@@ -1,6 +1,14 @@
 import { Link } from "@remix-run/react";
+import { useState } from "react";
+import { useAccount, useDisconnect } from "wagmi";
+import { truncateAddress } from "~/utils/helpers";
+import ConnectWalletButton from "./ConnectWalletButton";
 
 export default function AppHeader() {
+  const { disconnect } = useDisconnect();
+  const { address, connector } = useAccount();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <header className="tw-flex tw-mx-6 tw-py-2 tw-border-b">
       <Link to="/" className="tw-no-underline tw-flex tw-mr-12 tw-items-center">
@@ -15,11 +23,16 @@ export default function AppHeader() {
         </Link>
       </div>
       <div className="tw-ml-auto">
-        <button
-          className={`tw-bg-white tw-border tw-px-5 tw-py-3 tw-max-w-xs tw-text-sm tw-rounded-lg tw-text-[#626262] `}
-        >
-          <div className="tw-flex tw-items-center tw-justify-center"> Connect Wallet</div>
-        </button>
+        {address ? (
+          <button
+            onClick={() => disconnect}
+            className="tw-rounded-lg tw-bg-[#21C5F2] tw-text-white border-gradient tw-px-5 tw-py-3 tw-max-w-sm tw-border"
+          >
+            <p className="tw-text-sm">{truncateAddress(address)}</p>
+          </button>
+        ) : (
+          <ConnectWalletButton buttonText="Connect Wallet" connectWallet={setIsOpen} />
+        )}
       </div>
     </header>
   );
