@@ -1,7 +1,7 @@
 export default function WritingTips() {
   return (
     <div>
-      <div className="tw-max-w-md tw-mx-auto tw-justify-center">
+      <div className="tw-max-w-md tw-mx-auto">
         <a href="/questions/create" target="_self" rel="noreferrer">
           <button className="tw-bg-[#212B36] tw-text-white tw-rounded-lg tw-w-full tw-max-w-md tw-py-3 tw-text-sm">
             + Create question
