@@ -7,7 +7,7 @@ import { Listbox, Transition } from "@headlessui/react";
 export function CreateQuestion({ address }: { address: string }) {
   const [selectedProgram, setSelectedProgram] = useState(protocols[0]);
   return (
-    <div className="tw-flex tw-flex-col tw-justify-start tw-basis-3/4">
+    <>
       <div className="tw-flex tw-flex-row">
         <p className="tw-text-left tw-mb-3 tw-text-black tw-text-3xl tw-font-bold tw-pr-5">Create question</p>
         <span className="tw-text-sm tw-text-[#637381] tw-mt-3 tw-ml-auto">{truncateAddress(address)}</span>
@@ -92,6 +92,6 @@ export function CreateQuestion({ address }: { address: string }) {
           Submit
         </button>
       </div>
-    </div>
+    </>
   );
 }

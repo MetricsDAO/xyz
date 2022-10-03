@@ -1,6 +1,6 @@
 // Responsive layout for body content. Left and right panels are optional.
 
-/**
+/** Example
  *    <Layout>
         <Layout.Content>
           <p>Content<p>
