@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  :root {
+  }
+
+.border-gradient {
+    @apply tw-inline-block tw-relative tw-z-10;
+    @apply before:tw-absolute before:tw-z-[-10] before:tw-top-0 before:tw-left-0 before:tw-right-0 before:tw-bottom-0 before:tw-rounded-lg before:tw-p-[0.5px] before:tw-bggradient before:tw-mask;
+  }
+
+}
