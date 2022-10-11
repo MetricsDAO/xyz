@@ -4,7 +4,8 @@ import AppFooter from "./components/Footer";
 import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
-import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
+import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 
 export const meta: MetaFunction = () => {
   return {
@@ -70,6 +71,7 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: customStyles },
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: algoliaStyles },
+    { rel: "stylesheet", href: rainbowKitStyles },
   ];
 };
 
