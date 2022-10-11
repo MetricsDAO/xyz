@@ -1,11 +1,15 @@
-import AppHeader from "../../components/app-header-skinny";
+import Header from "~/components/Header";
 import XmetricDashboard from "./xmetric-dashboard";
 
 export default function xMetric() {
   return (
     <>
-      <AppHeader />
-      <XmetricDashboard />      
+      <section className="site-header-skinny">
+        <div className="container">
+          <Header />
+        </div>
+      </section>
+      <XmetricDashboard />
     </>
   );
 }

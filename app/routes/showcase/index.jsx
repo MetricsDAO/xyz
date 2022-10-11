@@ -1,5 +1,5 @@
 import algoliasearch from "algoliasearch/lite";
-import AppHeader from "../../components/app-header-skinny";
+import Header from "~/components/Header";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faExternalLink, faSignal, faUserGraduate, faFlag } from "@fortawesome/free-solid-svg-icons";
@@ -7,7 +7,7 @@ import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure }
 import { useLoaderData } from "@remix-run/react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
-import Comments from "./Comments";
+import Comments from "../../components/Comments";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 export function loader() {
@@ -27,7 +27,11 @@ function App() {
   const searchClient = algoliasearch(data.ALGOLIA_APP_ID, data.ALGOLIA_API_KEY);
   return (
     <>
-      <AppHeader />
+      <section className="site-header-skinny">
+        <div className="container">
+          <Header />
+        </div>
+      </section>
       <InstantSearch searchClient={searchClient} indexName="submissions">
         <div className="tw-flex tw-flex-row tw-min-h-screen tw-bg-gray-100 tw-text-gray-800">
           <Filters />
