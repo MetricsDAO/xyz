@@ -1,4 +1,4 @@
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 
 export default function AppFooter() {
   return (
@@ -13,27 +13,17 @@ export default function AppFooter() {
           <ul className="nav col-auto justify-content-end list-unstyled d-flex flex-row flex-lg-column social-network">
             <li className="mb-lg-3">
               <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
-                <a
-                  className="btn btn-outline-dark"
-                  href="https://twitter.com/MetricsDAO"
-                >
+                <a className="btn btn-outline-dark" href="https://twitter.com/MetricsDAO">
                   <i className="bi bi-twitter"></i>
                 </a>
                 <span className="ms-md-2 text-uppercase">twitter</span>
               </div>
             </li>
-            {/* <li className="mb-lg-3">
-              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
-                <a
-                  className="btn btn-outline-dark bi-mirror"
-                  href="https://metricsdao.ghost.io/"
-                ></a>
-                <span className="ms-md-2 text-uppercase">blog</span>
-              </div>
-            </li> */}
             <li className="mb-lg-3">
-              <a href="https://docs.metricsdao.xyz/"
-                 className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none">
+              <a
+                href="https://docs.metricsdao.xyz/"
+                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
+              >
                 <span className="btn btn-outline-dark">
                   <i className="bi bi-file-earmark-text-fill"></i>
                 </span>

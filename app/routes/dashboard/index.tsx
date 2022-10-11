@@ -1,11 +1,15 @@
-import AppHeader from "../../components/app-header-skinny";
+import Header from "~/components/Header";
 import ZohoDashboard from "./zoho-dashboard";
 
 export default function Index() {
   return (
     <>
-      <AppHeader />
-      <ZohoDashboard />      
+      <section className="site-header-skinny">
+        <div className="container">
+          <Header />
+        </div>
+      </section>
+      <ZohoDashboard />
     </>
   );
 }
