@@ -7,7 +7,7 @@ import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure }
 import { useLoaderData } from "@remix-run/react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
-import Comments from "../../components/Comments";
+import Comments from "~/components/Comments";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
 export function loader() {
