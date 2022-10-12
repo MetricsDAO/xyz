@@ -1,8 +1,16 @@
 import Header from "~/components/Header";
 import { Disclosure } from "@headlessui/react";
 import { ChevronRight24, ChevronDown24 } from "@carbon/icons-react";
+import Aos from "aos";
+import { useEffect } from "react";
 
 export default function Index() {
+  useEffect(() => {
+    Aos.init({
+      once: true,
+    });
+  }, []);
+
   return (
     <div className="three-step">
       <section className="hero-3-step">
