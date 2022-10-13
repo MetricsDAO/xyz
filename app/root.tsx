@@ -13,6 +13,17 @@ export const meta: MetaFunction = () => {
     charSet: "utf-8",
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
+    "og:image": "https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png",
+    "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:url": "https://bounty.metricsdao.xyz",
+    "og:title": "Metrics DAO",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:domain": "metricsdao.xyz",
+    "twitter:url": "https://metricsdao.xyz",
+    "twitter:title": "Metrics DAO",
+    "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "twitter:image": "https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png",
   };
 };
 
@@ -74,26 +85,11 @@ export const links: LinksFunction = () => {
 };
 
 export default function App() {
-  const description = "Uniting the best analytical minds in the space to build the future of crypto analytics.";
-
   return (
     <html lang="en">
       <head>
         <Links />
         <Meta />
-        <title>Metrics DAO</title>
-        <meta name="description" content={description} />
-        <meta property="og:url" content="https://bounty.metricsdao.xyz" />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="Metrics DAO" />
-        <meta property="og:description" content={description} />
-        <meta name="og:image" content="https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="metricsdao.xyz" />
-        <meta property="twitter:url" content="https://metricsdao.xyz" />
-        <meta name="twitter:title" content="Metrics DAO" />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content="https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
         <script
           type="text/javascript"
