@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 
 export default function AppFooter() {
   return (
-    <footer className="tw-bg-white tw-min-h-[70px] tw-py-[10px]">
+    <footer className="tw-bg-white tw-py-3">
       <div className="tw-grid tw-grid-cols-5 md:tw-grid-cols-8 mx-auto tw-items-center tw-py-3">
         <Link to="/" className="tw-no-underline tw-flex tw-items-center md:tw-col-span-2 tw-mx-auto">
           <img src="img/color-mark@2x.png" alt="MetricsDAO" width="24" height="24" className="tw-mx-auto md:tw-mr-2" />
