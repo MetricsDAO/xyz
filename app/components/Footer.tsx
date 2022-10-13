@@ -2,35 +2,36 @@ import { Link } from "@remix-run/react";
 
 export default function AppFooter() {
   return (
-    <footer className="site-footer">
-      <div className="container">
-        <div className="row d-flex flex-wrap justify-content-between align-items-center py-3 my-4">
-          <div className="col-4 d-flex align-items-center">
-            <Link to="/" className="footer-brand">
-              <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="96" />
-            </Link>
-          </div>
-          <ul className="nav col-auto justify-content-end list-unstyled d-flex flex-row flex-lg-column social-network">
-            <li className="mb-lg-3">
-              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
-                <a className="btn btn-outline-dark" href="https://twitter.com/MetricsDAO">
-                  <i className="bi bi-twitter"></i>
-                </a>
-                <span className="ms-md-2 text-uppercase">twitter</span>
-              </div>
-            </li>
-            <li className="mb-lg-3">
-              <a
-                href="https://docs.metricsdao.xyz/"
-                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
-              >
-                <span className="btn btn-outline-dark">
-                  <i className="bi bi-file-earmark-text-fill"></i>
-                </span>
-                <span className="ms-md-2 text-uppercase">docs</span>
-              </a>
-            </li>
-          </ul>
+    <footer className="tw-bg-white tw-min-h-[70px] tw-py-[10px]">
+      <div className="tw-grid tw-grid-cols-5 md:tw-grid-cols-8 mx-auto tw-items-center tw-py-3">
+        <Link to="/" className="tw-no-underline tw-flex tw-items-center md:tw-col-span-2 tw-mx-auto">
+          <img src="img/color-mark@2x.png" alt="MetricsDAO" width="24" height="24" className="tw-mx-auto md:tw-mr-2" />
+          <p className="tw-hidden md:tw-block">
+            Metrics<b>DAO</b>
+          </p>
+        </Link>
+        <Link to="/dashboard" className="tw-no-underline tw-mx-auto">
+          <p className="tw-font-semibold">Dashboard</p>
+        </Link>
+        <Link to="/showcase" className="tw-no-underline tw-mx-auto">
+          <p className="tw-font-semibold">Showcase</p>
+        </Link>
+        <a href="https://metricsdao.ghost.io/" className="tw-no-underline tw-mx-auto">
+          <p className="tw-font-semibold">Blog</p>
+        </a>
+        <Link to="/3-step-process" className="tw-no-underline tw-mx-auto">
+          <p className="tw-font-semibold">Partners</p>
+        </Link>
+        <div className="tw-col-span-5 tw-mt-3 md:tw-mt-0 md:tw-col-span-2 tw-flex tw-flex-row tw-mx-auto">
+          <a href="https://twitter.com/MetricsDAO" className="tw-no-underline tw-mr-12">
+            <img src="img/Twitter_icon_footer.svg" alt="Twitter" width="30" height="30" />
+          </a>
+          <a href="https://github.com/MetricsDAO" className="tw-no-underline tw-mr-12">
+            <img src="img/Github_icon_footer.svg" alt="Github" width="30" height="30" />
+          </a>
+          <a href="https://discord.gg/p3GMjK2zAr" className="tw-no-underline">
+            <img src="img/Discord_icon_footer.svg" alt="Discord" width="30" height="30" />
+          </a>
         </div>
       </div>
     </footer>
