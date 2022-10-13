@@ -30,6 +30,14 @@ export default function AppFooter() {
                 <span className="ms-md-2 text-uppercase">docs</span>
               </a>
             </li>
+            <li className="mb-lg-3">
+              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
+                <a className="btn btn-outline-dark" href="https://discord.gg/p3GMjK2zAr">
+                  <i className="bi bi-discord"></i>
+                </a>
+                <span className="ms-md-2 text-uppercase">discord</span>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
