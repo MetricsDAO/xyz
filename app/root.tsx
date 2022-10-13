@@ -13,6 +13,7 @@ export const meta: MetaFunction = () => {
     charSet: "utf-8",
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
+    description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
     "og:image": "https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png",
     "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
     "og:url": "https://bounty.metricsdao.xyz",
