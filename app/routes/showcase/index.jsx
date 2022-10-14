@@ -86,7 +86,7 @@ function Content() {
     </main>
   );
 }
-function Comments (comments) {
+const Comments = ({ comments }) => {
 
   const [active, setActive] = useState(false);
 
