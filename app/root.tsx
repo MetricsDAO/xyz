@@ -3,7 +3,7 @@ import fontStyles from "./styles/fonts.css";
 import AppFooter from "./components/Footer";
 import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
 
 export const meta: MetaFunction = () => {
@@ -73,7 +73,55 @@ export const links: LinksFunction = () => {
   ];
 };
 
+export function ErrorBoundary({ error }: { error: Error }) {
+  if (error) {
+    console.log(error);
+  }
+
+  return (
+    <Document>
+      <div className="tw-container tw-mx-auto tw-space-y-3 tw-my-6 tw-bg-[#E6E6E6] tw-rounded-lg tw-p-10 tw-shadow-xl">
+        <h1 className="tw-text-5xl">Uh oh, something broke.</h1>
+        {error.message ? <p className="tw-hidden">{error.message}</p> : <></>}
+      </div>
+    </Document>
+  );
+}
+
+export function CatchBoundary() {
+  let caught = useCatch();
+
+  let message;
+  switch (caught.status) {
+    case 404:
+      message = <p>Oops! Looks like you tried to visit a page that does not exist.</p>;
+      break;
+
+    default:
+      throw new Error(caught.data || caught.statusText);
+  }
+
+  return (
+    <Document>
+      <div className="tw-container tw-mx-auto tw-space-y-3 tw-my-6 tw-bg-[#E6E6E6] tw-rounded-lg tw-p-10 tw-shadow-xl">
+        <h1 className="tw-text-5xl">
+          {caught.status} {caught.statusText}
+        </h1>
+        <p className="tw-text-lg tw-text-zinc-500">{message}</p>
+      </div>
+    </Document>
+  );
+}
+
 export default function App() {
+  return (
+    <Document>
+      <Outlet />
+    </Document>
+  );
+}
+
+function Document({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -84,16 +132,16 @@ export default function App() {
           type="text/javascript"
           dangerouslySetInnerHTML={{
             __html: `            
-              window.dataLayer = window.dataLayer || [];
-              function gtag() { dataLayer.push(arguments); }
-              gtag('js', new Date());
-              gtag('config', 'G-8JJWLXT88P');
-          `,
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-8JJWLXT88P');
+        `,
           }}
         ></script>
       </head>
       <body>
-        <Outlet />
+        {children}
         <AppFooter />
         <ScrollRestoration />
         <Scripts />
