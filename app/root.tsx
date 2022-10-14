@@ -5,6 +5,7 @@ import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
+import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return {
@@ -74,12 +75,9 @@ export const links: LinksFunction = () => {
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  if (error) {
-    console.error(error);
-  }
-
+  useEffect(() => console.error(error), [error]);
   return (
-    <Document>
+    <Document title="Error!">
       <div className="tw-container tw-mx-auto tw-space-y-3 tw-my-6 tw-bg-[#E6E6E6] tw-rounded-lg tw-p-10 tw-shadow-xl">
         <h1 className="tw-text-5xl">Uh oh, something broke.</h1>
         {error.message ? <p className="tw-hidden">{error.message}</p> : <></>}
@@ -94,7 +92,7 @@ export function CatchBoundary() {
   let message;
   switch (caught.status) {
     case 404:
-      message = <p>Oops! Looks like you tried to visit a page that does not exist.</p>;
+      message = "Oops! Looks like you tried to visit a page that does not exist.";
       break;
 
     default:
@@ -102,7 +100,7 @@ export function CatchBoundary() {
   }
 
   return (
-    <Document>
+    <Document title={`${caught.status} ${caught.statusText}`}>
       <div className="tw-container tw-mx-auto tw-space-y-3 tw-my-6 tw-bg-[#E6E6E6] tw-rounded-lg tw-p-10 tw-shadow-xl">
         <h1 className="tw-text-5xl">
           {caught.status} {caught.statusText}
@@ -121,10 +119,11 @@ export default function App() {
   );
 }
 
-function Document({ children }: { children: React.ReactNode }) {
+function Document({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
     <html lang="en">
       <head>
+        {title ? <title>{title}</title> : null}
         <Links />
         <Meta />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
