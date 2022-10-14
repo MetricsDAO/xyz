@@ -14,7 +14,7 @@ export const meta: MetaFunction = () => {
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
     description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "og:image": "https://xyz-git-meta-image-metricsdao.vercel.app/img/social.png",
+    "og:image": "https://metricsdao.xyz/img/social.png",
     "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
     "og:url": "https://metricsdao.xyz",
     "og:title": "Metrics DAO",
@@ -24,7 +24,7 @@ export const meta: MetaFunction = () => {
     "twitter:url": "https://metricsdao.xyz",
     "twitter:title": "Metrics DAO",
     "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "twitter:image": "https://xyz-git-meta-image-metricsdao.vercel.app/img/social.png",
+    "twitter:image": "https://metricsdao.xyz/img/social.png",
   };
 };
 
