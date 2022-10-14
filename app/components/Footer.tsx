@@ -22,7 +22,7 @@ function Logo() {
   return (
     <Link to="/" className="tw-no-underline tw-flex tw-items-center tw-mx-auto">
       <img src="img/color-mark@2x.png" alt="MetricsDAO" width="24" height="24" className="tw-mx-auto tw-mr-2" />
-      <p>
+      <p className="tw-hidden md:tw-block">
         Metrics<b>DAO</b>
       </p>
     </Link>
@@ -31,7 +31,7 @@ function Logo() {
 
 function Links() {
   return (
-    <div className="tw-grid tw-grid-cols-4 tw-items-center">
+    <div className="tw-grid tw-grid-cols-2 tw-space-y-3 md:tw-space-y-0 md:tw-grid-cols-4 tw-items-center">
       <Link to="/dashboard" className="tw-no-underline tw-mx-auto">
         <p className="tw-font-semibold">Dashboard</p>
       </Link>
