@@ -14,6 +14,18 @@ export const meta: MetaFunction = () => {
     charSet: "utf-8",
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
+    description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:image": "https://metricsdao.xyz/img/social.png",
+    "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:url": "https://metricsdao.xyz",
+    "og:title": "Metrics DAO",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:domain": "metricsdao.xyz",
+    "twitter:url": "https://metricsdao.xyz",
+    "twitter:title": "Metrics DAO",
+    "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "twitter:image": "https://metricsdao.xyz/img/social.png",
   };
 };
 
