@@ -5,6 +5,7 @@ import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
+import socialImage from "/public/img/social.png";
 
 export const meta: MetaFunction = () => {
   return {
@@ -14,9 +15,9 @@ export const meta: MetaFunction = () => {
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
     description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "og:image": "https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png",
+    "og:image": socialImage,
     "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "og:url": "https://bounty.metricsdao.xyz",
+    "og:url": "https://metricsdao.xyz",
     "og:title": "Metrics DAO",
     "og:type": "website",
     "twitter:card": "summary_large_image",
@@ -24,7 +25,7 @@ export const meta: MetaFunction = () => {
     "twitter:url": "https://metricsdao.xyz",
     "twitter:title": "Metrics DAO",
     "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "twitter:image": "https://bounty.metricsdao.xyz/social/twitter/metricsdao_banner.png",
+    "twitter:image": socialImage,
   };
 };
 
