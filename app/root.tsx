@@ -14,9 +14,9 @@ export const meta: MetaFunction = () => {
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
     description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "og:image": "https://metricsdao.xyz/public/img/social.png",
+    "og:image": "https://xyz-git-meta-image-metricsdao.vercel.app/public/img/social.png",
     "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "og:url": "https://bounty.metricsdao.xyz",
+    "og:url": "https://metricsdao.xyz",
     "og:title": "Metrics DAO",
     "og:type": "website",
     "twitter:card": "summary_large_image",
@@ -24,7 +24,7 @@ export const meta: MetaFunction = () => {
     "twitter:url": "https://metricsdao.xyz",
     "twitter:title": "Metrics DAO",
     "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
-    "twitter:image": "https://metricsdao.xyz/public/img/social.png",
+    "twitter:image": "https://xyz-git-meta-image-metricsdao.vercel.app/public/img/social.png",
   };
 };
 
