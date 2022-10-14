@@ -5,7 +5,7 @@ import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
-import socialImage from "/public/img/social.png";
+import socialImage from "../public/img/social.png";
 
 export const meta: MetaFunction = () => {
   return {
