@@ -75,7 +75,7 @@ export const links: LinksFunction = () => {
 
 export function ErrorBoundary({ error }: { error: Error }) {
   if (error) {
-    console.log(error);
+    console.error(error);
   }
 
   return (
