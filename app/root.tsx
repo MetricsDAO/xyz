@@ -1,10 +1,11 @@
+import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
+import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
+import { useEffect } from "react";
+import algoliaStyles from "./styles/algolia.css";
+import styles from "./styles/app.css";
 import customStyles from "./styles/custom.css";
 import fontStyles from "./styles/fonts.css";
-import styles from "./styles/app.css";
-import algoliaStyles from "./styles/algolia.css";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
-import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 
 export const meta: MetaFunction = () => {
   return {
@@ -13,6 +14,18 @@ export const meta: MetaFunction = () => {
     charSet: "utf-8",
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
+    description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:image": "https://metricsdao.xyz/img/social.png",
+    "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:url": "https://metricsdao.xyz",
+    "og:title": "Metrics DAO",
+    "og:type": "website",
+    "twitter:card": "summary_large_image",
+    "twitter:domain": "metricsdao.xyz",
+    "twitter:url": "https://metricsdao.xyz",
+    "twitter:title": "Metrics DAO",
+    "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "twitter:image": "https://metricsdao.xyz/img/social.png",
   };
 };
 
@@ -74,10 +87,56 @@ export const links: LinksFunction = () => {
   ];
 };
 
+export function ErrorBoundary({ error }: { error: Error }) {
+  useEffect(() => console.error(error), [error]);
+  return (
+    <Document title="Error!">
+      <div className="tw-container tw-mx-auto tw-space-y-3 tw-my-6 tw-bg-[#E6E6E6] tw-rounded-lg tw-p-10 tw-shadow-xl">
+        <h1 className="tw-text-5xl">Uh oh, something broke.</h1>
+        {error.message ? <p className="tw-hidden">{error.message}</p> : <></>}
+      </div>
+    </Document>
+  );
+}
+
+export function CatchBoundary() {
+  let caught = useCatch();
+
+  let message;
+  switch (caught.status) {
+    case 404:
+      message = "Oops! Looks like you tried to visit a page that does not exist.";
+      break;
+
+    default:
+      throw new Error(caught.data || caught.statusText);
+  }
+
+  return (
+    <Document title={`${caught.status} ${caught.statusText}`}>
+      <div className="tw-container tw-mx-auto tw-space-y-3 tw-my-6 tw-bg-[#E6E6E6] tw-rounded-lg tw-p-10 tw-shadow-xl">
+        <h1 className="tw-text-5xl">
+          {caught.status} {caught.statusText}
+        </h1>
+        <p className="tw-text-lg tw-text-zinc-500">{message}</p>
+      </div>
+    </Document>
+  );
+}
+
 export default function App() {
+  return (
+    <Document>
+      <Outlet />
+    </Document>
+  );
+}
+
+function Document({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
     <html lang="en">
       <head>
+        {title ? <title>{title}</title> : null}
         <Links />
         <Meta />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
@@ -85,21 +144,19 @@ export default function App() {
           type="text/javascript"
           dangerouslySetInnerHTML={{
             __html: `            
-              window.dataLayer = window.dataLayer || [];
-              function gtag() { dataLayer.push(arguments); }
-              gtag('js', new Date());
-              gtag('config', 'G-8JJWLXT88P');
-          `,
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'G-8JJWLXT88P');
+        `,
           }}
         ></script>
       </head>
       <body>
-        <Outlet />
+        {children}
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-        <script>AOS.init();</script>
       </body>
     </html>
   );

@@ -2,12 +2,12 @@ import algoliasearch from "algoliasearch/lite";
 import Header from "~/components/Header";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faExternalLink, faSignal, faUserGraduate, faFlag } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faExternalLink, faSignal, faUserGraduate, faFlag, faComments } from "@fortawesome/free-solid-svg-icons";
 import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
+import { useState } from 'react';
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
-import Comments from "~/components/Comments";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import AppFooter from "~/components/Footer";
 
@@ -87,6 +87,35 @@ function Content() {
       </div>
     </main>
   );
+}
+const Comments = ({ comments }) => {
+
+  const [active, setActive] = useState(false);
+
+  const handleClick = () => {
+    setActive(!active)
+  };
+
+  return (
+    <div onClick={handleClick} className="tw-cursor-pointer">
+      <div className={"tw-text-slate-600 tw-flex tw-items-center tw-pt-2 tw-mt-2 tw-border-t tw-border-slate-200 " + (active ? "tw-justify-center" : "")}>
+        <FontAwesomeIcon
+          className="tw-mr-2"
+          icon={faComments}
+        />
+        <div className="tw-text-sm">
+          <p className="tw-max-w-xs sm:tw-max-w-xs md:tw-max-w-screen-md lg:tw-max-w-screen-md xl:tw-max-w-screen-lg 2xl:tw-max-w-screen-xl tw-truncate">
+            {active ? "Comments" : comments.join(', ')}
+          </p>
+        </div>
+      </div>
+      <ul className={"tw-text-sm tw-max-w-fit tw-list-disc tw-ml-4 tw-overflow-hidden " + (active ? "tw-h-full" : "tw-h-0")}>
+        {
+          comments?.map((note, index) => <li key={"noteId-" + index} className="tw-list-disc tw-mt-2 tw-ml-4">{note}</li>)
+        }
+      </ul>
+    </div>
+  )
 }
 function Hit(props) {
   const { hit } = props;

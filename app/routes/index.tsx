@@ -1,8 +1,16 @@
 import AppFooter from "~/components/Footer";
 import Header from "~/components/Header";
 import SocialIcons from "~/components/SocialIcons";
+import Aos from "aos";
+import { useEffect } from "react";
 
 export default function Index() {
+  useEffect(() => {
+    Aos.init({
+      once: true,
+    });
+  }, []);
+
   return (
     <>
       <section className="hero-section">
