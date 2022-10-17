@@ -6,12 +6,7 @@ export default function AppFooter() {
       <div className="container">
         <div className="row d-flex flex-wrap justify-content-between align-items-center py-3 my-4">
           <div className="col-4 d-flex align-items-center">
-            <Link 
-            
-            
-            
-            
-            to="/" className="footer-brand">
+            <Link to="/" className="footer-brand">
               <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="96" />
             </Link>
           </div>
