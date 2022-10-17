@@ -1,6 +1,5 @@
 import customStyles from "./styles/custom.css";
 import fontStyles from "./styles/fonts.css";
-import AppFooter from "./components/Footer";
 import styles from "./styles/app.css";
 import algoliaStyles from "./styles/algolia.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
@@ -96,7 +95,6 @@ export default function App() {
       </head>
       <body>
         <Outlet />
-        <AppFooter />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

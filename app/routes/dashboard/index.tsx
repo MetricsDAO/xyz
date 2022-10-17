@@ -1,3 +1,4 @@
+import AppFooter from "~/components/Footer";
 import Header from "~/components/Header";
 import ZohoDashboard from "./zoho-dashboard";
 
@@ -10,6 +11,7 @@ export default function Index() {
         </div>
       </section>
       <ZohoDashboard />
+      <AppFooter />
     </>
   );
 }
