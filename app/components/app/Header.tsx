@@ -61,14 +61,14 @@ function MobileMenu() {
         className="tw-z-20 tw-w-max tw-mt-2 tw-p-3 tw-origin-top-right tw-bg-white tw-rounded-md tw-shadow-lg focus:tw-outline-none"
       >
         <DropdownMenuItem className="focus:tw-outline-none">
-          <Link to={"/app/route-one"} className="tw-no-underline">
+          <a href={"/app/route-one"} className="tw-no-underline">
             Route 1
-          </Link>
+          </a>
         </DropdownMenuItem>
         <DropdownMenuItem className="focus:tw-outline-none">
-          <Link to={"/app/route-two"} className="tw-no-underline">
+          <a href={"/app/route-two"} className="tw-no-underline">
             Route 2
-          </Link>
+          </a>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
