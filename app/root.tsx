@@ -1,9 +1,13 @@
-import styles from "./styles/app.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
-import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Shell } from "./components/Shell";
+import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import algoliaStyles from "./styles/algolia.css";
+import styles from "./styles/app.css";
+import customStyles from "./styles/custom.css";
+import fontStyles from "./styles/fonts.css";
+import { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 
 export const meta: MetaFunction = () => {
   return {
@@ -52,18 +56,23 @@ export const links: LinksFunction = () => {
       rel: "icon",
       type: "image/png",
       sizes: "32x32",
-      href: "img/favicon-32x32.png",
+      href: "/img/favicon-32x32.png",
     },
     {
       rel: "icon",
       type: "image/png",
       sizes: "16x16",
-      href: "img/favicon-16x16.png",
+      href: "/img/favicon-16x16.png",
     },
     {
       rel: "shortcut icon",
-      href: "img/favicon.ico",
+      href: "/img/favicon.ico",
     },
+    { rel: "stylesheet", href: fontStyles },
+    { rel: "stylesheet", href: customStyles },
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: algoliaStyles },
+    { rel: "stylesheet", href: rainbowKitStyles },
   ];
 };
 
@@ -135,9 +144,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         ></script>
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          <Shell>{children}</Shell>
-        </QueryClientProvider>
+        {children}
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

@@ -1,3 +1,4 @@
+import AppFooter from "~/components/Footer";
 import Header from "~/components/Header";
 import SocialIcons from "~/components/SocialIcons";
 import Aos from "aos";
@@ -223,6 +224,7 @@ export default function Index() {
           </div>
         </div>
       </section>
+      <AppFooter />
     </>
   );
 }
