@@ -6,7 +6,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Link } from "@remix-run/react";
-import { Menu16 } from "@carbon/icons-react";
+import { Menu24 } from "@carbon/icons-react";
 
 export default function Header() {
   return (
@@ -52,7 +52,7 @@ function MobileMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="tw-bg-white tw-[#00C2FF] focus:tw-outline-none tw-flex tw-items-center tw-p-2">
-          <Menu16 />
+          <Menu24 />
         </button>
       </DropdownMenuTrigger>
 
