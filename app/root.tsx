@@ -1,11 +1,9 @@
-import customStyles from "./styles/custom.css";
-import fontStyles from "./styles/fonts.css";
-import AppFooter from "./components/Footer";
 import styles from "./styles/app.css";
-import algoliaStyles from "./styles/algolia.css";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/routeModules";
 import { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Shell } from "./components/Shell";
 
 export const meta: MetaFunction = () => {
   return {
@@ -31,12 +29,7 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => {
   return [
-    {
-      rel: "stylesheet",
-      href: "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css",
-      integrity: "sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3",
-      crossOrigin: "anonymous",
-    },
+    { rel: "stylesheet", href: styles },
     {
       rel: "preconnect",
       href: "https://fonts.googleapis.com",
@@ -48,15 +41,7 @@ export const links: LinksFunction = () => {
     },
     {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap",
-    },
-    {
-      rel: "stylesheet",
-      href: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css",
-    },
-    {
-      rel: "stylesheet",
-      href: "https://unpkg.com/aos@2.3.1/dist/aos.css",
+      href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap",
     },
     {
       rel: "apple-touch-icon",
@@ -79,10 +64,6 @@ export const links: LinksFunction = () => {
       rel: "shortcut icon",
       href: "img/favicon.ico",
     },
-    { rel: "stylesheet", href: fontStyles },
-    { rel: "stylesheet", href: customStyles },
-    { rel: "stylesheet", href: styles },
-    { rel: "stylesheet", href: algoliaStyles },
   ];
 };
 
@@ -131,6 +112,8 @@ export default function App() {
   );
 }
 
+const queryClient = new QueryClient();
+
 function Document({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
     <html lang="en">
@@ -152,8 +135,9 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         ></script>
       </head>
       <body>
-        {children}
-        <AppFooter />
+        <QueryClientProvider client={queryClient}>
+          <Shell>{children}</Shell>
+        </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
