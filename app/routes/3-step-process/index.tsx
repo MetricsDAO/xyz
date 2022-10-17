@@ -1,6 +1,7 @@
 import Header from "~/components/Header";
 import { Disclosure } from "@headlessui/react";
 import { ChevronRight24, ChevronDown24 } from "@carbon/icons-react";
+import AppFooter from "~/components/Footer";
 import Aos from "aos";
 import { useEffect } from "react";
 
@@ -270,6 +271,7 @@ export default function Index() {
           </Disclosure>
         </div>
       </section>
+      <AppFooter />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import AppFooter from "~/components/Footer";
 import Header from "~/components/Header";
 import XmetricDashboard from "./xmetric-dashboard";
 
@@ -10,6 +11,7 @@ export default function xMetric() {
         </div>
       </section>
       <XmetricDashboard />
+      <AppFooter />
     </>
   );
 }

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import AppFooter from "~/components/Footer";
 
 export function loader() {
   return {
@@ -38,6 +39,7 @@ function App() {
           <Content />
         </div>
       </InstantSearch>
+      <AppFooter/>
     </>
   );
 }
