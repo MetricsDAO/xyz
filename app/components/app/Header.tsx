@@ -51,24 +51,24 @@ function MobileMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="tw-bg-white tw-[#00C2FF] focus:tw-outline-none tw-flex tw-items-center tw-p-2">
+        <button className="tw-bg-white tw-[#00C2FF] tw-flex tw-items-center tw-p-2">
           <Menu24 />
         </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
         sideOffset={5}
-        className="tw-z-20 tw-w-max tw-mt-2 tw-p-3 tw-origin-top-right tw-bg-white tw-rounded-md tw-shadow-lg focus:tw-outline-none"
+        className="tw-z-20 tw-w-max tw-mt-2 tw-p-3 tw-origin-top-right tw-bg-white tw-rounded-md tw-shadow-lg"
       >
-        <DropdownMenuItem className="focus:tw-outline-none">
-          <a href={"/app/route-one"} className="tw-no-underline">
+        <DropdownMenuItem asChild>
+          <Link to="/app/route-one" className="tw-block">
             Route 1
-          </a>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem className="focus:tw-outline-none">
-          <a href={"/app/route-two"} className="tw-no-underline">
+        <DropdownMenuItem asChild>
+          <Link to={"/app/route-two"} className="tw-block">
             Route 2
-          </a>
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
