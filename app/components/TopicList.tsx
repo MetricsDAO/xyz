@@ -1,4 +1,4 @@
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 import type { TopicWithProgram } from "~/domain";
 import { Badge } from "./Badge";
 
