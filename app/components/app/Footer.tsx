@@ -21,7 +21,7 @@ export default function AppFooter() {
 function Logo() {
   return (
     <Link to="/" className="tw-no-underline tw-flex tw-items-center tw-mx-auto">
-      <img src="img/color-mark@2x.png" alt="MetricsDAO" width="24" height="24" className="tw-mx-auto tw-mr-2" />
+      <img src="/img/color-mark@2x.png" alt="MetricsDAO" width="24" height="24" className="tw-mx-auto tw-mr-2" />
       <p className="tw-hidden md:tw-block">
         Metrics<b>DAO</b>
       </p>
@@ -52,13 +52,13 @@ function Socials() {
   return (
     <div className="tw-flex tw-flex-row tw-mx-auto">
       <a href="https://twitter.com/MetricsDAO" className="tw-no-underline tw-mr-12">
-        <img src="img/Twitter_icon_footer.svg" alt="Twitter" width="30" height="30" />
+        <img src="/img/Twitter_icon_footer.svg" alt="Twitter" width="30" height="30" />
       </a>
       <a href="https://github.com/MetricsDAO" className="tw-no-underline tw-mr-12">
-        <img src="img/Github_icon_footer.svg" alt="Github" width="30" height="30" />
+        <img src="/img/Github_icon_footer.svg" alt="Github" width="30" height="30" />
       </a>
       <a href="https://discord.gg/p3GMjK2zAr" className="tw-no-underline">
-        <img src="img/Discord_icon_footer.svg" alt="Discord" width="30" height="30" />
+        <img src="/img/Discord_icon_footer.svg" alt="Discord" width="30" height="30" />
       </a>
     </div>
   );
