@@ -1,9 +1,9 @@
-import { Link, NavLink } from "remix";
+import { Link, NavLink } from "@remix-run/react";
 import { Button } from "~/components/Button";
 import { TopicList } from "~/components/TopicList";
 import { useTopics } from "~/hooks/useTopics";
 
-export default function Brainstorms() {
+export default function BrainstormCollection() {
   const { data: topics, isLoading } = useTopics({});
   if (isLoading) {
     return <div>Loading...</div>;

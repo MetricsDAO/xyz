@@ -1,11 +1,20 @@
+// TODO: Reimplement this in typescript.
+
 import algoliasearch from "algoliasearch/lite";
 import Header from "~/components/Header";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faExternalLink, faSignal, faUserGraduate, faFlag, faComments } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendar,
+  faExternalLink,
+  faSignal,
+  faUserGraduate,
+  faFlag,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
 import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
-import { useState } from 'react';
+import { useState } from "react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -34,30 +43,30 @@ function App() {
         </div>
       </section>
       <InstantSearch searchClient={searchClient} indexName="submissions">
-        <div className="tw-flex tw-flex-row tw-min-h-screen tw-bg-gray-100 tw-text-gray-800">
+        <div className="flex flex-row min-h-screen bg-gray-100 text-gray-800">
           <Filters />
           <Content />
         </div>
       </InstantSearch>
-      <AppFooter/>
+      <AppFooter />
     </>
   );
 }
 function Filters() {
   return (
-    <aside className="tw-sidebar lg:tw-w-80  md:tw-shadow tw-transform -tw-translate-x-full md:tw-translate-x-0 tw-transition-transform tw-duration-150 tw-ease-in">
-      <div className="tw-sidebar-content tw-px-2 tw-py-6 tw-ml-2 tw-mr-4 tw-mt-14 ">
-        <ul className="tw-flex tw-flex-col tw-w-full ">
-          <li className="tw-my-px tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4 tw-bg-white">
-            <div className="tw-text-xl tw-mb-2">Program</div>
+    <aside className="sidebar lg:w-80  md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
+      <div className="sidebar-content px-2 py-6 ml-2 mr-4 mt-14 ">
+        <ul className="flex flex-col w-full ">
+          <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
+            <div className="text-xl mb-2">Program</div>
             <RefinementList attribute="program_name" />
           </li>
-          <li className="tw-my-px tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4 tw-bg-white">
-            <div className="tw-text-xl tw-mb-2">Quality</div>
+          <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
+            <div className="text-xl mb-2">Quality</div>
             <RefinementList attribute="submission_quality" />
           </li>
-          <li className="tw-my-px tw-rounded-sm tw-shadow-lg tw-mb-4 tw-p-4 tw-bg-white">
-            <div className="tw-text-xl tw-mb-2">Analyst</div>
+          <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
+            <div className="text-xl mb-2">Analyst</div>
             <RefinementList attribute="hunter_discord_id" searchable={true} limit={5} />
           </li>
         </ul>
@@ -67,10 +76,10 @@ function Filters() {
 }
 function Content() {
   return (
-    <main className="tw-main tw-flex tw-flex-col tw-flex-grow -tw-ml-56 md:tw-ml-0 tw-transition-all tw-duration-150 tw-ease-in">
-      <div className="tw-main-content tw-flex tw-flex-col tw-flex-grow tw-p-4">
-        <h1 className="tw-font-bold tw-text-2xl tw-text-gray-700 tw-mb-4">Submissions</h1>
-        <div className="tw-max-w-full tw-mb-4">
+    <main className="main flex flex-col flex-grow -ml-56 md:ml-0 transition-all duration-150 ease-in">
+      <div className="main-content flex flex-col flex-grow p-4">
+        <h1 className="font-bold text-2xl text-gray-700 mb-4">Submissions</h1>
+        <div className="max-w-full mb-4">
           <SearchBox
             translations={{
               submitTitle: "Submit your search query.",
@@ -89,34 +98,36 @@ function Content() {
   );
 }
 const Comments = ({ comments }) => {
-
   const [active, setActive] = useState(false);
 
   const handleClick = () => {
-    setActive(!active)
+    setActive(!active);
   };
 
   return (
-    <div onClick={handleClick} className="tw-cursor-pointer">
-      <div className={"tw-text-slate-600 tw-flex tw-items-center tw-pt-2 tw-mt-2 tw-border-t tw-border-slate-200 " + (active ? "tw-justify-center" : "")}>
-        <FontAwesomeIcon
-          className="tw-mr-2"
-          icon={faComments}
-        />
-        <div className="tw-text-sm">
-          <p className="tw-max-w-xs sm:tw-max-w-xs md:tw-max-w-screen-md lg:tw-max-w-screen-md xl:tw-max-w-screen-lg 2xl:tw-max-w-screen-xl tw-truncate">
-            {active ? "Comments" : comments.join(', ')}
+    <div onClick={handleClick} className="cursor-pointer">
+      <div
+        className={
+          "text-slate-600 flex items-center pt-2 mt-2 border-t border-slate-200 " + (active ? "justify-center" : "")
+        }
+      >
+        <FontAwesomeIcon className="mr-2" icon={faComments} />
+        <div className="text-sm">
+          <p className="max-w-xs sm:max-w-xs md:max-w-screen-md lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl truncate">
+            {active ? "Comments" : comments.join(", ")}
           </p>
         </div>
       </div>
-      <ul className={"tw-text-sm tw-max-w-fit tw-list-disc tw-ml-4 tw-overflow-hidden " + (active ? "tw-h-full" : "tw-h-0")}>
-        {
-          comments?.map((note, index) => <li key={"noteId-" + index} className="tw-list-disc tw-mt-2 tw-ml-4">{note}</li>)
-        }
+      <ul className={"text-sm max-w-fit list-disc ml-4 overflow-hidden " + (active ? "h-full" : "h-0")}>
+        {comments?.map((note, index) => (
+          <li key={"noteId-" + index} className="list-disc mt-2 ml-4">
+            {note}
+          </li>
+        ))}
       </ul>
     </div>
-  )
-}
+  );
+};
 function Hit(props) {
   const { hit } = props;
   const { grading_notes = "", overall_score, is_flagged_by_bounty_ops, is_flagged_by_reviewers } = hit;
@@ -129,39 +140,36 @@ function Hit(props) {
   const toolTipText = is_flagged_by_bounty_ops == "Yes" ? "Flagged by Bounty Ops" : "Flagged By Peer Review";
 
   const uniqueFlags = is_flagged_by_bounty_ops == "Yes" ? uniqueOpsFlags : uniqueReviewerFlags;
-  const flagColor = is_flagged_by_bounty_ops == "Yes" ? "tw-bg-[#55ABFB]" : "tw-bg-[#B5E8FD]";
+  const flagColor = is_flagged_by_bounty_ops == "Yes" ? "bg-[#55ABFB]" : "bg-[#B5E8FD]";
 
   return (
     <Tooltip.Provider delayDuration={800} skipDelayDuration={500}>
-      <div className="tw-p-4 tw-mb-4 tw-max-w-full tw-mx-auto bg-white tw-rounded-md tw-shadow-md tw-flex tw-space-x-4 hover:tw-shadow-xl hover:tw-rounded-xl">
-        <div className="tw-w-full">
+      <div className="p-4 mb-4 max-w-full mx-auto bg-white rounded-md shadow-md flex space-x-4 hover:shadow-xl hover:rounded-xl">
+        <div className="w-full">
           <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
-            <div className="tw-text-xl tw-font-medium tw-text-black tw-mb-3 tw-flex tw-items-center tw-justify-between">
-              <div className="tw-flex tw-items-center">
-                <div className="program-icon tw-mr-2">
+            <div className="text-xl font-medium text-black mb-3 flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="program-icon mr-2">
                   {icons[hit["program_name"]] ? (
                     <img alt="MetricsDao" src={icons[hit["program_name"]]} title={hit["program_name"]} />
                   ) : (
                     <img alt="MetricsDao" src="../img/black-mark@2x.png" title={hit["program_name"]} />
                   )}
                 </div>
-                <div className="tw-content-start">
+                <div className="content-start">
                   {hit.question_title}
-                  <FontAwesomeIcon
-                    className="tw-text-slate-300 tw-align-middle tw-pl-2 tw-text-sm"
-                    icon={faExternalLink}
-                  />
+                  <FontAwesomeIcon className="text-slate-300 align-middle pl-2 text-sm" icon={faExternalLink} />
                 </div>
               </div>
               {is_flagged_by_bounty_ops == "No" && is_flagged_by_reviewers == "No" ? (
                 <div
-                  className="tw-flex tw-items-center tw-justify-around tw-space-x-2 tw-max-w-xs tw-text-sm tw-leading-7
-                tw-my-2 tw-px-4 tw-py-0.5 score-label tw-rounded-xl tw-border tw-border-slate-400"
+                  className="flex items-center justify-around space-x-2 max-w-xs text-sm leading-7
+                my-2 px-4 py-0.5 score-label rounded-xl border border-slate-400"
                 >
                   <span>Score</span>
                   <span
-                    className="tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-text-xs tw-rounded-full
-                    tw-font-bold tw-text-white tw-bg-slate-400 tw-ml-4 md:tw-ml-0"
+                    className="w-6 h-6 flex items-center justify-center text-xs rounded-full
+                    font-bold text-white bg-slate-400 ml-4 md:ml-0"
                   >
                     {overall_score}
                   </span>
@@ -169,13 +177,13 @@ function Hit(props) {
               ) : (
                 <Tooltip.Root>
                   <Tooltip.Trigger>
-                    <div className="tw-flex tw-justify-center tw-items-end tw-space-x-2 tw-border-none tw-border-x-slate-50:tw-ml-4">
-                      <div className="tw-flex tw-space-x-2 tw-items-center">
-                        <FontAwesomeIcon className="tw-text-slate-500 fa-xs" icon={faFlag} />
+                    <div className="flex justify-center items-end space-x-2 border-none border-x-slate-50:ml-4">
+                      <div className="flex space-x-2 items-center">
+                        <FontAwesomeIcon className="text-slate-500 fa-xs" icon={faFlag} />
                         {uniqueFlags.map((element, i) => (
                           <div
                             key={i}
-                            className={`tw-text-xs tw-rounded-full ${flagColor} tw-bg-opacity-50 tw-py-1 tw-px-2 tw-text-black`}
+                            className={`text-xs rounded-full ${flagColor} bg-opacity-50 py-1 px-2 text-black`}
                           >
                             {element}
                           </div>
@@ -183,7 +191,7 @@ function Hit(props) {
                       </div>
                     </div>
                   </Tooltip.Trigger>
-                  <Tooltip.Content className="flex tw-z-10 tw-py-2 tw-border-none tw-px-3 tw-text-sm tw-font-medium tw-text-white tw-bg-slate-600 tw-rounded-md">
+                  <Tooltip.Content className="flex z-10 py-2 border-none px-3 text-sm font-medium text-white bg-slate-600 rounded-md">
                     {toolTipText}
                     <Tooltip.Arrow fill="rgb(71 85 105)" />
                   </Tooltip.Content>
@@ -191,24 +199,24 @@ function Hit(props) {
               )}
             </div>
 
-            <div className="tw-flex tw-flex-row tw-space-x-8 tw-text-sm tw-justify-around md:tw-justify-start">
-              <div className="tw-flex tw-flex-row tw-space-x-2">
+            <div className="flex flex-row space-x-8 text-sm justify-around md:justify-start">
+              <div className="flex flex-row space-x-2">
                 <div>
-                  <FontAwesomeIcon className="tw-text-slate-500" icon={faSignal} />
+                  <FontAwesomeIcon className="text-slate-500" icon={faSignal} />
                 </div>
-                <div className="tw-text-slate-500">{hit["submission_quality"]}</div>
+                <div className="text-slate-500">{hit["submission_quality"]}</div>
               </div>
-              <div className="tw-flex tw-flex-row tw-space-x-2">
+              <div className="flex flex-row space-x-2">
                 <div>
-                  <FontAwesomeIcon className="tw-text-slate-500" icon={faCalendar} />
+                  <FontAwesomeIcon className="text-slate-500" icon={faCalendar} />
                 </div>
-                <div className="tw-text-slate-500">{hit["created_at"]}</div>
+                <div className="text-slate-500">{hit["created_at"]}</div>
               </div>
-              <div className="tw-flex tw-flex-row tw-space-x-2 tw-w-min-200">
+              <div className="flex flex-row space-x-2 w-min-200">
                 <div>
-                  <FontAwesomeIcon className="tw-text-slate-500" icon={faUserGraduate} />
+                  <FontAwesomeIcon className="text-slate-500" icon={faUserGraduate} />
                 </div>
-                <div className="tw-text-slate-500">{hit["hunter_discord_id"]}</div>
+                <div className="text-slate-500">{hit["hunter_discord_id"]}</div>
               </div>
             </div>
           </a>

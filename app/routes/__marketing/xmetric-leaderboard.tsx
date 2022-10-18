@@ -1,8 +1,7 @@
 import AppFooter from "~/components/Footer";
 import Header from "~/components/Header";
-import ZohoDashboard from "./zoho-dashboard";
 
-export default function Index() {
+export default function xMetric() {
   return (
     <>
       <section className="site-header-skinny">
@@ -10,7 +9,12 @@ export default function Index() {
           <Header />
         </div>
       </section>
-      <ZohoDashboard />
+      <iframe
+        src="https://analytics.zoho.com/open-view/2467969000005415175"
+        width={"100%"}
+        height={2200}
+        title="xMetric Dashboard"
+      />
       <AppFooter />
     </>
   );
