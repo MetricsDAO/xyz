@@ -31,7 +31,7 @@ export function UpdateMarketplace() {
           <input placeholder="Max" className="p-3 rounded-lg border" />
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-3 gap-x-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-3 gap-x-2">
         <p className="md:col-span-3">{"Reviewer rep priority"}</p>
         <input placeholder="Cheap" className="p-3 rounded-lg border" />
         <input placeholder="Average" className="p-3 rounded-lg border" />
