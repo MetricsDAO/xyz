@@ -1,15 +1,19 @@
 import { Link } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Button } from "~/components/Button";
-import type { Program } from "~/domain";
-import { fakeProgram } from "~/utils/fakes";
+import { Pagination } from "~/components/Pagination";
+import type { Marketplace } from "~/domain";
+import { withServices } from "~/services/with-services.server";
 
-export const loader = async () => {
-  return typedjson({ programs: Array.from({ length: 10 }).map(fakeProgram) });
+export const loader = async (data: DataFunctionArgs) => {
+  return withServices(data, async ({ marketplace }) => {
+    return typedjson(marketplace.brainstormMarketplaces());
+  });
 };
 
 export default function Brainstorm() {
-  const data = useTypedLoaderData<typeof loader>();
+  const { data: marketplaces, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
   return (
     <div className="flex">
       <main className="mx-auto container">
@@ -18,10 +22,13 @@ export default function Brainstorm() {
         </header>
 
         <div className="flex space-x-6">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 flex-1">
-            {data.programs.map((program) => (
-              <ProgramCard key={program.id} program={program} />
-            ))}
+          <div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 flex-1">
+              {marketplaces.map((marketplace) => (
+                <MarketplaceCard key={marketplace.id} marketplace={marketplace} />
+              ))}
+            </div>
+            <Pagination page={pageNumber} totalPages={totalPages} />
           </div>
           <aside className="w-1/5">
             <Button fullWidth>New Program</Button>
@@ -33,12 +40,12 @@ export default function Brainstorm() {
   );
 }
 
-function ProgramCard({ program }: { program: Program }) {
+function MarketplaceCard({ marketplace }: { marketplace: Marketplace }) {
   return (
     <Link to="/brainstorm/id" className="rounded bg-neutral-100 p-5 flex flex-col space-y-2">
-      <h4 className="text-lg font-semibold">{program.title}</h4>
-      <p className="text-sm text-neutral-500 text-ellipsis">{program.description}</p>
-      <p className="text-xs">Created By {program.creator}</p>
+      <h4 className="text-lg font-semibold">{marketplace.title}</h4>
+      <p className="text-sm text-neutral-500 text-ellipsis">{marketplace.description}</p>
+      <p className="text-xs">Created By {marketplace.creator}</p>
       <p className="text-sm">42 Questions</p>
     </Link>
   );
