@@ -39,4 +39,4 @@ when setting up first time you may need to run `npm run dev:css` before running 
 
 ## Ladle
 
-Components can be developed in isolation using [Ladle](https://ladle.dev/) by running `npm run ladle:serve`
+Components can be developed in isolation using [Ladle](https://ladle.dev/) by running `npm run ladle:dev`
