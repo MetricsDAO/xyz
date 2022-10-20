@@ -12,12 +12,15 @@ export default function AppFooter() {
           </div>
           <ul className="nav col-auto justify-content-end list-unstyled d-flex flex-row flex-lg-column social-network">
             <li className="mb-lg-3">
-              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
-                <a className="btn btn-outline-dark" href="https://twitter.com/MetricsDAO">
+              <a
+                href="https://twitter.com/MetricsDAO"
+                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
+              >
+                <span className="btn btn-outline-dark">
                   <i className="bi bi-twitter"></i>
-                </a>
+                </span>
                 <span className="ms-md-2 text-uppercase">twitter</span>
-              </div>
+              </a>
             </li>
             <li className="mb-lg-3">
               <a
@@ -31,12 +34,15 @@ export default function AppFooter() {
               </a>
             </li>
             <li className="mb-lg-3">
-              <div className="d-flex flex-column flex-lg-row justify-content-start align-items-center">
-                <a className="btn btn-outline-dark" href="https://discord.gg/p3GMjK2zAr">
+              <a
+                href="https://discord.gg/p3GMjK2zAr"
+                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
+              >
+                <span className="btn btn-outline-dark">
                   <i className="bi bi-discord"></i>
-                </a>
+                </span>
                 <span className="ms-md-2 text-uppercase">discord</span>
-              </div>
+              </a>
             </li>
           </ul>
         </div>
