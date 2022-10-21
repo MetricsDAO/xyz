@@ -12,7 +12,7 @@ export const ProjectsAllowed = [
 export type ProgramType = "brainstorm" | "community";
 
 // A Program is a collection of Topics and related config.
-export type Program = {
+export type Marketplace = {
   id: string;
   type: ProgramType;
   title: string;
@@ -45,7 +45,7 @@ export type Topic = {
 
 export type UnsavedTopic = Omit<Topic, "id">;
 
-export type TopicWithProgram = Topic & { program: Program };
+export type TopicWithMarketplace = Topic & { marketplace: Marketplace };
 
 export type Submission = {
   id: string;
