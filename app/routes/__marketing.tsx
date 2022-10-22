@@ -4,6 +4,7 @@ import fontStyles from "../styles/fonts.css";
 import aosStyles from "aos/dist/aos.css";
 import algoliaStyles from "../styles/algolia.css";
 import type { LinksFunction } from "@remix-run/react/dist/routeModules";
+import styles from "../styles/app.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -21,6 +22,7 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: fontStyles },
     { rel: "stylesheet", href: aosStyles },
     { rel: "stylesheet", href: algoliaStyles },
+    { rel: "stylesheet", href: styles }, // needs to come after Bootstrap
   ];
 };
 

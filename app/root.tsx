@@ -1,7 +1,5 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
 import { useEffect } from "react";
-import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-import styles from "./styles/app.css";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "./components/WalletProvider";
 import { MantineProvider, createEmotionCache } from "@mantine/core";
@@ -67,8 +65,6 @@ export const links: LinksFunction = () => {
       rel: "shortcut icon",
       href: "/img/favicon.ico",
     },
-    { rel: "stylesheet", href: styles },
-    { rel: "stylesheet", href: rainbowKitStyles },
   ];
 };
 
