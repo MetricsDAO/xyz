@@ -14,6 +14,7 @@ export function fakeMarketplace(): Marketplace {
     endsAt: faker.date.future(),
     rewardCurve: 1,
     rewardTokens: [],
+    rewardPool: faker.datatype.number(),
     authorRepMin: faker.datatype.number(),
     privacy: "public",
     creator: faker.finance.ethereumAddress(),
@@ -22,6 +23,9 @@ export function fakeMarketplace(): Marketplace {
     reviewerRepMin: faker.datatype.number(),
     reviewMethod: "likert",
     authorRepMax: faker.datatype.number(),
+    project: faker.helpers.arrayElement(["Solana", "Ethereum"]),
+    topicCount: faker.datatype.number(),
+    entryCost: faker.datatype.number(),
   };
 }
 
@@ -38,15 +42,8 @@ export function fakeTopic(): TopicWithMarketplace {
   };
 }
 
-export const fakeBrainstormMarketplacePages = (pageNumber: number) => {
-  const pageSize = 10;
-  const totalPages = 5;
-
+export const fakeBrainstormMarketplaces = (count: number) => {
   // deterministic results
-  faker.seed(pageNumber);
-  return {
-    data: Array.from({ length: totalPages }).map(() => Array.from({ length: pageSize }).map(fakeMarketplace)),
-    pageSize,
-    totalPages,
-  };
+  faker.seed(1337);
+  return Array.from({ length: count }).map(fakeMarketplace);
 };

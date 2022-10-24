@@ -1,9 +1,10 @@
-import { Link } from "@remix-run/react";
+import { Search16 } from "@carbon/icons-react";
+import { Input, Pagination, Select } from "@mantine/core";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Button } from "~/components/Button";
-import { Pagination } from "~/components/Pagination";
 import type { Marketplace } from "~/domain";
+import { useQueryParams } from "~/hooks/useQueryParams";
 import { withServices } from "~/services/with-services.server";
 
 export const loader = async (data: DataFunctionArgs) => {
@@ -14,39 +15,71 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Brainstorm() {
   const { data: marketplaces, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
-  return (
-    <div className="flex">
-      <main className="mx-auto container">
-        <header className="pb-10 flex items-center justify-between">
-          <h3 className="text-2xl font-semibold">Brainstorms</h3>
-        </header>
+  const [, setQueryParams] = useQueryParams();
 
-        <div className="flex space-x-6">
-          <div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 flex-1">
-              {marketplaces.map((marketplace) => (
-                <MarketplaceCard key={marketplace.id} marketplace={marketplace} />
-              ))}
-            </div>
-            <Pagination page={pageNumber} totalPages={totalPages} />
-          </div>
-          <aside className="w-1/5">
-            <Button fullWidth>New Program</Button>
-            filters
-          </aside>
-        </div>
-      </main>
-    </div>
+  const onPaginationChange = (page: number) => {
+    setQueryParams({ page: page === 1 ? null : page.toString() });
+  };
+
+  const onSortByChange = (value: string | null) => {
+    setQueryParams({ sortBy: value, page: null });
+  };
+
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQueryParams({ search: e.target.value, page: null });
+  };
+
+  return (
+    <section className="mx-auto container">
+      <header className="">
+        <h3 className="text-2xl font-semibold">Brainstorm Marketplaces</h3>
+        <p className="max-w-2xl">
+          Brainstorm marketplaces empower our community to crowdsource the best questions for crypto analysts to answer.
+          Participants can host, incentivize, and engage in brainstorms for any web3 topic.
+        </p>
+      </header>
+      <div className="flex flex-col-reverse md:flex-row">
+        <main className="flex-1">
+          <MarketplacesGrid marketplaces={marketplaces} />
+          <Pagination page={pageNumber} onChange={onPaginationChange} total={totalPages} />
+        </main>
+        <aside className="md:w-1/5 space-y-5">
+          <Button fullWidth>New Marketplace</Button>
+          <Input placeholder="Search" onChange={onSearchChange} icon={<Search16 />} />
+          <Select
+            label="Sort By"
+            placeholder="Select option"
+            onChange={onSortByChange}
+            clearable
+            data={[{ label: "Chain/Project", value: "project" }]}
+          />
+        </aside>
+      </div>
+    </section>
   );
 }
 
-function MarketplaceCard({ marketplace }: { marketplace: Marketplace }) {
+function MarketplacesGrid({ marketplaces }: { marketplaces: Marketplace[] }) {
   return (
-    <Link to="/brainstorm/id" className="rounded bg-neutral-100 p-5 flex flex-col space-y-2">
-      <h4 className="text-lg font-semibold">{marketplace.title}</h4>
-      <p className="text-sm text-neutral-500 text-ellipsis">{marketplace.description}</p>
-      <p className="text-xs">Created By {marketplace.creator}</p>
-      <p className="text-sm">42 Questions</p>
-    </Link>
+    <div className="grid grid-cols-6">
+      <div className="col-span-2">Title</div>
+      <div className="overflow-ellipsis overflow-hidden">Chain/Project</div>
+      <div>Reward Pool</div>
+      <div>Entry to Submit</div>
+      <div>Topics</div>
+      {marketplaces.map((m) => {
+        return [
+          <div key={`${m.id}-title`} className="col-span-2 overflow-ellipsis overflow-hidden">
+            {m.title}
+          </div>,
+          <div key={`${m.id}-project`} className="overflow-ellipsis overflow-hidden">
+            {m.project}
+          </div>,
+          <div key={`${m.id}-reward-pool`}>{m.rewardPool} USD</div>,
+          <div key={`${m.id}-entry`}>{m.entryCost} xMetric</div>,
+          <div key={`${m.id}-topic-count`}>{m.topicCount}</div>,
+        ];
+      })}
+    </div>
   );
 }
