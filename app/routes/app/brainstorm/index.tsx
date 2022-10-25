@@ -23,10 +23,6 @@ export default function Brainstorm() {
     setQueryParams({ page: page === 1 ? null : page.toString() });
   };
 
-  // Get the current page from the params so we can persist it through filter changes
-  const [searchParams] = useSearchParams();
-  const page = searchParams.get("page");
-
   // Form submission on change.
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -51,7 +47,6 @@ export default function Brainstorm() {
         </main>
 
         <Form className="md:w-1/5 space-y-5" onChange={handleChange} ref={formRef}>
-          {page ? <input type="hidden" name="page" value={page} /> : null}
           <Button fullWidth>New Marketplace</Button>
           <Input placeholder="Search" name="search" icon={<Search16 />} />
           <Select
