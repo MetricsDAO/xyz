@@ -19,12 +19,15 @@ export default function CreateTopic() {
           searchable
           clearable
         />
-        <button
-          className="bg-white text-black border border-[#00C2FF] rounded-md p-3 font-medium"
-          disabled={marketplace}
-        >
-          Create New Marketplace
-        </button>
+        <div className="flex flex-row items-center space-x-5">
+          <p>or</p>
+          <button
+            className="bg-white text-black border border-[#00C2FF] rounded-md p-3 font-medium"
+            disabled={marketplace}
+          >
+            Create New Marketplace
+          </button>
+        </div>
       </div>
       {marketplace ? (
         <div className="space-y-10">
