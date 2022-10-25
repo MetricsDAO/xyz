@@ -22,7 +22,7 @@ export default function CreateTopic() {
         <div className="flex flex-row items-center space-x-5">
           <p>or</p>
           <button
-            className="bg-white text-black border border-[#00C2FF] rounded-md p-3 font-medium"
+            className="bg-white text-black border border-[#16ABDD] rounded-md p-3 font-medium"
             disabled={marketplace}
           >
             Create New Marketplace
@@ -92,8 +92,8 @@ export default function CreateTopic() {
 
       <div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-5 items-center mt-2">
+          <button className="bg-[#16ABDD] text-white rounded-md p-3 font-medium">Submit</button>
           <button className="bg-white text-black border rounded-md p-3 font-medium">Cancel</button>
-          <button className="bg-black text-white rounded-md p-3 font-medium">Submit</button>
         </div>
       </div>
     </div>
