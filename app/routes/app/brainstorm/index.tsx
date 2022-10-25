@@ -1,6 +1,8 @@
 import { Search16 } from "@carbon/icons-react";
 import { Input, Pagination, Select } from "@mantine/core";
+import { Form, useSearchParams, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { useRef } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Button } from "~/components/Button";
 import type { Marketplace } from "~/domain";
@@ -21,13 +23,16 @@ export default function Brainstorm() {
     setQueryParams({ page: page === 1 ? null : page.toString() });
   };
 
-  const onSortByChange = (value: string | null) => {
-    setQueryParams({ sortBy: value, page: null });
-  };
+  // Get the current page from the params so we can persist it through filter changes
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
 
-  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQueryParams({ search: e.target.value, page: null });
-  };
+  // Form submission on change.
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
+  function handleChange() {
+    submit(formRef.current);
+  }
 
   return (
     <section className="mx-auto container">
@@ -38,22 +43,26 @@ export default function Brainstorm() {
           Participants can host, incentivize, and engage in brainstorms for any web3 topic.
         </p>
       </header>
+
       <div className="flex flex-col-reverse md:flex-row">
         <main className="flex-1">
           <MarketplacesGrid marketplaces={marketplaces} />
           <Pagination page={pageNumber} onChange={onPaginationChange} total={totalPages} />
         </main>
-        <aside className="md:w-1/5 space-y-5">
+
+        <Form className="md:w-1/5 space-y-5" onChange={handleChange} ref={formRef}>
+          {page ? <input type="hidden" name="page" value={page} /> : null}
           <Button fullWidth>New Marketplace</Button>
-          <Input placeholder="Search" onChange={onSearchChange} icon={<Search16 />} />
+          <Input placeholder="Search" name="search" icon={<Search16 />} />
           <Select
             label="Sort By"
             placeholder="Select option"
-            onChange={onSortByChange}
+            name="sortBy"
+            onChange={handleChange}
             clearable
             data={[{ label: "Chain/Project", value: "project" }]}
           />
-        </aside>
+        </Form>
       </div>
     </section>
   );
