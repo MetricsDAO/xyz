@@ -1,16 +1,18 @@
-import { MultiSelect, NativeSelect, NumberInput, Textarea, TextInput } from "@mantine/core";
+import { MultiSelect, NativeSelect, NumberInput, Textarea, TextInput, Title, Text, Button } from "@mantine/core";
 
-export function UpdateMarketplace() {
+export function UpdateMarketplace({ title }: { title: string }) {
   const delegateCreate = true;
 
   return (
     <div className="space-y-7 p-3">
       <div className="space-y-3">
-        <b className="text-3xl font-semibold">{"Create/Update Marketplace"}</b>
-        <p>
+        <Title order={2} weight={600}>
+          {title + " Marketplace"}
+        </Title>
+        <Text>
           Brainstorm marketplaces empower our community to crowdsource the best questions for crypto analysts to answer.
           Create a marketplace for you and peers to host, incentivize, and engage in brainstorms for any web3 topic.
-        </p>
+        </Text>
         <TextInput label="Title" placeholder="Marketplace name" className=" text-black w-full" />
         <Textarea
           label="Details"
@@ -32,7 +34,17 @@ export function UpdateMarketplace() {
         />
         {delegateCreate ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
-            <p className="text-sm md:col-span-2">Delegates</p>
+            <div className="flex flex-row md:col-span-2 space-x-4">
+              <Text variant="link" size="sm">
+                Launch Badger
+              </Text>
+              <Text variant="link" size="sm">
+                Badger Docs
+              </Text>
+            </div>
+            <Text size="sm" className="md:col-span-2">
+              Delegates
+            </Text>
             <TextInput placeholder="Badger Contact Address" className=" text-black w-full" />
             <TextInput placeholder="Token ID" className=" text-black w-full" />
           </div>
@@ -40,7 +52,9 @@ export function UpdateMarketplace() {
           <></>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
-          <b className="md:col-span-2">Rewards</b>
+          <Text weight={600} className="md:col-span-2">
+            Rewards
+          </Text>
           <NativeSelect
             label="Allow Reward Token"
             data={["React", "Angular", "Svelte", "Vue"]}
@@ -51,17 +65,25 @@ export function UpdateMarketplace() {
             data={["React", "Angular", "Svelte", "Vue"]}
             placeholder={"Aggressive: Rewards top 10%"}
           />
-          <b className="md:col-span-2">{"Control who can submit questions (Optional)"}</b>
+          <Text weight={600} className="md:col-span-2">
+            {"Control who can submit questions (Optional)"}
+          </Text>
           <NumberInput placeholder="xMetric Min" hideControls />
           <NumberInput placeholder="xMetric Max" hideControls />
-          <b className="md:col-span-2">{"Control who can peer review questions (Default)"}</b>
+          <Text weight={600} className="md:col-span-2">
+            {"Control who can peer review questions (Default)"}
+          </Text>
           <TextInput placeholder="{Reviewer Badger Contact Address}" className=" text-black w-full" />
           <TextInput placeholder="Token ID" className=" text-black w-full" />
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5 items-center">
-        <button className="bg-[#16ABDD] text-white rounded-md p-3 font-medium">Create</button>
-        <button className="bg-white text-black border rounded-md p-3 font-medium">Cancel</button>
+        <Button size="md" color="cyan">
+          Create
+        </Button>
+        <Button variant="default" color="dark" size="md">
+          Cancel
+        </Button>
       </div>
     </div>
   );
