@@ -4,6 +4,8 @@ import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeMod
 import WalletProvider from "./components/WalletProvider";
 import { MantineProvider, createEmotionCache } from "@mantine/core";
 import { StylesPlaceholder } from "@mantine/remix";
+import styles from "./styles/app.css";
+import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
 
 createEmotionCache({ key: "mantine" });
 
@@ -65,6 +67,8 @@ export const links: LinksFunction = () => {
       rel: "shortcut icon",
       href: "/img/favicon.ico",
     },
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: rainbowKitStyles },
   ];
 };
 
