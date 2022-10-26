@@ -1,26 +1,30 @@
-import { Button, Textarea, TextInput } from "@mantine/core";
+import { Button, List, Textarea, TextInput, Text, Title } from "@mantine/core";
 
 export default function SubmitQuestion() {
   return (
     <div className="container mx-auto px-10 md:px-32 space-y-3">
-      <b className="text-3xl font-semibold">{"Submit Question for {Topic}"}</b>
-      <p>{"Submit at least one question idea before the submission deadline in {countdown}."}</p>
+      <Title order={2} weight={600}>
+        {"Submit Question for {Topic}"}
+      </Title>
+      <Text>{"Submit at least one question idea before the submission deadline in {countdown}."}</Text>
       <div className="flex flex-col md:flex-row md:space-x-20">
         <div className="md:basis-2/3 space-y-10 md:space-y-28">
-          <TextInput label="Title" placeholder="Name" className=" text-black w-full" />
-          <Textarea
-            label="Question"
-            placeholder="Text"
-            className="text-black w-full md:col-span-2"
-            autosize
-            spellCheck="true"
-            minRows={5}
-            maxRows={10}
-          />
-          <i>
-            Important: Questions can’t be edited once submitted. Double check your work for typos and ensure your
-            question is good to go.
-          </i>
+          <TextInput label="Title" placeholder="Name" className="mt-1 w-full" />
+          <div className="space-y-5">
+            <Textarea
+              label="Question"
+              placeholder="Text"
+              className="text-black w-full md:col-span-2"
+              autosize
+              spellCheck="true"
+              minRows={5}
+              maxRows={10}
+            />
+            <Text italic>
+              Important: Questions can’t be edited once submitted. Double check your work for typos and ensure your
+              question is good to go.
+            </Text>
+          </div>
           <div className="flex flex-col md:flex-row gap-5 items-center">
             <Button variant="default" color="dark" size="md">
               Cancel
@@ -31,43 +35,36 @@ export default function SubmitQuestion() {
           </div>
         </div>
         <div className="mt-10 md:mt-0 md:basis-1/3">
-          <h3>How to Write a Good Question</h3>
-          <div className="border text-[#858582] rounded-lg p-4">
-            <p>Don’t assume we will “know what you mean.” </p>
-            <ul className="list-disc list-inside">
-              <li>Be specific</li>
-              <li>Define metrics </li>
-              <li>Specify time boundaries</li>
-            </ul>
+          <Text size="lg">How to Write a Good Question</Text>
+          <div className="border border-solid rounded-lg p-4 text-[#909296]">
+            <Text>Don’t assume we will “know what you mean.” </Text>
+            <List withPadding className="text-[#909296]">
+              <List.Item>Be specific</List.Item>
+              <List.Item>Define metrics </List.Item>
+              <List.Item>Specify time boundaries</List.Item>
+            </List>
           </div>
-          <div className="border text-[#858582] rounded-lg p-4 mt-10 space-y-6">
-            <p>ORIGINAL: How many people actively use Sushi? </p>
-            <p>
-              <b>Be specific:</b>
-            </p>
-            <p>
+          <div className="border border-solid text-[#909296] rounded-lg p-4 mt-10 space-y-6">
+            <Text>ORIGINAL: How many people actively use Sushi? </Text>
+            <Text weight={700}>Be specific:</Text>
+            <Text>
               The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person? Are we
               talking Ethereum? What about Polygon?
-            </p>
-            <p>UPDATE: How many addresses actively use the SUSHI token on Ethereum? </p>
-            <p>
-              <b>Define metrics: </b>
-            </p>
-            <p>
+            </Text>
+            <Text>UPDATE: How many addresses actively use the SUSHI token on Ethereum? </Text>
+            <Text weight={700}>Define metrics:</Text>
+            <Text>
               What is “active“? What is “use”? These terms can (and will) mean different things to different people. It
               doesn’t matter what definition you use as long as you communicate your expectations. Alternately you can
               ask for the metric to be defined as part of the question.
-            </p>
-            <p>UPDATE: How many addresses have transferred SUSHI on Ethereum?</p>
-
-            <p>
-              <b>Specify time boundaries:</b>
-            </p>
-            <p>
+            </Text>
+            <Text>UPDATE: How many addresses have transferred SUSHI on Ethereum?</Text>
+            <Text weight={700}>Specify time boundaries:</Text>
+            <Text>
               We still haven’t fully defined “active”. Specifying time makes the result easier to understand, don’t rely
               on the person answering the question to specify time for you if you didn’t ask them to.
-            </p>
-            <p> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?</p>
+            </Text>
+            <Text> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?</Text>
           </div>
         </div>
       </div>
