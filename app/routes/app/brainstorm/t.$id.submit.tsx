@@ -13,6 +13,7 @@ export default function SubmitQuestion() {
             placeholder="Text"
             className="text-black w-full md:col-span-2"
             autosize
+            spellCheck="true"
             minRows={5}
             maxRows={10}
           />
