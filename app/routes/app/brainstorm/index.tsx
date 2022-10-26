@@ -1,10 +1,9 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select } from "@mantine/core";
-import { Form, useSearchParams, useSubmit } from "@remix-run/react";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider } from "@mantine/core";
+import { Form, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useRef } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { Button } from "~/components/Button";
 import type { Marketplace } from "~/domain";
 import { useQueryParams } from "~/hooks/useQueryParams";
 import { withServices } from "~/services/with-services.server";
@@ -31,59 +30,79 @@ export default function Brainstorm() {
   }
 
   return (
-    <section className="mx-auto container">
-      <header className="">
-        <h3 className="text-2xl font-semibold">Brainstorm Marketplaces</h3>
-        <p className="max-w-2xl">
-          Brainstorm marketplaces empower our community to crowdsource the best questions for crypto analysts to answer.
-          Participants can host, incentivize, and engage in brainstorms for any web3 topic.
-        </p>
-      </header>
+    <div className="mx-auto container">
+      <section className="flex flex-col space-y-7 md:flex-row md:space-y-0 py-12">
+        <main className="flex-1">
+          <div className="space-y-3">
+            <Title order={2}>Brainstorm Marketplaces</Title>
+            <Text color="dimmed" className="max-w-2xl">
+              Brainstorm marketplaces empower our community to crowdsource the best questions for crypto analysts to
+              answer. Participants can host, incentivize, and engage in brainstorms for any web3 topic.
+            </Text>
+          </div>
+        </main>
+        <aside className="md:w-1/5">
+          <Center>
+            <Button radius="md" className="mx-auto">
+              Create Marketplace
+            </Button>
+          </Center>
+        </aside>
+      </section>
 
-      <div className="flex flex-col-reverse md:flex-row">
+      <section className="pb-7">
+        <Title order={3}>
+          Marketplaces{" "}
+          <Text span color="dimmed">
+            (25)
+          </Text>{" "}
+        </Title>
+        <Divider />
+      </section>
+
+      <section className="flex flex-col-reverse space-y-reverse space-y-7 md:space-y-0 md:flex-row">
         <main className="flex-1">
           <MarketplacesGrid marketplaces={marketplaces} />
           <Pagination page={pageNumber} onChange={onPaginationChange} total={totalPages} />
         </main>
-
-        <Form className="md:w-1/5 space-y-5" onChange={handleChange} ref={formRef}>
-          <Button fullWidth>New Marketplace</Button>
-          <Input placeholder="Search" name="search" icon={<Search16 />} />
-          <Select
-            label="Sort By"
-            placeholder="Select option"
-            name="sortBy"
-            onChange={handleChange}
-            clearable
-            data={[{ label: "Chain/Project", value: "project" }]}
-          />
-        </Form>
-      </div>
-    </section>
+        <aside className="md:w-1/5">
+          <Form className="space-y-5" onChange={handleChange} ref={formRef}>
+            <Input placeholder="Search" name="search" icon={<Search16 />} />
+            <Select
+              label="Sort By"
+              placeholder="Select option"
+              name="sortBy"
+              clearable
+              data={[{ label: "Chain/Project", value: "project" }]}
+            />
+          </Form>
+        </aside>
+      </section>
+    </div>
   );
 }
 
 function MarketplacesGrid({ marketplaces }: { marketplaces: Marketplace[] }) {
   return (
-    <div className="grid grid-cols-6">
-      <div className="col-span-2">Title</div>
-      <div className="overflow-ellipsis overflow-hidden">Chain/Project</div>
-      <div>Reward Pool</div>
-      <div>Entry to Submit</div>
-      <div>Topics</div>
+    <>
+      <div className="flex overflow-auto">
+        <div className="basis-2/6">Title</div>
+        <div className="basis-1/6">Chain/Project</div>
+        <div className="basis-1/6">Reward Pool</div>
+        <div className="basis-1/6">Entry to Submit</div>
+        <div className="basis-1/6">Topics</div>
+      </div>
       {marketplaces.map((m) => {
-        return [
-          <div key={`${m.id}-title`} className="col-span-2 overflow-ellipsis overflow-hidden">
-            {m.title}
-          </div>,
-          <div key={`${m.id}-project`} className="overflow-ellipsis overflow-hidden">
-            {m.project}
-          </div>,
-          <div key={`${m.id}-reward-pool`}>{m.rewardPool} USD</div>,
-          <div key={`${m.id}-entry`}>{m.entryCost} xMetric</div>,
-          <div key={`${m.id}-topic-count`}>{m.topicCount}</div>,
-        ];
+        return (
+          <div className="flex overflow-auto" key={m.id}>
+            <div className="basis-2/6">{m.title}</div>
+            <div className="basis-1/6">{m.project}</div>
+            <div className="basis-1/6">{m.rewardPool}</div>
+            <div className="basis-1/6">{m.entryCost}</div>
+            <div className="basis-1/6">{m.topicCount}</div>
+          </div>
+        );
       })}
-    </div>
+    </>
   );
 }
