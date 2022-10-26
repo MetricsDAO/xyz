@@ -36,36 +36,34 @@ export default function SubmitQuestion() {
               <li>Specify time boundaries</li>
             </ul>
           </div>
-          <div className="border text-[#858582] rounded-lg p-4 mt-10">
+          <div className="border text-[#858582] rounded-lg p-4 mt-10 space-y-6">
+            <p>ORIGINAL: How many people actively use Sushi? </p>
             <p>
-              ORIGINAL: How many people actively use Sushi? <br />
-              <br />
               <b>Be specific:</b>
-              <br />
-              <br /> The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person?
-              Are we talking Ethereum? What about Polygon? <br />
-              <br />
-              UPDATE: How many addresses actively use the SUSHI token on Ethereum? <br />
-              <br />
+            </p>
+            <p>
+              The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person? Are we
+              talking Ethereum? What about Polygon?
+            </p>
+            <p>UPDATE: How many addresses actively use the SUSHI token on Ethereum? </p>
+            <p>
               <b>Define metrics: </b>
-              <br />
-              <br />
+            </p>
+            <p>
               What is “active“? What is “use”? These terms can (and will) mean different things to different people. It
               doesn’t matter what definition you use as long as you communicate your expectations. Alternately you can
               ask for the metric to be defined as part of the question.
-              <br />
-              <br />
-              UPDATE: How many addresses have transferred SUSHI on Ethereum?
-              <br />
-              <br />
-              <b>Specify time boundaries:</b>
-              <br />
-              <br /> We still haven’t fully defined “active”. Specifying time makes the result easier to understand,
-              don’t rely on the person answering the question to specify time for you if you didn’t ask them to.
-              <br />
-              <br /> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?
             </p>
-            <b></b>
+            <p>UPDATE: How many addresses have transferred SUSHI on Ethereum?</p>
+
+            <p>
+              <b>Specify time boundaries:</b>
+            </p>
+            <p>
+              We still haven’t fully defined “active”. Specifying time makes the result easier to understand, don’t rely
+              on the person answering the question to specify time for you if you didn’t ask them to.
+            </p>
+            <p> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?</p>
           </div>
         </div>
       </div>
