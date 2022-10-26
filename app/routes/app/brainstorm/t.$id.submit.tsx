@@ -1,4 +1,4 @@
-import { Textarea, TextInput } from "@mantine/core";
+import { Button, Textarea, TextInput } from "@mantine/core";
 
 export default function SubmitQuestion() {
   return (
@@ -22,8 +22,12 @@ export default function SubmitQuestion() {
             question is good to go.
           </i>
           <div className="flex flex-col md:flex-row gap-5 items-center">
-            <button className="bg-white text-black border rounded-md py-4 px-12 font-medium">Cancel</button>
-            <button className="bg-black text-white rounded-md p-4 font-medium">Submit Question</button>
+            <Button variant="default" color="dark" size="md">
+              Cancel
+            </Button>
+            <Button color="dark" size="md">
+              Submit Question
+            </Button>
           </div>
         </div>
         <div className="mt-10 md:mt-0 md:basis-1/3">
