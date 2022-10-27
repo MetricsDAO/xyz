@@ -1,8 +1,8 @@
-import { Button, List, Textarea, TextInput, Text, Title } from "@mantine/core";
+import { Button, List, Textarea, TextInput, Text, Title, Paper } from "@mantine/core";
 
 export default function SubmitQuestion() {
   return (
-    <div className="container mx-auto px-10 md:px-32 space-y-3">
+    <div className="container mx-auto px-10 max-w-5xl space-y-3">
       <Title order={2} weight={600}>
         {"Submit Question for {Topic}"}
       </Title>
@@ -36,15 +36,15 @@ export default function SubmitQuestion() {
         </div>
         <div className="mt-10 md:mt-0 md:basis-1/3">
           <Text size="lg">How to Write a Good Question</Text>
-          <div className="border border-solid rounded-lg p-4 text-[#909296]">
+          <Paper p="md" radius="md" withBorder className="text-[#909296]">
             <Text>Don’t assume we will “know what you mean.” </Text>
             <List withPadding className="text-[#909296]">
               <List.Item>Be specific</List.Item>
               <List.Item>Define metrics </List.Item>
               <List.Item>Specify time boundaries</List.Item>
             </List>
-          </div>
-          <div className="border border-solid text-[#909296] rounded-lg p-4 mt-10 space-y-6">
+          </Paper>
+          <Paper p="md" radius="md" withBorder className="text-[#909296] mt-10 space-y-6">
             <Text>ORIGINAL: How many people actively use Sushi? </Text>
             <Text weight={700}>Be specific:</Text>
             <Text>
@@ -65,7 +65,7 @@ export default function SubmitQuestion() {
               on the person answering the question to specify time for you if you didn’t ask them to.
             </Text>
             <Text> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?</Text>
-          </div>
+          </Paper>
         </div>
       </div>
     </div>
