@@ -113,7 +113,9 @@ export default function App() {
   return (
     <Document>
       <WalletProvider>
-        <Outlet />
+        <MantineProvider withGlobalStyles withNormalizeCSS>
+          <Outlet />
+        </MantineProvider>
       </WalletProvider>
     </Document>
   );
@@ -121,33 +123,31 @@ export default function App() {
 
 function Document({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
-    <MantineProvider withGlobalStyles withNormalizeCSS>
-      <html lang="en">
-        <head>
-          <StylesPlaceholder />
-          {title ? <title>{title}</title> : null}
-          <Links />
-          <Meta />
-          <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
-          <script
-            type="text/javascript"
-            dangerouslySetInnerHTML={{
-              __html: `            
+    <html lang="en">
+      <head>
+        <StylesPlaceholder />
+        {title ? <title>{title}</title> : null}
+        <Links />
+        <Meta />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `            
             window.dataLayer = window.dataLayer || [];
             function gtag() { dataLayer.push(arguments); }
             gtag('js', new Date());
             gtag('config', 'G-8JJWLXT88P');
         `,
-            }}
-          ></script>
-        </head>
-        <body>
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
-    </MantineProvider>
+          }}
+        ></script>
+      </head>
+      <body>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
   );
 }
