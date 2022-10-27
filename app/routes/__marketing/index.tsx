@@ -115,7 +115,7 @@ export default function Index() {
       <section className="section-3">
         <div className="container d-flex flex-wrap justify-content-center align-items-center">
           <div className="row section-creation">
-            <div className="col-6 box-content">
+            <div className="col-6">
               <h3 className="section-subtitle">
                 <span className="fw-bold">Community Brainstorming</span>
               </h3>
@@ -138,7 +138,7 @@ export default function Index() {
             <div className="col-6 order-1 order-lg-0" data-aos="fade-up" data-aos-delay="300" data-aos-duration="2000">
               <img src="img/pic-generation.png" alt="" className="img-fluid" />
             </div>
-            <div className="col-6 box-content">
+            <div className="col-6">
               <h4 className="section-subtitle">
                 <span className="fw-bold">Analytics </span>
               </h4>
@@ -158,7 +158,7 @@ export default function Index() {
             </div>
           </div>
           <div className="row section-review">
-            <div className="col-6 box-content">
+            <div className="col-6">
               <h4 className="section-subtitle">
                 <span className="fw-bold">Peer Review</span>
               </h4>

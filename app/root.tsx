@@ -1,10 +1,13 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
 import { useEffect } from "react";
-import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-import styles from "./styles/app.css";
-import fontStyles from "./styles/fonts.css";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "./components/WalletProvider";
+import { MantineProvider, createEmotionCache } from "@mantine/core";
+import { StylesPlaceholder } from "@mantine/remix";
+import styles from "./styles/app.css";
+import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+
+createEmotionCache({ key: "mantine" });
 
 export const meta: MetaFunction = () => {
   return {
@@ -110,7 +113,9 @@ export default function App() {
   return (
     <Document>
       <WalletProvider>
-        <Outlet />
+        <MantineProvider withGlobalStyles withNormalizeCSS>
+          <Outlet />
+        </MantineProvider>
       </WalletProvider>
     </Document>
   );
@@ -120,6 +125,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
   return (
     <html lang="en">
       <head>
+        <StylesPlaceholder />
         {title ? <title>{title}</title> : null}
         <Links />
         <Meta />

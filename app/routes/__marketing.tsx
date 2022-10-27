@@ -1,6 +1,8 @@
 import { Outlet } from "@remix-run/react";
 import customStyles from "../styles/custom.css";
 import fontStyles from "../styles/fonts.css";
+import aosStyles from "aos/dist/aos.css";
+import algoliaStyles from "../styles/algolia.css";
 import type { LinksFunction } from "@remix-run/react/dist/routeModules";
 
 export const links: LinksFunction = () => {
@@ -11,8 +13,16 @@ export const links: LinksFunction = () => {
       integrity: "sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3",
       crossOrigin: "anonymous",
     },
-    { rel: "stylesheet", href: fontStyles },
+    {
+      rel: "stylesheet",
+      href: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css",
+    },
     { rel: "stylesheet", href: customStyles },
+    { rel: "stylesheet", href: fontStyles },
+    { rel: "stylesheet", href: aosStyles },
+    { rel: "stylesheet", href: algoliaStyles },
+    // hack to include Tailwind base styles (https://tailwindcss.com/docs/preflight). We don't want base styles on app side.
+    { rel: "stylesheet", href: "https://unpkg.com/tailwindcss@3.2.1/src/css/preflight.css" },
   ];
 };
 
