@@ -2,50 +2,52 @@ import { Button, List, Textarea, TextInput, Text, Title, Paper } from "@mantine/
 
 export default function SubmitQuestion() {
   return (
-    <div className="container mx-auto px-10 max-w-5xl space-y-3">
-      <Title order={2} weight={600}>
-        {"Submit Question for {Topic}"}
-      </Title>
-      <Text>{"Submit at least one question idea before the submission deadline in {countdown}."}</Text>
-      <div className="flex flex-col md:flex-row md:space-x-20">
-        <div className="md:basis-2/3 space-y-10 md:space-y-16">
-          <TextInput label="Title" size="md" placeholder="Name" className="mt-1 w-full" />
-          <div className="space-y-3">
-            <Textarea
-              label="Question"
-              placeholder="Text"
-              className="text-black w-full md:col-span-2"
-              size="md"
-              autosize
-              spellCheck="true"
-              minRows={5}
-              maxRows={10}
-            />
-            <Text italic>
-              Important: Questions can’t be edited once submitted. Double check your work for typos and ensure your
-              question is good to go.
+    <div className="container mx-auto px-10 space-y-3">
+      <div className="flex flex-col md:flex-row md:space-x-5">
+        <div className="hidden md:block md:basis-1/5" />
+        <div className="md:basis-3/5 space-y-7">
+          <div>
+            <Title order={2} weight={600} className="mb-1">
+              {"Submit Question"}
+            </Title>
+            <Title order={3} color="cyan.3" weight={400}>
+              {"Brainstorm the best question for crypto analysts to answer about {Challenge title}"}
+            </Title>
+            <Text className="text-[#A5A5A5]">
+              Submit your best questions. Peers will review your question. If you’re a winner, you’ll earn tokens from
+              the reward pool!
             </Text>
           </div>
+          <div className="max-w-md space-y-7">
+            <TextInput label="Question Title" size="md" placeholder="Question title" className="mt-1 w-full" />
+            <div className="space-y-3">
+              <Textarea
+                label="What's your question?"
+                placeholder=""
+                className="text-black w-full md:col-span-2"
+                size="md"
+                autosize
+                spellCheck="true"
+                minRows={5}
+                maxRows={10}
+              />
+              <Text italic className="text-[#A5A5A5]">
+                Important: Questions can’t be edited once submitted. Double check your work for typos and ensure your
+                question is good to go.
+              </Text>
+            </div>
+          </div>
           <div className="flex flex-col md:flex-row gap-5 items-center">
+            <Button color="cyan.3" size="md">
+              Submit Question
+            </Button>
             <Button variant="default" color="dark" size="md">
               Cancel
             </Button>
-            <Button color="dark" size="md">
-              Submit Question
-            </Button>
           </div>
         </div>
-        <div className="mt-10 md:mt-0 md:basis-1/3">
-          <Text size="lg">How to Write a Good Question</Text>
-          <Paper p="md" radius="md" withBorder className="text-[#909296]">
-            <Text>Don’t assume we will “know what you mean.” </Text>
-            <List withPadding className="text-[#909296]">
-              <List.Item>Be specific</List.Item>
-              <List.Item>Define metrics </List.Item>
-              <List.Item>Specify time boundaries</List.Item>
-            </List>
-          </Paper>
-          <Paper p="md" radius="md" withBorder className="text-[#909296] mt-10 space-y-6">
+        <div className="md:basis-1/5">
+          <Paper p="md" radius="md" withBorder className="text-[#909296] space-y-6">
             <Text>ORIGINAL: How many people actively use Sushi? </Text>
             <Text weight={700}>Be specific:</Text>
             <Text>
