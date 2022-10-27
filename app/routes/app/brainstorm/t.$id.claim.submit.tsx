@@ -1,8 +1,8 @@
-import { Title, Text, List, Button } from "@mantine/core";
+import { Title, Text, List, Button, Paper } from "@mantine/core";
 
 export default function ClaimToSubmit() {
   return (
-    <div className="container mx-auto px-10 md:px-32 space-y-7">
+    <div className="container mx-auto px-10 max-w-5xl space-y-7">
       <Title order={2} weight={600}>
         {"Claim {Topic} to Submit"}
       </Title>
@@ -21,21 +21,21 @@ export default function ClaimToSubmit() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-5 gap-y-16 lg:mr-24">
         <div className="lg:col-span-2 space-y-2">
           <Title order={4}>Claim Deadline</Title>
-          <div className="border border-solid text-[#858582] border-[#858582] p-3 rounded-md w-full col-span-2">
+          <Paper p="sm" withBorder className="text-[#858582] w-full col-span-2">
             <Text>4d 2h 3m</Text>
-          </div>
+          </Paper>
         </div>
         <div className="lg:col-span-2 space-y-2">
           <Title order={4}>Submit Deadline</Title>
-          <div className="border border-solid text-[#858582] border-[#858582] p-3 rounded-md w-full col-span-2">
+          <Paper p="sm" withBorder className="text-[#858582] w-full col-span-2">
             <Text>4d 2h 3m</Text>
-          </div>
+          </Paper>
         </div>
         <div className="lg:col-span-2 space-y-2">
           <Title order={4}>Lock xMetric</Title>
-          <div className="border border-solid text-[#858582] border-[#858582] p-3 rounded-md w-full col-span-2">
+          <Paper p="sm" withBorder className="text-[#858582] w-full col-span-2">
             <Text>You must lock 10 xMetric to claim</Text>
-          </div>
+          </Paper>
         </div>
         <Button color="dark" size="lg" className="self-end">
           Lock xMetric
