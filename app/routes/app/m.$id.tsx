@@ -6,7 +6,7 @@ import { ProjectBadge } from "~/components/ProjectBadge";
 
 export default function Marketplace() {
   return (
-    <div className="container mx-auto max-w-6xl space-y-6 py-16">
+    <div className="container mx-auto max-w-6xl space-y-10 py-16">
       <header className="flex justify-between">
         <Title size="h1">Marketplace Title</Title>
         <Button>Launch Challenge</Button>
@@ -28,7 +28,7 @@ export default function Marketplace() {
       </div>
 
       {/* Description */}
-      <Text size="sm">
+      <Text size="sm" className="w-2/3">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
         pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit fermentum,
         consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus, ligula commodo aliquet
@@ -115,6 +115,11 @@ export default function Marketplace() {
           </div>
         </div>
         {/* end Requirements */}
+      </div>
+
+      <div className="flex">
+        <main className="flex-1">table</main>
+        <aside className="w-1/5">filters</aside>
       </div>
     </div>
   );
