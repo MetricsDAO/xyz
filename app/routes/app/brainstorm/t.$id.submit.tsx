@@ -8,13 +8,14 @@ export default function SubmitQuestion() {
       </Title>
       <Text>{"Submit at least one question idea before the submission deadline in {countdown}."}</Text>
       <div className="flex flex-col md:flex-row md:space-x-20">
-        <div className="md:basis-2/3 space-y-10 md:space-y-28">
-          <TextInput label="Title" placeholder="Name" className="mt-1 w-full" />
-          <div className="space-y-5">
+        <div className="md:basis-2/3 space-y-10 md:space-y-16">
+          <TextInput label="Title" size="md" placeholder="Name" className="mt-1 w-full" />
+          <div className="space-y-3">
             <Textarea
               label="Question"
               placeholder="Text"
               className="text-black w-full md:col-span-2"
+              size="md"
               autosize
               spellCheck="true"
               minRows={5}
@@ -51,20 +52,20 @@ export default function SubmitQuestion() {
               The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person? Are we
               talking Ethereum? What about Polygon?
             </Text>
-            <Text>UPDATE: How many addresses actively use the SUSHI token on Ethereum? </Text>
+            <Text italic>UPDATE: How many addresses actively use the SUSHI token on Ethereum? </Text>
             <Text weight={700}>Define metrics:</Text>
             <Text>
               What is “active“? What is “use”? These terms can (and will) mean different things to different people. It
               doesn’t matter what definition you use as long as you communicate your expectations. Alternately you can
               ask for the metric to be defined as part of the question.
             </Text>
-            <Text>UPDATE: How many addresses have transferred SUSHI on Ethereum?</Text>
+            <Text italic>UPDATE: How many addresses have transferred SUSHI on Ethereum?</Text>
             <Text weight={700}>Specify time boundaries:</Text>
             <Text>
               We still haven’t fully defined “active”. Specifying time makes the result easier to understand, don’t rely
               on the person answering the question to specify time for you if you didn’t ask them to.
             </Text>
-            <Text> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?</Text>
+            <Text italic> UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?</Text>
           </Paper>
         </div>
       </div>
