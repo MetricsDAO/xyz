@@ -4,6 +4,7 @@ import { useAccount, useContractRead, useDisconnect } from "wagmi";
 import { useEffect, useState } from "react";
 import { logger } from "ethers";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Button } from "@mantine/core";
 
 function CustomConnectButton() {
   const { disconnect } = useDisconnect();
@@ -60,46 +61,44 @@ function CustomConnectButton() {
             {(() => {
               if (authenticationStatus === "unauthenticated") {
                 return (
-                  <button
-                    className="btn rounded-md py-2 px-2 bg-red-600 text-white border-none text-sm"
-                    onClick={openConnectModal}
-                    type="button"
-                  >
+                  <Button color="red" onClick={openConnectModal} type="button">
                     Sanctioned Address
-                  </button>
+                  </Button>
                 );
               } else if (!connected) {
                 return (
-                  <button
-                    className="btn rounded-md bg-gray-100 py-2 px-2 bg-gradient-to-r from-[#00C2FF] to-[#B9E09B] border-none text-sm"
+                  <Button
+                    style={{ color: "black" }}
+                    variant="gradient"
+                    gradient={{ from: "#00C2FF", to: "#B9E09B", deg: 60 }}
+                    size="md"
                     onClick={openConnectModal}
                     type="button"
                   >
                     Connect Wallet
-                  </button>
+                  </Button>
                 );
               }
 
               if (chain.unsupported || chain.name == "Ethereum") {
                 return (
-                  <button
-                    className="btn rounded-md py-2 px-2 bg-red-600 text-white border-none text-sm"
-                    onClick={openChainModal}
-                    type="button"
-                  >
+                  <Button color="red" onClick={openChainModal} type="button">
                     Wrong network
-                  </button>
+                  </Button>
                 );
               }
 
               return (
                 <div>
-                  <button
-                    className="btn rounded-md bg-gray-100 p-[3px] bg-gradient-to-r from-[#00C2FF] to-[#B9E09B] border-none items-center align-middle text-sm"
+                  <Button
+                    variant="outline"
+                    color="white"
+                    style={{ borderColor: "#A2DDF1", borderWidth: "2px" }}
                     onClick={openAccountModal}
                     type="button"
+                    radius="sm"
                   >
-                    <div className="flex flex-row gap-2 h-full bg-white align-middle rounded pt-1 px-4">
+                    <div className="flex flex-row gap-2 text-black items-center align-middle">
                       {account.ensAvatar ? (
                         account.ensAvatar
                       ) : (
@@ -108,9 +107,10 @@ function CustomConnectButton() {
                         </div>
                       )}
                       {account.ensName ? account.ensName : account.displayName}
-                      {/* {account.displayBalance ? ` (${account.displayBalance})` : ""} */}
+                      {/* //TODO: later we will show metric and xmetric balances
+                      {account.displayBalance ? ` (${account.displayBalance})` : ""} */}
                     </div>
-                  </button>
+                  </Button>
                 </div>
               );
             })()}
