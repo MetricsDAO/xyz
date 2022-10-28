@@ -31,7 +31,7 @@ export default function Marketplace() {
       </div>
 
       {/* Description */}
-      <Text size="sm" className="w-2/3">
+      <Text size="sm" className="md:w-2/3">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
         pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit fermentum,
         consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus, ligula commodo aliquet
@@ -39,7 +39,7 @@ export default function Marketplace() {
       </Text>
 
       {/* Reward and requirment details */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Rewards */}
         <div>
           <header className="mb-4">
@@ -83,8 +83,8 @@ export default function Marketplace() {
           </header>
           <div className="grid grid-cols-2 gap-5">
             <InfoCard>
-              <InfoCard.Title>xMETRIC Balanace</InfoCard.Title>
-              <div className="flex space-x-6">
+              <InfoCard.Title>xMETRIC Balance</InfoCard.Title>
+              <div className="flex flex-wrap justify-between">
                 <Detail>
                   <Detail.Title>Min balance</Detail.Title>
                   <Text>15 xMETRIC</Text>

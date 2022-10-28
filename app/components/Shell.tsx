@@ -16,7 +16,7 @@ const navitems = [
   { name: "Analyze", href: "/app/analyze" },
 ];
 
-const userLinks = [{ name: "Reward Center", href: "/app/rewards" }];
+const userLinks = [{ name: "Rewards", href: "/app/rewards" }];
 
 // The Shell component is used to wrap the entire app. It's a good place to put things that should be on every page, like a header or footer.
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -55,7 +55,7 @@ function DesktopMenu() {
           </NavLink>
         ))}
       </ul>
-      <Link to="/rewards">Reward Center</Link>
+      <Link to="/rewards">Rewards</Link>
     </div>
   );
 }
