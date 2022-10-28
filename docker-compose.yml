@@ -1,0 +1,18 @@
+version: "3.8"
+
+volumes:
+  db_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:14-bullseye
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: mdao
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
