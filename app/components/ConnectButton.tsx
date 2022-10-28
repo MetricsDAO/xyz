@@ -1,11 +1,13 @@
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import chainalysisAbi from "~/abi/chainalysis.json";
-import { useAccount, useContractRead } from "wagmi";
-import { useState } from "react";
+import { useAccount, useContractRead, useDisconnect } from "wagmi";
+import { useEffect, useState } from "react";
 import { logger } from "ethers";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function CustomConnectButton() {
+  const { disconnect } = useDisconnect();
+
   const [connected, setConnected] = useState(false);
 
   const account = useAccount({
@@ -24,6 +26,14 @@ function CustomConnectButton() {
     args: [account.address],
     enabled: connected,
   });
+
+  useEffect(() => {
+    if (data === true && connected) {
+      disconnect();
+      setConnected(false);
+      logger.info("address " + account.address + " was sanctioned and therefore disconnected");
+    }
+  }, [data, connected, disconnect, account.address]);
 
   return (
     <ConnectButton.Custom>
@@ -48,10 +58,20 @@ function CustomConnectButton() {
             })}
           >
             {(() => {
-              if (!connected) {
+              if (authenticationStatus === "unauthenticated") {
                 return (
                   <button
-                    className="btn rounded-md bg-gray-100 border py-1 px-2 bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9]"
+                    className="btn rounded-md py-1 px-2 bg-red-600 text-white border-none"
+                    onClick={openConnectModal}
+                    type="button"
+                  >
+                    Sanctioned Address
+                  </button>
+                );
+              } else if (!connected) {
+                return (
+                  <button
+                    className="btn rounded-md bg-gray-100 py-1 px-2 bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none"
                     onClick={openConnectModal}
                     type="button"
                   >
@@ -63,7 +83,7 @@ function CustomConnectButton() {
               if (chain.unsupported || chain.name == "Ethereum") {
                 return (
                   <button
-                    className="btn rounded-md py-1 px-2 bg-red-600 text-white"
+                    className="btn rounded-md py-1 px-2 bg-red-600 text-white border-none"
                     onClick={openChainModal}
                     type="button"
                   >
@@ -75,15 +95,17 @@ function CustomConnectButton() {
               return (
                 <div style={{ display: "flex", gap: 12 }}>
                   <button
-                    className="btn rounded-md bg-gray-100 border p-[2px] bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9]"
+                    className="btn rounded-md bg-gray-100 p-[2px] bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none items-center text-sm"
                     onClick={openAccountModal}
                     type="button"
                   >
-                    <div className="flex gap-2 justify-between items-center h-full bg-white rounded-md px-4">
+                    <div className="flex gap-2 justify-between h-full bg-white rounded py-2 px-4">
                       {account.ensAvatar ? (
                         account.ensAvatar
                       ) : (
-                        <Jazzicon diameter={20} seed={jsNumberForAddress(account.address)} />
+                        <div className="rounded-full">
+                          <Jazzicon diameter={20} seed={jsNumberForAddress(account.address)} />
+                        </div>
                       )}
                       {account.ensName ? account.ensName : account.displayName}
                       {account.displayBalance ? ` (${account.displayBalance})` : ""}
