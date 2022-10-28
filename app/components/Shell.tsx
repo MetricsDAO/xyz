@@ -46,7 +46,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
 function DesktopMenu() {
   return (
-    <div className="flex px-2">
+    <div className="flex px-2 items-center">
       <ul className="space-x-7 flex flex-1">
         {navitems.map((item) => (
           <NavLink key={item.name} to={item.href} className="flex items-center space-x-2">
