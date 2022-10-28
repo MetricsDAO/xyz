@@ -5,13 +5,14 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "build": "npm run lint && npm run build:css && remix build",
+    "build": "yarn run lint && yarn run build:css && remix build",
     "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint '**/*.{ts,tsx}'",
-    "dev": "concurrently \"npm run dev:css\" \"remix dev\"",
+    "dev": "concurrently \"yarn run dev:css\" \"remix dev\"",
     "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
+    "prod": "yarn run build && remix-serve api",
     "postinstall": "remix setup node",
-    "ladle:dev": "concurrently \"npm run dev:css\" \"ladle serve --stories=ladle\""
+    "ladle:dev": "concurrently \"yarn run dev:css\" \"ladle serve --stories=ladle\""
   },
   "dependencies": {
     "@carbon/icons-react": "^10.44.0",
