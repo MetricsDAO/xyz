@@ -1,4 +1,5 @@
 import { Avatar, Button, Text, Title } from "@mantine/core";
+import { Link } from "@remix-run/react";
 import * as Author from "~/components/Author";
 import { Detail } from "~/components/Detail";
 import { InfoCard } from "~/components/InfoCard";
@@ -9,7 +10,9 @@ export default function Marketplace() {
     <div className="container mx-auto max-w-6xl space-y-10 py-16">
       <header className="flex justify-between">
         <Title size="h1">Marketplace Title</Title>
-        <Button>Launch Challenge</Button>
+        <Button>
+          <Link to={`/app/m/[marketplaceId]/t/new`}>Create Topic</Link>
+        </Button>
       </header>
 
       {/* Sponsor and project details */}

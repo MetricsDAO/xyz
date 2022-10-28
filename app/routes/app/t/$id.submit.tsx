@@ -1,4 +1,4 @@
-import { Button, List, Textarea, TextInput, Text, Title, Paper } from "@mantine/core";
+import { Button, Textarea, TextInput, Text, Title, Paper } from "@mantine/core";
 
 export default function SubmitQuestion() {
   return (
