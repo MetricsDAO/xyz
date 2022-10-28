@@ -47,9 +47,11 @@ export default function Brainstorm() {
         </main>
         <aside className="md:w-1/5">
           <Center>
-            <Button radius="md" className="mx-auto">
-              <Link to="/app/m/new">Create Marketplace</Link>
-            </Button>
+            <Link to="/app/m/new">
+              <Button radius="md" className="mx-auto">
+                Create Marketplace
+              </Button>
+            </Link>
           </Center>
         </aside>
       </section>
