@@ -113,7 +113,15 @@ export default function App() {
   return (
     <Document>
       <WalletProvider>
-        <MantineProvider withGlobalStyles withNormalizeCSS>
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            headings: {
+              fontWeight: 600,
+            },
+          }}
+        >
           <Outlet />
         </MantineProvider>
       </WalletProvider>

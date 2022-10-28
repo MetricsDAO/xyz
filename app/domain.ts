@@ -28,7 +28,11 @@ export type Marketplace = {
   rewardCurve: number;
   rewardTokens: string[];
   reviewMethod: "likert";
+  rewardPool: number;
   reviewPriorityFactor: "cheap" | "normal" | "aggressive";
+  project: string;
+  entryCost: number;
+  topicCount: number;
 };
 
 export type Topic = {
