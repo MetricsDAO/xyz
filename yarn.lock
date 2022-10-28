@@ -1913,7 +1913,7 @@
     vite "^3.0.9"
     vite-tsconfig-paths "^3.5.0"
 
-"@mantine/core@^5.6.0":
+"@mantine/core@^5.6.2":
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/@mantine/core/-/core-5.6.3.tgz#26128610c285cba9b23c5ccc5ed77fcf03e26774"
   integrity sha512-joEeRblARR/faeOjOeETY4l4osYEFfgZV0+i8BO7TyalZ+ONMUurYWJp0a5iX4Gf3M6uNO9lbBLlsOy2vDnNew==
@@ -1924,12 +1924,19 @@
     "@radix-ui/react-scroll-area" "1.0.0"
     react-textarea-autosize "8.3.4"
 
-"@mantine/hooks@^5.6.0":
+"@mantine/dates@^5.6.2":
+  version "5.6.3"
+  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-5.6.3.tgz#9882208fc67fef345ae5578fcbebe129f0d091a1"
+  integrity sha512-VDKbUPNVI+WB7/ejfErOGmXK486fJG7SQz+TU+YiVa6OzMfBfYyvw28rGR4Jg83EdwugZ3loKBhUVsRrAVyAoA==
+  dependencies:
+    "@mantine/utils" "5.6.3"
+
+"@mantine/hooks@^5.6.2":
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-5.6.3.tgz#2878de1998358dbd208cb8864b765bb1ddb650d1"
   integrity sha512-de3Fm7Z2MrWms8Ah/YbG9fr6CLLtAfz5LCwtqnRXgOetqbu38ZERYNi7TMFxnhGdZko90QjdIpiQRJBsfVax+g==
 
-"@mantine/remix@^5.6.0":
+"@mantine/remix@^5.6.2":
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/@mantine/remix/-/remix-5.6.3.tgz#409ed321a20754ddb0db8842f68c91233795f40b"
   integrity sha512-63sCgWUQiP4dGUfmRne0NDxrH37Rg3QvgEWLNh7A43chB6IqZC8f9swatBM8TxtFIT7edCVpkfDJyqfUfRz2iw==
@@ -4506,6 +4513,11 @@ date-fns@^2.29.1:
   version "2.29.3"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.3.tgz#27402d2fc67eb442b511b70bbdf98e6411cd68a8"
   integrity sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==
+
+dayjs@^1.11.6:
+  version "1.11.6"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.6.tgz#2e79a226314ec3ec904e3ee1dd5a4f5e5b1c7afb"
+  integrity sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==
 
 deasync@^0.1.0:
   version "0.1.28"
