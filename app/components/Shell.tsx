@@ -56,9 +56,9 @@ function DesktopMenu() {
           </NavLink>
         ))}
       </ul>
-      <NavLink key="RewardsCenter" to="/rewards" className="flex items-center space-x-2">
+      <NavLink key="Rewards" to="/rewards" className="flex items-center space-x-2">
         {({ isActive }) => (
-          <span className={isActive ? "border bg-gray-200 p-2 text-black rounded-lg" : ""}>Rewards Center</span>
+          <span className={isActive ? "border bg-gray-200 p-2 text-black rounded-lg" : ""}>Rewards</span>
         )}
       </NavLink>
     </div>
