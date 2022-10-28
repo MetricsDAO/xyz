@@ -22,8 +22,8 @@ import AppFooter from "~/components/Footer";
 
 export function loader() {
   return {
-    ALGOLIA_APP_ID: "NI29B1RZSI",
-    ALGOLIA_API_KEY: "10d9ec05401d57e792aaf162e2c4b935",
+    ALGOLIA_APP_ID: process.env.ALGOLIA_APP_ID,
+    ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
   };
 }
 
