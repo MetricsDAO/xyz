@@ -71,7 +71,7 @@ function CustomConnectButton() {
               } else if (!connected) {
                 return (
                   <button
-                    className="btn rounded-md bg-gray-100 py-2 px-2 bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none text-sm"
+                    className="btn rounded-md bg-gray-100 py-2 px-2 bg-gradient-to-r from-[#00C2FF] to-[#B9E09B] border-none text-sm"
                     onClick={openConnectModal}
                     type="button"
                   >
@@ -95,7 +95,7 @@ function CustomConnectButton() {
               return (
                 <div>
                   <button
-                    className="btn rounded-md bg-gray-100 p-[3px] bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none items-center align-middle text-sm"
+                    className="btn rounded-md bg-gray-100 p-[3px] bg-gradient-to-r from-[#00C2FF] to-[#B9E09B] border-none items-center align-middle text-sm"
                     onClick={openAccountModal}
                     type="button"
                   >
