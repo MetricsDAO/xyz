@@ -61,7 +61,7 @@ function CustomConnectButton() {
               if (authenticationStatus === "unauthenticated") {
                 return (
                   <button
-                    className="btn rounded-md py-1 px-2 bg-red-600 text-white border-none"
+                    className="btn rounded-md py-2 px-2 bg-red-600 text-white border-none text-sm"
                     onClick={openConnectModal}
                     type="button"
                   >
@@ -71,7 +71,7 @@ function CustomConnectButton() {
               } else if (!connected) {
                 return (
                   <button
-                    className="btn rounded-md bg-gray-100 py-1 px-2 bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none"
+                    className="btn rounded-md bg-gray-100 py-2 px-2 bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none text-sm"
                     onClick={openConnectModal}
                     type="button"
                   >
@@ -83,7 +83,7 @@ function CustomConnectButton() {
               if (chain.unsupported || chain.name == "Ethereum") {
                 return (
                   <button
-                    className="btn rounded-md py-1 px-2 bg-red-600 text-white border-none"
+                    className="btn rounded-md py-2 px-2 bg-red-600 text-white border-none text-sm"
                     onClick={openChainModal}
                     type="button"
                   >
@@ -93,13 +93,13 @@ function CustomConnectButton() {
               }
 
               return (
-                <div style={{ display: "flex", gap: 12 }}>
+                <div>
                   <button
-                    className="btn rounded-md bg-gray-100 p-[2px] bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none items-center text-sm"
+                    className="btn rounded-md bg-gray-100 p-[3px] bg-gradient-to-r from-[#67CCD3] to-[#C8D5A9] border-none items-center align-middle text-sm"
                     onClick={openAccountModal}
                     type="button"
                   >
-                    <div className="flex gap-2 justify-between h-full bg-white rounded py-2 px-4">
+                    <div className="flex flex-row gap-2 h-full bg-white align-middle rounded pt-1 px-4">
                       {account.ensAvatar ? (
                         account.ensAvatar
                       ) : (
@@ -108,7 +108,7 @@ function CustomConnectButton() {
                         </div>
                       )}
                       {account.ensName ? account.ensName : account.displayName}
-                      {account.displayBalance ? ` (${account.displayBalance})` : ""}
+                      {/* {account.displayBalance ? ` (${account.displayBalance})` : ""} */}
                     </div>
                   </button>
                 </div>
