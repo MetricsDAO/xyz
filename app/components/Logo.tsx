@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 export function LogoType({ className, ...props }: React.ComponentProps<"h1">) {
   return (
-    <h1 className={clsx("font-bold", className)} {...props}>
+    <h1 className={clsx("text-base font-bold", className)} {...props}>
       MetricsDAO
     </h1>
   );

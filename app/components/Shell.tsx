@@ -16,7 +16,7 @@ const navitems = [
   { name: "Analyze", href: "/app/analyze" },
 ];
 
-const userLinks = [{ name: "Reward Center", href: "/app/rewards" }];
+const userLinks = [{ name: "Rewards", href: "/app/rewards" }];
 
 // The Shell component is used to wrap the entire app. It's a good place to put things that should be on every page, like a header or footer.
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -39,7 +39,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <StatsBar />
+      {/* TODO: Not sticking to footer properly */}
+      {/* <StatsBar /> */}
     </div>
   );
 }
@@ -94,10 +95,10 @@ function MobileMenu() {
   );
 }
 
-function StatsBar() {
+/* function StatsBar() {
   return (
     <div className="flex flex-row w-full h-14 absolute bottom-0 bg-neutral-200 text-neutral-400 items-center justify-center">
       Stats Bar
     </div>
   );
-}
+} */
