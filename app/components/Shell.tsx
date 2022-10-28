@@ -47,14 +47,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
 function DesktopMenu() {
   return (
     <div className="flex px-2">
-      <ul className="space-x-7 flex flex-1">
+      <ul className="space-x-7 flex flex-1 items-center">
         {navitems.map((item) => (
           <NavLink key={item.name} to={item.href} className="flex items-center space-x-2">
-            <span>{item.name}</span>
+            {({ isActive }) => (
+              <span className={isActive ? "border bg-gray-200 p-2 text-black rounded-lg" : ""}>{item.name}</span>
+            )}
           </NavLink>
         ))}
       </ul>
-      <Link to="/rewards">Reward Center</Link>
+      <NavLink key="RewardsCenter" to="/rewards" className="flex items-center space-x-2">
+        {({ isActive }) => (
+          <span className={isActive ? "border bg-gray-200 p-2 text-black rounded-lg" : ""}>Rewards Center</span>
+        )}
+      </NavLink>
     </div>
   );
 }
@@ -71,16 +77,16 @@ function MobileMenu() {
       <DropdownMenuContent sideOffset={5} className="z-20 w-max mt-2 p-3 origin-top-right bg-white rounded-md border">
         {navitems.map((item) => (
           <DropdownMenuItem key={item.name} asChild>
-            <Link to={item.href} className="flex items-center">
-              <span>{item.name}</span>
-            </Link>
+            <NavLink key={item.name} to={item.href} className="flex items-center">
+              {({ isActive }) => <span className={isActive ? "text-black" : ""}>{item.name}</span>}
+            </NavLink>
           </DropdownMenuItem>
         ))}
         {userLinks.map((item) => (
           <DropdownMenuItem key={item.name} asChild>
-            <Link to={item.href} className="flex items-center">
-              <span>{item.name}</span>
-            </Link>
+            <NavLink key={item.name} to={item.href} className="flex items-center">
+              {({ isActive }) => <span className={isActive ? "text-black" : ""}>{item.name}</span>}
+            </NavLink>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
