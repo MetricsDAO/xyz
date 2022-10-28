@@ -35,7 +35,7 @@ If you're used to using the `vercel dev` command provided by [Vercel CLI](https:
 
 ## TroubleShooting
 
-when setting up first time you may need to run `npm run dev:css` before running npm run dev
+When setting up first time you may need to run `npm run dev:css` before running npm run dev
 
 ## Ladle
 

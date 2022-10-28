@@ -1,12 +1,14 @@
 export type Address = string;
 
-export const ProjectsAllowed = [
+export const Projects = [
   { slug: "solana", name: "Solana" },
   { slug: "ethereum", name: "Ethereum" },
   { slug: "thor", name: "Thorchain" },
   { slug: "axelar", name: "Axelar" },
   { slug: "aave", name: "AAVE" },
-];
+] as const;
+
+export type ProjectSlug = typeof Projects[number]["slug"];
 
 // Enum for the different types of projects MDAO supports.
 export type ProgramType = "brainstorm" | "community";
@@ -28,7 +30,11 @@ export type Marketplace = {
   rewardCurve: number;
   rewardTokens: string[];
   reviewMethod: "likert";
+  rewardPool: number;
   reviewPriorityFactor: "cheap" | "normal" | "aggressive";
+  project: string;
+  entryCost: number;
+  topicCount: number;
 };
 
 export type Topic = {
