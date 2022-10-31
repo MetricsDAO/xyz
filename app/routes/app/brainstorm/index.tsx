@@ -4,12 +4,11 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Button } from "~/components/Button";
 import { Pagination } from "~/components/Pagination";
 import type { Marketplace } from "~/domain";
-import { withServices } from "~/services/with-services.server";
 
-export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async ({ marketplace }) => {
-    return typedjson(marketplace.brainstormMarketplaces());
-  });
+export const loader = async ({ context, request }: DataFunctionArgs) => {
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get("page")) || 1;
+  return typedjson(context.marketplaces.brainstormMarketplaces({ page }));
 };
 
 export default function Brainstorm() {

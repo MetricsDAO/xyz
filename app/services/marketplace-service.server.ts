@@ -1,12 +1,10 @@
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { PrismaClient } from "@prisma/client";
 import { fakeBrainstormMarketplacePages } from "~/utils/fakes";
 
 export default class MarketplaceService {
-  constructor(private dataFunctionArgs: DataFunctionArgs) {}
+  constructor(private prisma: PrismaClient) {}
 
-  brainstormMarketplaces() {
-    const url = new URL(this.dataFunctionArgs.request.url);
-    const page = Number(url.searchParams.get("page")) || 1;
+  brainstormMarketplaces({ page }: { page: number }) {
     const { data, totalPages } = fakeBrainstormMarketplacePages(page - 1);
     return {
       pageNumber: page,
