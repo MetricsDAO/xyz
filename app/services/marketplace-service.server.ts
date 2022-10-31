@@ -4,11 +4,18 @@ import { fakeBrainstormMarketplaces } from "~/utils/fakes";
 export default class MarketplaceService {
   constructor(private prisma: PrismaClient) {}
 
-  brainstormMarketplaces(opts: { page: number; sortBy?: string; search?: string }) {
+  brainstormMarketplaces(opts: {
+    page: number;
+    sortBy?: string;
+    search?: string;
+    project?: string;
+    token?: string;
+    filter?: string;
+  }) {
     const pageSize = 10;
     const totalPages = 5;
     const data = fakeBrainstormMarketplaces(pageSize * totalPages);
-    const { page, sortBy, search } = opts;
+    const { page, sortBy, search, token, project, filter } = opts;
     let filteredAndSortedData = [...data];
     if (sortBy) {
       if (sortBy === "project") {
@@ -21,6 +28,15 @@ export default class MarketplaceService {
     }
     if (search) {
       filteredAndSortedData = filteredAndSortedData.filter((m) => m.title.includes(search));
+    }
+    if (filter) {
+      //Needs badges
+    }
+    if (token) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => token.includes(t)));
+    }
+    if (project) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => project.includes(m.project));
     }
     const pageData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
     return {

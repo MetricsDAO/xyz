@@ -1,11 +1,9 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider } from "@mantine/core";
-import { Form, Link, useSubmit } from "@remix-run/react";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
+import { Form, Link, useSearchParams } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { useRef } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { Marketplace } from "~/domain";
-import { useQueryParams } from "~/hooks/useQueryParams";
 import z from "zod";
 import { getSearchParamsOrFail } from "remix-params-helper";
 
@@ -22,18 +20,12 @@ export const loader = async ({ context, request }: DataFunctionArgs) => {
 
 export default function Brainstorm() {
   const { data: marketplaces, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
-  const [, setQueryParams] = useQueryParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
-    setQueryParams({ page: page === 1 ? null : page.toString() });
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
   };
-
-  // Form submission on change.
-  const submit = useSubmit();
-  const formRef = useRef<HTMLFormElement>(null);
-  function handleChange() {
-    submit(formRef.current);
-  }
 
   return (
     <div className="mx-auto container mb-12">
@@ -82,7 +74,7 @@ export default function Brainstorm() {
           </div>
         </main>
         <aside className="md:w-1/5">
-          <Form className="space-y-5" onChange={handleChange} ref={formRef}>
+          <Form className="space-y-5">
             <Input placeholder="Search" name="search" icon={<Search16 />} />
             <Select
               label="Sort By"
@@ -91,6 +83,40 @@ export default function Brainstorm() {
               clearable
               data={[{ label: "Chain/Project", value: "project" }]}
             />
+            <MultiSelect
+              label="I am able to"
+              name="filter"
+              clearable
+              data={[
+                { value: "launch", label: "Launch" },
+                { value: "submit", label: "Submit" },
+                { value: "review", label: "Review" },
+              ]}
+            />
+            <MultiSelect
+              label="Reward Token"
+              placeholder="Select option"
+              name="rewardToken"
+              clearable
+              data={[
+                { label: "Solana", value: "Solana" },
+                { label: "Ethereum", value: "Ethereum" },
+                { label: "USD", value: "USD" },
+              ]}
+            />
+            <MultiSelect
+              label="Chain/Project"
+              placeholder="Select option"
+              name="chainProject"
+              clearable
+              data={[
+                { label: "Solana", value: "Solana" },
+                { label: "Ethereum", value: "Ethereum" },
+              ]}
+            />
+            <Button variant="light" color="cyan" size="xs" type="submit">
+              Apply Filters
+            </Button>
           </Form>
         </aside>
       </section>
