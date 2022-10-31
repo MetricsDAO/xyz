@@ -9,6 +9,9 @@ export default class MarketplaceService {
     const page = Number(url.searchParams.get("page")) || 1;
     const sortBy = url.searchParams.get("sortBy");
     const search = url.searchParams.get("search");
+    const filter = url.searchParams.get("filter");
+    const rewardToken = url.searchParams.get("rewardToken");
+    const chainProject = url.searchParams.get("chainProject");
     const pageSize = 10;
     const totalPages = 5;
     const data = fakeBrainstormMarketplaces(pageSize * totalPages);
@@ -25,6 +28,15 @@ export default class MarketplaceService {
     }
     if (search) {
       filteredAndSortedData = filteredAndSortedData.filter((m) => m.title.includes(search));
+    }
+    if (filter) {
+      //Needs badges
+    }
+    if (rewardToken) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => rewardToken.includes(t)));
+    }
+    if (chainProject) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => m.project === chainProject);
     }
     const pageData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
     return {

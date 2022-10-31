@@ -1,5 +1,5 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider } from "@mantine/core";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider, Checkbox, MultiSelect } from "@mantine/core";
 import { Form, Link, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useRef } from "react";
@@ -85,6 +85,40 @@ export default function Brainstorm() {
               clearable
               data={[{ label: "Chain/Project", value: "project" }]}
             />
+            <MultiSelect
+              label="I am able to"
+              name="filter"
+              clearable
+              data={[
+                { value: "launch", label: "Launch" },
+                { value: "submit", label: "Submit" },
+                { value: "review", label: "Review" },
+              ]}
+            />
+            <MultiSelect
+              label="Reward Token"
+              placeholder="Select option"
+              name="rewardToken"
+              clearable
+              data={[
+                { label: "Solana", value: "Solana" },
+                { label: "Ethereum", value: "Ethereum" },
+                { label: "USD", value: "USD" },
+              ]}
+            />
+            <Select
+              label="Chain/Project"
+              placeholder="Select option"
+              name="chainProject"
+              clearable
+              data={[
+                { label: "Solana", value: "Solana" },
+                { label: "Ethereum", value: "Ethereum" },
+              ]}
+            />
+            <Button variant="light" color="cyan" size="xs" onClick={handleChange}>
+              Apply Filters
+            </Button>
           </Form>
         </aside>
       </section>
