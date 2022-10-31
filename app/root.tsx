@@ -117,6 +117,21 @@ export default function App() {
           withGlobalStyles
           withNormalizeCSS
           theme={{
+            colors: {
+              brand: [
+                "#dbfaff",
+                "#b1e9fc",
+                "#86daf5",
+                "#59caf0",
+                "#2ebbea",
+                "#15a1d1",
+                "#037ea3",
+                "#005a76",
+                "#00374a",
+                "#00141d",
+              ],
+            },
+            primaryColor: "brand",
             fontFamily: "Inter, sans-serif",
             headings: {
               fontFamily: "Inter, sans-serif",

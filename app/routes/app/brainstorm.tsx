@@ -23,13 +23,13 @@ export default function Brainstorm() {
   };
 
   return (
-    <div className="mx-auto container mb-12">
+    <div className="mx-auto container px-3">
       <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 py-12">
         <main className="flex-1">
           <div className="space-y-5 max-w-3xl">
             <Title order={1}>Challenge Marketplaces</Title>
             <div className="space-y-2">
-              <Text size="lg" color="blue.4">
+              <Text size="lg" color="brand.4">
                 Crowdsource the best questions for crypto analysts to answer about any web3 topic
               </Text>
               <Text color="dimmed">
@@ -42,7 +42,7 @@ export default function Brainstorm() {
         <aside className="md:w-1/5">
           <Center>
             <Link to="/app/m/new">
-              <Button radius="md" size="lg" color="blue.4">
+              <Button radius="md" size="md">
                 Create Marketplace
               </Button>
             </Link>
@@ -70,67 +70,87 @@ export default function Brainstorm() {
           </div>
         </main>
         <aside className="md:w-1/5">
-          <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-[#94CAFF] bg-opacity-5">
-            <Input placeholder="Search" name="search" icon={<Search16 />} />
-            <Title order={4}>Sort:</Title>
-            <Select
-              placeholder="Select option"
-              name="sortBy"
-              clearable
-              data={[{ label: "Chain/Project", value: "project" }]}
-            />
-            <Title order={4}>Filter:</Title>
-            <MultiSelect
-              label="I am able to"
-              name="filter"
-              clearable
-              data={[
-                { value: "launch", label: "Launch" },
-                { value: "submit", label: "Submit" },
-                { value: "review", label: "Review" },
-              ]}
-            />
-            <MultiSelect
-              label="Reward Token"
-              placeholder="Select option"
-              name="rewardToken"
-              clearable
-              data={[
-                { label: "Solana", value: "Solana" },
-                { label: "Ethereum", value: "Ethereum" },
-                { label: "USD", value: "USD" },
-              ]}
-            />
-            <MultiSelect
-              label="Chain/Project"
-              placeholder="Select option"
-              name="chainProject"
-              clearable
-              data={[
-                { label: "Solana", value: "Solana" },
-                { label: "Ethereum", value: "Ethereum" },
-              ]}
-            />
-            <Button variant="light" color="blue" size="xs" type="submit">
-              Apply Filters
-            </Button>
-          </Form>
+          <SearchAndFilter />
         </aside>
       </section>
     </div>
   );
 }
 
+function SearchAndFilter() {
+  return (
+    <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-[#94CAFF] bg-opacity-5">
+      <Input placeholder="Search" name="search" rightSection={<Search16 />} />
+      <Text size="lg" weight={600}>
+        Sort:
+      </Text>
+      <Select
+        placeholder="Select option"
+        name="sortBy"
+        clearable
+        data={[{ label: "Chain/Project", value: "project" }]}
+      />
+      <Text size="lg" weight={600}>
+        Filter:
+      </Text>
+      <MultiSelect
+        label="I am able to"
+        name="filter"
+        clearable
+        data={[
+          { value: "launch", label: "Launch" },
+          { value: "submit", label: "Submit" },
+          { value: "review", label: "Review" },
+        ]}
+      />
+      <MultiSelect
+        label="Reward Token"
+        placeholder="Select option"
+        name="rewardToken"
+        clearable
+        data={[
+          { label: "Solana", value: "Solana" },
+          { label: "Ethereum", value: "Ethereum" },
+          { label: "USD", value: "USD" },
+        ]}
+      />
+      <MultiSelect
+        label="Chain/Project"
+        placeholder="Select option"
+        name="chainProject"
+        clearable
+        data={[
+          { label: "Solana", value: "Solana" },
+          { label: "Ethereum", value: "Ethereum" },
+        ]}
+      />
+      <Button variant="light" size="xs" type="submit">
+        Apply Filters
+      </Button>
+    </Form>
+  );
+}
+
 function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
   return (
     <div className="overflow-auto">
-      <div className="min-w-[700px] w-full border-spacing-4 border-separate">
+      <div className="w-full border-spacing-4 border-separate">
         <div className="flex items-center space-x-2 text-left px-4">
-          <div className="w-2/6 font-normal overflow-hidden text-ellipsis">Brainstorm</div>
-          <div className="w-1/6 font-normal overflow-hidden text-ellipsis">Chain/Project</div>
-          <div className="w-1/6 font-normal overflow-hidden text-ellipsis">Potential Rewards</div>
-          <div className="w-1/6 font-normal overflow-hidden text-ellipsis">Entry to Submit</div>
-          <div className="w-1/6 font-normal overflow-hidden text-ellipsis"># Challenges</div>
+          <div className="w-2/6">
+            <Text color="dark.3">Challenge Marketplace</Text>
+          </div>
+          <div className="w-1/6">
+            <Text color="dark.3">Chain/Project</Text>
+          </div>
+          <div className="w-1/6">
+            <Text color="dark.3">Challenge Pool Totals</Text>
+          </div>
+          <div className="w-1/6">
+            <Text color="dark.3">Avg. Challenge Pool</Text>
+          </div>
+          <div className="w-1/6">
+            <Text color="dark.3"># Challenges</Text>
+          </div>
         </div>
         <div className="space-y-4">
           {marketplaces.map((m) => {
