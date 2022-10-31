@@ -5,10 +5,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@radix-ui/react-dropdown-menu";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { NavLink } from "@remix-run/react";
 import { Link } from "react-router-dom";
 import { LogoMark, LogoType } from "./Logo";
+import React from "react";
+import CustomConnectButton from "./ConnectButton";
 
 const navitems = [
   { name: "Ecosystem", href: "/app/ecosystem" },
@@ -34,7 +35,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <DesktopMenu />
           </div>
         </nav>
-        <ConnectButton />
+        <CustomConnectButton />
       </header>
 
       <main className="flex-1">{children}</main>
