@@ -1,15 +1,13 @@
-name: Preview
+name: Deploy Preview
 on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-  FLY_REGION: iad
-  FLY_ORG: metricsdao-614
 
 jobs:
-  staging_app:
+  deploy:
     runs-on: ubuntu-latest
 
     # Only run one deployment at a time per PR.
@@ -24,9 +22,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Deploy
-        id: deploy
-        uses: superfly/fly-pr-review-apps@1.0.0
-        with:
-          postgres: mdao-pg-stg
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl apps destroy --yes pr-${{ github.event.number }} --yes
+      - run: flyctl apps create --name pr-${{ github.event.number }} --org metricsdao-614 --region iad
+      - run: flyctl postgres attach mdao-pg-stg --app pr-${{ github.event.number }}
+      - run: flyctl deploy --remote-only --app pr-${{ github.event.number }}
