@@ -106,7 +106,7 @@ export default function Brainstorm() {
                 { label: "USD", value: "USD" },
               ]}
             />
-            <Select
+            <MultiSelect
               label="Chain/Project"
               placeholder="Select option"
               name="chainProject"

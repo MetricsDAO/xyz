@@ -36,7 +36,7 @@ export default class MarketplaceService {
       filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => rewardToken.includes(t)));
     }
     if (chainProject) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.project === chainProject);
+      filteredAndSortedData = filteredAndSortedData.filter((m) => chainProject.includes(m.project));
     }
     const pageData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
     return {
