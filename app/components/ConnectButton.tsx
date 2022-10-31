@@ -13,7 +13,7 @@ function CustomConnectButton() {
 
   const account = useAccount({
     onConnect({ address }) {
-      logger.info(address + "successfully connected");
+      logger.info(address + " successfully connected");
       setConnected(true);
     },
   });
@@ -75,7 +75,7 @@ function CustomConnectButton() {
               if (chain.unsupported || chain.name == "Ethereum") {
                 return (
                   <Button color="red" onClick={openChainModal} type="button">
-                    Wrong network
+                    Switch to Polygon
                   </Button>
                 );
               }
