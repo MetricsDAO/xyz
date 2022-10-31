@@ -6,12 +6,18 @@ import { useRef } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { Marketplace } from "~/domain";
 import { useQueryParams } from "~/hooks/useQueryParams";
-import { withServices } from "~/services/with-services.server";
+import z from "zod";
+import { getSearchParamsOrFail } from "remix-params-helper";
 
-export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async ({ marketplace }) => {
-    return typedjson(marketplace.brainstormMarketplaces());
-  });
+const ParamsSchema = z.object({
+  page: z.number(),
+  search: z.string().optional(),
+  sortBy: z.string().optional(),
+});
+
+export const loader = async ({ context, request }: DataFunctionArgs) => {
+  const params = getSearchParamsOrFail(request, ParamsSchema);
+  return typedjson(context.marketplaces.brainstormMarketplaces(params));
 };
 
 export default function Brainstorm() {
