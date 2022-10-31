@@ -1,10 +1,11 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect, Avatar } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { Marketplace } from "~/domain";
 import { withServices } from "~/services/with-services.server";
+import { PROJECT_ICONS } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
   return withServices(data, async ({ marketplace }) => {
@@ -13,7 +14,7 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 export default function Brainstorm() {
-  const { data: marketplaces, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
+  const { data: marketplaces, pageNumber, totalPages, totalResults } = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
@@ -25,22 +26,23 @@ export default function Brainstorm() {
     <div className="mx-auto container mb-12">
       <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 py-12">
         <main className="flex-1">
-          <div className="space-y-3">
-            <Title order={2}>Brainstorm Marketplaces</Title>
-            <Text color="dimmed" className="max-w-2xl">
-              <Text span color="blue">
-                Brainstorm marketplaces empower our community to host brainstorm challenges that crowdsource the best
-                questions for crypto analysts to answer.
-              </Text>{" "}
-              Ways to participate: Sponsor brainstorm challenges for any web3 topic. Submit your best question ideas on
-              challenges that interest you. Review peers’ question ideas to surface and reward challenge winners.
-            </Text>
+          <div className="space-y-5 max-w-3xl">
+            <Title order={1}>Challenge Marketplaces</Title>
+            <div className="space-y-2">
+              <Text size="lg" color="blue.4">
+                Crowdsource the best questions for crypto analysts to answer about any web3 topic
+              </Text>
+              <Text color="dimmed">
+                Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
+                your best question ideas or review peers' submissions to surface and reward winners
+              </Text>
+            </div>
           </div>
         </main>
         <aside className="md:w-1/5">
           <Center>
             <Link to="/app/m/new">
-              <Button radius="md" className="mx-auto">
+              <Button radius="md" size="lg" color="blue.4">
                 Create Marketplace
               </Button>
             </Link>
@@ -50,9 +52,9 @@ export default function Brainstorm() {
 
       <section className="pb-7">
         <Title order={3}>
-          Marketplaces{" "}
+          Challenge Marketplaces{" "}
           <Text span color="dimmed">
-            (25)
+            ({totalResults})
           </Text>{" "}
         </Title>
         <Divider />
@@ -68,15 +70,16 @@ export default function Brainstorm() {
           </div>
         </main>
         <aside className="md:w-1/5">
-          <Form className="space-y-5">
+          <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-[#94CAFF] bg-opacity-5">
             <Input placeholder="Search" name="search" icon={<Search16 />} />
+            <Title order={4}>Sort:</Title>
             <Select
-              label="Sort By"
               placeholder="Select option"
               name="sortBy"
               clearable
               data={[{ label: "Chain/Project", value: "project" }]}
             />
+            <Title order={4}>Filter:</Title>
             <MultiSelect
               label="I am able to"
               name="filter"
@@ -108,7 +111,7 @@ export default function Brainstorm() {
                 { label: "Ethereum", value: "Ethereum" },
               ]}
             />
-            <Button variant="light" color="cyan" size="xs" type="submit">
+            <Button variant="light" color="blue" size="xs" type="submit">
               Apply Filters
             </Button>
           </Form>
@@ -121,8 +124,8 @@ export default function Brainstorm() {
 function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
   return (
     <div className="overflow-auto">
-      <div className="min-w-[350px] w-full border-spacing-4 border-separate">
-        <div className="flex items-center space-x-2 text-left px-4 text-[#666666]">
+      <div className="min-w-[700px] w-full border-spacing-4 border-separate">
+        <div className="flex items-center space-x-2 text-left px-4">
           <div className="w-2/6 font-normal overflow-hidden text-ellipsis">Brainstorm</div>
           <div className="w-1/6 font-normal overflow-hidden text-ellipsis">Chain/Project</div>
           <div className="w-1/6 font-normal overflow-hidden text-ellipsis">Potential Rewards</div>
@@ -134,19 +137,46 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
             return (
               <Link
                 to="/app/m/[marketplaceId]"
-                className="flex space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-4 rounded-lg hover:border-black"
+                className="flex items-center space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-4 rounded-lg hover:border-[#16ABDD66] hover:shadow-md shadow-sm"
                 key={m.id}
               >
-                <div className="w-2/6">{m.title}</div>
-                <div className="w-1/6">{m.project}</div>
-                <div className="w-1/6">{m.rewardPool} USD</div>
-                <div className="w-1/6">{m.entryCost} xMetric</div>
-                <div className="w-1/6">{m.topicCount}</div>
+                <div className="w-2/6">
+                  <Text>{m.title}</Text>
+                </div>
+                <div className="w-1/6">
+                  <ProjectWithIcon project={m.project} />
+                </div>
+                <div className="w-1/6">
+                  <TextWithIcon text={`${m.rewardPool} USD`} iconUrl="/img/icons/dollar.svg" />
+                </div>
+                <div className="w-1/6">
+                  <TextWithIcon text={`${m.entryCost} USD`} iconUrl="/img/icons/dollar.svg" />
+                </div>
+                <div className="w-1/6">
+                  <Text color="dark.3">{m.topicCount}</Text>
+                </div>
               </Link>
             );
           })}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ProjectWithIcon({ project }: { project: string }) {
+  const iconUrl = PROJECT_ICONS[project];
+
+  return <TextWithIcon text={project} iconUrl={iconUrl ?? null} />;
+}
+
+function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
+  return (
+    <div className="flex items-center space-x-1">
+      {iconUrl && <Avatar size="sm" src={iconUrl} />}
+      <Text color="dark.3" weight={400}>
+        {text}
+      </Text>
     </div>
   );
 }

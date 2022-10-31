@@ -41,6 +41,7 @@ export default class MarketplaceService {
     const pageData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
     return {
       pageNumber: page,
+      totalResults: filteredAndSortedData.length,
       totalPages: Math.floor(filteredAndSortedData.length / pageSize),
       data: pageData,
     };
