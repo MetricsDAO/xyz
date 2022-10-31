@@ -1,10 +1,10 @@
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import chainalysisAbi from "~/abi/chainalysis.json";
-import { useAccount, useContractRead, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useEffect, useState } from "react";
 import { logger } from "ethers";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "@mantine/core";
+import { useChainalysisContract } from "~/hooks/useChainalysisContract";
 
 function CustomConnectButton() {
   const { disconnect } = useDisconnect();
@@ -12,34 +12,26 @@ function CustomConnectButton() {
   const [connected, setConnected] = useState(false);
 
   const account = useAccount({
-    onConnect({ address, connector, isReconnected }) {
+    onConnect({ address }) {
       logger.info(address + "successfully connected");
       setConnected(true);
     },
   });
 
-  const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";
-
-  const { data } = useContractRead({
-    address: contract_address,
-    abi: chainalysisAbi.abi,
-    functionName: "isSanctioned",
-    args: [account.address],
-    enabled: connected,
-  });
+  const { data: isSanctionedAddress } = useChainalysisContract(account.address ? account.address : "");
 
   useEffect(() => {
-    if (data === true && connected) {
+    if (isSanctionedAddress === true && connected) {
       disconnect();
       setConnected(false);
       logger.info("address " + account.address + " was sanctioned and therefore disconnected");
     }
-  }, [data, connected, disconnect, account.address]);
+  }, [connected, disconnect, account.address, isSanctionedAddress]);
 
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
-        if (data === true) {
+        if (isSanctionedAddress === true) {
           authenticationStatus = "unauthenticated";
         }
 
@@ -68,7 +60,7 @@ function CustomConnectButton() {
               } else if (!connected) {
                 return (
                   <Button
-                    style={{ color: "black" }}
+                    sx={{ color: "black" }}
                     variant="gradient"
                     gradient={{ from: "#00C2FF", to: "#B9E09B", deg: 60 }}
                     size="md"
@@ -93,7 +85,7 @@ function CustomConnectButton() {
                   <Button
                     variant="outline"
                     color="white"
-                    style={{ borderColor: "#A2DDF1", borderWidth: "2px" }}
+                    sx={{ borderColor: "#A2DDF1", borderWidth: "2px" }}
                     onClick={openAccountModal}
                     type="button"
                     radius="sm"
