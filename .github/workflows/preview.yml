@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl apps destroy --yes pr-${{ github.event.number }} --yes
+      - run: flyctl deply --app pr-${{ github.event.number }} --auto-confirm
       - run: flyctl apps create --name pr-${{ github.event.number }} --org metricsdao-614 --region iad
       - run: flyctl postgres attach mdao-pg-stg --app pr-${{ github.event.number }}
       - run: flyctl deploy --remote-only --app pr-${{ github.event.number }}
