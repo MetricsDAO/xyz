@@ -38,7 +38,7 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
 
     "&:hover": {
-      color: "#16ABDD",
+      backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
     },
 
     [theme.fn.smallerThan("sm")]: {
@@ -49,7 +49,8 @@ const useStyles = createStyles((theme) => ({
 
   linkActive: {
     "&, &:hover": {
-      color: "#16ABDD",
+      backgroundColor: "#E6EBF0",
+      color: "#333333",
     },
   },
 
@@ -138,6 +139,7 @@ export function AppHeader({ links, userLinks }: AppHeaderProps) {
         </Group>
         <CustomConnectButton />
       </Container>
+      <hr style={{ color: "#FAFAFA", backgroundColor: "#FAFAFA", height: "1px", borderWidth: 0 }} />
     </Header>
   );
 }
