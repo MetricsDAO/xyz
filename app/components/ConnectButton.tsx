@@ -63,7 +63,7 @@ function CustomConnectButton() {
                     sx={{ color: "black" }}
                     variant="gradient"
                     gradient={{ from: "#00C2FF", to: "#B9E09B", deg: 60 }}
-                    size="md"
+                    size="sm"
                     onClick={openConnectModal}
                     type="button"
                   >
