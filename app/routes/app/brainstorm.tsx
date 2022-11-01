@@ -23,8 +23,8 @@ export default function Brainstorm() {
   };
 
   return (
-    <div className="mx-auto container px-3">
-      <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 py-12">
+    <div className="mx-auto container space-y-7 px-3 mt-5 mb-10">
+      <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <div className="space-y-5 max-w-3xl">
             <Title order={1}>Challenge Marketplaces</Title>
@@ -50,7 +50,7 @@ export default function Brainstorm() {
         </aside>
       </section>
 
-      <section className="pb-7">
+      <section>
         <Title order={3}>
           Challenge Marketplaces{" "}
           <Text span color="dimmed">
@@ -79,7 +79,7 @@ export default function Brainstorm() {
 
 function SearchAndFilter() {
   return (
-    <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-[#94CAFF] bg-opacity-5">
+    <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
       <Input placeholder="Search" name="search" rightSection={<Search16 />} />
       <Text size="lg" weight={600}>
         Sort:
@@ -157,7 +157,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
             return (
               <Link
                 to="/app/m/[marketplaceId]"
-                className="flex items-center space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-4 rounded-lg hover:border-[#16ABDD66] hover:shadow-md shadow-sm"
+                className="flex items-center space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-4 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
                 key={m.id}
               >
                 <div className="w-2/6">
