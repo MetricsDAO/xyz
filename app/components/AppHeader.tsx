@@ -13,6 +13,7 @@ const useStyles = createStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
   },
 
   links: {
@@ -22,7 +23,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   burger: {
-    [theme.fn.largerThan("xs")]: {
+    [theme.fn.largerThan("sm")]: {
       display: "none",
     },
   },
@@ -131,14 +132,15 @@ export function AppHeader({ links, userLinks }: AppHeaderProps) {
             <LogoMark /> <LogoType className="hidden md:block" />
           </Link>
         </Group>
-        <Group position="left" spacing={5} className={classes.links}>
+        <Group position="center" spacing={5} className={classes.links}>
           {items}
         </Group>
-        <Group position="right" spacing={5} className={classes.links}>
-          {secondaryItems}
+        <Group position="right" spacing={5}>
+          <Group className={classes.links}> {secondaryItems}</Group>
+          <CustomConnectButton />
         </Group>
-        <CustomConnectButton />
       </Container>
+
       <hr style={{ color: "#FAFAFA", backgroundColor: "#FAFAFA", height: "1px", borderWidth: 0 }} />
     </Header>
   );
