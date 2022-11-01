@@ -3,6 +3,7 @@ import express from "express";
 import compression from "compression";
 import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
+import { getLoadContext } from "~/context";
 
 const app = express();
 
@@ -67,12 +68,13 @@ const BUILD_DIR = path.join(process.cwd(), "build");
 app.all(
   "*",
   MODE === "production"
-    ? createRequestHandler({ build: require(BUILD_DIR) })
+    ? createRequestHandler({ build: require(BUILD_DIR), getLoadContext })
     : (...args) => {
         purgeRequireCache();
         const requestHandler = createRequestHandler({
           build: require(BUILD_DIR),
           mode: MODE,
+          getLoadContext,
         });
         return requestHandler(...args);
       }
