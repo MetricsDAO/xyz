@@ -12,6 +12,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         ]}
         userLinks={[{ link: "/app/rewards", label: "Rewards" }]}
       />
+      <main className="flex-grow">{children}</main>
 
       {/* TODO: Not sticking to footer properly */}
       {/* <StatsBar /> */}

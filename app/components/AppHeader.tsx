@@ -1,6 +1,6 @@
-import { createStyles, Header, Container, Group, Burger, Transition, Paper, Anchor } from "@mantine/core";
+import { createStyles, Header, Container, Group, Burger, Transition, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Link } from "@remix-run/react";
+import { Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
 import CustomConnectButton from "./ConnectButton";
 import { LogoMark, LogoType } from "./Logo";
@@ -87,33 +87,29 @@ export function AppHeader({ links, userLinks }: AppHeaderProps) {
   const { classes, cx } = useStyles();
 
   const items = links.map((link) => (
-    <a
+    <NavLink
       key={link.label}
-      href={link.link}
+      to={link.link}
       className={cx(classes.link, { [classes.linkActive]: active === link.link })}
-      onClick={(event) => {
-        event.preventDefault();
+      onClick={() => {
         setActive(link.link);
-        close();
       }}
     >
       {link.label}
-    </a>
+    </NavLink>
   ));
 
   const secondaryItems = userLinks.map((item) => (
-    <a
+    <NavLink
       key={item.label}
-      href={item.link}
+      to={item.link}
       className={cx(classes.link, { [classes.linkActive]: active === item.link })}
-      onClick={(event) => {
-        event.preventDefault();
+      onClick={() => {
         setActive(item.link);
-        close();
       }}
     >
       {item.label}
-    </a>
+    </NavLink>
   ));
 
   return (
