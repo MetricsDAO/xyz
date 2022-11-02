@@ -5,7 +5,7 @@ export default function SubmitQuestion() {
     <div className="container mx-auto px-10 space-y-3 mb-12 pt-12">
       <div className="flex flex-col md:flex-row md:space-x-16">
         <div className="hidden lg:block lg:basis-1/6" />
-        <div className="max-w-xl space-y-7">
+        <main className="max-w-xl space-y-7">
           <div>
             <Title order={2} weight={600} className="mb-1">
               {"Submit Question"}
@@ -43,8 +43,8 @@ export default function SubmitQuestion() {
               Cancel
             </Button>
           </div>
-        </div>
-        <div className="md:basis-1/4">
+        </main>
+        <aside className="md:basis-1/4">
           <Paper p="md" withBorder sx={{ backgroundColor: "#E7F5FF" }} radius="md">
             <Text color="dimmed" className="space-y-6">
               <div className="space-y-3">
@@ -87,7 +87,7 @@ export default function SubmitQuestion() {
               </div>
             </Text>
           </Paper>
-        </div>
+        </aside>
       </div>
     </div>
   );
