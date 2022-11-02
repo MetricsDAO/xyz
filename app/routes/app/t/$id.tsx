@@ -148,7 +148,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                           <Text size="xs" color="dimmed">
                             by
                           </Text>
-                          <Avatar src="\public\img\user-icon.png" alt="" />
+                          <Avatar size={26} radius="xl" alt="" />
                           <Text size="xs">user.ETH</Text>
                           <Badge color="gray" radius="md">
                             <Text weight={400} className="normal-case">
@@ -247,8 +247,8 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
                 <Text color="dimmed" size="xs">
                   MDAO S4 REVIEWER BADGE
                 </Text>
-                <div className="flex">
-                  <Avatar src="\public\img\user-icon.png" alt="" />
+                <div className="flex gap-2">
+                  <Avatar size={26} radius="xl" alt="" />
                   <Text>0x1234</Text>
                 </div>
               </Paper>
@@ -343,7 +343,7 @@ function Participants({ submissions }: { submissions: Submission[] }) {
                         key={m.id}
                       >
                         <main className="flex items-center flex-1 space-x-2">
-                          <Avatar src="\public\img\user-icon.png" alt="" />
+                          <Avatar alt="" />
                           <Text weight={500}>user.ETH</Text>
                           <Badge color="gray" radius="sm">
                             <Text weight={400} className="normal-case">
