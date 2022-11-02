@@ -372,7 +372,7 @@ function Participants({ submissions }: { submissions: Submission[] }) {
               clearable
               data={[{ label: "Chain/Project", value: "project" }]}
             />
-            <Checkbox.Group label="Filter:" spacing="xs">
+            <Checkbox.Group label="Filter:" spacing="xs" orientation="vertical">
               <Checkbox value="claimedSubmit" label="Claimed to Submit" />
               <Checkbox value="submitted" label="Submitted" />
               <Checkbox value="calimedReview" label="Claimed to Review" />
