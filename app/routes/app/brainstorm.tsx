@@ -5,10 +5,15 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { Marketplace } from "~/domain";
 import { withServices } from "~/services/with-services.server";
+import { getParamsOrFail } from "remix-params-helper";
+import { LaborMarketSearchSchema } from "~/domain/labor-market";
 
 export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async ({ marketplace }) => {
-    return typedjson(marketplace.brainstormMarketplaces());
+  return withServices(data, async (svc) => {
+    const url = new URL(data.request.url);
+    const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
+    console.log({ params });
+    return typedjson(svc.marketplace.brainstormMarketplaces(params));
   });
 };
 
