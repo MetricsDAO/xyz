@@ -27,7 +27,7 @@ export default function Challenge() {
         <main className="flex-1">
           <div className="space-y-3">
             <Title order={2}>Challenge Title</Title>
-            <div className="flex space-x-8">
+            <div className="flex flex-wrap space-x-8">
               <Detail>
                 <Detail.Title>Sponsor</Detail.Title>
                 <Author.Author />
@@ -66,7 +66,7 @@ export default function Challenge() {
             </Text>
           </div>
         </main>
-        <aside className="md:w-1/5">
+        <aside className="md:w-1/3">
           <Center className="space-x-5">
             <Link to="/app/t/[topicId]/review">
               <Button variant="default" color="dark" radius="md" className="mx-auto">
