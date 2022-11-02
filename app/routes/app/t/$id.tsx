@@ -22,64 +22,66 @@ import { ProjectBadge } from "~/components/ProjectBadge";
 
 export default function Challenge() {
   return (
-    <div className="mx-auto container mb-12">
-      <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 py-12">
-        <main className="flex-1">
-          <div className="space-y-3">
-            <Title order={2}>Challenge Title</Title>
-            <div className="flex flex-wrap space-x-8">
-              <Detail>
-                <Detail.Title>Sponsor</Detail.Title>
-                <Author.Author />
-              </Detail>
-              <Detail>
-                <Detail.Title>Chain/Project</Detail.Title>
-                <div className="flex space-x-2">
-                  <ProjectBadge slug="solana" />
-                  <ProjectBadge slug="solana" />
-                </div>
-              </Detail>
-              <Detail>
-                <Detail.Title>Reward Pool</Detail.Title>
-                <Badge>100 SOL</Badge>
-              </Detail>
-              <Detail>
-                <Detail.Title>Submissions</Detail.Title>
-                <Badge>1000</Badge>
-              </Detail>
-              <Detail>
-                <Detail.Title>Reviews</Detail.Title>
-                <Badge>99</Badge>
-              </Detail>
-              <Detail>
-                <Detail.Title>Winners</Detail.Title>
-                <Badge>
-                  <Text size="sm" className="normal-case font-normal">
-                    Pending
-                  </Text>
-                </Badge>
-              </Detail>
+    <div className="mx-auto container mb-12 px-10">
+      <section className="flex flex-wrap gap-5 justify-between pt-12 pb-5">
+        <Title order={2}>Challenge Title</Title>
+        <Center className="flex flex-wrap gap-5">
+          <Link to="/app/t/[topicId]/review">
+            <Button variant="default" color="dark" radius="md" className="mx-auto">
+              Claim to Review
+            </Button>
+          </Link>
+          <Link to="/app/t/[topicId]/claim">
+            <Button radius="md" className="mx-auto">
+              Claim to Submit
+            </Button>
+          </Link>
+        </Center>
+      </section>
+      <section className="flex flex-col space-y-7 pb-12">
+        <div className="flex flex-wrap gap-x-8">
+          <Detail>
+            <Detail.Title>Sponsor</Detail.Title>
+            <Author.Author />
+          </Detail>
+          <Detail>
+            <Detail.Title>Chain/Project</Detail.Title>
+            <div className="flex space-x-2">
+              <ProjectBadge slug="solana" />
+              <ProjectBadge slug="solana" />
             </div>
-            <Text color="dimmed" className="max-w-2xl">
-              What’s the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why?
-              What’s the challenge What web3 topic do you want to crowdsource potential analytics questions
-            </Text>
-          </div>
-        </main>
-        <aside className="md:w-1/3">
-          <Center className="space-x-5">
-            <Link to="/app/t/[topicId]/review">
-              <Button variant="default" color="dark" radius="md" className="mx-auto">
-                Claim to Review
-              </Button>
-            </Link>
-            <Link to="/app/t/[topicId]/claim">
-              <Button radius="md" className="mx-auto">
-                Claim to Submit
-              </Button>
-            </Link>
-          </Center>
-        </aside>
+          </Detail>
+          <Detail>
+            <Detail.Title>Reward Pool</Detail.Title>
+            <Badge color="gray" size="lg">
+              100 SOL
+            </Badge>
+          </Detail>
+          <Detail>
+            <Detail.Title>Submissions</Detail.Title>
+            <Badge color="gray" size="lg">
+              1000
+            </Badge>
+          </Detail>
+          <Detail>
+            <Detail.Title>Reviews</Detail.Title>
+            <Badge color="gray" size="lg">
+              99
+            </Badge>
+          </Detail>
+          <Detail>
+            <Detail.Title>Winners</Detail.Title>
+            <Badge color="gray" size="lg">
+              <Text size="sm" className="normal-case font-normal">
+                Pending
+              </Text>
+            </Badge>
+          </Detail>
+        </div>
+        <Text color="dimmed" className="max-w-2xl">
+          What’s the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What’s
+          the challenge What web3 topic do you want to crowdsource potential analytics questions
+        </Text>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
@@ -149,7 +151,9 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                           <Avatar src="\public\img\user-icon.png" alt="" />
                           <Text size="xs">user.ETH</Text>
                           <Badge color="gray" radius="md">
-                            <Text weight={400}>400 xMetric</Text>
+                            <Text weight={400} className="normal-case">
+                              400 xMetric
+                            </Text>
                           </Badge>
                         </div>
                       </main>
@@ -158,7 +162,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                           <div className="rounded-lg bg-sky-200 py-2 w-3/4">
                             <Text align="center">Good</Text>
                           </div>
-                          <Text align="center" color="white">
+                          <Text color="white" className="mx-auto">
                             80
                           </Text>
                         </div>
@@ -213,8 +217,30 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
               <Text color="dimmed">
                 What you must hold in your connected wallet to perform various actions on this challenge
               </Text>
-              <Paper shadow="xs" radius="md" p="md" withBorder>
+              <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
                 <Text weight={600}>You must hold this much xMETRIC to enter submissions for this challenge</Text>
+                <div className="flex flex-wrap gap-3">
+                  <Center className="flex flex-col">
+                    <Text size="xs" color="gray" className="mb-2">
+                      MIN BALANCE
+                    </Text>
+                    <Badge color="gray" radius="sm">
+                      <Text weight={600} className="normal-case">
+                        15 xMetric
+                      </Text>
+                    </Badge>
+                  </Center>
+                  <Center className="flex flex-col">
+                    <Text size="xs" color="gray" className="mb-2">
+                      MAX BALANCE
+                    </Text>
+                    <Badge color="gray" radius="sm">
+                      <Text weight={600} className="normal-case">
+                        100 xMetric
+                      </Text>
+                    </Badge>
+                  </Center>
+                </div>
               </Paper>
               <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
                 <Text weight={600}>You must hold this badge to review and score submissions on this challenge</Text>
@@ -222,7 +248,7 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
                   MDAO S4 REVIEWER BADGE
                 </Text>
                 <div className="flex">
-                  <Avatar src="\public\img\user-icon.png" alt="Icon" />
+                  <Avatar src="\public\img\user-icon.png" alt="" />
                   <Text>0x1234</Text>
                 </div>
               </Paper>
@@ -312,7 +338,7 @@ function Participants({ submissions }: { submissions: Submission[] }) {
                   {submissions.map((m) => {
                     return (
                       <Link
-                        to="/app/m/[marketplaceId]"
+                        to="/u/[uId]"
                         className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center"
                         key={m.id}
                       >
@@ -320,7 +346,9 @@ function Participants({ submissions }: { submissions: Submission[] }) {
                           <Avatar src="\public\img\user-icon.png" alt="" />
                           <Text weight={500}>user.ETH</Text>
                           <Badge color="gray" radius="sm">
-                            <Text weight={400}>400 xMetric</Text>
+                            <Text weight={400} className="normal-case">
+                              400 xMetric
+                            </Text>
                           </Badge>
                         </main>
                         <aside className="md:w-1/5">
