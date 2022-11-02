@@ -3,8 +3,8 @@ import { Button, Textarea, TextInput, Text, Title, Paper } from "@mantine/core";
 export default function SubmitQuestion() {
   return (
     <div className="container mx-auto px-10 space-y-3 mb-12 pt-12">
-      <div className="flex flex-col md:flex-row md:space-x-16">
-        <main className="max-w-xl space-y-7">
+      <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
+        <main className="lg:max-w-xl space-y-7">
           <div>
             <Title order={2} weight={600} className="mb-1">
               {"Submit Question"}
@@ -43,7 +43,7 @@ export default function SubmitQuestion() {
             </Button>
           </div>
         </main>
-        <aside className="md:basis-1/4">
+        <aside className="lg:basis-1/3 ">
           <Paper p="md" withBorder sx={{ backgroundColor: "#E7F5FF" }} radius="md">
             <Text color="dimmed" className="space-y-6">
               <div className="space-y-3">
