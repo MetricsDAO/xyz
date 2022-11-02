@@ -3,7 +3,7 @@ import { CountDown } from "~/components/CountDown";
 
 export default function ClaimToSubmit() {
   return (
-    <div className="container mx-auto px-10 max-w-3xl space-y-7 mb-12 pt-12">
+    <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12 pt-12">
       <div className="space-y-2">
         <Title order={2} weight={600}>
           {"Claim to Submit on {Challenge title}"}
