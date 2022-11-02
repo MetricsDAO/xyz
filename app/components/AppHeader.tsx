@@ -1,7 +1,6 @@
 import { createStyles, Header, Container, Group, Burger, Transition, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, NavLink } from "@remix-run/react";
-import { useState } from "react";
 import CustomConnectButton from "./ConnectButton";
 import { LogoMark, LogoType } from "./Logo";
 
@@ -81,19 +80,18 @@ interface AppHeaderProps {
   userLinks: { link: string; label: string }[];
 }
 
+const activeLinkStyle = { backgroundColor: "#E6EBF0", color: "#333333" };
+
 export function AppHeader({ links, userLinks }: AppHeaderProps) {
   const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(links[0].link);
   const { classes, cx } = useStyles();
 
   const items = links.map((link) => (
     <NavLink
       key={link.label}
       to={link.link}
-      className={cx(classes.link, { [classes.linkActive]: active === link.link })}
-      onClick={() => {
-        setActive(link.link);
-      }}
+      className={({ isActive }) => cx(classes.link, { [classes.linkActive]: isActive })}
+      style={({ isActive }) => (isActive ? activeLinkStyle : {})}
     >
       {link.label}
     </NavLink>
@@ -103,10 +101,8 @@ export function AppHeader({ links, userLinks }: AppHeaderProps) {
     <NavLink
       key={item.label}
       to={item.link}
-      className={cx(classes.link, { [classes.linkActive]: active === item.link })}
-      onClick={() => {
-        setActive(item.link);
-      }}
+      className={({ isActive }) => cx(classes.link, { [classes.linkActive]: isActive })}
+      style={({ isActive }) => (isActive ? activeLinkStyle : {})}
     >
       {item.label}
     </NavLink>
