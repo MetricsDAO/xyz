@@ -13,7 +13,6 @@ export const loader = async (data: DataFunctionArgs) => {
   return withServices(data, async (svc) => {
     const url = new URL(data.request.url);
     const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-    console.log({ params });
     return typedjson(svc.marketplace.brainstormMarketplaces(params));
   });
 };
