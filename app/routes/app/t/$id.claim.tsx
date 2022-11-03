@@ -1,56 +1,67 @@
-import { Title, Text, List, Button, Paper } from "@mantine/core";
+import { Title, Text, List, Button, Badge } from "@mantine/core";
+import { CountDown } from "~/components/CountDown";
 
 export default function ClaimToSubmit() {
   return (
-    <div className="container mx-auto px-10 max-w-5xl space-y-7">
-      <div>
-        <Title order={2} weight={600} className="mb-1">
+    <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12 pt-12">
+      <div className="space-y-2">
+        <Title order={2} weight={600}>
           {"Claim to Submit on {Challenge title}"}
         </Title>
-        <Title order={3} color="cyan.3" weight={400}>
-          {"Claiming is an up front commitment to submit at least one submission"}
-        </Title>
-        <Text className="text-[#A5A5A5]">
-          You must lock xMETRIC to claim. If you don’t submit before the deadline, all your locked xMETRIC will be
-          slashed
-        </Text>
+        <div>
+          <Title order={4} color="blue" weight={400}>
+            {"Claiming is an up front commitment to submit at least one submission"}
+          </Title>
+          <Text color="dimmed">
+            You must temporarily lock xMETRIC to claim. If you claim and don’t submit before the deadline, all your
+            locked xMETRIC will be slashed.
+          </Text>
+        </div>
       </div>
       <div className="space-y-2">
         <Title order={4}>How Claims Work</Title>
         <List withPadding>
-          <List.Item>Commit to submitting at least one question by locking xMETRIC against this topic</List.Item>
-          <List.Item>Submit at least one question before the submission deadline</List.Item>
+          <List.Item>Commit to entering at least one submission by locking xMETRIC against this challenge</List.Item>
+          <List.Item>Enter at least one submission before the submission deadline</List.Item>
           <List.Item>If you submit before the deadline, your xMETRIC will be unlocked</List.Item>
-          <List.Item>If you claim and don’t submit, your xMETRIC will be slashed</List.Item>
+          <List.Item>If you don’t submit before the deadline, all your locked xMETRIC will be slashed</List.Item>
         </List>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-5 gap-y-16 lg:mr-24">
-        <div className="space-y-2">
-          <Title order={4}>Claim Deadline</Title>
-          <Text>4d 2h 3m</Text>
-        </div>
-        <div className="space-y-2">
-          <Title order={4}>Submit Deadline</Title>
-          <Text>4d 2h 3m</Text>
+      <div className="flex">
+        <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-16 lg:mr-24">
+          <div className="space-y-2">
+            <Title order={4}>Claim Deadline</Title>
+            <CountDown progress={64} time="42d 3h 22m" />
+          </div>
+          <div className="space-y-2">
+            <Title order={4}>Submit Deadline</Title>
+            <CountDown progress={22} time="42d 3h 22m" />
+          </div>
         </div>
       </div>
-      <Title order={4}>Lock xMetric</Title>
-      <div className="flex flex-col md:flex-row space-y-2 md:space-x-5">
-        <Paper p="sm" radius="md" withBorder className="text-[#858582]">
-          <Text>You must lock 10 xMetric to claim</Text>
-        </Paper>
-        <Button color="dark" size="lg" className="self-end">
-          Lock xMetric
-        </Button>
+      <div>
+        <Title order={4}>Lock xMetric</Title>
+        <div className="flex flex-col md:flex-row space-y-2 md:space-x-5">
+          <div className="flex flex-wrap gap-1 items-center">
+            <Text>You must lock </Text>
+            <Badge radius="sm" color="dark">
+              10
+            </Badge>
+            <Text> xMetric to claim</Text>
+          </div>
+          <Button radius="md" variant="outline" size="lg" className="self-start">
+            Lock xMetric
+          </Button>
+        </div>
+        <Text italic color="dimmed" className="mt-2">
+          If you claim and don’t submit before the deadline, all your locked xMETRIC will be slashed
+        </Text>
       </div>
-      <Text italic className="text-[#A5A5A5]">
-        If you claim and don’t submit before the deadline, all your locked xMETRIC will be slashed
-      </Text>
-      <div className="flex flex-col md:flex-row gap-5">
-        <Button color="dark" size="lg">
-          Claim to Review
+      <div className="flex flex-wrap gap-5">
+        <Button radius="md" size="lg">
+          Claim to Submit
         </Button>
-        <Button variant="default" color="dark" size="lg">
+        <Button radius="md" variant="default" color="dark" size="lg">
           Cancel
         </Button>
       </div>
