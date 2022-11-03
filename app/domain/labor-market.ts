@@ -22,7 +22,7 @@ export const LaborMarketSchema = z.object({
 });
 
 export const LaborMarketSearchSchema = z.object({
-  page: z.number().default(0),
+  page: z.number().default(1).optional(),
   q: z.string().optional(),
   sortBy: z.string().optional(),
   order: z.string().optional(),
