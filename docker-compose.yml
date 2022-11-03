@@ -5,14 +5,14 @@ volumes:
     driver: local
 
 services:
-  postgres:
-    image: postgres:14-bullseye
-    container_name: postgres
+  mysql:
+    image: mysql:latest
+    container_name: db
     restart: always
     environment:
-      POSTGRES_USER: mdao
-      POSTGRES_PASSWORD: postgres
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mdao
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/mysql
     ports:
-      - "5435:5432"
+      - "3306:3306"
