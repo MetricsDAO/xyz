@@ -34,10 +34,11 @@ export default class MarketplaceService {
       filteredAndSortedData = filteredAndSortedData.filter((m) => project.includes(m.project));
     }
     const pageData = filteredAndSortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const pagesFloor = Math.floor(filteredAndSortedData.length / pageSize);
     return {
-      pageNumber: page,
+      pageNumber: currentPage,
       totalResults: filteredAndSortedData.length,
-      totalPages: Math.floor(filteredAndSortedData.length / pageSize),
+      totalPages: pagesFloor > 0 ? pagesFloor : 1,
       data: pageData,
     };
   }

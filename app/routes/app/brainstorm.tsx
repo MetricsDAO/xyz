@@ -69,7 +69,12 @@ export default function Brainstorm() {
           <div className="space-y-5">
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              <Pagination page={pageNumber} onChange={onPaginationChange} total={totalPages} />
+              <Pagination
+                page={pageNumber}
+                hidden={marketplaces.length === 0}
+                onChange={onPaginationChange}
+                total={totalPages}
+              />
             </div>
           </div>
         </main>
@@ -138,6 +143,9 @@ function SearchAndFilter() {
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
+  if (marketplaces.length === 0) {
+    return <Text>No results. Try changing search and filter options.</Text>;
+  }
   return (
     <>
       {/* Header (hide on mobile) */}
@@ -167,11 +175,11 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
               <div className="lg:hidden">Chain/Project</div>
               <ProjectWithIcon project={m.project} />
               <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`${m.rewardPool} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`${m.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`${m.entryCost} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`${m.entryCost.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m.topicCount}</Text>
+              <Text color="dark.3">{m.topicCount.toLocaleString()}</Text>
             </Link>
           );
         })}
