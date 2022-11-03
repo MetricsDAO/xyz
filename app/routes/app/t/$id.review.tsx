@@ -1,4 +1,4 @@
-import { Title, Text, List, Button, Badge } from "@mantine/core";
+import { Title, Text, List, Button, Badge, SegmentedControl } from "@mantine/core";
 import { CountDown } from "~/components/CountDown";
 
 export default function ClaimToReview() {
@@ -45,18 +45,19 @@ export default function ClaimToReview() {
       </div>
       <div>
         <Title order={4}>How many submissions do you commit to reviewing at a minimum?</Title>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-x-5">
-          <div className="flex flex-wrap gap-1 items-center">
-            <Text>You must lock </Text>
-            <Badge radius="sm" color="dark">
-              50
-            </Badge>
-            <Text> xMetric to claim</Text>
-          </div>
-          <Button radius="md" variant="outline" size="lg" className="self-start">
-            Lock xMetric
-          </Button>
-        </div>
+        <SegmentedControl
+          className="mt-2"
+          transitionDuration={500}
+          fullWidth
+          transitionTimingFunction="linear"
+          data={[
+            { value: "10", label: "10" },
+            { value: "25", label: "25" },
+            { value: "50", label: "50" },
+            { value: "75", label: "75" },
+            { value: "100", label: "100" },
+          ]}
+        />
         <Text italic color="dimmed" className="mt-2">
           You’re only required to review the minimum you commit to, but you can optionally review more
         </Text>
