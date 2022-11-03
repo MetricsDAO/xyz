@@ -55,7 +55,7 @@ export default function Brainstorm() {
           Challenge Marketplaces{" "}
           <Text span color="dimmed">
             ({totalResults})
-          </Text>{" "}
+          </Text>
         </Title>
         <Divider />
       </section>
@@ -95,6 +95,7 @@ function SearchAndFilter() {
       </Text>
       <MultiSelect
         label="I am able to"
+        placeholder="Select option"
         name="filter"
         clearable
         data={[
@@ -131,56 +132,47 @@ function SearchAndFilter() {
   );
 }
 
+// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
   return (
-    <div className="overflow-auto">
-      <div className="w-full border-spacing-4 border-separate">
-        <div className="flex items-center space-x-2 text-left px-4">
-          <div className="w-2/6">
-            <Text color="dark.3">Challenge Marketplace</Text>
-          </div>
-          <div className="w-1/6">
-            <Text color="dark.3">Chain/Project</Text>
-          </div>
-          <div className="w-1/6">
-            <Text color="dark.3">Challenge Pool Totals</Text>
-          </div>
-          <div className="w-1/6">
-            <Text color="dark.3">Avg. Challenge Pool</Text>
-          </div>
-          <div className="w-1/6">
-            <Text color="dark.3"># Challenges</Text>
-          </div>
+    <>
+      {/* Header (hide on mobile) */}
+      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
+        <div className="col-span-2">
+          <Text color="dark.3">Challenge Marketplace</Text>
         </div>
-        <div className="space-y-4">
-          {marketplaces.map((m) => {
-            return (
-              <Link
-                to="/app/m/[marketplaceId]"
-                className="flex items-center space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-4 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-                key={m.id}
-              >
-                <div className="w-2/6">
-                  <Text>{m.title}</Text>
-                </div>
-                <div className="w-1/6">
-                  <ProjectWithIcon project={m.project} />
-                </div>
-                <div className="w-1/6">
-                  <TextWithIcon text={`${m.rewardPool} USD`} iconUrl="/img/icons/dollar.svg" />
-                </div>
-                <div className="w-1/6">
-                  <TextWithIcon text={`${m.entryCost} USD`} iconUrl="/img/icons/dollar.svg" />
-                </div>
-                <div className="w-1/6">
-                  <Text color="dark.3">{m.topicCount}</Text>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <Text color="dark.3">Chain/Project</Text>
+        <Text color="dark.3">Challenge Pool Totals</Text>
+        <Text color="dark.3">Avg. Challenge Pool</Text>
+        <Text color="dark.3"># Challenges</Text>
       </div>
-    </div>
+      {/* Rows */}
+      <div className="space-y-3">
+        {marketplaces.map((m) => {
+          return (
+            <Link
+              to="/app/m/[marketplaceId]"
+              // On mobile, two column grid with "labels". On desktop hide the "labels".
+              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
+              key={m.id}
+            >
+              <div className="lg:hidden">Challenge Marketplaces</div>
+              <div className="lg:col-span-2">
+                <Text>{m.title}</Text>
+              </div>
+              <div className="lg:hidden">Chain/Project</div>
+              <ProjectWithIcon project={m.project} />
+              <div className="lg:hidden">Challenge Pool Totals</div>
+              <TextWithIcon text={`${m.rewardPool} USD`} iconUrl="/img/icons/dollar.svg" />
+              <div className="lg:hidden">Avg. Challenge Pool</div>
+              <TextWithIcon text={`${m.entryCost} USD`} iconUrl="/img/icons/dollar.svg" />
+              <div className="lg:hidden"># Challenges</div>
+              <Text color="dark.3">{m.topicCount}</Text>
+            </Link>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
