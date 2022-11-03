@@ -44,7 +44,7 @@ export default function Brainstorm() {
         </main>
         <aside className="md:w-1/5">
           <Center>
-            <Link to="/app/m/new">
+            <Link to="/app/brainstorm/new">
               <Button radius="md" className="mx-auto">
                 Create Marketplace
               </Button>
@@ -138,7 +138,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
           {marketplaces.map((m) => {
             return (
               <Link
-                to="/app/m/[marketplaceId]"
+                to="/app/brainstorm/[marketplaceId]"
                 className="flex space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-4 rounded-lg hover:border-black"
                 key={m.id}
               >

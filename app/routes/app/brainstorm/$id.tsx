@@ -10,7 +10,7 @@ export default function Marketplace() {
     <div className="container mx-auto max-w-6xl space-y-10 py-16">
       <header className="flex justify-between">
         <Title size="h1">Marketplace Title</Title>
-        <Link to={`/app/m/[marketplaceId]/t/new`}>
+        <Link to={`/app/brainstorm/[marketplaceId]/t/new`}>
           <Button>Create Topic</Button>
         </Link>
       </header>
