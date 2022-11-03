@@ -1,8 +1,16 @@
 import { Search16 } from "@carbon/icons-react";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
+import { Badge, Button, Center, Divider, Title, Text, Avatar, Input, Select, Checkbox, Paper } from "@mantine/core";
+import { Form, Link } from "@remix-run/react";
 
 export default function ChallengeSubmission() {
+  const reviews = [
+    { id: "1", author: "1234" },
+    { id: "2", author: "2234" },
+    { id: "3", author: "3234" },
+  ];
+
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pt-12 pb-5">
@@ -11,11 +19,6 @@ export default function ChallengeSubmission() {
           <Link to="/app/t/[topicId]/submission/review">
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Review Question
-            </Button>
-          </Link>
-          <Link to="/app/t/[topicId]/claim">
-            <Button radius="md" className="mx-auto">
-              Claim to Submit
             </Button>
           </Link>
         </Center>
@@ -54,20 +57,19 @@ export default function ChallengeSubmission() {
           aliquet velit massa. Lacinia lacus amet massa
         </Text>
       </section>
-      <Divider />
+      <section>
+        <Title order={3}>{"Reviews (35)"}</Title>
+        <Divider />
+      </section>
 
-      <section className="space-y-7">
-        <div className="flex items-center space-x-2 text-left px-4">
-          <Text size="sm">Average user xMETRIC</Text>
-          <Badge color="dark">1,000</Badge>
-        </div>
+      <section className="mt-3">
         <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
           <main className="flex-1">
             <div className="space-y-5">
               <div className="overflow-auto">
                 <div className="min-w-[350px] w-full border-spacing-4 border-separate">
                   <div className="space-y-4">
-                    {submissions.map((m) => {
+                    {reviews.map((m) => {
                       return (
                         <Link
                           to="/u/[uId]"
@@ -75,6 +77,9 @@ export default function ChallengeSubmission() {
                           key={m.id}
                         >
                           <main className="flex items-center flex-1 space-x-2">
+                            <Paper p="md" sx={{ backgroundColor: "green" }}>
+                              <Text>Good</Text>
+                            </Paper>
                             <Avatar alt="" />
                             <Text weight={500}>user.ETH</Text>
                             <Badge color="gray" radius="sm">
@@ -97,18 +102,13 @@ export default function ChallengeSubmission() {
           <aside className="md:w-1/5">
             <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
               <Input placeholder="Search" name="search" icon={<Search16 />} />
-              <Select
-                label="Sort"
-                placeholder="Select option"
-                name="sortBy"
-                clearable
-                data={[{ label: "Chain/Project", value: "project" }]}
-              />
-              <Checkbox.Group label="Filter:" spacing="xs" orientation="vertical">
-                <Checkbox value="claimedSubmit" label="Claimed to Submit" />
-                <Checkbox value="submitted" label="Submitted" />
-                <Checkbox value="calimedReview" label="Claimed to Review" />
-                <Checkbox value="reviewed" label="Reviewed" />
+              <Select label="Sort" name="sortBy" clearable data={[{ label: "Chain/Project", value: "project" }]} />
+              <Checkbox.Group label="Filter:" description="Overall score" spacing="xs" orientation="vertical">
+                <Checkbox value="great" label="Great" />
+                <Checkbox value="good" label="Good" />
+                <Checkbox value="average" label="Average" />
+                <Checkbox value="bad" label="Bad" />
+                <Checkbox value="spam" label="Spam" />
               </Checkbox.Group>
             </Form>
           </aside>
