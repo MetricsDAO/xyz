@@ -28,7 +28,7 @@ export default function ClaimToSubmit() {
         </List>
       </div>
       <div className="flex">
-        <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-16 lg:mr-24">
+        <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-2">
             <Title order={4}>Claim Deadline</Title>
             <CountDown progress={64} time="42d 3h 22m" />
@@ -44,7 +44,7 @@ export default function ClaimToSubmit() {
         <div className="flex flex-col md:flex-row space-y-2 md:space-x-5">
           <div className="flex flex-wrap gap-1 items-center">
             <Text>You must lock </Text>
-            <Badge radius="sm" color="dark">
+            <Badge radius="sm" color="dark" className="mt-1">
               10
             </Badge>
             <Text> xMetric to claim</Text>
