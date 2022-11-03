@@ -41,14 +41,14 @@ export default function ClaimToSubmit() {
       </div>
       <div>
         <Title order={4}>Lock xMetric</Title>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-x-5">
-          <div className="flex flex-wrap gap-1 items-center">
-            <Text>You must lock </Text>
+        <div className="flex flex-col md:flex-row space-y-2 md:space-x-5 items-center">
+          <Text>
+            You must lock{" "}
             <Badge radius="sm" color="dark" className="mt-1">
               10
-            </Badge>
-            <Text> xMetric to claim</Text>
-          </div>
+            </Badge>{" "}
+            xMetric to claim
+          </Text>
           <Button radius="md" variant="outline" size="lg" className="self-start">
             Lock xMetric
           </Button>
