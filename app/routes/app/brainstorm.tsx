@@ -85,7 +85,7 @@ export default function Brainstorm() {
 function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input placeholder="Search" name="search" rightSection={<Search16 />} />
+      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
       <Text size="lg" weight={600}>
         Sort:
       </Text>
