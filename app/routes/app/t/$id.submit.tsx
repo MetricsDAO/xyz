@@ -14,7 +14,7 @@ export default function SubmitQuestion() {
             </Title>
             <Text color="dimmed">
               Submit your best question idea. Peers will review and score your question. If you’re a winner, you’ll earn
-              tokens from the challenge reward pool!
+              tokens and xMETRIC from the challenge reward pool!
             </Text>
           </div>
           <TextInput label="Question Title" size="md" placeholder="Question title" className="mt-1 w-full" />
