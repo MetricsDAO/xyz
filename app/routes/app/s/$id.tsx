@@ -5,6 +5,8 @@ import { Badge, Button, Center, Divider, Title, Text, Avatar, Input, Select, Che
 import { Form, Link } from "@remix-run/react";
 
 export default function ChallengeSubmission() {
+  const isWinner = true;
+
   const reviews = [
     { id: "1", author: "1234" },
     { id: "2", author: "2234" },
@@ -14,7 +16,10 @@ export default function ChallengeSubmission() {
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
-        <Title order={2}>Question Title</Title>
+        <div className="flex items-center gap-2">
+          <Title order={2}>Question Title </Title>
+          {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
+        </div>
         <Center className="flex flex-wrap gap-5">
           <Link to="/app/t/[topicId]/submission/review">
             <Button radius="md" className="mx-auto">
@@ -39,9 +44,16 @@ export default function ChallengeSubmission() {
           </Detail>
           <Detail>
             <Detail.Title>Overall Score</Detail.Title>
-            <Badge color="gray" size="lg">
-              80
-            </Badge>
+            <div className="flex rounded-full bg-sky-500 items-center">
+              <div className="rounded-full bg-sky-200 w-3/4">
+                <Text align="center" className="normal-case font-normal">
+                  Good
+                </Text>
+              </div>
+              <Text color="white" className="mx-auto pl-1 pr-2">
+                80
+              </Text>
+            </div>
           </Detail>
           <Detail>
             <Detail.Title>Reviews</Detail.Title>
@@ -49,6 +61,18 @@ export default function ChallengeSubmission() {
               99
             </Badge>
           </Detail>
+          {isWinner ? (
+            <Detail>
+              <Detail.Title>Winner</Detail.Title>
+              <Badge color="yellow" size="lg" leftSection={<Avatar size={20} src="/img/trophy.svg" />}>
+                <Text color="dark" size="sm" className="normal-case font-normal">
+                  100 SOL
+                </Text>
+              </Badge>
+            </Detail>
+          ) : (
+            <></>
+          )}
         </div>
         <Text color="dimmed" className="max-w-2xl">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
