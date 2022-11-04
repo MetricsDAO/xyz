@@ -133,7 +133,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                 {submissions.map((m) => {
                   return (
                     <Link
-                      to="/app/t/[topicId]/[submissionId]"
+                      to="/app/s/[submissionId]"
                       className="flex space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center"
                       key={m.id}
                     >

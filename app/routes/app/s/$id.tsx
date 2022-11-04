@@ -13,17 +13,17 @@ export default function ChallengeSubmission() {
 
   return (
     <div className="mx-auto container mb-12 px-10">
-      <section className="flex flex-wrap gap-5 justify-between pt-12 pb-5">
+      <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
         <Title order={2}>Question Title</Title>
         <Center className="flex flex-wrap gap-5">
           <Link to="/app/t/[topicId]/submission/review">
-            <Button variant="default" color="dark" radius="md" className="mx-auto">
+            <Button radius="md" className="mx-auto">
               Review Question
             </Button>
           </Link>
         </Center>
       </section>
-      <section className="flex flex-col space-y-7 pb-12">
+      <section className="flex flex-col space-y-7 pb-24">
         <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
@@ -58,7 +58,7 @@ export default function ChallengeSubmission() {
         </Text>
       </section>
       <section>
-        <Title order={3}>{"Reviews (35)"}</Title>
+        <Title order={3}>Reviews ({reviews.length})</Title>
         <Divider />
       </section>
 
@@ -76,11 +76,11 @@ export default function ChallengeSubmission() {
                           className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center"
                           key={m.id}
                         >
-                          <main className="flex items-center flex-1 space-x-2">
-                            <Paper p="md" sx={{ backgroundColor: "green" }}>
-                              <Text>Good</Text>
+                          <main className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                            <Paper p="xs" sx={{ backgroundColor: "green", width: 100 }}>
+                              <Text align="center">Average</Text>
                             </Paper>
-                            <Avatar alt="" />
+                            <Avatar alt="" className="md:ml-2" />
                             <Text weight={500}>user.ETH</Text>
                             <Badge color="gray" radius="sm">
                               <Text weight={400} className="normal-case">
