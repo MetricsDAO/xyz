@@ -1,4 +1,4 @@
-import { Title } from "@mantine/core";
+import { Text } from "@mantine/core";
 
 export function Detail({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col">{children}</div>;
@@ -6,8 +6,8 @@ export function Detail({ children }: { children: React.ReactNode }) {
 
 Detail.Title = function DetailTitle({ children }: { children: React.ReactNode }) {
   return (
-    <Title size="h6" color="gray" className="text-xs uppercase font-normal mb-2">
+    <Text size="xs" color="gray" weight={500} transform="uppercase" className="mb-2">
       {children}
-    </Title>
+    </Text>
   );
 };
