@@ -13,7 +13,7 @@ export function ProjectBadge({ slug }: Props) {
     throw new Error(`Project with slug ${slug} not found.`);
   }
   return (
-    <Badge color="gray" leftSection={<Avatar size={24} radius="xl" />} size="xl" className="pl-1">
+    <Badge color="gray" leftSection={<Avatar size={24} radius="xl" />} size="lg">
       <Text size="sm" className="normal-case font-normal">
         {project.name}
       </Text>
