@@ -6,10 +6,43 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
+  id          String        @id @default(cuid())
+  wallet      Wallet[]
+  Transaction Transaction[]
+}
+
+model Wallet {
   address String @id @unique
+  chain   String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+}
+
+model Transaction {
+  hash   String @id @unique
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  status String
+}
+
+model LaborMarket {
+  address     String @id @unique
+  title       String
+  description String
+  type        String
+}
+
+model ServiceRequest {
+  id                 String @id @unique
+  laborMarketAddress String
+}
+
+model Submission {
+  id               String @id @unique
+  serviceRequestId String
 }

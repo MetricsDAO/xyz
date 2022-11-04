@@ -1,17 +1,12 @@
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { PrismaClient } from "@prisma/client";
+import type { LaborMarketSearch } from "~/domain/labor-market";
 import { fakeBrainstormMarketplaces } from "~/utils/fakes";
 
 export default class MarketplaceService {
-  constructor(private dataFunctionArgs: DataFunctionArgs) {}
+  constructor(private prisma: PrismaClient) {}
 
-  brainstormMarketplaces() {
-    const url = new URL(this.dataFunctionArgs.request.url);
-    const page = Number(url.searchParams.get("page")) || 1;
-    const sortBy = url.searchParams.get("sortBy");
-    const search = url.searchParams.get("search");
-    const filter = url.searchParams.get("filter");
-    const rewardToken = url.searchParams.get("rewardToken");
-    const chainProject = url.searchParams.get("chainProject");
+  brainstormMarketplaces({ page, sortBy, q, project, token }: LaborMarketSearch) {
+    const currentPage = page ?? 1;
     const pageSize = 10;
     const totalPages = 5;
     const data = fakeBrainstormMarketplaces(pageSize * totalPages);
@@ -26,22 +21,24 @@ export default class MarketplaceService {
         });
       }
     }
-    if (search) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.title.includes(search));
+    if (q) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => m.title.includes(q));
     }
-    if (filter) {
-      //Needs badges
+    // if (filters) {
+    //   //Needs badges
+    // }
+    if (token) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => token.includes(t)));
     }
-    if (rewardToken) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => rewardToken.includes(t)));
+    if (project) {
+      filteredAndSortedData = filteredAndSortedData.filter((m) => project.includes(m.project));
     }
-    if (chainProject) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => chainProject.includes(m.project));
-    }
-    const pageData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
+    const pageData = filteredAndSortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const pagesFloor = Math.floor(filteredAndSortedData.length / pageSize);
     return {
-      pageNumber: page,
-      totalPages: Math.floor(filteredAndSortedData.length / pageSize),
+      pageNumber: currentPage,
+      totalResults: filteredAndSortedData.length,
+      totalPages: pagesFloor > 0 ? pagesFloor : 1,
       data: pageData,
     };
   }
