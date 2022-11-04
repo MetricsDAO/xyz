@@ -29,7 +29,7 @@ export default function ChallengeSubmission() {
         </Center>
       </section>
       <section className="flex flex-col space-y-7 pb-24">
-        <div className="flex flex-wrap gap-x-8">
+        <div className="flex flex-wrap gap-x-8 gap-y-4">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
             <Author.Author />
