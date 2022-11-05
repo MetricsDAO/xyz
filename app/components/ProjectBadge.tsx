@@ -1,17 +1,13 @@
 import { Avatar, Badge, Text } from "@mantine/core";
-import type { ProjectSlug } from "~/domain";
-import { Projects } from "~/domain";
+import type { Project } from "@prisma/client";
+// import type { Project } from "~/mdao";
 
 type Props = {
   // Slug for the project.
-  slug: ProjectSlug;
+  project: Project;
 };
 
-export function ProjectBadge({ slug }: Props) {
-  const project = Projects.find((project) => project.slug === slug);
-  if (!project) {
-    throw new Error(`Project with slug ${slug} not found.`);
-  }
+export function ProjectBadge({ project }: Props) {
   return (
     <Badge color="gray" leftSection={<Avatar size={24} radius="xl" />} size="lg">
       <Text size="sm" className="normal-case font-normal">

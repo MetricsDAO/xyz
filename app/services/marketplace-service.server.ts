@@ -25,7 +25,7 @@ export const searchMarketplaces = async (params: LaborMarketSearch) => {
       description: { search: params.q },
     },
     orderBy: {
-      [params.sortBy]: params.order || "desc",
+      [params.sortBy]: params.order,
     },
     take: PER_PAGE,
     skip: PER_PAGE * params.page,
