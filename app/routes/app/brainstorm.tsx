@@ -1,24 +1,22 @@
 import { Search16 } from "@carbon/icons-react";
 import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect, Avatar } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import type { Marketplace } from "~/domain";
-import { withServices } from "~/services/with-services.server";
 import { PROJECT_ICONS } from "~/utils/helpers";
 import { getParamsOrFail } from "remix-params-helper";
-import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { LaborMarketSearchSchema } from "~/mdao";
+import { searchMarketplaces } from "~/services/marketplace-service.server";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 
 export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async (svc) => {
-    const url = new URL(data.request.url);
-    const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-    return typedjson(svc.marketplace.brainstormMarketplaces(params));
-  });
+  const url = new URL(data.request.url);
+  const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
+  return typedjson(await searchMarketplaces(params));
 };
 
 export default function Brainstorm() {
-  const { data: marketplaces, pageNumber, totalPages, totalResults } = useTypedLoaderData<typeof loader>();
+  const marketplaces = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
@@ -58,7 +56,7 @@ export default function Brainstorm() {
         <Title order={3}>
           Challenge Marketplaces{" "}
           <Text span color="dimmed">
-            ({totalResults})
+            (420)
           </Text>
         </Title>
         <Divider />
@@ -69,12 +67,7 @@ export default function Brainstorm() {
           <div className="space-y-5">
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              <Pagination
-                page={pageNumber}
-                hidden={marketplaces.length === 0}
-                onChange={onPaginationChange}
-                total={totalPages}
-              />
+              <Pagination page={1} hidden={marketplaces.length === 0} onChange={onPaginationChange} total={10} />
             </div>
           </div>
         </main>
@@ -141,8 +134,12 @@ function SearchAndFilter() {
   );
 }
 
+type MarketplaceTableProps = {
+  marketplaces: UseDataFunctionReturn<typeof loader>;
+};
+
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
+function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -166,20 +163,20 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
               to="/app/m/[marketplaceId]"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={m.id}
+              key={m.address}
             >
               <div className="lg:hidden">Challenge Marketplaces</div>
               <div className="lg:col-span-2">
                 <Text>{m.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectWithIcon project={m.project} />
+              <ProjectWithIcon project={m.projects[0].slug} />
               <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`${m.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`${m.entryCost.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m.topicCount.toLocaleString()}</Text>
+              <Text color="dark.3">{m._count.serviceRequests.toLocaleString()}</Text>
             </Link>
           );
         })}

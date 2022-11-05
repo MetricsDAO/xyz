@@ -1,45 +1,70 @@
-import type { PrismaClient } from "@prisma/client";
-import type { LaborMarketSearch } from "~/domain/labor-market";
-import { fakeBrainstormMarketplaces } from "~/utils/fakes";
+import type { LaborMarket as PrismaLaborMarket } from "@prisma/client";
+import type { LaborMarketMetaCreator, LaborMarketSearch, LaborMarketUpserter } from "~/mdao";
+import env from "~/env";
+import { LaborMarketSchema } from "~/mdao";
+import { prisma } from "./prisma.server";
+import { Blob, NFTStorage } from "nft.storage";
 
-export default class MarketplaceService {
-  constructor(private prisma: PrismaClient) {}
+const PER_PAGE = 10;
 
-  brainstormMarketplaces({ page, sortBy, q, project, token }: LaborMarketSearch) {
-    const currentPage = page ?? 1;
-    const pageSize = 10;
-    const totalPages = 5;
-    const data = fakeBrainstormMarketplaces(pageSize * totalPages);
+/**
+ * Returns an array of LaborMarkets for a given LaborMarketSearch.
+ * @param {LaborMarketSearch} params - The search parameters.
+ * @returns {PrismaLaborMarket[]}
+ */
+export const searchMarketplaces = async (params: LaborMarketSearch) => {
+  return prisma.laborMarket.findMany({
+    include: {
+      _count: {
+        select: { serviceRequests: true },
+      },
+      projects: true,
+    },
+    where: {
+      title: { search: params.q },
+      description: { search: params.q },
+    },
+    orderBy: {
+      [params.sortBy]: params.order || "desc",
+    },
+    take: PER_PAGE,
+    skip: PER_PAGE * params.page,
+  });
+};
 
-    let filteredAndSortedData = [...data];
-    if (sortBy) {
-      if (sortBy === "project") {
-        filteredAndSortedData = filteredAndSortedData.sort((a, b) => {
-          if (a.project < b.project) return -1;
-          if (a.project > b.project) return 1;
-          return 0;
-        });
-      }
-    }
-    if (q) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.title.includes(q));
-    }
-    // if (filters) {
-    //   //Needs badges
-    // }
-    if (token) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => token.includes(t)));
-    }
-    if (project) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => project.includes(m.project));
-    }
-    const pageData = filteredAndSortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-    const pagesFloor = Math.floor(filteredAndSortedData.length / pageSize);
-    return {
-      pageNumber: currentPage,
-      totalResults: filteredAndSortedData.length,
-      totalPages: pagesFloor > 0 ? pagesFloor : 1,
-      data: pageData,
-    };
-  }
-}
+/**
+ * Creates or updates a new LaborMarket. This is only really used by the indexer.
+ * @param {LaborMarket} laborMarket - The labor market to create.
+ * @returns {PrismaLaborMarket}
+ */
+export const upsertLaborMarket: LaborMarketUpserter = async (laborMarket) => {
+  const { address, ...data } = laborMarket;
+  const newLaborMarket = await prisma.laborMarket.upsert({
+    where: { address },
+    update: data,
+    create: { address, ...data },
+  });
+  return laborMarketFromPrisma(newLaborMarket);
+};
+
+/**
+ * Creates a new LaborMarket metadata object in IPFS.
+ * The CID is returned to the client and then written to the LaborMarket contract.
+ * @param {LaborMarketMeta} metadata - The metadata to store.
+ * @returns {string} - The IPFS address (CID) of the metadata.
+ */
+export const createLaborMarketMeta: LaborMarketMetaCreator = async (metadata) => {
+  const client = new NFTStorage({ token: env.NFT_STORAGE_KEY });
+  const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+  const cid = await client.storeBlob(blob);
+  return cid;
+};
+
+/**
+ * Converts a Prisma LaborMarket to a domain LaborMarket.
+ * @param {PrismaLaborMarket} laborMarket - The labor market to convert from Prisma.
+ * @returns {PrismaLaborMarket} - Domain LaborMarket
+ */
+const laborMarketFromPrisma = (laborMarket: PrismaLaborMarket) => {
+  return LaborMarketSchema.parse(laborMarket);
+};
