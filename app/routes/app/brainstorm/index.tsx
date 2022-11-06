@@ -45,8 +45,8 @@ export default function Brainstorm() {
         </main>
         <aside className="md:w-1/5">
           <Center>
-            <Link to="/app/m/new">
-              <Button radius="md" size="md">
+            <Link to="/app/brainstorm/new">
+              <Button radius="md" className="mx-auto">
                 Create Marketplace
               </Button>
             </Link>
@@ -163,7 +163,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
         {marketplaces.map((m) => {
           return (
             <Link
-              to="/app/m/[marketplaceId]"
+              to="/app/brainstorm/[marketplaceId]"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={m.id}
