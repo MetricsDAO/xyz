@@ -26,12 +26,12 @@ export default function Challenge() {
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <Title order={2}>Challenge Title</Title>
         <Center className="flex flex-wrap gap-5">
-          <Link to="/app/t/[topicId]/review">
+          <Link to="/app/brainstorm/c/[topicId]/review">
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Claim to Review
             </Button>
           </Link>
-          <Link to="/app/t/[topicId]/claim">
+          <Link to="/app/brainstorm/c/[topicId]/claim">
             <Button radius="md" className="mx-auto">
               Claim to Submit
             </Button>
@@ -133,7 +133,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                 {submissions.map((m) => {
                   return (
                     <Link
-                      to="/app/t/[topicId]/[submissionId]"
+                      to="/app/brainstorm/c/[topicId]/[submissionId]"
                       className="flex space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center"
                       key={m.id}
                     >
