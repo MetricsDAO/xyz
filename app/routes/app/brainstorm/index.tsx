@@ -34,7 +34,7 @@ export default function Brainstorm() {
             <Title order={1}>Challenge Marketplaces</Title>
             <div className="space-y-2">
               <Text size="lg" color="brand.4">
-                Crowdsource the best questions for crypto analysts to answer about any web3 challenge
+                Crowdsource the best questions for crypto analysts to answer about any web3 topic
               </Text>
               <Text color="dimmed">
                 Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
