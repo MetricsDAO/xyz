@@ -5,9 +5,9 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { Marketplace } from "~/domain";
 import { withServices } from "~/services/with-services.server";
-import { PROJECT_ICONS } from "~/utils/helpers";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   return withServices(data, async (svc) => {
@@ -89,11 +89,12 @@ export default function Brainstorm() {
 function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
+      <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
       <Text size="lg" weight={600}>
         Sort:
       </Text>
       <Select
+        radius="md"
         placeholder="Select option"
         name="sortBy"
         clearable
@@ -103,6 +104,7 @@ function SearchAndFilter() {
         Filter:
       </Text>
       <MultiSelect
+        radius="md"
         label="I am able to"
         placeholder="Select option"
         name="filter"
@@ -114,6 +116,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Reward Token"
         placeholder="Select option"
         name="rewardToken"
@@ -125,6 +128,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Chain/Project"
         placeholder="Select option"
         name="chainProject"
@@ -134,7 +138,7 @@ function SearchAndFilter() {
           { label: "Ethereum", value: "Ethereum" },
         ]}
       />
-      <Button variant="light" size="xs" type="submit">
+      <Button radius="md" variant="light" size="xs" type="submit">
         Apply Filters
       </Button>
     </Form>
@@ -173,7 +177,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
                 <Text>{m.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectWithIcon project={m.project} />
+              <ProjectBadge slug={m.project} />
               <div className="lg:hidden">Challenge Pool Totals</div>
               <TextWithIcon text={`${m.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>
@@ -185,22 +189,5 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
         })}
       </div>
     </>
-  );
-}
-
-function ProjectWithIcon({ project }: { project: string }) {
-  const iconUrl = PROJECT_ICONS[project];
-
-  return <TextWithIcon text={project} iconUrl={iconUrl ?? null} />;
-}
-
-function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
-  return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} />}
-      <Text color="dark.3" weight={400}>
-        {text}
-      </Text>
-    </div>
   );
 }

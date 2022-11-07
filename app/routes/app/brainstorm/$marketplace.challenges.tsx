@@ -17,13 +17,13 @@ import { Form, Link, useSearchParams } from "@remix-run/react";
 import type { ChallengeWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
-import { PROJECT_ICONS } from "~/utils/helpers";
 import { withServices } from "~/services/with-services.server";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
+import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   return withServices(data, async (svc) => {
@@ -63,7 +63,7 @@ export default function MarketplaceChallenges() {
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
             <div className="flex space-x-2">
-              <ProjectWithIcon project={"Solana"} />
+              <ProjectBadge slug={"Solana"} />
             </div>
           </Detail>
         </div>
@@ -120,11 +120,12 @@ export default function MarketplaceChallenges() {
 function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
+      <Input placeholder="Search" name="q" radius="md" rightSection={<Search16 />} />
       <Text size="lg" weight={600}>
         Sort:
       </Text>
       <Select
+        radius="md"
         placeholder="Select option"
         name="sortBy"
         clearable
@@ -137,6 +138,7 @@ function SearchAndFilter() {
         Filter:
       </Text>
       <MultiSelect
+        radius="md"
         label="I am able to"
         placeholder="Select option"
         name="filter"
@@ -147,6 +149,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Reward Token"
         placeholder="Select option"
         name="rewardToken"
@@ -158,6 +161,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Chain/Project"
         placeholder="Select option"
         name="chainProject"
@@ -167,7 +171,7 @@ function SearchAndFilter() {
           { label: "Ethereum", value: "Ethereum" },
         ]}
       />
-      <Button variant="light" size="xs" type="submit">
+      <Button radius="md" variant="light" size="xs" type="submit">
         Apply Filters
       </Button>
     </Form>
@@ -176,7 +180,7 @@ function SearchAndFilter() {
 
 function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate">
@@ -229,7 +233,7 @@ function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
 
 function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
@@ -291,7 +295,7 @@ function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWith
                 <Text>{c.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectWithIcon project={c.marketplace.project} />
+              <ProjectBadge slug={c.marketplace.project} />
               <div className="lg:hidden">Reward Pool Totals</div>
               <TextWithIcon text={`${c.marketplace.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Submit Deadline</div>
@@ -303,22 +307,5 @@ function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWith
         })}
       </div>
     </>
-  );
-}
-
-function ProjectWithIcon({ project }: { project: string }) {
-  const iconUrl = PROJECT_ICONS[project];
-
-  return <TextWithIcon text={project} iconUrl={iconUrl ?? null} />;
-}
-
-function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
-  return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} />}
-      <Text color="dark.3" weight={400}>
-        {text}
-      </Text>
-    </div>
   );
 }

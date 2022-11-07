@@ -8,7 +8,7 @@ export default function CreateChallenge() {
     <div className="mx-auto max-w-3xl space-y-10">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-center">
         <Title order={2} weight={600} className="md:col-span-3">
-          {"Create Challenge"}
+          Create Challenge
         </Title>
         <Text className="md:col-span-3">
           Crowdsource the best questions for crypto analysts to answer about an important or timely challenge. Create
@@ -64,7 +64,7 @@ export default function CreateChallenge() {
             <DatePicker placeholder="End date" size="md" className="w-full" />
             <TimeInput format="12" size="md" className="w-full" />
             <Text italic className="md:col-span-2 text-[#858582]">
-              {"Authors must claim this challenge by {local timestamp} to submit question ideas"}
+              Authors must claim this challenge by &#123; local timestamp &#125; to submit question ideas
             </Text>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
@@ -74,7 +74,7 @@ export default function CreateChallenge() {
             <DatePicker placeholder="Set date" size="md" className="w-full" />
             <TimeInput format="12" size="md" className="w-full" />
             <Text italic className="md:col-span-2 text-[#858582]">
-              {"Reviewers must claim this challenge by {local timestamp} to score questions"}
+              Reviewers must claim this challenge by &#123;local timestamp &#125; to score questions
             </Text>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
@@ -90,9 +90,8 @@ export default function CreateChallenge() {
             />
             <NumberInput defaultValue={1} placeholder="Amount" size="md" label="Reward Pool" hideControls />
             <Text italic className="md:col-span-2 text-[#858582]">
-              {
-                "Rewards will be distributed to eligible authors via the {Reward Curve} reward curve set for the marketplace"
-              }
+              Rewards will be distributed to eligible authors via the &#123; Reward Curve &#125; reward curve set for
+              the marketplace
             </Text>
           </div>
         </div>
