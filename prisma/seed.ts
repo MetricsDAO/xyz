@@ -1,6 +1,7 @@
 import { upsertLaborMarket } from "~/services/marketplace-service.server";
 import { fakeLaborMarket } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
+import { faker } from "@faker-js/faker";
 
 async function main() {
   await prisma.project.createMany({
@@ -30,9 +31,16 @@ async function main() {
     ],
   });
 
+  const projectIds = (await prisma.project.findMany()).map((p) => p.id);
+  const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
   // create 100 fake labor markets in prisma
   for (let i = 0; i < 100; i++) {
-    await upsertLaborMarket(fakeLaborMarket());
+    await upsertLaborMarket(
+      fakeLaborMarket({
+        projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
+        tokenSymbols: faker.helpers.arrayElements(tokenSymbols), // pick a subset of random tokens
+      })
+    );
   }
 }
 
