@@ -18,7 +18,8 @@ export const LaborMarketSchema = z.object({
   reviewPriorityFactor: z.enum(["cheap", "normal", "aggressive"]),
   project: z.string(),
   entryCost: z.number(),
-  topicCount: z.number(),
+  challengeCount: z.number(),
+  reviewDeadline: z.date(),
 });
 
 export const LaborMarketSearchSchema = z.object({

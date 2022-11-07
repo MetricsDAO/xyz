@@ -14,7 +14,7 @@ import {
   Checkbox,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
-import type { Submission, TopicWithMarketplace } from "~/domain";
+import type { Submission, ChallengeWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
@@ -26,12 +26,12 @@ export default function Challenge() {
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <Title order={2}>Challenge Title</Title>
         <Center className="flex flex-wrap gap-5">
-          <Link to="/app/brainstorm/c/[topicId]/review">
+          <Link to="/app/brainstorm/c/[challengeId]/review">
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Claim to Review
             </Button>
           </Link>
-          <Link to="/app/brainstorm/c/[topicId]/claim">
+          <Link to="/app/brainstorm/c/[challengeId]/claim">
             <Button radius="md" className="mx-auto">
               Claim to Submit
             </Button>
@@ -79,8 +79,8 @@ export default function Challenge() {
           </Detail>
         </div>
         <Text color="dimmed" className="max-w-2xl">
-          What’s the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What’s
-          the challenge What web3 topic do you want to crowdsource potential analytics questions
+          What’s the challenge What web3 challenge do you want to crowdsource potential analytics questions for? Why?
+          What’s the challenge What web3 challenge do you want to crowdsource potential analytics questions
         </Text>
       </section>
 
@@ -208,7 +208,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
   );
 }
 
-function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
+function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -261,7 +261,7 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
   );
 }
 
-function Rewards({ topic }: { topic: TopicWithMarketplace }) {
+function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -293,7 +293,7 @@ function Rewards({ topic }: { topic: TopicWithMarketplace }) {
   );
 }
 
-function Timeline({ topic }: { topic: TopicWithMarketplace }) {
+function Timeline({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
