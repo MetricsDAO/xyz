@@ -1,5 +1,4 @@
 import { Avatar, Text } from "@mantine/core";
-import type { ProjectSlug } from "~/domain";
 import { PROJECT_ICONS } from "~/utils/helpers";
 
 export function ProjectBadge({ slug }: { slug: string }) {

@@ -1,24 +1,26 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect, Avatar } from "@mantine/core";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import type { Marketplace } from "~/domain";
-import { withServices } from "~/services/with-services.server";
+
+import { countLaborMarkets, searchLaborMarkets } from "~/services/marketplace-service.server";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async (svc) => {
-    const url = new URL(data.request.url);
-    const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-    return typedjson(svc.marketplace.brainstormMarketplaces(params));
-  });
+  const url = new URL(data.request.url);
+  url.searchParams.set("type", "brainstorm");
+  const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
+  const marketplaces = await searchLaborMarkets(params);
+  const totalResults = await countLaborMarkets(params);
+  return typedjson({ marketplaces, totalResults, params }, { status: 200 });
 };
 
 export default function Brainstorm() {
-  const { data: marketplaces, pageNumber, totalPages, totalResults } = useTypedLoaderData<typeof loader>();
+  const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
@@ -70,10 +72,10 @@ export default function Brainstorm() {
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination
-                page={pageNumber}
-                hidden={marketplaces.length === 0}
+                page={params.page}
+                hidden={totalResults === 0}
+                total={Math.ceil(totalResults / params.first)}
                 onChange={onPaginationChange}
-                total={totalPages}
               />
             </div>
           </div>
@@ -145,8 +147,12 @@ function SearchAndFilter() {
   );
 }
 
+type MarketplaceTableProps = {
+  marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
+};
+
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
+function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -170,20 +176,24 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
               to="/app/brainstorm/[marketplaceId]/challenges"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={m.id}
+              key={m.address}
             >
               <div className="lg:hidden">Challenge Marketplaces</div>
               <div className="lg:col-span-2">
                 <Text>{m.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectBadge slug={m.project} />
+              <div>
+                {m.projects.map((p) => (
+                  <ProjectBadge key={p.slug} slug={p.slug} />
+                ))}
+              </div>
               <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`${m.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`${m.entryCost.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m.challengeCount?.toLocaleString()}</Text>
+              <Text color="dark.3">{m._count.serviceRequests.toLocaleString()}</Text>
             </Link>
           );
         })}
