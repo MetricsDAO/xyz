@@ -3,13 +3,13 @@ import { CountDown } from "~/components/CountDown";
 
 export default function ClaimToSubmit() {
   return (
-    <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12 pt-12">
+    <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
       <div className="space-y-2">
         <Title order={2} weight={600}>
           {"Claim to Submit on {Challenge title}"}
         </Title>
         <div>
-          <Title order={4} color="blue" weight={400}>
+          <Title order={4} color="brand" weight={400}>
             {"Claiming is an up front commitment to submit at least one submission"}
           </Title>
           <Text color="dimmed">

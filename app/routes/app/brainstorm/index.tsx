@@ -2,12 +2,13 @@ import { Search16 } from "@carbon/icons-react";
 import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect, Avatar } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { PROJECT_ICONS } from "~/utils/helpers";
-import { getParamsOrFail } from "remix-params-helper";
-import { LaborMarketSearchSchema } from "~/domain";
+
 import { countLaborMarkets, searchLaborMarkets } from "~/services/marketplace-service.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { getParamsOrFail } from "remix-params-helper";
+import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -28,7 +29,7 @@ export default function Brainstorm() {
   };
 
   return (
-    <div className="mx-auto container space-y-7 px-3 mt-5 mb-10">
+    <div className="mx-auto container space-y-7 px-3 mb-10">
       <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <div className="space-y-5 max-w-3xl">
@@ -46,8 +47,8 @@ export default function Brainstorm() {
         </main>
         <aside className="md:w-1/5">
           <Center>
-            <Link to="/app/m/new">
-              <Button radius="md" size="md">
+            <Link to="/app/brainstorm/new">
+              <Button radius="md" className="mx-auto">
                 Create Marketplace
               </Button>
             </Link>
@@ -57,7 +58,7 @@ export default function Brainstorm() {
 
       <section>
         <Title order={3}>
-          Challenge Marketplaces{" "}
+          Challenge Marketplaces
           <Text span color="dimmed">
             ({totalResults})
           </Text>
@@ -90,11 +91,12 @@ export default function Brainstorm() {
 function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
+      <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
       <Text size="lg" weight={600}>
         Sort:
       </Text>
       <Select
+        radius="md"
         placeholder="Select option"
         name="sortBy"
         clearable
@@ -104,6 +106,7 @@ function SearchAndFilter() {
         Filter:
       </Text>
       <MultiSelect
+        radius="md"
         label="I am able to"
         placeholder="Select option"
         name="filter"
@@ -115,6 +118,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Reward Token"
         placeholder="Select option"
         name="rewardToken"
@@ -126,6 +130,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Chain/Project"
         placeholder="Select option"
         name="chainProject"
@@ -135,7 +140,7 @@ function SearchAndFilter() {
           { label: "Ethereum", value: "Ethereum" },
         ]}
       />
-      <Button variant="light" size="xs" type="submit">
+      <Button radius="md" variant="light" size="xs" type="submit">
         Apply Filters
       </Button>
     </Form>
@@ -168,7 +173,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         {marketplaces.map((m) => {
           return (
             <Link
-              to="/app/m/[marketplaceId]"
+              to="/app/brainstorm/[marketplaceId]/challenges"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={m.address}
@@ -179,7 +184,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
               </div>
               <div className="lg:hidden">Chain/Project</div>
               {m.projects.map((p) => (
-                <ProjectWithIcon key={p.slug} project={p.slug} />
+                <ProjectBadge key={p.slug} slug={p.slug} />
               ))}
               <div className="lg:hidden">Challenge Pool Totals</div>
               <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
@@ -192,22 +197,5 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         })}
       </div>
     </>
-  );
-}
-
-function ProjectWithIcon({ project }: { project: string }) {
-  const iconUrl = PROJECT_ICONS[project];
-
-  return <TextWithIcon text={project} iconUrl={iconUrl ?? null} />;
-}
-
-function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
-  return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} />}
-      <Text color="dark.3" weight={400}>
-        {text}
-      </Text>
-    </div>
   );
 }

@@ -71,3 +71,10 @@ export const fakeLaborMarket = (): LaborMarket => {
     projectIds: ["solana"],
   };
 };
+
+export const fakeChallenges = (count: number) => {
+  // deterministic results
+  faker.seed(20);
+  return [];
+  // return Array.from({ length: count }).map(fakeChallenge);
+};
