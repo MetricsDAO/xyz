@@ -52,13 +52,7 @@ import type { LaborMarket } from "~/domain";
  * Creates a fake LaborMarket. Development use only.
  * @returns {LaborMarketNew} laborMarket - The labor market to create.
  */
-export const fakeLaborMarket = ({
-  projectIds,
-  tokenSymbols,
-}: {
-  projectIds: string[];
-  tokenSymbols: string[];
-}): LaborMarket => {
+export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   return {
     address: faker.finance.ethereumAddress(),
     title: faker.random.words(3),
@@ -73,7 +67,8 @@ export const fakeLaborMarket = ({
     sponsorAddress: faker.finance.ethereumAddress(),
     reviewBadgerAddress: faker.finance.ethereumAddress(),
     reviewBadgerTokenId: faker.datatype.string(),
-    tokenSymbols: faker.helpers.arrayElements(tokenSymbols),
-    projectIds: faker.helpers.arrayElements(projectIds, 2),
+    tokenSymbols: [],
+    projectIds: [],
+    ...data,
   };
 };
