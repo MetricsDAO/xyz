@@ -14,11 +14,9 @@ import {
   Pagination,
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { Topic, TopicWithMarketplace } from "~/domain";
+import type { TopicWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
-import { ProjectBadge } from "~/components/ProjectBadge";
-import { CountDown } from "~/components/CountDown";
 import { PROJECT_ICONS } from "~/utils/helpers";
 import { withServices } from "~/services/with-services.server";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
@@ -36,7 +34,7 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 export default function MarketplaceTopics() {
-  const { data: challenges, pageNumber, totalPages, totalResults } = useTypedLoaderData<typeof loader>();
+  const { data: challenges, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
@@ -65,8 +63,6 @@ export default function MarketplaceTopics() {
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
             <div className="flex space-x-2">
-              {/* <ProjectBadge slug="solana" />
-              <ProjectBadge slug="solana" /> */}
               <ProjectWithIcon project={"Solana"} />
             </div>
           </Detail>
@@ -87,7 +83,6 @@ export default function MarketplaceTopics() {
             </Tabs.List>
 
             <Tabs.Panel value="challenges" pt="xs">
-              {/* <MarketplacesChallengesTable challenges={[]} /> */}
               <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
                 <main className="flex-1">
                   <div className="space-y-5">
@@ -328,9 +323,3 @@ function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null 
     </div>
   );
 }
-
-const dummySubmissions = [
-  { id: "1", author: "1234" },
-  { id: "2", author: "2234" },
-  { id: "3", author: "3234" },
-];
