@@ -9,21 +9,28 @@ export default function SubmitQuestion() {
             <Title order={2} weight={600} className="mb-1">
               {"Submit Question"}
             </Title>
-            <Title order={4} color="blue" weight={400}>
+            <Title order={4} color="brand" weight={400}>
               {"Brainstorm the best question for crypto analysts to answer about {Challenge title}"}
             </Title>
             <Text color="dimmed">
               Submit your best question idea. Peers will review and score your question. If you’re a winner, you’ll earn
-              tokens from the challenge reward pool!
+              tokens and xMETRIC from the challenge reward pool!
             </Text>
           </div>
-          <TextInput label="Question Title" size="md" placeholder="Question title" className="mt-1 w-full" />
+          <TextInput
+            label="Question Title"
+            size="md"
+            radius="md"
+            placeholder="Question title"
+            className="mt-1 w-full"
+          />
           <div className="space-y-3">
             <Textarea
               label="What's your question?"
               placeholder="Don’t assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
               className="text-black w-full md:col-span-2"
               size="md"
+              radius="sm"
               autosize
               spellCheck="true"
               minRows={5}

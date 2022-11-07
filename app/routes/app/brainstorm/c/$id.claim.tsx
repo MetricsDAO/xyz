@@ -9,7 +9,7 @@ export default function ClaimToSubmit() {
           {"Claim to Submit on {Challenge title}"}
         </Title>
         <div>
-          <Title order={4} color="blue" weight={400}>
+          <Title order={4} color="brand" weight={400}>
             {"Claiming is an up front commitment to submit at least one submission"}
           </Title>
           <Text color="dimmed">
