@@ -113,34 +113,7 @@ export default function App() {
   return (
     <Document>
       <WalletProvider>
-        <MantineProvider
-          withGlobalStyles
-          withNormalizeCSS
-          theme={{
-            colors: {
-              brand: [
-                "#dbfaff",
-                "#b1e9fc",
-                "#86daf5",
-                "#59caf0",
-                "#2ebbea",
-                "#15a1d1",
-                "#037ea3",
-                "#005a76",
-                "#00374a",
-                "#00141d",
-              ],
-            },
-            primaryColor: "brand",
-            fontFamily: "Inter, sans-serif",
-            headings: {
-              fontFamily: "Inter, sans-serif",
-              fontWeight: 600,
-            },
-          }}
-        >
-          <Outlet />
-        </MantineProvider>
+        <Outlet />
       </WalletProvider>
     </Document>
   );
@@ -168,7 +141,34 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         ></script>
       </head>
       <body>
-        {children}
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            colors: {
+              brand: [
+                "#dbfaff",
+                "#b1e9fc",
+                "#86daf5",
+                "#59caf0",
+                "#2ebbea",
+                "#15a1d1",
+                "#037ea3",
+                "#005a76",
+                "#00374a",
+                "#00141d",
+              ],
+            },
+            primaryColor: "brand",
+            fontFamily: "Inter, sans-serif",
+            headings: {
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 600,
+            },
+          }}
+        >
+          {children}
+        </MantineProvider>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
