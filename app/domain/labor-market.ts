@@ -16,7 +16,7 @@ export const LaborMarketSchema = z.object({
   submitRepMax: z.number({ description: "Maximum xMETRIC allowed to submit a request." }),
   reviewBadgerAddress: z.string({ description: "Badger Address of the badge needed to review a request." }),
   reviewBadgerTokenId: z.string({ description: "Token ID of the badge needed to review a request." }),
-  tokenIds: z.array(z.string(), { description: "List of reward tokens." }),
+  tokenSymbols: z.array(z.string(), { description: "List of reward tokens." }),
   projectIds: z.array(z.string(), { description: "List of project IDs." }),
   sponsorAddress: z.string({ description: "ID of the user who sponsored it." }),
 });
