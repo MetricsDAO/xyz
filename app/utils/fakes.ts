@@ -26,6 +26,7 @@ export function fakeMarketplace(): Marketplace {
     project: faker.helpers.arrayElement(["Solana", "Ethereum"]),
     topicCount: faker.datatype.number(),
     entryCost: faker.datatype.number(),
+    reviewDeadline: faker.date.future(),
   };
 }
 
@@ -46,4 +47,10 @@ export const fakeBrainstormMarketplaces = (count: number) => {
   // deterministic results
   faker.seed(1337);
   return Array.from({ length: count }).map(fakeMarketplace);
+};
+
+export const fakeTopics = (count: number) => {
+  // deterministic results
+  faker.seed(20);
+  return Array.from({ length: count }).map(fakeTopic);
 };

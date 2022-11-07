@@ -19,6 +19,7 @@ export const LaborMarketSchema = z.object({
   project: z.string(),
   entryCost: z.number(),
   topicCount: z.number(),
+  reviewDeadline: z.date(),
 });
 
 export const LaborMarketSearchSchema = z.object({

@@ -35,6 +35,7 @@ export type Marketplace = {
   project: string;
   entryCost: number;
   topicCount: number;
+  reviewDeadline?: Date;
 };
 
 export type Topic = {

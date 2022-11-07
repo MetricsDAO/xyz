@@ -56,7 +56,7 @@ export default function Brainstorm() {
 
       <section>
         <Title order={3}>
-          Challenge Marketplaces{" "}
+          Challenge Marketplaces
           <Text span color="dimmed">
             ({totalResults})
           </Text>
@@ -163,7 +163,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
         {marketplaces.map((m) => {
           return (
             <Link
-              to="/app/brainstorm/[marketplaceId]"
+              to="/app/brainstorm/[marketplaceId]/topics"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={m.id}
