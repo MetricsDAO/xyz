@@ -134,10 +134,10 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                   return (
                     <Link
                       to="/app/s/[submissionId]"
-                      className="flex space-x-2 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center"
+                      className="flex flex-col md:flex-row gap-x-10 gap-y-3 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center space-between"
                       key={m.id}
                     >
-                      <main className="flex flex-col flex-1 gap-2">
+                      <div className="flex flex-col flex-1 gap-2">
                         <Text weight={500}>Some bold words</Text>
                         <Text>
                           What are wallets/users swapping their $NEAR for? Analyse the distribution of $NEAR outflow
@@ -156,18 +156,18 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                             </Text>
                           </Badge>
                         </div>
-                      </main>
-                      <aside className="md:w-1/6">
-                        <div className="flex rounded-lg bg-sky-500 items-center">
-                          <div className="rounded-lg bg-sky-200 py-2 w-3/4">
-                            <Text align="center">Good</Text>
+                      </div>
+                      <div>
+                        <div className="flex rounded-lg bg-sky-500 items-center w-32">
+                          <div className="rounded-lg bg-sky-200 py-2 w-24">
+                            <Text align="center">Average</Text>
                           </div>
                           <Text color="white" className="mx-auto">
                             80
                           </Text>
                         </div>
                         <Text align="center">55 reviews</Text>
-                      </aside>
+                      </div>
                     </Link>
                   );
                 })}
@@ -178,11 +178,12 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
       </main>
       <aside className="md:w-1/5">
         <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
-          <Input placeholder="Search" name="search" icon={<Search16 />} />
+          <Input radius="md" placeholder="Search" name="search" icon={<Search16 />} />
           <Select
             label="Sort"
             placeholder="Select option"
             name="sortBy"
+            radius="md"
             clearable
             data={[{ label: "Chain/Project", value: "project" }]}
           />
@@ -339,10 +340,10 @@ function Participants({ submissions }: { submissions: Submission[] }) {
                     return (
                       <Link
                         to="/u/[uId]"
-                        className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center"
+                        className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
                         key={m.id}
                       >
-                        <main className="flex items-center flex-1 space-x-2">
+                        <div className="flex items-center flex-1 space-x-2">
                           <Avatar alt="" />
                           <Text weight={500}>user.ETH</Text>
                           <Badge color="gray" radius="sm">
@@ -350,10 +351,8 @@ function Participants({ submissions }: { submissions: Submission[] }) {
                               400 xMetric
                             </Text>
                           </Badge>
-                        </main>
-                        <aside className="md:w-1/5">
-                          <Text>12 hours ago</Text>
-                        </aside>
+                        </div>
+                        <Text>12 hours ago</Text>
                       </Link>
                     );
                   })}
@@ -364,11 +363,12 @@ function Participants({ submissions }: { submissions: Submission[] }) {
         </main>
         <aside className="md:w-1/5">
           <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
-            <Input placeholder="Search" name="search" icon={<Search16 />} />
+            <Input radius="md" placeholder="Search" name="search" icon={<Search16 />} />
             <Select
               label="Sort"
               placeholder="Select option"
               name="sortBy"
+              radius="md"
               clearable
               data={[{ label: "Chain/Project", value: "project" }]}
             />

@@ -17,13 +17,20 @@ export default function SubmitQuestion() {
               tokens and xMETRIC from the challenge reward pool!
             </Text>
           </div>
-          <TextInput label="Question Title" size="md" placeholder="Question title" className="mt-1 w-full" />
+          <TextInput
+            label="Question Title"
+            size="md"
+            radius="md"
+            placeholder="Question title"
+            className="mt-1 w-full"
+          />
           <div className="space-y-3">
             <Textarea
               label="What's your question?"
               placeholder="Don’t assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
               className="text-black w-full md:col-span-2"
               size="md"
+              radius="sm"
               autosize
               spellCheck="true"
               minRows={5}

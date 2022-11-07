@@ -44,8 +44,8 @@ export default function ChallengeSubmission() {
           </Detail>
           <Detail>
             <Detail.Title>Overall Score</Detail.Title>
-            <div className="flex rounded-full bg-sky-500 items-center">
-              <div className="rounded-full bg-sky-200 w-3/4">
+            <div className="flex rounded-full bg-[#6993FF] items-center w-28">
+              <div className="rounded-full bg-[#D1DEFF] w-3/4">
                 <Text align="center" className="normal-case font-normal">
                   Good
                 </Text>
@@ -97,24 +97,22 @@ export default function ChallengeSubmission() {
                       return (
                         <Link
                           to="/u/[uId]"
-                          className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center"
+                          className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
                           key={m.id}
                         >
-                          <main className="flex flex-col md:flex-row items-center flex-1 gap-2">
-                            <Paper p="xs" sx={{ backgroundColor: "green", width: 100 }}>
-                              <Text align="center">Average</Text>
+                          <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                            <Paper p="xs" sx={{ backgroundColor: "#D9F0CA", width: 100 }}>
+                              <Text align="center">Great</Text>
                             </Paper>
-                            <Avatar alt="" className="md:ml-2" />
+                            <Avatar alt="" className="md:ml-2" radius="xl" />
                             <Text weight={500}>user.ETH</Text>
                             <Badge color="gray" radius="sm">
                               <Text weight={400} className="normal-case">
                                 400 xMetric
                               </Text>
                             </Badge>
-                          </main>
-                          <aside className="md:w-1/5">
-                            <Text>12 hours ago</Text>
-                          </aside>
+                          </div>
+                          <Text>12 hours ago</Text>
                         </Link>
                       );
                     })}
@@ -125,8 +123,14 @@ export default function ChallengeSubmission() {
           </main>
           <aside className="md:w-1/5">
             <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
-              <Input placeholder="Search" name="search" icon={<Search16 />} />
-              <Select label="Sort" name="sortBy" clearable data={[{ label: "Chain/Project", value: "project" }]} />
+              <Input placeholder="Search" name="search" icon={<Search16 />} radius="md" />
+              <Select
+                radius="md"
+                label="Sort"
+                name="sortBy"
+                clearable
+                data={[{ label: "Chain/Project", value: "project" }]}
+              />
               <Checkbox.Group label="Filter:" description="Overall score" spacing="xs" orientation="vertical">
                 <Checkbox value="great" label="Great" />
                 <Checkbox value="good" label="Good" />
