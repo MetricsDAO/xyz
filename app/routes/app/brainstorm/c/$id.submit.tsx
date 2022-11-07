@@ -2,7 +2,7 @@ import { Button, Textarea, TextInput, Text, Title, Paper } from "@mantine/core";
 
 export default function SubmitQuestion() {
   return (
-    <div className="container mx-auto px-10 space-y-3 mb-12 pt-12">
+    <div className="container mx-auto px-10 space-y-3 mb-12">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
         <main className="lg:max-w-xl space-y-7">
           <div>

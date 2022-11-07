@@ -1,45 +1,63 @@
-import type { PrismaClient } from "@prisma/client";
-import type { LaborMarketSearch } from "~/domain/labor-market";
-import { fakeBrainstormMarketplaces } from "~/utils/fakes";
+import type { LaborMarket, LaborMarketSearch } from "~/domain";
+import { prisma } from "./prisma.server";
 
-export default class MarketplaceService {
-  constructor(private prisma: PrismaClient) {}
+/**
+ * Returns an array of LaborMarkets for a given LaborMarketSearch.
+ * @param {LaborMarketSearch} params - The search parameters.
+ */
+export const searchLaborMarkets = async (params: LaborMarketSearch) => {
+  return prisma.laborMarket.findMany({
+    include: {
+      _count: {
+        select: { serviceRequests: true },
+      },
+      projects: true,
+    },
+    where: {
+      type: params.type,
+      title: { search: params.q },
+      description: { search: params.q },
+      tokens: params.token ? { some: { symbol: params.token } } : undefined,
+      projects: params.project ? { some: { id: params.project } } : undefined,
+    },
+    orderBy: {
+      [params.sortBy]: params.order,
+    },
+    take: params.first,
+    skip: params.first * (params.page - 1),
+  });
+};
 
-  brainstormMarketplaces({ page, sortBy, q, project, token }: LaborMarketSearch) {
-    const currentPage = page ?? 1;
-    const pageSize = 10;
-    const totalPages = 5;
-    const data = fakeBrainstormMarketplaces(pageSize * totalPages);
+/**
+ * Counts the number of LaborMarkets that match a given LaborMarketSearch.
+ * @param {LaborMarketSearch} params - The search parameters.
+ * @returns {number} - The number of LaborMarkets that match the search.
+ */
+export const countLaborMarkets = async (params: LaborMarketSearch) => {
+  return prisma.laborMarket.count({
+    where: {
+      type: params.type,
+      title: { search: params.q },
+      description: { search: params.q },
+    },
+  });
+};
 
-    let filteredAndSortedData = [...data];
-    if (sortBy) {
-      if (sortBy === "project") {
-        filteredAndSortedData = filteredAndSortedData.sort((a, b) => {
-          if (a.project < b.project) return -1;
-          if (a.project > b.project) return 1;
-          return 0;
-        });
-      }
-    }
-    if (q) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.title.includes(q));
-    }
-    // if (filters) {
-    //   //Needs badges
-    // }
-    if (token) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => m.rewardTokens.some((t) => token.includes(t)));
-    }
-    if (project) {
-      filteredAndSortedData = filteredAndSortedData.filter((m) => project.includes(m.project));
-    }
-    const pageData = filteredAndSortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-    const pagesFloor = Math.floor(filteredAndSortedData.length / pageSize);
-    return {
-      pageNumber: currentPage,
-      totalResults: filteredAndSortedData.length,
-      totalPages: pagesFloor > 0 ? pagesFloor : 1,
-      data: pageData,
-    };
-  }
-}
+/**
+ * Creates or updates a new LaborMarket. This is only really used by the indexer.
+ * @param {LaborMarket} laborMarket - The labor market to create.
+ */
+export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
+  const { address, projectIds, tokenSymbols, ...data } = laborMarket;
+  const newLaborMarket = await prisma.laborMarket.upsert({
+    where: { address },
+    update: data,
+    create: {
+      address,
+      ...data,
+      projects: { connect: projectIds.map((id) => ({ id })) },
+      tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
+    },
+  });
+  return newLaborMarket;
+};

@@ -1,22 +1,19 @@
-import { Avatar, Badge, Text } from "@mantine/core";
-import type { ProjectSlug } from "~/domain";
-import { Projects } from "~/domain";
+import { Avatar, Text } from "@mantine/core";
+import { PROJECT_ICONS } from "~/utils/helpers";
 
-type Props = {
-  // Slug for the project.
-  slug: ProjectSlug;
-};
+export function ProjectBadge({ slug }: { slug: string }) {
+  const iconUrl = PROJECT_ICONS[slug];
 
-export function ProjectBadge({ slug }: Props) {
-  const project = Projects.find((project) => project.slug === slug);
-  if (!project) {
-    throw new Error(`Project with slug ${slug} not found.`);
-  }
+  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
+}
+
+export function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
   return (
-    <Badge color="gray" leftSection={<Avatar size={24} radius="xl" />} size="lg">
-      <Text size="sm" className="normal-case font-normal">
-        {project.name}
+    <div className="flex items-center space-x-1">
+      {iconUrl && <Avatar size="sm" src={iconUrl} />}
+      <Text color="dark.3" weight={400}>
+        {text}
       </Text>
-    </Badge>
+    </div>
   );
 }
