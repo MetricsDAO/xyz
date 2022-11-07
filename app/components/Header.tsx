@@ -36,6 +36,14 @@ const Header = () => {
         <span className="block w-6 h-0.5 bg-gray-600"></span>
       </div>
       <ul ref={navRef} className="nav w-3/4 justify-end list-none hidden lg:flex items-center">
+        <a
+          target="_blank"
+          className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1"
+          href="https://blog.metricsdao.xyz/101/"
+          rel="noreferrer"
+        >
+          BECOME AN ANALYST
+        </a>
         <Link className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1" to="/dashboard">
           DASHBOARD
         </Link>
