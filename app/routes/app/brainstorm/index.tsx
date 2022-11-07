@@ -34,7 +34,7 @@ export default function Brainstorm() {
             <Title order={1}>Challenge Marketplaces</Title>
             <div className="space-y-2">
               <Text size="lg" color="brand.4">
-                Crowdsource the best questions for crypto analysts to answer about any web3 topic
+                Crowdsource the best questions for crypto analysts to answer about any web3 challenge
               </Text>
               <Text color="dimmed">
                 Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
@@ -163,7 +163,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
         {marketplaces.map((m) => {
           return (
             <Link
-              to="/app/brainstorm/[marketplaceId]/topics"
+              to="/app/brainstorm/[marketplaceId]/challenges"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={m.id}
@@ -179,7 +179,7 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
               <div className="lg:hidden">Avg. Challenge Pool</div>
               <TextWithIcon text={`${m.entryCost.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m.topicCount.toLocaleString()}</Text>
+              <Text color="dark.3">{m.challengeCount?.toLocaleString()}</Text>
             </Link>
           );
         })}

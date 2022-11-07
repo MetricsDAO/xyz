@@ -1,6 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 import type { ChallengeSearch } from "~/domain/challenge";
-import { fakeTopics } from "~/utils/fakes";
+import { fakeChallenges } from "~/utils/fakes";
 
 export default class ChallengeService {
   constructor(private prisma: PrismaClient) {}
@@ -9,7 +9,7 @@ export default class ChallengeService {
     const currentPage = page ?? 1;
     const pageSize = 10;
     const totalPages = 5;
-    const data = fakeTopics(pageSize * totalPages);
+    const data = fakeChallenges(pageSize * totalPages);
 
     let filteredAndSortedData = [...data];
     if (sortBy) {

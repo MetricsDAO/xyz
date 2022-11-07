@@ -81,7 +81,7 @@ export default function Index() {
               <p className="text-content">
                 The three-step Brainstorming, Analytics, and Review system provides a variety of ways for the community
                 and Web3 organizations to generate engagement, education, content, and peer reviewed analytics about
-                protocols or topics they care about. Each step can be activated on its own or together.
+                protocols or challenges they care about. Each step can be activated on its own or together.
               </p>
             </div>
             <div className="col-12" data-aos="fade" data-aos-delay="300" data-aos-duration="2000">

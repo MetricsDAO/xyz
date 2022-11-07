@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { Marketplace, TopicWithMarketplace } from "~/domain";
+import type { Marketplace, ChallengeWithMarketplace } from "~/domain";
 
 // This module export utlity functions to generate fake data for testing and development
 // Uses domain types from ~/domain.
@@ -24,13 +24,13 @@ export function fakeMarketplace(): Marketplace {
     reviewMethod: "likert",
     authorRepMax: faker.datatype.number(),
     project: faker.helpers.arrayElement(["Solana", "Ethereum"]),
-    topicCount: faker.datatype.number(),
+    challengeCount: faker.datatype.number(),
     entryCost: faker.datatype.number(),
     reviewDeadline: faker.date.future(),
   };
 }
 
-export function fakeTopic(): TopicWithMarketplace {
+export function fakeChallenge(): ChallengeWithMarketplace {
   return {
     id: faker.datatype.uuid(),
     title: faker.lorem.words(6),
@@ -49,8 +49,8 @@ export const fakeBrainstormMarketplaces = (count: number) => {
   return Array.from({ length: count }).map(fakeMarketplace);
 };
 
-export const fakeTopics = (count: number) => {
+export const fakeChallenges = (count: number) => {
   // deterministic results
   faker.seed(20);
-  return Array.from({ length: count }).map(fakeTopic);
+  return Array.from({ length: count }).map(fakeChallenge);
 };

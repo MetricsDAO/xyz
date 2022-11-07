@@ -14,7 +14,7 @@ import {
   Pagination,
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { TopicWithMarketplace } from "~/domain";
+import type { ChallengeWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { PROJECT_ICONS } from "~/utils/helpers";
@@ -33,7 +33,7 @@ export const loader = async (data: DataFunctionArgs) => {
   });
 };
 
-export default function MarketplaceTopics() {
+export default function MarketplaceChallenges() {
   const { data: challenges, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -174,7 +174,7 @@ function SearchAndFilter() {
   );
 }
 
-function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
+function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
@@ -227,7 +227,7 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
   );
 }
 
-function Rewards({ topic }: { topic: TopicWithMarketplace }) {
+function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
@@ -260,7 +260,7 @@ function Rewards({ topic }: { topic: TopicWithMarketplace }) {
 }
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesChallengesTable({ challenges }: { challenges: TopicWithMarketplace[] }) {
+function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWithMarketplace[] }) {
   console.log(challenges.length);
   if (challenges.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
@@ -282,7 +282,7 @@ function MarketplacesChallengesTable({ challenges }: { challenges: TopicWithMark
         {challenges.map((c) => {
           return (
             <Link
-              to="/app/brainstorm/[marketplaceId]/topics"
+              to="/app/brainstorm/[marketplaceId]/challenges"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={c.id}

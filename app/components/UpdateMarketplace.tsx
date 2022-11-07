@@ -11,7 +11,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
         </Title>
         <Text>
           Brainstorm marketplaces empower our community to crowdsource the best questions for crypto analysts to answer.
-          Create a marketplace for you and peers to host, incentivize, and engage in brainstorms for any web3 topic.
+          Create a marketplace for you and peers to host, incentivize, and engage in brainstorms for any web3 challenge.
         </Text>
         <TextInput label="Title" placeholder="Marketplace name" className=" text-black w-full" />
         <Textarea
@@ -29,7 +29,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
         />
         <NativeSelect
           className="text-black"
-          label="Control who can create topics"
+          label="Control who can create challenges"
           data={["React", "Angular", "Svelte", "Vue"]}
         />
         {delegateCreate ? (

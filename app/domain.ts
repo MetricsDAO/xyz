@@ -13,7 +13,7 @@ export type ProjectSlug = typeof Projects[number]["slug"];
 // Enum for the different types of projects MDAO supports.
 export type ProgramType = "brainstorm" | "community";
 
-// A Program is a collection of Topics and related config.
+// A Program is a collection of Challenges and related config.
 export type Marketplace = {
   id: string;
   type: ProgramType;
@@ -34,11 +34,11 @@ export type Marketplace = {
   reviewPriorityFactor: "cheap" | "normal" | "aggressive";
   project: string;
   entryCost: number;
-  topicCount: number;
+  challengeCount: number;
   reviewDeadline?: Date;
 };
 
-export type Topic = {
+export type Challenge = {
   id: string;
   title: string;
   description: string;
@@ -50,9 +50,9 @@ export type Topic = {
   sponsor: Address;
 };
 
-export type UnsavedTopic = Omit<Topic, "id">;
+export type UnsavedChallenge = Omit<Challenge, "id">;
 
-export type TopicWithMarketplace = Topic & { marketplace: Marketplace };
+export type ChallengeWithMarketplace = Challenge & { marketplace: Marketplace };
 
 export type Submission = {
   id: string;
