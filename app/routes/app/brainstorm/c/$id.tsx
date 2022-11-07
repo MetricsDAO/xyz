@@ -14,11 +14,26 @@ import {
   Checkbox,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
-import type { Submission, ChallengeWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { z } from "zod";
+import { findChallenge } from "~/services/challenges-service.server";
+import { typedjson } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
+
+const paramsSchema = z.object({ id: z.string() });
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id);
+  if (!challenge) {
+    throw notFound({ id });
+  }
+  return typedjson({ challenge }, { status: 200 });
+};
 
 export default function Challenge() {
   return (
@@ -79,8 +94,8 @@ export default function Challenge() {
           </Detail>
         </div>
         <Text color="dimmed" className="max-w-2xl">
-          What’s the challenge What web3 challenge do you want to crowdsource potential analytics questions for? Why?
-          What’s the challenge What web3 challenge do you want to crowdsource potential analytics questions
+          What's the challenge What web3 challenge do you want to crowdsource potential analytics questions for? Why?
+          What's the challenge What web3 challenge do you want to crowdsource potential analytics questions
         </Text>
       </section>
 
@@ -96,7 +111,7 @@ export default function Challenge() {
             </Tabs.List>
 
             <Tabs.Panel value="submissions" pt="xs">
-              <Submissions submissions={dummySubmissions} />
+              <Submissions submissions={[]} />
             </Tabs.Panel>
 
             <Tabs.Panel value="prerequisites" pt="xs">
@@ -112,7 +127,7 @@ export default function Challenge() {
             </Tabs.Panel>
 
             <Tabs.Panel value="participants" pt="xs">
-              <Participants submissions={dummySubmissions} />
+              <Participants submissions={[]} />
             </Tabs.Panel>
           </Tabs>
         </main>
@@ -121,7 +136,11 @@ export default function Challenge() {
   );
 }
 
-function Submissions({ submissions }: { submissions: Submission[] }) {
+type SubmissionsProps = {
+  submissions: UseDataFunctionReturn<typeof loader>["challenge"]["submissions"];
+};
+
+function Submissions({ submissions }: SubmissionsProps) {
   const winnerSelected = false;
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -193,9 +212,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                 <Checkbox value="winner" label="Winner" />
                 <Divider size="xs" />
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Checkbox value="great" label="Great" />
             <Checkbox value="good" label="Good" />
             <Checkbox value="average" label="Average" />
@@ -208,7 +225,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
   );
 }
 
-function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
+function Prerequisites() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -261,7 +278,7 @@ function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
   );
 }
 
-function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
+function Rewards() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -293,7 +310,7 @@ function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
   );
 }
 
-function Timeline({ challenge }: { challenge: ChallengeWithMarketplace }) {
+function Timeline() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -323,7 +340,7 @@ function Timeline({ challenge }: { challenge: ChallengeWithMarketplace }) {
   );
 }
 
-function Participants({ submissions }: { submissions: Submission[] }) {
+function Participants({ submissions }: SubmissionsProps) {
   return (
     <section className="space-y-7">
       <div className="flex items-center space-x-2 text-left px-4">
@@ -384,9 +401,3 @@ function Participants({ submissions }: { submissions: Submission[] }) {
     </section>
   );
 }
-
-const dummySubmissions = [
-  { id: "1", author: "1234" },
-  { id: "2", author: "2234" },
-  { id: "3", author: "3234" },
-];

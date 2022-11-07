@@ -14,29 +14,28 @@ import {
   Pagination,
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { ChallengeWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
-import { withServices } from "~/services/with-services.server";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 
 export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async (svc) => {
-    const url = new URL(data.request.url);
-    const params = getParamsOrFail(url.searchParams, ChallengeSearchSchema);
-    return typedjson(svc.challenge.challenges(params));
-  });
+  const url = new URL(data.request.url);
+  const params = getParamsOrFail(url.searchParams, ChallengeSearchSchema);
+  const challenges = await searchChallenges(params);
+  const totalResults = await countChallenges(params);
+  return typedjson({ challenges, totalResults, params });
 };
 
 export default function MarketplaceChallenges() {
-  const { data: challenges, pageNumber, totalPages } = useTypedLoaderData<typeof loader>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { challenges, totalResults, params } = useTypedLoaderData<typeof loader>();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const onPaginationChange = (page: number) => {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
@@ -89,10 +88,10 @@ export default function MarketplaceChallenges() {
                     <MarketplacesChallengesTable challenges={challenges} />
                     <div className="w-fit m-auto">
                       <Pagination
-                        page={pageNumber}
+                        page={params.page}
                         hidden={challenges.length === 0}
                         onChange={onPaginationChange}
-                        total={totalPages}
+                        total={Math.ceil(totalResults / params.first)}
                       />
                     </div>
                   </div>
@@ -178,7 +177,7 @@ function SearchAndFilter() {
   );
 }
 
-function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
+function Prerequisites() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -231,7 +230,7 @@ function Prerequisites({ challenge }: { challenge: ChallengeWithMarketplace }) {
   );
 }
 
-function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
+function Rewards() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -263,8 +262,12 @@ function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
   );
 }
 
+type MarketplaceChallengesTableProps = {
+  challenges: UseDataFunctionReturn<typeof loader>["challenges"];
+};
+
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWithMarketplace[] }) {
+function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableProps) {
   if (challenges.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -295,13 +298,17 @@ function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWith
                 <Text>{c.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectBadge slug={c.marketplace.project} />
+              <div>
+                {c.laborMarket.projects.map((p) => (
+                  <ProjectBadge key={p.id} slug={p.slug} />
+                ))}
+              </div>
               <div className="lg:hidden">Reward Pool Totals</div>
-              <TextWithIcon text={`${c.marketplace.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`${10000} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Submit Deadline</div>
-              <Text color="dark.3">{`${c.marketplace.endsAt?.toLocaleString()}`} </Text>
+              <Text color="dark.3">{`TODO`} </Text>
               <div className="lg:hidden">Review Deadline</div>
-              <Text color="dark.3">{c.marketplace.reviewDeadline?.toLocaleString()}</Text>
+              <Text color="dark.3">TODO</Text>
             </Link>
           );
         })}

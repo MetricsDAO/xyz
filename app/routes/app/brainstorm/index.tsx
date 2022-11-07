@@ -1,5 +1,5 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect, Avatar } from "@mantine/core";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 

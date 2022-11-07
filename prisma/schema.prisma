@@ -70,13 +70,16 @@ model LaborMarket {
 }
 
 model ServiceRequest {
-  id                 String      @id @unique
+  id                 String       @id @unique
+  title              String
   laborMarketAddress String
-  laborMarket        LaborMarket @relation(fields: [laborMarketAddress], references: [address])
+  laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
+  submissions        Submission[]
 }
 
 // Represents an on-chain submission to a service request.
 model Submission {
-  id               String @id @unique
+  id               String         @id @unique
   serviceRequestId String
+  serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
 }

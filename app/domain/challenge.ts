@@ -13,12 +13,14 @@ export const ChallengeSchema = z.object({
 });
 
 export const ChallengeSearchSchema = z.object({
-  page: z.number().default(1).optional(),
+  page: z.number().default(1),
+  laborMarket: z.string().optional(),
   q: z.string().optional(),
   sortBy: z.string().optional(),
   order: z.string().optional(),
   token: z.string().optional(),
   project: z.string().optional(),
+  first: z.number().default(12),
 });
 
 export type Challenge = z.infer<typeof ChallengeSchema>;
