@@ -37,7 +37,6 @@ const Header = () => {
       </div>
       <ul ref={navRef} className="nav w-3/4 justify-end list-none hidden lg:flex items-center">
         <a
-          target="_blank"
           className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1"
           href="https://blog.metricsdao.xyz/101/"
           rel="noreferrer"
