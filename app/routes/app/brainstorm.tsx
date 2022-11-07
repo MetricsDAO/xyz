@@ -11,6 +11,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
+  url.searchParams.set("type", "brainstorm");
   const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(params);
   const totalResults = await countLaborMarkets(params);

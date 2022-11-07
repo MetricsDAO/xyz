@@ -37,6 +37,7 @@ export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true });
 export const LaborMarketSearchSchema = z.object({
   q: z.string().optional(),
   sortBy: z.enum(["title"]).default("title"),
+  type: z.enum(["brainstorm", "analyze"]),
   order: z.enum(["asc", "desc"]).default("desc"),
   project: z.string().optional(),
   token: z.string().optional(),
