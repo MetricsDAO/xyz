@@ -22,7 +22,7 @@ import { CountDown } from "~/components/CountDown";
 
 export default function Challenge() {
   return (
-    <div className="mx-auto container mb-12 px-10">
+    <div className="mx-auto container mb-12 px-10 pt-12">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <Title order={2}>Challenge Title</Title>
         <Center className="flex flex-wrap gap-5">
@@ -124,16 +124,16 @@ export default function Challenge() {
 function Submissions({ submissions }: { submissions: Submission[] }) {
   const winnerSelected = false;
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <div className="overflow-auto">
-            <div className="min-w-[350px] w-full border-spacing-4 border-separate">
+            <div className="min-w-[300px] w-full border-spacing-4 border-separate">
               <div className="space-y-4">
                 {submissions.map((m) => {
                   return (
                     <Link
-                      to="/app/s/[submissionId]"
+                      to="/app/brainstorm/s/[submissionId]"
                       className="flex flex-col md:flex-row gap-x-10 gap-y-3 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center space-between"
                       key={m.id}
                     >
@@ -210,10 +210,10 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
 
 function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <div className="min-w-[350px] w-full border-spacing-4 border-separate">
+          <div className="w-full border-spacing-4 border-separate">
             <div className="space-y-4 md:w-4/5">
               <Text color="dimmed">
                 What you must hold in your connected wallet to perform various actions on this challenge
@@ -263,10 +263,10 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
 
 function Rewards({ topic }: { topic: TopicWithMarketplace }) {
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
+          <div className="w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
             <Paper shadow="xs" radius="md" p="md" withBorder>
               <Text weight={600}>Reward Pool</Text>
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
@@ -279,7 +279,7 @@ function Rewards({ topic }: { topic: TopicWithMarketplace }) {
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
                 HOW THE REWARD POOL IS DISTRIBUTED
               </Text>
-              <div className="flex flex-row space-x-3 mt-1">
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
                 <Badge size="sm" radius="sm">
                   Aggresive
                 </Badge>
@@ -295,11 +295,11 @@ function Rewards({ topic }: { topic: TopicWithMarketplace }) {
 
 function Timeline({ topic }: { topic: TopicWithMarketplace }) {
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <div className="overflow-auto">
-            <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-5/6">
+            <div className="w-full border-spacing-4 border-separate space-y-4 md:w-5/6">
               <Text weight={600} size="lg">
                 Upcoming
               </Text>
@@ -330,20 +330,20 @@ function Participants({ submissions }: { submissions: Submission[] }) {
         <Text size="sm">Average user xMETRIC</Text>
         <Badge color="dark">1,000</Badge>
       </div>
-      <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+      <div className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
             <div className="overflow-auto">
-              <div className="min-w-[350px] w-full border-spacing-4 border-separate">
+              <div className="w-full border-spacing-4 border-separate">
                 <div className="space-y-4">
                   {submissions.map((m) => {
                     return (
                       <Link
                         to="/u/[uId]"
-                        className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
+                        className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
                         key={m.id}
                       >
-                        <div className="flex items-center flex-1 space-x-2">
+                        <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                           <Avatar alt="" />
                           <Text weight={500}>user.ETH</Text>
                           <Badge color="gray" radius="sm">

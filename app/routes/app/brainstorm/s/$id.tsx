@@ -91,13 +91,13 @@ export default function ChallengeSubmission() {
           <main className="flex-1">
             <div className="space-y-5">
               <div className="overflow-auto">
-                <div className="min-w-[350px] w-full border-spacing-4 border-separate">
+                <div className="w-full border-spacing-4 border-separate">
                   <div className="space-y-4">
                     {reviews.map((m) => {
                       return (
                         <Link
                           to="/u/[uId]"
-                          className="flex border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
+                          className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
                           key={m.id}
                         >
                           <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
