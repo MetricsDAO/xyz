@@ -1,24 +1,26 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect, Avatar } from "@mantine/core";
+import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import type { Marketplace } from "~/domain";
-import { withServices } from "~/services/with-services.server";
-import { PROJECT_ICONS } from "~/utils/helpers";
+
+import { countLaborMarkets, searchLaborMarkets } from "~/services/marketplace-service.server";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
-  return withServices(data, async (svc) => {
-    const url = new URL(data.request.url);
-    const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-    return typedjson(svc.marketplace.brainstormMarketplaces(params));
-  });
+  const url = new URL(data.request.url);
+  url.searchParams.set("type", "brainstorm");
+  const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
+  const marketplaces = await searchLaborMarkets(params);
+  const totalResults = await countLaborMarkets(params);
+  return typedjson({ marketplaces, totalResults, params }, { status: 200 });
 };
 
 export default function Brainstorm() {
-  const { data: marketplaces, pageNumber, totalPages, totalResults } = useTypedLoaderData<typeof loader>();
+  const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
@@ -27,8 +29,8 @@ export default function Brainstorm() {
   };
 
   return (
-    <div className="mx-auto container space-y-7 px-3 mt-5 mb-10">
-      <section className="flex flex-col md:flex-row gap-y-7 gap-x-5">
+    <div className="mx-auto container space-y-7 px-3 mb-10">
+      <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <div className="space-y-5 max-w-3xl">
             <Title order={1}>Challenge Marketplaces</Title>
@@ -56,7 +58,7 @@ export default function Brainstorm() {
 
       <section>
         <Title order={3}>
-          Challenge Marketplaces{" "}
+          Challenge Marketplaces
           <Text span color="dimmed">
             ({totalResults})
           </Text>
@@ -70,10 +72,10 @@ export default function Brainstorm() {
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination
-                page={pageNumber}
-                hidden={marketplaces.length === 0}
+                page={params.page}
+                hidden={totalResults === 0}
+                total={Math.ceil(totalResults / params.first)}
                 onChange={onPaginationChange}
-                total={totalPages}
               />
             </div>
           </div>
@@ -89,11 +91,12 @@ export default function Brainstorm() {
 function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
+      <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
       <Text size="lg" weight={600}>
         Sort:
       </Text>
       <Select
+        radius="md"
         placeholder="Select option"
         name="sortBy"
         clearable
@@ -103,6 +106,7 @@ function SearchAndFilter() {
         Filter:
       </Text>
       <MultiSelect
+        radius="md"
         label="I am able to"
         placeholder="Select option"
         name="filter"
@@ -114,6 +118,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Reward Token"
         placeholder="Select option"
         name="rewardToken"
@@ -125,6 +130,7 @@ function SearchAndFilter() {
         ]}
       />
       <MultiSelect
+        radius="md"
         label="Chain/Project"
         placeholder="Select option"
         name="chainProject"
@@ -134,15 +140,19 @@ function SearchAndFilter() {
           { label: "Ethereum", value: "Ethereum" },
         ]}
       />
-      <Button variant="light" size="xs" type="submit">
+      <Button radius="md" variant="light" size="xs" type="submit">
         Apply Filters
       </Button>
     </Form>
   );
 }
 
+type MarketplaceTableProps = {
+  marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
+};
+
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
+function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -163,44 +173,31 @@ function MarketplacesTable({ marketplaces }: { marketplaces: Marketplace[] }) {
         {marketplaces.map((m) => {
           return (
             <Link
-              to="/app/brainstorm/[marketplaceId]"
+              to="/app/brainstorm/[marketplaceId]/challenges"
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={m.id}
+              key={m.address}
             >
               <div className="lg:hidden">Challenge Marketplaces</div>
               <div className="lg:col-span-2">
                 <Text>{m.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectWithIcon project={m.project} />
+              <div>
+                {m.projects.map((p) => (
+                  <ProjectBadge key={p.slug} slug={p.slug} />
+                ))}
+              </div>
               <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`${m.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`${m.entryCost.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m.topicCount.toLocaleString()}</Text>
+              <Text color="dark.3">{m._count.serviceRequests.toLocaleString()}</Text>
             </Link>
           );
         })}
       </div>
     </>
-  );
-}
-
-function ProjectWithIcon({ project }: { project: string }) {
-  const iconUrl = PROJECT_ICONS[project];
-
-  return <TextWithIcon text={project} iconUrl={iconUrl ?? null} />;
-}
-
-function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
-  return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} />}
-      <Text color="dark.3" weight={400}>
-        {text}
-      </Text>
-    </div>
   );
 }

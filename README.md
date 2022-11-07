@@ -20,13 +20,31 @@ It is generally recommended to use a Git repository, because future commits will
 To run your Remix app locally, make sure your project's local dependencies are installed:
 
 ```sh
-npm install
+yarn install
 ```
 
 Afterwards, start the Remix development server like so:
 
 ```sh
-npm run dev
+yarn dev
+```
+
+Generate the prisma client, run migrations and seed the database:
+
+```sh
+yarn setup
+```
+
+If you pull down commits with updates to the schema make sure you run migrations:
+
+```sh
+yarn prisma migrate dev
+```
+
+To reset the database and start fresh you can run the following command to delete database data, run migrations and seed the database:
+
+```sh
+yarn reset
 ```
 
 Open up [http://localhost:3000](http://localhost:3000) and you should be ready to go!

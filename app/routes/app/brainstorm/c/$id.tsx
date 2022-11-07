@@ -14,11 +14,26 @@ import {
   Checkbox,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
-import type { Submission, TopicWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { z } from "zod";
+import { findChallenge } from "~/services/challenges-service.server";
+import { typedjson } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
+
+const paramsSchema = z.object({ id: z.string() });
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id);
+  if (!challenge) {
+    throw notFound({ id });
+  }
+  return typedjson({ challenge }, { status: 200 });
+};
 
 export default function Challenge() {
   return (
@@ -26,12 +41,12 @@ export default function Challenge() {
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <Title order={2}>Challenge Title</Title>
         <Center className="flex flex-wrap gap-5">
-          <Link to="/app/brainstorm/c/[topicId]/review">
+          <Link to="/app/brainstorm/c/[challengeId]/review">
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Claim to Review
             </Button>
           </Link>
-          <Link to="/app/brainstorm/c/[topicId]/claim">
+          <Link to="/app/brainstorm/c/[challengeId]/claim">
             <Button radius="md" className="mx-auto">
               Claim to Submit
             </Button>
@@ -79,8 +94,8 @@ export default function Challenge() {
           </Detail>
         </div>
         <Text color="dimmed" className="max-w-2xl">
-          What’s the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What’s
-          the challenge What web3 topic do you want to crowdsource potential analytics questions
+          What's the challenge What web3 challenge do you want to crowdsource potential analytics questions for? Why?
+          What's the challenge What web3 challenge do you want to crowdsource potential analytics questions
         </Text>
       </section>
 
@@ -96,7 +111,7 @@ export default function Challenge() {
             </Tabs.List>
 
             <Tabs.Panel value="submissions" pt="xs">
-              <Submissions submissions={dummySubmissions} />
+              <Submissions submissions={[]} />
             </Tabs.Panel>
 
             <Tabs.Panel value="prerequisites" pt="xs">
@@ -112,7 +127,7 @@ export default function Challenge() {
             </Tabs.Panel>
 
             <Tabs.Panel value="participants" pt="xs">
-              <Participants submissions={dummySubmissions} />
+              <Participants submissions={[]} />
             </Tabs.Panel>
           </Tabs>
         </main>
@@ -121,7 +136,11 @@ export default function Challenge() {
   );
 }
 
-function Submissions({ submissions }: { submissions: Submission[] }) {
+type SubmissionsProps = {
+  submissions: UseDataFunctionReturn<typeof loader>["challenge"]["submissions"];
+};
+
+function Submissions({ submissions }: SubmissionsProps) {
   const winnerSelected = false;
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
@@ -185,9 +204,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                 <Checkbox value="winner" label="Winner" />
                 <Divider size="xs" />
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
             <Checkbox value="great" label="Great" />
             <Checkbox value="good" label="Good" />
             <Checkbox value="average" label="Average" />
@@ -200,7 +217,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
   );
 }
 
-function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
+function Prerequisites() {
   return (
     <section className="w-full border-spacing-4 border-separate space-y-3 md:w-4/5">
       <Text color="dimmed">
@@ -245,7 +262,7 @@ function Prerequisites({ topic }: { topic: TopicWithMarketplace }) {
   );
 }
 
-function Rewards({ topic }: { topic: TopicWithMarketplace }) {
+function Rewards() {
   return (
     <section className="space-y-3 w-full border-spacing-4 border-separate md:w-4/5">
       <Paper shadow="xs" radius="md" p="md" withBorder>
@@ -271,7 +288,7 @@ function Rewards({ topic }: { topic: TopicWithMarketplace }) {
   );
 }
 
-function Timeline({ topic }: { topic: TopicWithMarketplace }) {
+function Timeline() {
   return (
     <section className="w-full border-spacing-4 border-separate space-y-4 md:w-5/6">
       <Text weight={600} size="lg">
@@ -293,7 +310,7 @@ function Timeline({ topic }: { topic: TopicWithMarketplace }) {
   );
 }
 
-function Participants({ submissions }: { submissions: Submission[] }) {
+function Participants({ submissions }: SubmissionsProps) {
   return (
     <section className="space-y-7">
       <div className="flex items-center space-x-2 text-left px-4">
@@ -346,9 +363,3 @@ function Participants({ submissions }: { submissions: Submission[] }) {
     </section>
   );
 }
-
-const dummySubmissions = [
-  { id: "1", author: "1234" },
-  { id: "2", author: "2234" },
-  { id: "3", author: "3234" },
-];
