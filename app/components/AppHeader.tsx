@@ -1,7 +1,6 @@
 import { createStyles, Header, Container, Group, Burger, Transition, Paper } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, NavLink } from "@remix-run/react";
-import { useState } from "react";
 import CustomConnectButton from "./ConnectButton";
 import { LogoMark, LogoType } from "./Logo";
 
@@ -28,37 +27,6 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  link: {
-    display: "block",
-    lineHeight: 1,
-    padding: "8px 12px",
-    borderRadius: theme.radius.sm,
-    textDecoration: "none",
-    color: "#666666",
-    fontSize: theme.fontSizes.sm,
-    fontWeight: 500,
-
-    "&:hover": {
-      backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
-    },
-
-    [theme.fn.smallerThan("sm")]: {
-      borderRadius: 0,
-      padding: theme.spacing.md,
-    },
-  },
-
-  linkActive: {
-    "&, &:hover": {
-      backgroundColor: "#E6EBF0",
-      color: "#333333",
-    },
-  },
-
-  linkLabel: {
-    marginRight: 5,
-  },
-
   dropdown: {
     position: "absolute",
     top: HEADER_HEIGHT,
@@ -81,39 +49,47 @@ interface AppHeaderProps {
   userLinks: { link: string; label: string }[];
 }
 
+const activeLinkStyle = {
+  backgroundColor: "#E6EBF0",
+  color: "#333333",
+  display: "block",
+  lineHeight: 1,
+  padding: "8px 12px",
+  borderRadius: "3px",
+  textDecoration: "none",
+  fontSize: "sm",
+  fontWeight: 500,
+};
+
+const linkStyle = {
+  display: "block",
+  lineHeight: 1,
+  padding: "8px 12px",
+  borderRadius: "3px",
+  textDecoration: "none",
+  color: "#666666",
+  fontSize: "sm",
+  fontWeight: 500,
+};
+
 export function AppHeader({ links, userLinks }: AppHeaderProps) {
   const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(links[0].link);
-  const { classes, cx } = useStyles();
+  const { classes } = useStyles();
 
   const items = links.map((link) => (
-    <NavLink
-      key={link.label}
-      to={link.link}
-      className={cx(classes.link, { [classes.linkActive]: active === link.link })}
-      onClick={() => {
-        setActive(link.link);
-      }}
-    >
+    <NavLink key={link.label} to={link.link} style={({ isActive }) => (isActive ? activeLinkStyle : linkStyle)}>
       {link.label}
     </NavLink>
   ));
 
   const secondaryItems = userLinks.map((item) => (
-    <NavLink
-      key={item.label}
-      to={item.link}
-      className={cx(classes.link, { [classes.linkActive]: active === item.link })}
-      onClick={() => {
-        setActive(item.link);
-      }}
-    >
+    <NavLink key={item.label} to={item.link} style={({ isActive }) => (isActive ? activeLinkStyle : linkStyle)}>
       {item.label}
     </NavLink>
   ));
 
   return (
-    <Header height={HEADER_HEIGHT} sx={{ borderBottom: 0 }} mb={120}>
+    <Header height={HEADER_HEIGHT} sx={{ borderBottomWidth: "2px", borderColor: "#FAFAFA" }}>
       <Container className={classes.outer} fluid>
         <Group>
           <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
@@ -136,8 +112,6 @@ export function AppHeader({ links, userLinks }: AppHeaderProps) {
           <CustomConnectButton />
         </Group>
       </Container>
-
-      <hr style={{ color: "#FAFAFA", backgroundColor: "#FAFAFA", height: "1px", borderWidth: 0 }} />
     </Header>
   );
 }

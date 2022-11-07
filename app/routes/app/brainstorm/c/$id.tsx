@@ -12,26 +12,26 @@ import {
   Badge,
   Avatar,
   Checkbox,
-  Progress,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 import type { Submission, TopicWithMarketplace } from "~/domain";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
+import { CountDown } from "~/components/CountDown";
 
 export default function Challenge() {
   return (
     <div className="mx-auto container mb-12 px-10">
-      <section className="flex flex-wrap gap-5 justify-between pt-12 pb-5">
+      <section className="flex flex-wrap gap-5 justify-between pb-5">
         <Title order={2}>Challenge Title</Title>
         <Center className="flex flex-wrap gap-5">
-          <Link to="/app/t/[topicId]/review">
+          <Link to="/app/brainstorm/c/[topicId]/review">
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Claim to Review
             </Button>
           </Link>
-          <Link to="/app/t/[topicId]/claim">
+          <Link to="/app/brainstorm/c/[topicId]/claim">
             <Button radius="md" className="mx-auto">
               Claim to Submit
             </Button>
@@ -304,16 +304,16 @@ function Timeline({ topic }: { topic: TopicWithMarketplace }) {
                 Upcoming
               </Text>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-                <CountDown />
-                <CountDown />
-                <CountDown />
-                <CountDown />
+                <CountDown progress={10} time="2d 3h 22m" subText="claim to review deadline" />
+                <CountDown progress={43} time="2d 3h 22m" subText="claim to review deadline" />
+                <CountDown progress={22} time="2d 3h 22m" subText="claim to review deadline" />
+                <CountDown progress={61} time="2d 3h 22m" subText="claim to review deadline" />
               </div>
               <Text weight={600} size="lg">
                 Past
               </Text>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-                <CountDown />
+                <CountDown progress={100} time="2d 3h 22m" subText="claim to review deadline" />
               </div>
             </div>
           </div>
@@ -382,18 +382,6 @@ function Participants({ submissions }: { submissions: Submission[] }) {
         </aside>
       </div>
     </section>
-  );
-}
-
-function CountDown() {
-  return (
-    <Paper withBorder>
-      <Progress value={70} radius="xs" />
-      <div className="flex flex-col items-center my-6">
-        <Title>2d 6h 10m</Title>
-        <Text>claim to review deadline</Text>
-      </div>
-    </Paper>
   );
 }
 

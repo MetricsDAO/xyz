@@ -6,6 +6,7 @@ export default class MarketplaceService {
   constructor(private prisma: PrismaClient) {}
 
   brainstormMarketplaces({ page, sortBy, q, project, token }: LaborMarketSearch) {
+    const currentPage = page ?? 1;
     const pageSize = 10;
     const totalPages = 5;
     const data = fakeBrainstormMarketplaces(pageSize * totalPages);
@@ -32,10 +33,12 @@ export default class MarketplaceService {
     if (project) {
       filteredAndSortedData = filteredAndSortedData.filter((m) => project.includes(m.project));
     }
-    const pageData = filteredAndSortedData.slice((page - 1) * pageSize, page * pageSize);
+    const pageData = filteredAndSortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const pagesFloor = Math.floor(filteredAndSortedData.length / pageSize);
     return {
-      pageNumber: page,
-      totalPages: Math.floor(filteredAndSortedData.length / pageSize),
+      pageNumber: currentPage,
+      totalResults: filteredAndSortedData.length,
+      totalPages: pagesFloor > 0 ? pagesFloor : 1,
       data: pageData,
     };
   }
