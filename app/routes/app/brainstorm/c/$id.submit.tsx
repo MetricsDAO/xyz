@@ -9,7 +9,7 @@ export default function SubmitQuestion() {
             <Title order={2} weight={600} className="mb-1">
               {"Submit Question"}
             </Title>
-            <Title order={4} color="brand" weight={400}>
+            <Title order={4} color="brand.4" weight={400}>
               {"Brainstorm the best question for crypto analysts to answer about {Challenge title}"}
             </Title>
             <Text color="dimmed">
