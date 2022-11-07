@@ -4,7 +4,7 @@ import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { PROJECT_ICONS } from "~/utils/helpers";
 import { getParamsOrFail } from "remix-params-helper";
-import { LaborMarketSearchSchema } from "~/mdao";
+import { LaborMarketSearchSchema } from "~/domain";
 import { countLaborMarkets, searchLaborMarkets } from "~/services/marketplace-service.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";

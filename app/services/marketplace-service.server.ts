@@ -1,4 +1,4 @@
-import type { LaborMarket, LaborMarketSearch } from "~/mdao";
+import type { LaborMarket, LaborMarketSearch } from "~/domain";
 import { prisma } from "./prisma.server";
 
 /**

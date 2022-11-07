@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { LaborMarket } from "~/mdao";
+import type { LaborMarket } from "~/domain";
 
 // This module export utlity functions to generate fake data for testing and development
 // Uses domain types from ~/domain.

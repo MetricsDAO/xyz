@@ -1,6 +1,6 @@
 import { NFTStorage } from "nft.storage";
 import env from "~/env";
-import type { LaborMarketMeta } from "~/mdao";
+import type { LaborMarketMeta } from "~/domain";
 
 /**
  * Creates a new LaborMarket metadata object in IPFS.
