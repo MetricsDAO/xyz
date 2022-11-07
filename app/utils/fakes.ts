@@ -57,7 +57,7 @@ export const fakeLaborMarket = (): LaborMarket => {
     address: faker.finance.ethereumAddress(),
     title: faker.random.words(3),
     description: faker.random.words(10),
-    type: "brainstorm",
+    type: faker.helpers.arrayElement(["brainstorm", "analyze"]) as "brainstorm" | "analyze",
     rewardCurveAddress: faker.finance.ethereumAddress(),
     submitRepMin: faker.datatype.number(),
     submitRepMax: faker.datatype.number(),

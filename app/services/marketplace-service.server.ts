@@ -14,6 +14,7 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
       projects: true,
     },
     where: {
+      type: params.type,
       title: { search: params.q },
       description: { search: params.q },
       tokens: params.token ? { some: { symbol: params.token } } : undefined,
@@ -35,6 +36,7 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
 export const countLaborMarkets = async (params: LaborMarketSearch) => {
   return prisma.laborMarket.count({
     where: {
+      type: params.type,
       title: { search: params.q },
       description: { search: params.q },
     },
