@@ -89,7 +89,7 @@ export function AppHeader({ links, userLinks }: AppHeaderProps) {
   ));
 
   return (
-    <Header height={HEADER_HEIGHT} sx={{ marginBottom: "64px", borderBottomWidth: "2px", borderColor: "#FAFAFA" }}>
+    <Header height={HEADER_HEIGHT} sx={{ marginBottom: "4rem", borderBottomWidth: "2px", borderColor: "#FAFAFA" }}>
       <Container className={classes.outer} fluid>
         <Group>
           <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />

@@ -261,7 +261,6 @@ function Rewards({ challenge }: { challenge: ChallengeWithMarketplace }) {
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWithMarketplace[] }) {
-  console.log(challenges.length);
   if (challenges.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }

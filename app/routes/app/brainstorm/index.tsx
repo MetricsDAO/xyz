@@ -27,7 +27,7 @@ export default function Brainstorm() {
   };
 
   return (
-    <div className="mx-auto container space-y-7 px-3 mt-5 mb-10">
+    <div className="mx-auto container space-y-7 px-3 mb-10">
       <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <div className="space-y-5 max-w-3xl">
