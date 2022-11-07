@@ -20,7 +20,7 @@ import { Form, Link } from "@remix-run/react";
 import { useState } from "react";
 
 export default function ChallengeSubmission() {
-  const [opened, setOpened] = useState(true);
+  const [opened, setOpened] = useState(false);
   const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
 
   const isWinner = true;
@@ -110,11 +110,9 @@ export default function ChallengeSubmission() {
             {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
           </div>
           <Center className="flex flex-wrap gap-5">
-            <Link to="/app/t/[topicId]/submission/review">
-              <Button radius="md" className="mx-auto" onClick={() => setOpened(true)}>
-                Review Question
-              </Button>
-            </Link>
+            <Button radius="md" className="mx-auto" onClick={() => setOpened(true)}>
+              Review Question
+            </Button>
           </Center>
         </section>
         <section className="flex flex-col space-y-7 pb-24">
@@ -176,38 +174,32 @@ export default function ChallengeSubmission() {
         </section>
 
         <section className="mt-3">
-          <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+          <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
             <main className="flex-1">
-              <div className="space-y-5">
-                <div className="overflow-auto">
-                  <div className="w-full border-spacing-4 border-separate">
-                    <div className="space-y-4">
-                      {reviews.map((m) => {
-                        return (
-                          <Link
-                            to="/u/[uId]"
-                            className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
-                            key={m.id}
-                          >
-                            <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
-                              <Paper p="xs" sx={{ backgroundColor: "#D9F0CA", width: 100 }}>
-                                <Text align="center">Great</Text>
-                              </Paper>
-                              <Avatar alt="" className="md:ml-2" radius="xl" />
-                              <Text weight={500}>user.ETH</Text>
-                              <Badge color="gray" radius="sm">
-                                <Text weight={400} className="normal-case">
-                                  400 xMetric
-                                </Text>
-                              </Badge>
-                            </div>
-                            <Text>12 hours ago</Text>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
+              <div className="w-full border-spacing-4 border-separate space-y-5">
+                {reviews.map((m) => {
+                  return (
+                    <Link
+                      to="/u/[uId]"
+                      className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
+                      key={m.id}
+                    >
+                      <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                        <Paper p="xs" sx={{ backgroundColor: "#D9F0CA", width: 100 }}>
+                          <Text align="center">Great</Text>
+                        </Paper>
+                        <Avatar alt="" className="md:ml-2" radius="xl" />
+                        <Text weight={500}>user.ETH</Text>
+                        <Badge color="gray" radius="sm">
+                          <Text weight={400} className="normal-case">
+                            400 xMetric
+                          </Text>
+                        </Badge>
+                      </div>
+                      <Text>12 hours ago</Text>
+                    </Link>
+                  );
+                })}
               </div>
             </main>
             <aside className="md:w-1/5">
