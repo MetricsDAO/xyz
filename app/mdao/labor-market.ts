@@ -35,14 +35,14 @@ export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true });
 
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({
-  q: z.string().optional(),
-  sortBy: z.enum(["title"]).default("title"),
-  type: z.enum(["brainstorm", "analyze"]),
-  order: z.enum(["asc", "desc"]).default("desc"),
-  project: z.string().optional(),
-  token: z.string().optional(),
-  page: z.number().min(1).default(1),
-  first: z.number().min(1).max(100).default(12),
+  q: z.string().optional().describe("Search query."),
+  sortBy: z.enum(["title"]).default("title").describe("Sort by column."),
+  type: z.enum(["brainstorm", "analyze"]).describe("Type of the labor market (MDAO specific)."),
+  order: z.enum(["asc", "desc"]).default("desc").describe("Order of the results."),
+  project: z.string().optional().describe("Project IDs to filter by."),
+  token: z.string().optional().describe("Token symbols to filter by."),
+  page: z.number().min(1).default(1).describe("Page number."),
+  first: z.number().min(1).max(100).default(12).describe("The number of results to return."),
 });
 
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
