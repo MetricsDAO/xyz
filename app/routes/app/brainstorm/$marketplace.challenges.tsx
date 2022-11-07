@@ -24,6 +24,7 @@ import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { Countdown } from "~/components/dateCountdown";
 
 export const loader = async (data: DataFunctionArgs) => {
   return withServices(data, async (svc) => {
@@ -299,9 +300,13 @@ function MarketplacesChallengesTable({ challenges }: { challenges: ChallengeWith
               <div className="lg:hidden">Reward Pool Totals</div>
               <TextWithIcon text={`${c.marketplace.rewardPool.toLocaleString()} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Submit Deadline</div>
-              <Text color="dark.3">{`${c.marketplace.endsAt?.toLocaleString()}`} </Text>
+              <span>
+                <Countdown date={c.marketplace.endsAt ? c.marketplace.endsAt : ""} />
+              </span>
               <div className="lg:hidden">Review Deadline</div>
-              <Text color="dark.3">{c.marketplace.reviewDeadline?.toLocaleString()}</Text>
+              <span>
+                <Countdown date={c.marketplace.reviewDeadline ? c.marketplace.reviewDeadline : ""} />
+              </span>
             </Link>
           );
         })}
