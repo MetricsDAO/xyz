@@ -178,9 +178,11 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                 <Text>{m.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              {m.projects.map((p) => (
-                <ProjectWithIcon key={p.slug} project={p.slug} />
-              ))}
+              <div>
+                {m.projects.map((p) => (
+                  <ProjectWithIcon key={p.slug} project={p.name} />
+                ))}
+              </div>
               <div className="lg:hidden">Challenge Pool Totals</div>
               <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>

@@ -48,11 +48,16 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
  * @param {LaborMarket} laborMarket - The labor market to create.
  */
 export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
-  const { address, projectIds, tokenIds, ...data } = laborMarket;
+  const { address, projectIds, tokenSymbols, ...data } = laborMarket;
   const newLaborMarket = await prisma.laborMarket.upsert({
     where: { address },
     update: data,
-    create: { address, ...data },
+    create: {
+      address,
+      ...data,
+      projects: { connect: projectIds.map((id) => ({ id })) },
+      tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
+    },
   });
   return newLaborMarket;
 };
