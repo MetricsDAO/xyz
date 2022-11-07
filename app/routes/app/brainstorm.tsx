@@ -59,7 +59,7 @@ export default function Brainstorm() {
         <Title order={3}>
           Challenge Marketplaces{" "}
           <Text span color="dimmed">
-            (420)
+            ({totalResults})
           </Text>
         </Title>
         <Divider />
