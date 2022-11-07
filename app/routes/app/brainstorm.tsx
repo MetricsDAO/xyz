@@ -5,18 +5,20 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { PROJECT_ICONS } from "~/utils/helpers";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/mdao";
-import { searchMarketplaces } from "~/services/marketplace-service.server";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/marketplace-service.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-  return typedjson(await searchMarketplaces(params));
+  const marketplaces = await searchLaborMarkets(params);
+  const totalResults = await countLaborMarkets(params);
+  return typedjson({ marketplaces, totalResults, params }, { status: 200 });
 };
 
 export default function Brainstorm() {
-  const marketplaces = useTypedLoaderData<typeof loader>();
+  const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onPaginationChange = (page: number) => {
@@ -67,7 +69,12 @@ export default function Brainstorm() {
           <div className="space-y-5">
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              <Pagination page={1} hidden={marketplaces.length === 0} onChange={onPaginationChange} total={10} />
+              <Pagination
+                page={params.page}
+                hidden={totalResults === 0}
+                total={Math.ceil(totalResults / params.first)}
+                onChange={onPaginationChange}
+              />
             </div>
           </div>
         </main>
@@ -135,7 +142,7 @@ function SearchAndFilter() {
 }
 
 type MarketplaceTableProps = {
-  marketplaces: UseDataFunctionReturn<typeof loader>;
+  marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
 };
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
@@ -170,7 +177,9 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                 <Text>{m.title}</Text>
               </div>
               <div className="lg:hidden">Chain/Project</div>
-              <ProjectWithIcon project={m.projects[0].slug} />
+              {m.projects.map((p) => (
+                <ProjectWithIcon key={p.slug} project={p.slug} />
+              ))}
               <div className="lg:hidden">Challenge Pool Totals</div>
               <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Avg. Challenge Pool</div>

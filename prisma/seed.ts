@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { upsertLaborMarket } from "~/services/marketplace-service.server";
+import { fakeLaborMarket } from "~/utils/fakes";
+import { prisma } from "~/services/prisma.server";
 
 async function main() {
   await prisma.project.createMany({
@@ -29,6 +29,11 @@ async function main() {
       { symbol: "AVAX", name: "Avalanche" },
     ],
   });
+
+  // create 100 fake labor markets in prisma
+  for (let i = 0; i < 100; i++) {
+    await upsertLaborMarket(fakeLaborMarket());
+  }
 }
 
 main()
