@@ -122,7 +122,7 @@ export default function ChallengeSubmission() {
             </div>
           </main>
           <aside className="md:w-1/5">
-            <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
+            <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4">
               <Input placeholder="Search" name="search" icon={<Search16 />} radius="md" />
               <Select
                 radius="md"

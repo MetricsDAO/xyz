@@ -9,7 +9,7 @@ export default function ClaimToReview() {
           {"Claim to Review {Challenge title}"}
         </Title>
         <div>
-          <Title order={4} color="blue" weight={400}>
+          <Title order={4} color="brand" weight={400}>
             {"Claiming is an up front commitment to review and score a minumum number of submissions"}
           </Title>
           <Text color="dimmed">

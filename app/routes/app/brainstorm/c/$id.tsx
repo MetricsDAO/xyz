@@ -158,12 +158,12 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
                         </div>
                       </div>
                       <div>
-                        <div className="flex rounded-lg bg-sky-500 items-center w-32">
-                          <div className="rounded-lg bg-sky-200 py-2 w-24">
-                            <Text align="center">Average</Text>
+                        <div className="flex rounded-lg bg-[#EFA453] items-center w-32">
+                          <div className="rounded-lg bg-[#FFE2C2] py-2 w-24">
+                            <Text align="center">Bad</Text>
                           </div>
                           <Text color="white" className="mx-auto">
-                            80
+                            50
                           </Text>
                         </div>
                         <Text align="center">55 reviews</Text>
@@ -177,7 +177,7 @@ function Submissions({ submissions }: { submissions: Submission[] }) {
         </div>
       </main>
       <aside className="md:w-1/5">
-        <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
+        <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4">
           <Input radius="md" placeholder="Search" name="search" icon={<Search16 />} />
           <Select
             label="Sort"
@@ -362,7 +362,7 @@ function Participants({ submissions }: { submissions: Submission[] }) {
           </div>
         </main>
         <aside className="md:w-1/5">
-          <Form className="space-y-3 bg-sky-50 rounded-lg p-4">
+          <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4">
             <Input radius="md" placeholder="Search" name="search" icon={<Search16 />} />
             <Select
               label="Sort"
