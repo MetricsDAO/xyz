@@ -66,7 +66,7 @@ export default function Brainstorm() {
         <Divider />
       </section>
 
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
             <MarketplacesTable marketplaces={marketplaces} />
