@@ -15,8 +15,8 @@ import {
 import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import uniswapLogo from "../../../../public/img/uniswap-logo.png";
-import olympusLogo from "../../../../public/img/olympusdao-logo.png";
+import uniswapLogo from "../../../public/img/uniswap-logo.png";
+import olympusLogo from "../../../public/img/olympusdao-logo.png";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import AppFooter from "~/components/Footer";
 

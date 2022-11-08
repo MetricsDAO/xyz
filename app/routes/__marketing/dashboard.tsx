@@ -6,7 +6,6 @@ export default function Index() {
     <>
       <section className="site-header-skinny">
         <div className="container">
-          <Footerr></Footerr>
           <Header />
         </div>
       </section>
