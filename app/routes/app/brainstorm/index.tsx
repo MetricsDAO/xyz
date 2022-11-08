@@ -1,5 +1,16 @@
 import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
+import {
+  Input,
+  Pagination,
+  Select,
+  Title,
+  Text,
+  Button,
+  Center,
+  Divider,
+  MultiSelect,
+  UnstyledButton,
+} from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
@@ -9,6 +20,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { Unsplash } from "@faker-js/faker/modules/image/providers/unsplash";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -153,6 +165,21 @@ type MarketplaceTableProps = {
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onSort = (header: string) => {
+    if (searchParams.get("sortBy") === header) {
+      if (searchParams.get("order") === "asc") {
+        searchParams.set("order", "desc");
+      } else {
+        searchParams.set("order", "asc");
+      }
+    } else {
+      searchParams.set("sortBy", header.toString());
+      searchParams.set("order", "desc");
+    }
+    setSearchParams(searchParams);
+  };
+
   if (marketplaces.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -161,12 +188,22 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <Text color="dark.3">Challenge Marketplace</Text>
+          <UnstyledButton onClick={() => onSort("title")}>
+            <Text color="dark.3">Challenge Marketplace</Text>
+          </UnstyledButton>
         </div>
-        <Text color="dark.3">Chain/Project</Text>
-        <Text color="dark.3">Challenge Pool Totals</Text>
-        <Text color="dark.3">Avg. Challenge Pool</Text>
-        <Text color="dark.3"># Challenges</Text>
+        <UnstyledButton>
+          <Text color="dark.3">Chain/Project</Text>
+        </UnstyledButton>
+        <UnstyledButton>
+          <Text color="dark.3">Challenge Pool Totals</Text>
+        </UnstyledButton>
+        <UnstyledButton>
+          <Text color="dark.3">Avg. Challenge Pool</Text>
+        </UnstyledButton>
+        <UnstyledButton>
+          <Text color="dark.3"># Challenges</Text>
+        </UnstyledButton>
       </div>
       {/* Rows */}
       <div className="space-y-3">
