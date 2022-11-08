@@ -1,12 +1,10 @@
 import { Button, Text, TextInput, Title } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useNavigate } from "@remix-run/react";
-import { BigNumber } from "ethers";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useWaitForTransaction } from "wagmi";
 import type { LaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
-
-const DEV_TEST_CONTRACT_ADDRESS = "0xd138D0B4F007EA66C8A8C0b95E671ffE788aa6A9";
+import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
 
 export function UpdateMarketplace({ title }: { title: string }) {
   const navigate = useNavigate();
@@ -18,23 +16,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
     validate: zodResolver(LaborMarketNewSchema),
   });
 
-  const { config } = usePrepareContractWrite({
-    address: DEV_TEST_CONTRACT_ADDRESS,
-    abi: [
-      {
-        inputs: [{ internalType: "uint256", name: "_num", type: "uint256" }],
-        name: "test",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ],
-    functionName: "test",
-    enabled: form.isValid(),
-    args: form.isValid() ? [BigNumber.from(form.values.title.charCodeAt(0))] : [BigNumber.from(0)], //mocking
-  });
-
-  const { data, write } = useContractWrite(config);
+  const { data, write } = useCreateMarketplace(form);
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
