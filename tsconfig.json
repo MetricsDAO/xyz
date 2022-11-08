@@ -4,7 +4,7 @@
     "**/*.ts",
     "**/*.tsx",
     "app/routes/showcase/index.jsx"
-, "app/routes/__main"  ],
+, "app/routes/__main", "app/routes/__marketing"  ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "isolatedModules": true,

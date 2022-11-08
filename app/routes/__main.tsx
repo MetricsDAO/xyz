@@ -1,10 +1,9 @@
 import { useEffect } from "react";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
+import { Outlet, useCatch } from "@remix-run/react";
 import { MantineProvider } from "@mantine/core";
 import styles from "../styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
-import { StylesPlaceholder } from "@mantine/remix";
 
 export const meta: MetaFunction = () => {
   return {
@@ -132,63 +131,5 @@ export function ErrorBoundary({ error }: { error: Error }) {
       <h1 className="text-5xl">Uh oh, something broke.</h1>
       {error.message ? <p className="hidden">{error.message}</p> : <></>}
     </div>
-  );
-}
-
-function Document({ children, title }: { children: React.ReactNode; title?: string }) {
-  return (
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colors: {
-          brand: [
-            "#dbfaff",
-            "#b1e9fc",
-            "#86daf5",
-            "#59caf0",
-            "#2ebbea",
-            "#15a1d1",
-            "#037ea3",
-            "#005a76",
-            "#00374a",
-            "#00141d",
-          ],
-        },
-        primaryColor: "brand",
-        fontFamily: "Inter, sans-serif",
-        headings: {
-          fontFamily: "Inter, sans-serif",
-          fontWeight: 600,
-        },
-      }}
-    >
-      <html lang="en">
-        <head>
-          <StylesPlaceholder />
-          {title ? <title>{title}</title> : null}
-          <Links />
-          <Meta />
-          <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
-          <script
-            type="text/javascript"
-            dangerouslySetInnerHTML={{
-              __html: `            
-              window.dataLayer = window.dataLayer || [];
-              function gtag() { dataLayer.push(arguments); }
-              gtag('js', new Date());
-              gtag('config', 'G-8JJWLXT88P');
-          `,
-            }}
-          ></script>
-        </head>
-        <body>
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
-    </MantineProvider>
   );
 }
