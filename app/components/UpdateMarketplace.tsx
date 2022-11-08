@@ -11,9 +11,10 @@ export function UpdateMarketplace({ title }: { title: string }) {
   const navigate = useNavigate();
   const [marketplace, setMarketplace] = useState<LaborMarketNew>();
 
-  const form = useForm({
+  const form = useForm<LaborMarketNew>({
     initialValues: {
-      title: null,
+      title: "",
+      type: "brainstorm",
       // ...
     },
     validate: zodResolver(LaborMarketNewSchema),
@@ -29,22 +30,21 @@ export function UpdateMarketplace({ title }: { title: string }) {
     },
   });
 
-  const onCreate = () => {
+  const onSubmit = () => {
     write?.();
+  };
+
+  const onChange = () => {
+    const validation = LaborMarketNewSchema.safeParse(form.values);
+    if (validation.success) {
+      setMarketplace(validation.data);
+    }
   };
 
   const delegateCreate = true;
 
   return (
-    <form
-      onChange={() => {
-        const validation = LaborMarketNewSchema.safeParse(form.values);
-        if (validation.success) {
-          setMarketplace(validation.data);
-        }
-      }}
-      className="space-y-7 p-3 max-w-3xl mx-auto"
-    >
+    <form onChange={onChange} className="space-y-7 p-3 max-w-3xl mx-auto">
       <p>data {JSON.stringify(data)}</p>
       <p>Is loading {JSON.stringify(isLoading)}</p>
       <p>is Success {JSON.stringify(isSuccess)}</p>
@@ -126,7 +126,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5 items-center">
-        <Button size="md" color="cyan" type="button" onClick={onCreate}>
+        <Button size="md" color="cyan" type="button" onClick={onSubmit}>
           Create
         </Button>
         <Button variant="default" color="dark" size="md">
