@@ -1,8 +1,8 @@
 import { Outlet } from "@remix-run/react";
-import customStyles from "../styles/custom.css";
-import fontStyles from "../styles/fonts.css";
+import customStyles from "../../styles/custom.css";
+import fontStyles from "../../styles/fonts.css";
 import aosStyles from "aos/dist/aos.css";
-import algoliaStyles from "../styles/algolia.css";
+import algoliaStyles from "../../styles/algolia.css";
 import type { LinksFunction } from "@remix-run/react/dist/routeModules";
 
 export const links: LinksFunction = () => {
