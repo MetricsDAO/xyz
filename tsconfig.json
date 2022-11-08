@@ -12,6 +12,7 @@
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
     "target": "ES2019",
     "strict": true,
     "baseUrl": ".",

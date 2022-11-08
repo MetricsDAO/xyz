@@ -1,22 +1,22 @@
 import { Link } from "@remix-run/react";
-import type { TopicWithProgram } from "~/domain";
+import type { ChallengeWithMarketplace } from "~/domain";
 import { Badge } from "./Badge";
 
-export function TopicList({ children }: { children: React.ReactNode }) {
+export function ChallengeList({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col space-y-6">{children}</div>;
 }
 
-TopicList.Item = function TopicListItem({ topic }: { topic: TopicWithProgram }) {
+ChallengeList.Item = function ChallengeListItem({ challenge }: { challenge: ChallengeWithMarketplace }) {
   return (
     <div className="text-gray-500 flex justify-between">
       <div>
         <Link to="/" className="text-lg text-neutral-600">
-          {topic.title}
+          {challenge.title}
         </Link>
         <p className="text-sm">
           Sponsored by{" "}
           <Badge asChild>
-            <Link to="/">{topic.sponsor}</Link>
+            <Link to="/">{challenge.sponsor}</Link>
           </Badge>
         </p>
       </div>
