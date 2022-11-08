@@ -3,7 +3,7 @@ import { z } from "zod";
 // Main LaborMarket schema.
 export const LaborMarketSchema = z.object({
   address: z.string({ description: "The address of the labor market on-chain." }),
-  title: z.string({ description: "Title of the labor market." }),
+  title: z.string({ description: "Title of the labor market." }).min(1),
   description: z.string({ description: "Description of the labor market." }),
   type: z.enum(["brainstorm", "analyze"], { description: "Type of the labor market (MDAO specific)." }),
   launchAccess: z.enum(["delegates", "anyone"], {
@@ -31,7 +31,7 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
 });
 
 // Schema for a new labor market.
-export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true });
+export const LaborMarketNewSchema = LaborMarketSchema.pick({ title: true });
 
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({

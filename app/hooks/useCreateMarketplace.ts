@@ -18,7 +18,7 @@ export function useCreateMarketplace(data?: LaborMarketNew) {
     ],
     functionName: "test",
     enabled: data !== undefined,
-    args: [BigNumber.from(1)], //use data in the future
+    args: data !== undefined ? [BigNumber.from(data.title.charCodeAt(0))] : [BigNumber.from(0)], // mocking
   });
 
   return useContractWrite(config);
