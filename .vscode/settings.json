@@ -12,5 +12,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "css.customData": [".vscode/css_custom_data.json"]
+  "css.customData": [".vscode/css_custom_data.json"],
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///Users/bryan/Code/xyz/.github/workflows/deploy.yml"
+  }
 }

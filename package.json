@@ -16,7 +16,7 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint '**/*.{ts,tsx}'",
     "prod": "yarn build && remix-serve api",
     "postinstall": "remix setup node",
-    "docker": "docker compose up -d",
+    "docker": "docker compose up -d --remove-orphans",
     "ladle:dev": "concurrently \"yarn dev:css\" \"ladle serve --stories=ladle\""
   },
   "dependencies": {
