@@ -201,7 +201,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <UnstyledButton>
           <Text color="dark.3">Avg. Challenge Pool</Text>
         </UnstyledButton>
-        <UnstyledButton>
+        <UnstyledButton onClick={() => onSort("serviceRequests")}>
           <Text color="dark.3"># Challenges</Text>
         </UnstyledButton>
       </div>
