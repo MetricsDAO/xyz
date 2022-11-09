@@ -18,7 +18,7 @@ export function useCreateMarketplace({ data, isEnabled }: { data?: LaborMarketNe
     ],
     functionName: "test",
     enabled: isEnabled,
-    args: data ? [BigNumber.from(data?.title.charCodeAt(0))] : [BigNumber.from(0)], //mocking
+    args: data ? [BigNumber.from(data?.title.length > 0 ? data?.title.charCodeAt(0) : 12)] : [BigNumber.from(0)], //mocking
   });
 
   return useContractWrite(config);
