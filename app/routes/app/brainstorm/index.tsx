@@ -241,7 +241,7 @@ function SortButton({ label }: { label: string }) {
           <ChevronSortDown16 />
         )
       ) : (
-        <ChevronSort16 />
+        <ChevronSort16 className="mt-1" />
       )}
     </UnstyledButton>
   );
