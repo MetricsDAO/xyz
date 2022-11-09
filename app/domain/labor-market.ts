@@ -31,7 +31,7 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
 });
 
 // Schema for a new labor market.
-export const LaborMarketNewSchema = LaborMarketSchema.pick({ title: true });
+export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true });
 
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({

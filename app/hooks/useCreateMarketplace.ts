@@ -29,12 +29,13 @@ export function useCreateMarketplace({
     ],
     functionName: "test",
     enabled: isEnabled,
-    args: data && data?.title.length > 0 ? [BigNumber.from(data.title.charCodeAt(0))] : [BigNumber.from(0)], //mocking
+    args: [BigNumber.from(0)], //mocking. Should come from labor market data in the future.
   });
 
   const { data: transactionResultData, write } = useContractWrite({
     ...config,
-    onSuccess(data) {
+    onSuccess(result) {
+      console.log("data that would be commited", data);
       // TODO: create transaction in Prisma
       onWriteSuccess?.();
     },
@@ -45,10 +46,10 @@ export function useCreateMarketplace({
     onError(error) {
       console.log("error", error);
     },
-    onSuccess(data) {
-      console.log("success", data);
+    onSuccess(receipt) {
+      console.log("success", receipt);
       // TODO: (for test/dev) create marketplace in Prisma
-      onTransactionSuccess?.(data);
+      onTransactionSuccess?.(receipt);
     },
   });
 
