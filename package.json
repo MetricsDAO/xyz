@@ -17,7 +17,8 @@
     "prod": "yarn build && remix-serve api",
     "postinstall": "remix setup node",
     "docker": "docker compose up -d --remove-orphans",
-    "ladle:dev": "concurrently \"yarn dev:css\" \"ladle serve --stories=ladle\""
+    "ladle:dev": "concurrently \"yarn dev:css\" \"ladle serve --stories=ladle\"",
+    "typescript": "tsc -b"
   },
   "dependencies": {
     "@carbon/icons-react": "^10.44.0",
