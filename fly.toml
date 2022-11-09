@@ -4,6 +4,10 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
+[env]
+  PORT = "8080"
+  METRICS_PORT = "8081"
+  
 [deploy]
   release_command = "yarn prisma migrate deploy"
 
