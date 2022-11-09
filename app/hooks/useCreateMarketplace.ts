@@ -8,11 +8,13 @@ const DEV_TEST_CONTRACT_ADDRESS = "0xd138D0B4F007EA66C8A8C0b95E671ffE788aa6A9";
 export function useCreateMarketplace({
   data,
   isEnabled,
-  onSuccess,
+  onTransactionSuccess,
+  onWriteSuccess,
 }: {
   data?: LaborMarketNew;
   isEnabled: boolean;
-  onSuccess?: (data: TransactionReceipt) => void;
+  onWriteSuccess?: () => void;
+  onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
     address: DEV_TEST_CONTRACT_ADDRESS,
@@ -30,7 +32,13 @@ export function useCreateMarketplace({
     args: data && data?.title.length > 0 ? [BigNumber.from(data.title.charCodeAt(0))] : [BigNumber.from(0)], //mocking
   });
 
-  const { data: transactionResultData, write } = useContractWrite(config);
+  const { data: transactionResultData, write } = useContractWrite({
+    ...config,
+    onSuccess(data) {
+      // TODO: create transaction in Prisma
+      onWriteSuccess?.();
+    },
+  });
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,
@@ -40,7 +48,7 @@ export function useCreateMarketplace({
     onSuccess(data) {
       console.log("success", data);
       // TODO: (for test/dev) create marketplace in Prisma
-      onSuccess?.(data);
+      onTransactionSuccess?.(data);
     },
   });
 

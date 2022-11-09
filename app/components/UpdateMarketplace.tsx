@@ -20,8 +20,11 @@ export function UpdateMarketplace({ title }: { title: string }) {
   const { write, isLoading, isSuccess } = useCreateMarketplace({
     isEnabled: form.isValid(),
     data: form.values,
-    onSuccess() {
+    onTransactionSuccess() {
       navigate("/app/brainstorm");
+    },
+    onWriteSuccess() {
+      // TODO: toast message or some kind of feedback
     },
   });
 
