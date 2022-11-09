@@ -1,4 +1,4 @@
-import { Search16 } from "@carbon/icons-react";
+import { ChevronSort16, ChevronSortDown16, ChevronSortUp16, Search16 } from "@carbon/icons-react";
 import {
   Input,
   Pagination,
@@ -20,7 +20,6 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
-import { Unsplash } from "@faker-js/faker/modules/image/providers/unsplash";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -165,21 +164,6 @@ type MarketplaceTableProps = {
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    if (searchParams.get("sortBy") === header) {
-      if (searchParams.get("order") === "asc") {
-        searchParams.set("order", "desc");
-      } else {
-        searchParams.set("order", "asc");
-      }
-    } else {
-      searchParams.set("sortBy", header.toString());
-      searchParams.set("order", "desc");
-    }
-    setSearchParams(searchParams);
-  };
-
   if (marketplaces.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -188,9 +172,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <UnstyledButton onClick={() => onSort("title")}>
-            <Text color="dark.3">Challenge Marketplace</Text>
-          </UnstyledButton>
+          <SortButton label="title" />
         </div>
         <UnstyledButton>
           <Text color="dark.3">Chain/Project</Text>
@@ -201,9 +183,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <UnstyledButton>
           <Text color="dark.3">Avg. Challenge Pool</Text>
         </UnstyledButton>
-        <UnstyledButton onClick={() => onSort("serviceRequests")}>
-          <Text color="dark.3"># Challenges</Text>
-        </UnstyledButton>
+        <SortButton label="serviceRequests" />
       </div>
       {/* Rows */}
       <div className="space-y-3">
@@ -236,5 +216,33 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         })}
       </div>
     </>
+  );
+}
+
+function SortButton({ label }: { label: string }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onSort = (header: string) => {
+    searchParams.set("sortBy", header);
+    if (searchParams.get("order") === "asc") {
+      searchParams.set("order", "desc");
+    } else {
+      searchParams.set("order", "asc");
+    }
+    setSearchParams(searchParams);
+  };
+
+  return (
+    <UnstyledButton onClick={() => onSort(label)} className="flex">
+      <Text color="dark.3"># Challenges</Text>
+      {searchParams.get("sortBy") === label ? (
+        searchParams.get("order") === "asc" ? (
+          <ChevronSortUp16 />
+        ) : (
+          <ChevronSortDown16 />
+        )
+      ) : (
+        <ChevronSort16 />
+      )}
+    </UnstyledButton>
   );
 }
