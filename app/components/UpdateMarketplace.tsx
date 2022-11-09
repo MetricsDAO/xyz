@@ -1,7 +1,7 @@
 import { Alert, Button, Text, TextInput, Title } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useNavigate } from "@remix-run/react";
-import { useAccount, useWaitForTransaction } from "wagmi";
+import { useAccount } from "wagmi";
 import type { LaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
 import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
@@ -17,17 +17,10 @@ export function UpdateMarketplace({ title }: { title: string }) {
     validate: zodResolver(LaborMarketNewSchema),
   });
 
-  const { data, write } = useCreateMarketplace({ isEnabled: form.isValid(), data: form.values });
-
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
-    onError(error) {
-      console.log("error", error);
-    },
-    onSuccess(data) {
-      console.log("success", data);
-      // 1. (for test/dev) create marketplace in Prisma
-      // 2. Navigate to details page? Or to marketplace list?
+  const { write, isLoading, isSuccess } = useCreateMarketplace({
+    isEnabled: form.isValid(),
+    data: form.values,
+    onSuccess() {
       navigate("/app/brainstorm");
     },
   });
@@ -35,13 +28,10 @@ export function UpdateMarketplace({ title }: { title: string }) {
   return (
     <form
       onSubmit={form.onSubmit(() => {
-        if (form.isValid()) {
-          write?.();
-        }
+        write?.();
       })}
       className="space-y-7 p-3 max-w-3xl mx-auto"
     >
-      <p>data {JSON.stringify(data)}</p>
       <p>Is loading {JSON.stringify(isLoading)}</p>
       <p>is Success {JSON.stringify(isSuccess)}</p>
       <div className="space-y-3 mx-auto">
