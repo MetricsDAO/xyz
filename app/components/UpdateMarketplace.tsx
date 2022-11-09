@@ -31,7 +31,6 @@ export function UpdateMarketplace({ title }: { title: string }) {
   });
 
   const { write, isLoading } = useCreateMarketplace({
-    isEnabled: form.isValid(),
     data: form.isValid() ? (form.values as LaborMarketNew) : undefined,
     onTransactionSuccess() {
       navigate("/app/brainstorm");
@@ -43,7 +42,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
 
   return (
     <form
-      onSubmit={form.onSubmit((values) => {
+      onSubmit={form.onSubmit(() => {
         write?.();
       })}
       className="space-y-7 p-3 max-w-3xl mx-auto"
@@ -154,7 +153,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
         </Alert>
       )}
       <div className="flex flex-col sm:flex-row gap-5">
-        <Button size="md" color="cyan" type="submit" disabled={isDisconnected}>
+        <Button size="md" color="brand.5" type="submit" disabled={isDisconnected}>
           Create
         </Button>
         <Button variant="default" color="dark" size="md">

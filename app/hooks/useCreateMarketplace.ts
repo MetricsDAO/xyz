@@ -7,12 +7,10 @@ const DEV_TEST_CONTRACT_ADDRESS = "0xd138D0B4F007EA66C8A8C0b95E671ffE788aa6A9";
 
 export function useCreateMarketplace({
   data,
-  isEnabled,
   onTransactionSuccess,
   onWriteSuccess,
 }: {
   data?: LaborMarketNew;
-  isEnabled: boolean;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
@@ -28,7 +26,7 @@ export function useCreateMarketplace({
       },
     ],
     functionName: "test",
-    enabled: isEnabled,
+    enabled: data !== undefined,
     args: [BigNumber.from(0)], //mocking. Should come from labor market data in the future.
   });
 
