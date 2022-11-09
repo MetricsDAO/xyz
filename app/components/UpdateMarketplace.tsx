@@ -17,7 +17,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
     validate: zodResolver(LaborMarketNewSchema),
   });
 
-  const { data, write } = useCreateMarketplace(form);
+  const { data, write } = useCreateMarketplace({ isEnabled: form.isValid(), data: form.values });
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,

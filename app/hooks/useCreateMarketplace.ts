@@ -1,11 +1,10 @@
-import type { UseFormReturnType } from "@mantine/form";
 import { BigNumber } from "ethers";
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketNew } from "~/domain";
 
 const DEV_TEST_CONTRACT_ADDRESS = "0xd138D0B4F007EA66C8A8C0b95E671ffE788aa6A9";
 
-export function useCreateMarketplace(form: UseFormReturnType<LaborMarketNew>) {
+export function useCreateMarketplace({ data, isEnabled }: { data?: LaborMarketNew; isEnabled: boolean }) {
   const { config } = usePrepareContractWrite({
     address: DEV_TEST_CONTRACT_ADDRESS,
     abi: [
@@ -18,8 +17,8 @@ export function useCreateMarketplace(form: UseFormReturnType<LaborMarketNew>) {
       },
     ],
     functionName: "test",
-    enabled: form.isValid(),
-    args: form.isValid() ? [BigNumber.from(form.values.title.charCodeAt(0))] : [BigNumber.from(0)], //mocking
+    enabled: isEnabled,
+    args: data ? [BigNumber.from(data?.title.charCodeAt(0))] : [BigNumber.from(0)], //mocking
   });
 
   return useContractWrite(config);
