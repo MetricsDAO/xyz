@@ -22,7 +22,7 @@ import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
-import { Countdown } from "~/components/dateCountdown";
+import { Countdown } from "~/components/DateCountdown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 
 export const loader = async (data: DataFunctionArgs) => {
@@ -308,11 +308,11 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
               <TextWithIcon text={`${10000} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Submit Deadline</div>
               <span>
-                <Countdown date={c.marketplace.endsAt ? c.marketplace.endsAt : ""} />
+                <Countdown date={"2019-01-25"} />
               </span>
               <div className="lg:hidden">Review Deadline</div>
               <span>
-                <Countdown date={c.marketplace.reviewDeadline ? c.marketplace.reviewDeadline : ""} />
+                <Countdown date={""} />
               </span>
             </Link>
           );
