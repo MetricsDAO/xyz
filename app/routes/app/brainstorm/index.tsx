@@ -1,5 +1,16 @@
-import { Search16 } from "@carbon/icons-react";
-import { Input, Pagination, Select, Title, Text, Button, Center, Divider, MultiSelect } from "@mantine/core";
+import { ChevronSort16, ChevronSortDown16, ChevronSortUp16, Search16 } from "@carbon/icons-react";
+import {
+  Input,
+  Pagination,
+  Select,
+  Title,
+  Text,
+  Button,
+  Center,
+  Divider,
+  MultiSelect,
+  UnstyledButton,
+} from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
@@ -92,13 +103,14 @@ function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
       <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
-      <Text size="lg" weight={600}>
+      <Text size="lg" weight={600} className="md:hidden">
         Sort:
       </Text>
       <Select
         radius="md"
         placeholder="Select option"
         name="sortBy"
+        className="md:hidden"
         clearable
         data={[{ label: "Chain/Project", value: "project" }]}
       />
@@ -161,12 +173,18 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <Text color="dark.3">Challenge Marketplace</Text>
+          <SortButton label="title" title="Challenge Marketplace" />
         </div>
-        <Text color="dark.3">Chain/Project</Text>
-        <Text color="dark.3">Challenge Pool Totals</Text>
-        <Text color="dark.3">Avg. Challenge Pool</Text>
-        <Text color="dark.3"># Challenges</Text>
+        <UnstyledButton>
+          <Text color="dark.3">Chain/Project</Text>
+        </UnstyledButton>
+        <UnstyledButton>
+          <Text color="dark.3">Challenge Pool Totals</Text>
+        </UnstyledButton>
+        <UnstyledButton>
+          <Text color="dark.3">Avg. Challenge Pool</Text>
+        </UnstyledButton>
+        <SortButton label="serviceRequests" title="# Challenges" />
       </div>
       {/* Rows */}
       <div className="space-y-3">
@@ -199,5 +217,33 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         })}
       </div>
     </>
+  );
+}
+
+function SortButton({ label, title }: { label: string; title: string }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onSort = (header: string) => {
+    searchParams.set("sortBy", header);
+    if (searchParams.get("order") === "asc") {
+      searchParams.set("order", "desc");
+    } else {
+      searchParams.set("order", "asc");
+    }
+    setSearchParams(searchParams);
+  };
+
+  return (
+    <UnstyledButton onClick={() => onSort(label)} className="flex">
+      <Text color="dark.3">{title}</Text>
+      {searchParams.get("sortBy") === label ? (
+        searchParams.get("order") === "asc" ? (
+          <ChevronSortUp16 className="mt-2" />
+        ) : (
+          <ChevronSortDown16 />
+        )
+      ) : (
+        <ChevronSort16 className="mt-1" />
+      )}
+    </UnstyledButton>
   );
 }
