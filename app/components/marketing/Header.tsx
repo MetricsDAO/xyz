@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { useRef } from "react";
-import SocialIcons from "~/components/SocialIcons";
+import SocialIcons from "~/components/marketing/SocialIcons";
 
 const Header = () => {
   const navRef = useRef<any>(null);
@@ -42,6 +42,12 @@ const Header = () => {
           rel="noreferrer"
         >
           BECOME AN ANALYST
+        </a>
+        <a
+          className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1"
+          href="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
+        >
+          BOUNTIES
         </a>
         <Link className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1" to="/dashboard">
           DASHBOARD
