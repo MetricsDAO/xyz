@@ -10,7 +10,7 @@ export function useCreateMarketplace({
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data?: LaborMarketNew;
+  data: LaborMarketNew;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
@@ -26,7 +26,6 @@ export function useCreateMarketplace({
       },
     ],
     functionName: "test",
-    enabled: data !== undefined,
     args: [BigNumber.from(0)], //mocking. Should come from labor market data in the future.
   });
 
@@ -46,6 +45,7 @@ export function useCreateMarketplace({
     },
     onSuccess(receipt) {
       console.log("success", receipt);
+      // TODO: update transaction in Prisma?
       // TODO: (for test/dev) create marketplace in Prisma
       onTransactionSuccess?.(receipt);
     },

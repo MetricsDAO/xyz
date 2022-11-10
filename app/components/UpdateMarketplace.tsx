@@ -1,7 +1,8 @@
+import type { ModalProps } from "@mantine/core";
 import {
   Alert,
   Button,
-  LoadingOverlay,
+  Modal,
   MultiSelect,
   NumberInput,
   Select,
@@ -12,14 +13,17 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useNavigate } from "@remix-run/react";
+import { useQuery } from "@tanstack/react-query";
+import type { CIDString } from "nft.storage";
+import { useState } from "react";
 import { useAccount } from "wagmi";
 import type { LaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
 import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
 
 export function UpdateMarketplace({ title }: { title: string }) {
-  const navigate = useNavigate();
-  const { isDisconnected, address } = useAccount();
+  const { address, isDisconnected } = useAccount();
+  const [isModalOpen, setModalOpened] = useState(false);
 
   const form = useForm<Partial<LaborMarketNew>>({
     initialValues: {
@@ -30,24 +34,32 @@ export function UpdateMarketplace({ title }: { title: string }) {
     validate: zodResolver(LaborMarketNewSchema),
   });
 
-  const { write, isLoading } = useCreateMarketplace({
-    data: form.isValid() ? (form.values as LaborMarketNew) : undefined,
-    onTransactionSuccess() {
-      navigate("/app/brainstorm");
+  const {
+    data: cid,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["marketplace-create"],
+    queryFn: async () => {
+      // Testing
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      // return "cid-from-ipfs";
+      const cid = await createLaborMarketMeta(form.values as LaborMarketNew); // validated with zod by now
+      return cid;
     },
-    onWriteSuccess() {
-      // TODO: toast message or some kind of feedback
+    onSuccess() {
+      setModalOpened(true);
     },
+    enabled: false,
   });
 
   return (
     <form
       onSubmit={form.onSubmit(() => {
-        write?.();
+        refetch({ throwOnError: true });
       })}
       className="space-y-7 p-3 max-w-3xl mx-auto"
     >
-      <LoadingOverlay visible={isLoading} overlayBlur={2} />
       <div className="space-y-3 mx-auto">
         <Title order={2} weight={600}>
           {title + " Marketplace"}
@@ -152,14 +164,58 @@ export function UpdateMarketplace({ title }: { title: string }) {
           Please connect wallet
         </Alert>
       )}
-      <div className="flex flex-col sm:flex-row gap-5">
-        <Button size="md" color="brand.5" type="submit" disabled={isDisconnected}>
-          Create
-        </Button>
-        <Button variant="default" color="dark" size="md">
-          Cancel
-        </Button>
-      </div>
+      <Button size="md" color="brand.5" type="submit" disabled={isDisconnected} loading={isFetching}>
+        Next
+      </Button>
+      <ConfirmTransactionModal
+        laborMarket={form.values as LaborMarketNew}
+        cid={cid as string}
+        opened={isModalOpen}
+        onClose={() => setModalOpened(false)}
+      />
     </form>
+  );
+}
+
+function ConfirmTransactionModal({
+  laborMarket,
+  cid,
+  ...modalProps
+}: { laborMarket: LaborMarketNew; cid: CIDString } & ModalProps) {
+  const navigate = useNavigate();
+
+  const { write, isLoading } = useCreateMarketplace({
+    data: laborMarket,
+    onTransactionSuccess() {
+      navigate("/app/brainstorm");
+    },
+    onWriteSuccess() {
+      // TODO: toast message or some kind of feedback
+    },
+  });
+
+  return (
+    <Modal {...modalProps}>
+      <div className="space-y-8">
+        <Title>Confirm Transaction</Title>
+        <Text>Please confirm that you would like to create a new marketplace.</Text>
+        {/* {Object.keys(laborMarket).map((key) => (
+          <div key={key}>
+            <Text>{key}</Text>
+            <Text>{laborMarket[key]}</Text>
+          </div>
+        ))}
+        <Text>cid</Text>
+        <Text>{cid}</Text> */}
+        <div className="flex flex-col sm:flex-row justify-center gap-5">
+          <Button size="md" color="brand.5" type="button" onClick={() => write?.()} loading={isLoading}>
+            Create
+          </Button>
+          <Button variant="default" color="dark" size="md" onClick={modalProps.onClose}>
+            Cancel
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 }
