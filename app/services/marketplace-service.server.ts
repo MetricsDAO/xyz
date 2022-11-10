@@ -21,7 +21,12 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
       projects: params.project ? { some: { id: params.project } } : undefined,
     },
     orderBy: {
-      [params.sortBy]: params.order,
+      [params.sortBy]:
+        "serviceRequests" !== params.sortBy
+          ? params.order
+          : {
+              _count: params.order,
+            },
     },
     take: params.first,
     skip: params.first * (params.page - 1),

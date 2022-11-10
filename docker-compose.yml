@@ -1,18 +1,19 @@
 version: "3.8"
 
 volumes:
-  db_data:
+  pg_data:
     driver: local
 
 services:
-  mysql:
-    image: mysql:latest
+  postgres:
+    image: postgres:latest
     container_name: db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mdao
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: user
+      POSTGRES_DB: mdao
     volumes:
-      - db_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
     ports:
-      - "3306:3306"
+      - "5435:5432"

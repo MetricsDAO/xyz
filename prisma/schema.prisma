@@ -3,11 +3,11 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -65,8 +65,6 @@ model LaborMarket {
   tokens              Token[]
   projects            Project[]
   serviceRequests     ServiceRequest[]
-
-  @@fulltext([title, description])
 }
 
 model ServiceRequest {
