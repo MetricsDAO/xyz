@@ -103,13 +103,14 @@ function SearchAndFilter() {
   return (
     <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
       <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
-      <Text size="lg" weight={600}>
+      <Text size="lg" weight={600} className="md:hidden">
         Sort:
       </Text>
       <Select
         radius="md"
         placeholder="Select option"
         name="sortBy"
+        className="md:hidden"
         clearable
         data={[{ label: "Chain/Project", value: "project" }]}
       />
@@ -172,7 +173,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <SortButton label="title" />
+          <SortButton label="title" title="Challenge Marketplace" />
         </div>
         <UnstyledButton>
           <Text color="dark.3">Chain/Project</Text>
@@ -183,7 +184,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <UnstyledButton>
           <Text color="dark.3">Avg. Challenge Pool</Text>
         </UnstyledButton>
-        <SortButton label="serviceRequests" />
+        <SortButton label="serviceRequests" title="# Challenges" />
       </div>
       {/* Rows */}
       <div className="space-y-3">
@@ -219,7 +220,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   );
 }
 
-function SortButton({ label }: { label: string }) {
+function SortButton({ label, title }: { label: string; title: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const onSort = (header: string) => {
     searchParams.set("sortBy", header);
@@ -233,10 +234,10 @@ function SortButton({ label }: { label: string }) {
 
   return (
     <UnstyledButton onClick={() => onSort(label)} className="flex">
-      <Text color="dark.3"># Challenges</Text>
+      <Text color="dark.3">{title}</Text>
       {searchParams.get("sortBy") === label ? (
         searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 />
+          <ChevronSortUp16 className="mt-2" />
         ) : (
           <ChevronSortDown16 />
         )
