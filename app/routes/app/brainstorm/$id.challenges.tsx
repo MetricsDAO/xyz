@@ -23,17 +23,29 @@ import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
+import { findLaborMarket } from "~/services/marketplace-service.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ChallengeSearchSchema);
+
+  if (params.laborMarket == undefined) {
+    params.laborMarket = data.params.id;
+  }
+
+  let laborMarket = undefined;
+
+  if (data.params.id != undefined) {
+    laborMarket = await findLaborMarket(data.params.id);
+  }
+
   const challenges = await searchChallenges(params);
   const totalResults = await countChallenges(params);
-  return typedjson({ challenges, totalResults, params });
+  return typedjson({ challenges, totalResults, params, laborMarket });
 };
 
 export default function MarketplaceChallenges() {
-  const { challenges, totalResults, params } = useTypedLoaderData<typeof loader>();
+  const { challenges, totalResults, params, laborMarket } = useTypedLoaderData<typeof loader>();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const onPaginationChange = (page: number) => {
@@ -44,13 +56,13 @@ export default function MarketplaceChallenges() {
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <Title order={2}>Challenge Title</Title>
+        <Title order={2}>{laborMarket?.title} </Title>
         <Center className="flex flex-wrap gap-5">
-          {/* <Link to="/app/brainstorm/[marketplaceId]/claim"> */}
-          <Button radius="md" className="mx-auto">
-            Launch Challenge
-          </Button>
-          {/* </Link> */}
+          <Link to="/app/brainstorm/[marketplaceId]/claim">
+            <Button radius="md" className="mx-auto">
+              Launch Challenge
+            </Button>
+          </Link>
         </Center>
       </section>
       <section className="flex flex-col space-y-7 pb-12">
@@ -276,7 +288,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <Text color="dark.3">Challenge Marketplace</Text>
+          <Text color="dark.3">Challenge</Text>
         </div>
         <Text color="dark.3">Chain/Project</Text>
         <Text color="dark.3">Reward Pool</Text>
@@ -288,7 +300,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
         {challenges.map((c) => {
           return (
             <Link
-              to="/app/brainstorm/c/[id]"
+              to={`/app/brainstorm/c/${c.id}`}
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={c.id}

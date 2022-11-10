@@ -23,6 +23,7 @@ import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 
 const paramsSchema = z.object({ id: z.string() });
@@ -32,14 +33,18 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!challenge) {
     throw notFound({ id });
   }
+
   return typedjson({ challenge }, { status: 200 });
 };
 
 export default function Challenge() {
+  const { challenge } = useTypedLoaderData<typeof loader>();
+  const submissions = challenge.submissions;
+
   return (
     <div className="mx-auto container mb-12 px-10 pt-12">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <Title order={2}>Challenge Title</Title>
+        <Title order={2}>{challenge.title}</Title>
         <Center className="flex flex-wrap gap-5">
           <Link to="/app/brainstorm/c/[challengeId]/review">
             <Button variant="default" color="dark" radius="md" className="mx-auto">
@@ -111,7 +116,7 @@ export default function Challenge() {
             </Tabs.List>
 
             <Tabs.Panel value="submissions" pt="xs">
-              <Submissions submissions={[]} />
+              <Submissions submissions={submissions} />
             </Tabs.Panel>
 
             <Tabs.Panel value="prerequisites" pt="xs">
@@ -148,7 +153,7 @@ function Submissions({ submissions }: SubmissionsProps) {
         {submissions.map((m) => {
           return (
             <Link
-              to="/app/brainstorm/s/[submissionId]"
+              to={`/app/brainstorm/s/${m.id}`}
               className="flex flex-col md:flex-row gap-x-10 gap-y-3 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center space-between"
               key={m.id}
             >

@@ -1,7 +1,11 @@
 import { upsertLaborMarket } from "~/services/marketplace-service.server";
-import { fakeLaborMarket } from "~/utils/fakes";
+import { fakeLaborMarket, fakeServiceRequest, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
+import { upsertServiceRequest } from "~/services/challenges-service.server";
+import { upsertSubmission } from "~/services/submission-service.server";
+import type { LaborMarket, ServiceRequest } from "@prisma/client";
+import { promise } from "zod";
 
 async function main() {
   await prisma.project.createMany({
@@ -42,6 +46,35 @@ async function main() {
       })
     );
   }
+
+  const allLaborMarkets = await prisma.laborMarket.findMany();
+  console.log("allLaborMarkets", allLaborMarkets.length);
+
+  // create 10 fake service requests/challenges for each labor market in Prisma
+  async function seedServiceRequests(laborMarkets: LaborMarket[]): Promise<ServiceRequest[]> {
+    laborMarkets.forEach((laborMarket) => {
+      for (let i = 0; i < 10; i++) {
+        upsertServiceRequest(fakeServiceRequest({}, laborMarket.address as string));
+      }
+    });
+    const allSerivceRequests = await prisma.serviceRequest.findMany();
+    return allSerivceRequests;
+  }
+
+  function seedSubmissions(allChallenges: ServiceRequest[]) {
+    allChallenges.forEach((challenge) => {
+      // create 10 fake submissions for each challenge in Prisma
+      for (let i = 0; i < 3; i++) {
+        upsertSubmission(fakeSubmission({}, challenge.id));
+      }
+    });
+  }
+
+  const promise = await seedServiceRequests(allLaborMarkets);
+
+  Promise.all(promise).then((allChallenges) => {
+    seedSubmissions(allChallenges);
+  });
 }
 
 main()
