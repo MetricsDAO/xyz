@@ -1,7 +1,7 @@
+import type { LaborMarket, User } from "@prisma/client";
 import { forbidden } from "remix-utils";
-import type { LaborMarket, User } from "~/mdao";
 
-type CanObject = LaborMarket;
+type CanObject = LaborMarket | User;
 type CanAction = "read" | "write" | "delete" | "execute";
 
 /**
