@@ -14,7 +14,6 @@ import {
   Checkbox,
   Paper,
   Drawer,
-  Group,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 import { useState } from "react";
@@ -22,7 +21,6 @@ import { z } from "zod";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
-import { findChallenge } from "~/services/challenges-service.server";
 import { notFound } from "remix-utils";
 import { findSubmission } from "~/services/submission-service.server";
 

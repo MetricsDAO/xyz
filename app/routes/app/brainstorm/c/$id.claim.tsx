@@ -2,7 +2,7 @@ import { Title, Text, List, Button, Badge } from "@mantine/core";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
-import { string, z } from "zod";
+import { z } from "zod";
 import { CountDown } from "~/components/CountDown";
 import { findChallenge } from "~/services/challenges-service.server";
 
