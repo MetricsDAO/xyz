@@ -14,7 +14,6 @@ import {
   Checkbox,
   Paper,
   Drawer,
-  Group,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 import { useState } from "react";
