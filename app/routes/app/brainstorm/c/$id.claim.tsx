@@ -1,12 +1,29 @@
 import { Title, Text, List, Button, Badge } from "@mantine/core";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { notFound } from "remix-utils";
+import { string, z } from "zod";
 import { CountDown } from "~/components/CountDown";
+import { findChallenge } from "~/services/challenges-service.server";
 
+const paramsSchema = z.object({ id: z.string() });
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id);
+  if (!challenge) {
+    throw notFound({ id });
+  }
+
+  return typedjson({ challenge }, { status: 200 });
+};
 export default function ClaimToSubmit() {
+  const { challenge } = useTypedLoaderData<typeof loader>();
+
   return (
     <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
       <div className="space-y-2">
         <Title order={2} weight={600}>
-          {"Claim to Submit on {Challenge title}"}
+          {`Claim to Submit on ${challenge.title}`}
         </Title>
         <div>
           <Title order={4} color="brand.4" weight={400}>
@@ -43,10 +60,10 @@ export default function ClaimToSubmit() {
         <Title order={4}>Lock xMetric</Title>
         <div className="flex flex-col md:flex-row space-y-2 md:space-x-5 items-center">
           <Text>
-            You must lock{" "}
+            You must lock
             <Badge radius="sm" color="dark" className="mt-1">
               10
-            </Badge>{" "}
+            </Badge>
             xMetric to claim
           </Text>
           <Button radius="md" variant="outline" size="lg" className="self-start">

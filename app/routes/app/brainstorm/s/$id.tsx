@@ -128,7 +128,7 @@ export default function ChallengeSubmission() {
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
           <div className="flex items-center gap-2">
-            <Title order={2}>{} </Title>
+            <Title order={2}>Title goes here </Title>
             {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
           </div>
           <Center className="flex flex-wrap gap-5">

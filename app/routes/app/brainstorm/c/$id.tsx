@@ -46,12 +46,12 @@ export default function Challenge() {
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <Title order={2}>{challenge.title}</Title>
         <Center className="flex flex-wrap gap-5">
-          <Link to="/app/brainstorm/c/[challengeId]/review">
+          <Link to={`/app/brainstorm/c/${challenge.id}/review`}>
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Claim to Review
             </Button>
           </Link>
-          <Link to="/app/brainstorm/c/[challengeId]/claim">
+          <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>
             <Button radius="md" className="mx-auto">
               Claim to Submit
             </Button>
