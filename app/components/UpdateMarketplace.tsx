@@ -28,10 +28,11 @@ export function UpdateMarketplace({ title }: { title: string }) {
     validate: zodResolver(LaborMarketNewSchema),
   });
 
-  const { mutate: prepareLaborMarket, isLoading, isSuccess, data } = usePrepareLaborMarket();
-  useEffect(() => {
-    setModalOpened(isSuccess);
-  }, [isSuccess]);
+  const {
+    mutate: prepareLaborMarket,
+    isLoading,
+    data,
+  } = usePrepareLaborMarket({ onSuccess: () => setModalOpened(true) });
 
   function handleSubmit() {
     form.onSubmit((values) => {
