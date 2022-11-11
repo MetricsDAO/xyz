@@ -24,7 +24,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
   const { isDisconnected } = useAccount();
   const [modalOpen, setModalOpened] = useState(false);
 
-  const form = useForm<LaborMarketNew>({
+  const form = useForm<Partial<LaborMarketNew>>({
     validate: zodResolver(LaborMarketNewSchema),
   });
 
@@ -33,8 +33,15 @@ export function UpdateMarketplace({ title }: { title: string }) {
     setModalOpened(isSuccess);
   }, [isSuccess]);
 
+  function handleSubmit() {
+    form.onSubmit((values) => {
+      const laborMarketNew = LaborMarketNewSchema.parse(values);
+      prepareLaborMarket(laborMarketNew);
+    });
+  }
+
   return (
-    <form onSubmit={form.onSubmit((values) => prepareLaborMarket(values))} className="space-y-7 p-3 max-w-3xl mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-7 p-3 max-w-3xl mx-auto">
       <Modal opened={modalOpen} onClose={() => setModalOpened(false)}>
         <ConfirmTransaction laborMarket={data} onCancel={() => setModalOpened(false)} />
       </Modal>
