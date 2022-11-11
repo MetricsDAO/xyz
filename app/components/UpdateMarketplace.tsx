@@ -12,12 +12,13 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useNavigate } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
 import { usePrepareLaborMarket } from "~/hooks/usePrepareLaborMarket";
 import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
+import invariant from "tiny-invariant";
 
 export function UpdateMarketplace({ title }: { title: string }) {
   const { isDisconnected } = useAccount();
@@ -31,11 +32,13 @@ export function UpdateMarketplace({ title }: { title: string }) {
     validate: zodResolver(LaborMarketNewSchema),
   });
 
-  const {
-    mutate: prepareLaborMarket,
-    isLoading,
-    data,
-  } = usePrepareLaborMarket({ onSuccess: () => setModalOpened(true) });
+  const { mutate: prepareLaborMarket, data, isLoading, isSuccess } = usePrepareLaborMarket();
+
+  useEffect(() => {
+    if (isSuccess) {
+      setModalOpened(true);
+    }
+  }, [isSuccess]);
 
   function handleSubmit() {
     return form.onSubmit((values) => {
@@ -47,7 +50,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
   return (
     <form onSubmit={handleSubmit()} className="space-y-7 p-3 max-w-3xl mx-auto">
       <Modal opened={modalOpen} onClose={() => setModalOpened(false)}>
-        {data && <ConfirmTransaction laborMarket={data} onCancel={() => setModalOpened(false)} />}
+        <ConfirmTransaction laborMarket={data} onCancel={() => setModalOpened(false)} />
       </Modal>
 
       <div className="space-y-3 mx-auto">
@@ -165,7 +168,9 @@ export function UpdateMarketplace({ title }: { title: string }) {
   );
 }
 
-function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket: LaborMarketPrepared; onCancel: () => void }) {
+function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
+  invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
+
   const navigate = useNavigate();
 
   const { write, isLoading } = useCreateMarketplace({
