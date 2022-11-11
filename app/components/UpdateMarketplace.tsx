@@ -1,4 +1,3 @@
-import type { ModalProps } from "@mantine/core";
 import {
   Alert,
   Button,
@@ -13,53 +12,41 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useNavigate } from "@remix-run/react";
-import { useQuery } from "@tanstack/react-query";
-import type { CIDString } from "nft.storage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import type { LaborMarketNew } from "~/domain";
+import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
+import { usePrepareLaborMarket } from "~/hooks/usePrepareLaborMarket";
 import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
+import invariant from "tiny-invariant";
 
 export function UpdateMarketplace({ title }: { title: string }) {
-  const { address, isDisconnected } = useAccount();
-  const [isModalOpen, setModalOpened] = useState(false);
+  const { isDisconnected } = useAccount();
+  const [modalOpen, setModalOpened] = useState(false);
 
   const form = useForm<Partial<LaborMarketNew>>({
-    initialValues: {
-      sponsorAddress: address,
-      type: "brainstorm",
-      launchAccess: "anyone",
-    },
     validate: zodResolver(LaborMarketNewSchema),
   });
 
   const {
-    data: cid,
-    isFetching,
-    refetch,
-  } = useQuery({
-    queryKey: ["marketplace-create"],
-    queryFn: async () => {
-      // Testing
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
-      // return "cid-from-ipfs";
-      const cid = await createLaborMarketMeta(form.values as LaborMarketNew); // validated with zod by now
-      return cid;
-    },
-    onSuccess() {
-      setModalOpened(true);
-    },
-    enabled: false,
-  });
+    mutate: prepareLaborMarket,
+    isLoading,
+    data,
+  } = usePrepareLaborMarket({ onSuccess: () => setModalOpened(true) });
+
+  function handleSubmit() {
+    form.onSubmit((values) => {
+      const laborMarketNew = LaborMarketNewSchema.parse(values);
+      prepareLaborMarket(laborMarketNew);
+    });
+  }
 
   return (
-    <form
-      onSubmit={form.onSubmit(() => {
-        refetch({ throwOnError: true });
-      })}
-      className="space-y-7 p-3 max-w-3xl mx-auto"
-    >
+    <form onSubmit={handleSubmit} className="space-y-7 p-3 max-w-3xl mx-auto">
+      <Modal opened={modalOpen} onClose={() => setModalOpened(false)}>
+        <ConfirmTransaction laborMarket={data} onCancel={() => setModalOpened(false)} />
+      </Modal>
+
       <div className="space-y-3 mx-auto">
         <Title order={2} weight={600}>
           {title + " Marketplace"}
@@ -95,6 +82,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
           ]}
           {...form.getInputProps("launchAccess")}
         />
+
         {form.values.launchAccess === "delegates" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
             <div className="flex flex-row md:col-span-2 space-x-4">
@@ -120,6 +108,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
             />
           </div>
         )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-5">
           <Text weight={600} className="md:col-span-2">
             Rewards
@@ -159,29 +148,23 @@ export function UpdateMarketplace({ title }: { title: string }) {
           />
         </div>
       </div>
+
       {isDisconnected && (
         <Alert color="red" variant="outline" title="Disconnected">
           Please connect wallet
         </Alert>
       )}
-      <Button size="md" color="brand.5" type="submit" disabled={isDisconnected} loading={isFetching}>
+
+      <Button size="md" color="brand.5" type="submit" disabled={isDisconnected} loading={isLoading}>
         Next
       </Button>
-      <ConfirmTransactionModal
-        laborMarket={form.values as LaborMarketNew}
-        cid={cid as string}
-        opened={isModalOpen}
-        onClose={() => setModalOpened(false)}
-      />
     </form>
   );
 }
 
-function ConfirmTransactionModal({
-  laborMarket,
-  cid,
-  ...modalProps
-}: { laborMarket: LaborMarketNew; cid: CIDString } & ModalProps) {
+function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
+  invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
+
   const navigate = useNavigate();
 
   const { write, isLoading } = useCreateMarketplace({
@@ -195,11 +178,10 @@ function ConfirmTransactionModal({
   });
 
   return (
-    <Modal {...modalProps}>
-      <div className="space-y-8">
-        <Title>Confirm Transaction</Title>
-        <Text>Please confirm that you would like to create a new marketplace.</Text>
-        {/* {Object.keys(laborMarket).map((key) => (
+    <div className="space-y-8">
+      <Title>Confirm Transaction</Title>
+      <Text>Please confirm that you would like to create a new marketplace.</Text>
+      {/* {Object.keys(laborMarket).map((key) => (
           <div key={key}>
             <Text>{key}</Text>
             <Text>{laborMarket[key]}</Text>
@@ -207,15 +189,14 @@ function ConfirmTransactionModal({
         ))}
         <Text>cid</Text>
         <Text>{cid}</Text> */}
-        <div className="flex flex-col sm:flex-row justify-center gap-5">
-          <Button size="md" color="brand.5" type="button" onClick={() => write?.()} loading={isLoading}>
-            Create
-          </Button>
-          <Button variant="default" color="dark" size="md" onClick={modalProps.onClose}>
-            Cancel
-          </Button>
-        </div>
+      <div className="flex flex-col sm:flex-row justify-center gap-5">
+        <Button size="md" color="brand.5" type="button" onClick={() => write?.()} loading={isLoading}>
+          Create
+        </Button>
+        <Button variant="default" color="dark" size="md" onClick={onCancel}>
+          Cancel
+        </Button>
       </div>
-    </Modal>
+    </div>
   );
 }

@@ -6,6 +6,8 @@ import { MantineProvider, createEmotionCache } from "@mantine/core";
 import { StylesPlaceholder } from "@mantine/remix";
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import env from "./env";
 
 createEmotionCache({ key: "mantine" });
 
@@ -70,6 +72,12 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: rainbowKitStyles },
   ];
+};
+
+export const loader = () => {
+  return typedjson({
+    ENV: {},
+  });
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {
@@ -147,6 +155,7 @@ export default function App() {
 }
 
 function Document({ children, title }: { children: React.ReactNode; title?: string }) {
+  const data = useTypedLoaderData<typeof loader>();
   return (
     <html lang="en">
       <head>
@@ -166,6 +175,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         `,
           }}
         ></script>
+        <script dangerouslySetInnerHTML={{ __html: `window.process = ${JSON.stringify({ env: data.ENV })}` }} />
       </head>
       <body>
         {children}

@@ -31,7 +31,13 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
 });
 
 // Schema for a new labor market.
-export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true });
+export const LaborMarketNewSchema = LaborMarketSchema.omit({
+  address: true,
+  sponsorAddress: true,
+});
+
+// Schema for a labor market with an IPFS CID.
+export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({ ipfsHash: z.string() });
 
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({
@@ -47,5 +53,6 @@ export const LaborMarketSearchSchema = z.object({
 
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 export type LaborMarketNew = z.infer<typeof LaborMarketNewSchema>;
+export type LaborMarketPrepared = z.infer<typeof LaborMarketPreparedSchema>;
 export type LaborMarketMeta = z.infer<typeof LaborMarketMetaSchema>;
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;
