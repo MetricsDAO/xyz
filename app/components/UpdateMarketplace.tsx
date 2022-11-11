@@ -12,19 +12,22 @@ import {
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useNavigate } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAccount } from "wagmi";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
 import { usePrepareLaborMarket } from "~/hooks/usePrepareLaborMarket";
 import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
-import invariant from "tiny-invariant";
 
 export function UpdateMarketplace({ title }: { title: string }) {
   const { isDisconnected } = useAccount();
   const [modalOpen, setModalOpened] = useState(false);
 
   const form = useForm<Partial<LaborMarketNew>>({
+    initialValues: {
+      type: "brainstorm",
+      launchAccess: "anyone",
+    },
     validate: zodResolver(LaborMarketNewSchema),
   });
 
@@ -35,16 +38,16 @@ export function UpdateMarketplace({ title }: { title: string }) {
   } = usePrepareLaborMarket({ onSuccess: () => setModalOpened(true) });
 
   function handleSubmit() {
-    form.onSubmit((values) => {
+    return form.onSubmit((values) => {
       const laborMarketNew = LaborMarketNewSchema.parse(values);
       prepareLaborMarket(laborMarketNew);
     });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-7 p-3 max-w-3xl mx-auto">
+    <form onSubmit={handleSubmit()} className="space-y-7 p-3 max-w-3xl mx-auto">
       <Modal opened={modalOpen} onClose={() => setModalOpened(false)}>
-        <ConfirmTransaction laborMarket={data} onCancel={() => setModalOpened(false)} />
+        {data && <ConfirmTransaction laborMarket={data} onCancel={() => setModalOpened(false)} />}
       </Modal>
 
       <div className="space-y-3 mx-auto">
@@ -69,7 +72,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
             { label: "Polygon", value: "id-2" },
           ]}
           label="Blockchain/Project"
-          placeholder="Choose one or more Bloockchain/Project"
+          placeholder="Choose one or more Blockchain/Project"
           {...form.getInputProps("projectIds")}
         />
         <Select
@@ -162,9 +165,7 @@ export function UpdateMarketplace({ title }: { title: string }) {
   );
 }
 
-function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
-  invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
-
+function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket: LaborMarketPrepared; onCancel: () => void }) {
   const navigate = useNavigate();
 
   const { write, isLoading } = useCreateMarketplace({
@@ -181,14 +182,6 @@ function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMark
     <div className="space-y-8">
       <Title>Confirm Transaction</Title>
       <Text>Please confirm that you would like to create a new marketplace.</Text>
-      {/* {Object.keys(laborMarket).map((key) => (
-          <div key={key}>
-            <Text>{key}</Text>
-            <Text>{laborMarket[key]}</Text>
-          </div>
-        ))}
-        <Text>cid</Text>
-        <Text>{cid}</Text> */}
       <div className="flex flex-col sm:flex-row justify-center gap-5">
         <Button size="md" color="brand.5" type="button" onClick={() => write?.()} loading={isLoading}>
           Create
