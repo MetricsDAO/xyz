@@ -1,7 +1,7 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { LaborMarketNew } from "~/domain";
+import type { LaborMarketPrepared } from "~/domain";
 
 const DEV_TEST_CONTRACT_ADDRESS = "0xd138D0B4F007EA66C8A8C0b95E671ffE788aa6A9";
 
@@ -10,7 +10,7 @@ export function useCreateMarketplace({
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: LaborMarketNew;
+  data: LaborMarketPrepared;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
