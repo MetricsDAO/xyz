@@ -38,8 +38,6 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 };
 
 export default function ChallengeSubmission() {
-  const { submission } = useTypedLoaderData<typeof loader>();
-
   const [opened, setOpened] = useState(false);
   const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
 

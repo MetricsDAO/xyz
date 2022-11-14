@@ -64,8 +64,8 @@ async function main() {
     }
   }
 
-  const laborMarkets = await seedLaborMarkets();
-  const serviceRequests = await seedServiceRequests(await prisma.laborMarket.findMany());
+  seedLaborMarkets();
+  seedServiceRequests(await prisma.laborMarket.findMany());
   seedSubmissions(await prisma.serviceRequest.findMany());
 }
 
