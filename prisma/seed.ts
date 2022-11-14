@@ -34,45 +34,39 @@ async function main() {
     ],
   });
 
-  const projectIds = (await prisma.project.findMany()).map((p) => p.id);
-  const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
-  // create 100 fake labor markets in prisma
-  for (let i = 0; i < 100; i++) {
-    await upsertLaborMarket(
-      fakeLaborMarket({
-        projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
-        tokenSymbols: faker.helpers.arrayElements(tokenSymbols), // pick a subset of random tokens
-      })
-    );
+  async function seedLaborMarkets() {
+    const projectIds = (await prisma.project.findMany()).map((p) => p.id);
+    const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
+    // create 100 fake labor markets in prisma
+    for (let i = 0; i < 100; i++) {
+      await upsertLaborMarket(
+        fakeLaborMarket({
+          projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
+          tokenSymbols: faker.helpers.arrayElements(tokenSymbols), // pick a subset of random tokens
+        })
+      );
+    }
   }
 
-  const allLaborMarkets = await prisma.laborMarket.findMany();
-
   // create 10 fake service requests/challenges for each labor market in Prisma
-  async function seedServiceRequests(laborMarkets: LaborMarket[]): Promise<ServiceRequest[]> {
-    laborMarkets.forEach((laborMarket) => {
-      for (let i = 0; i < 10; i++) {
-        upsertServiceRequest(fakeServiceRequest({}, laborMarket.address as string));
-      }
-    });
-    const allSerivceRequests = await prisma.serviceRequest.findMany();
-    return allSerivceRequests;
+  async function seedServiceRequests(laborMarkets: LaborMarket[]) {
+    for (const laborMarket of laborMarkets) {
+      await upsertServiceRequest(fakeServiceRequest({}, laborMarket.address as string));
+    }
   }
 
   function seedSubmissions(allChallenges: ServiceRequest[]) {
-    allChallenges.forEach((challenge) => {
+    for (const challenge of allChallenges) {
       // create 10 fake submissions for each challenge in Prisma
       for (let i = 0; i < 3; i++) {
         upsertSubmission(fakeSubmission({}, challenge.id));
       }
-    });
+    }
   }
 
-  const promise = await seedServiceRequests(allLaborMarkets);
-
-  Promise.all(promise).then((allChallenges) => {
-    seedSubmissions(allChallenges);
-  });
+  const laborMarkets = await seedLaborMarkets();
+  const serviceRequests = await seedServiceRequests(await prisma.laborMarket.findMany());
+  seedSubmissions(await prisma.serviceRequest.findMany());
 }
 
 main()
