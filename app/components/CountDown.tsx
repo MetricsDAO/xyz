@@ -1,13 +1,16 @@
-import { Paper, Title, Text, Progress } from "@mantine/core";
+import dayjs from "dayjs";
+import { useUpdateInterval } from "~/utils/use-update-interval";
 
-export function CountDown({ progress, time, subText }: { progress: number; time: string; subText?: string }) {
-  return (
-    <Paper withBorder>
-      <Progress value={progress} radius="xs" />
-      <div className="flex flex-col items-center my-6 px-3">
-        <Title weight={400}>{time}</Title>
-        <Text>{subText}</Text>
-      </div>
-    </Paper>
-  );
+function CountDown({ date }: { date: Date | string }) {
+  useUpdateInterval(1000);
+
+  const duration = dayjs(date).diff(dayjs());
+  if (dayjs(date).diff(dayjs(), "month") >= 1) {
+    return <>{dayjs(duration).format("M[m] d[d] h[h]")}</>;
+  } else if (dayjs(date).diff(dayjs(), "days") >= 1) {
+    return <>{dayjs(duration).format("d[d] h[h] m[m]")}</>;
+  }
+  return <>{dayjs(duration).format("h[h] m[m] s[s]")}</>;
 }
+
+export { CountDown };

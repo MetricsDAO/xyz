@@ -22,6 +22,7 @@ import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/marketplace-service.server";
 
@@ -318,9 +319,13 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
               <div className="lg:hidden">Reward Pool Totals</div>
               <TextWithIcon text={`${10000} USD`} iconUrl="/img/icons/dollar.svg" />
               <div className="lg:hidden">Submit Deadline</div>
-              <Text color="dark.3">{`TODO`} </Text>
+              <span>
+                <CountDown date={"2023-01-25"} />
+              </span>
               <div className="lg:hidden">Review Deadline</div>
-              <Text color="dark.3">TODO</Text>
+              <span>
+                <CountDown date={"2022-11-25"} />
+              </span>
             </Link>
           );
         })}

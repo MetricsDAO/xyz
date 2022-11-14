@@ -17,7 +17,7 @@ import { Form, Link } from "@remix-run/react";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
-import { CountDown } from "~/components/CountDown";
+import { CountDownCard } from "~/components/CountDownCard";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
@@ -300,16 +300,16 @@ function Timeline() {
         Upcoming
       </Text>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <CountDown progress={10} time="2d 3h 22m" subText="claim to review deadline" />
-        <CountDown progress={43} time="2d 3h 22m" subText="claim to review deadline" />
-        <CountDown progress={22} time="2d 3h 22m" subText="claim to review deadline" />
-        <CountDown progress={61} time="2d 3h 22m" subText="claim to review deadline" />
+        <CountDownCard progress={10} time={"2023-01-25"} subText="claim to review deadline" />
+        <CountDownCard progress={43} time={"2023-01-25"} subText="claim to review deadline" />
+        <CountDownCard progress={22} time={"2023-01-25"} subText="claim to review deadline" />
+        <CountDownCard progress={61} time={"2023-01-25"} subText="claim to review deadline" />
       </div>
       <Text weight={600} size="lg">
         Past
       </Text>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <CountDown progress={100} time="2d 3h 22m" subText="claim to review deadline" />
+        <CountDownCard progress={100} time={"2023-01-25"} subText="claim to review deadline" />
       </div>
     </section>
   );

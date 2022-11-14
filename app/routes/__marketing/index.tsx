@@ -1,6 +1,6 @@
-import AppFooter from "~/components/Footer";
-import Header from "~/components/Header";
-import SocialIcons from "~/components/SocialIcons";
+import AppFooter from "~/components/marketing/Footer";
+import Header from "~/components/marketing/Header";
+import SocialIcons from "~/components/marketing/SocialIcons";
 import Aos from "aos";
 import { useEffect } from "react";
 

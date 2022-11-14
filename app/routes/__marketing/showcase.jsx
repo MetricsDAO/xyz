@@ -1,7 +1,7 @@
 // TODO: Reimplement this in typescript.
 
 import algoliasearch from "algoliasearch/lite";
-import Header from "~/components/Header";
+import Header from "~/components/marketing/Header";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,7 +18,7 @@ import { useState } from "react";
 import uniswapLogo from "../../../public/img/uniswap-logo.png";
 import olympusLogo from "../../../public/img/olympusdao-logo.png";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import AppFooter from "~/components/Footer";
+import AppFooter from "~/components/marketing/Footer";
 
 export function loader() {
   return {
