@@ -1,4 +1,6 @@
-import type { LaborMarket, LaborMarketSearch } from "~/domain";
+import type { LaborMarket, LaborMarketNew, LaborMarketPrepared, LaborMarketSearch } from "~/domain";
+import { LaborMarketMetaSchema } from "~/domain";
+import { uploadJsonToIpfs } from "./ipfs.server";
 import { prisma } from "./prisma.server";
 
 /**
@@ -41,6 +43,18 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
       description: { search: params.q },
     },
   });
+};
+
+/**
+ * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
+ * @param {LaborMarketNew} newLaborMarket - The LaborMarketNew to prepare.
+ * @returns {LaborMarketPrepared} - The prepared LaborMarket.
+ */
+export const prepareLaborMarket = async (newLaborMarket: LaborMarketNew) => {
+  const metadata = LaborMarketMetaSchema.parse(newLaborMarket); // Prune extra fields from LaborMarketNew
+  const cid = await uploadJsonToIpfs(metadata);
+  const result: LaborMarketPrepared = { ...newLaborMarket, ipfsHash: cid };
+  return result;
 };
 
 /**

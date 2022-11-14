@@ -1,6 +1,6 @@
 import { useMutation } from "wagmi";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
-import { uploadJsonToIpfs } from "~/utils/ipfs";
+import { uploadJsonToIpfs } from "~/services/ipfs.server";
 
 /**
  * Creates a react-query mutation that accepts a LaborMarketNew and returns a LaborMarketPrepared on success.

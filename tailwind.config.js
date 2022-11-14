@@ -1,8 +1,10 @@
+/**
+ * @type {import('tailwindcss/defaultConfig').TailwindConfig}
+ */
 module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx}"],
-  theme: {
+  extend: {
     colors: {
-      // Should be the same as Mantine
       brand: {
         50: "#dbfaff",
         100: "#b1e9fc",
@@ -22,4 +24,5 @@ module.exports = {
       },
     },
   },
+  plugins: [require("@tailwindcss/typography")],
 };

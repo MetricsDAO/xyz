@@ -1,4 +1,4 @@
-import { upsertLaborMarket } from "~/services/marketplace-service.server";
+import { upsertLaborMarket } from "~/services/labor-market.server";
 import { fakeLaborMarket } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
