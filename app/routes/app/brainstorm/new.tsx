@@ -6,7 +6,6 @@ import type { LaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
-import { Text, Title } from "@mantine/core";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
@@ -39,9 +38,7 @@ export default function CreateMarketplace() {
           method="post"
           defaultValues={{ launchAccess: "anyone", projectIds: [], tokenSymbols: [] }}
         >
-          <Title order={2} weight={600}>
-            Create Challenge Marketplace
-          </Title>
+          <h1 className="text-2xl font-bold">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
         </ValidatedForm>
       </div>
