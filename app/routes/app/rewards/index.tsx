@@ -40,7 +40,12 @@ export default function Rewards() {
 
   //to be replaced
   const rewards = [{ id: 123, title: "silly string" }];
-  const addresses = [{ id: 123, title: "silly string" }];
+  const wallets = [
+    { address: "0x75638840948190490890", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
+    { address: "0x32849854983758727987", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
+    { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
+    { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
+  ];
   const totalResults = rewards.length;
   const params = { first: 1, page: 1 };
   const validAddress = false;
@@ -151,7 +156,7 @@ export default function Rewards() {
             <Tabs value={activeTab} onTabChange={setActiveTab}>
               <Tabs.List className="mb-5">
                 <Tabs.Tab value="rewards">My Rewards (3)</Tabs.Tab>
-                <Tabs.Tab value="addresses">Payout Addresses (23)</Tabs.Tab>
+                <Tabs.Tab value="addresses">Payout Addresses ({wallets.length})</Tabs.Tab>
               </Tabs.List>
 
               <Tabs.Panel value="rewards" pt="xs">
@@ -176,7 +181,7 @@ export default function Rewards() {
               </Tabs.Panel>
 
               <Tabs.Panel value="addresses" pt="xs">
-                <PayoutAddresses addresses={addresses} />
+                <PayoutAddresses wallets={wallets} />
               </Tabs.Panel>
             </Tabs>
           </main>
@@ -224,7 +229,7 @@ function SearchAndFilter() {
   );
 }
 
-function PayoutAddresses({ addresses }: { addresses: any }) {
+function PayoutAddresses({ wallets }: { wallets: any }) {
   const [openedUpdate, setOpenedUpdate] = useState(false);
   const [openedRemove, setOpenedRemove] = useState(false);
 
@@ -295,22 +300,21 @@ function PayoutAddresses({ addresses }: { addresses: any }) {
         </div>
         {/* Rows */}
         <div className="space-y-3">
-          {addresses.map((a: { id: string }) => {
+          {wallets.map((w: { address: string; chain: string }) => {
             return (
               <div
                 // On mobile, two column grid with "labels". On desktop hide the "labels".
                 className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-                key={a.id}
+                key={w.address}
               >
                 <div className="lg:hidden">Chain/Project</div>
-                <ProjectBadge key={a.id} slug={"Solana"} />
+                <ProjectBadge slug={w.chain} />
                 <div className="lg:hidden">Address</div>
                 <div className="lg:col-span-2">
-                  <Text color="dark.3">{`TODO`} </Text>
+                  <Text color="dark.3">{w.address}</Text>
                 </div>
                 <div className="lg:hidden">Last Updated</div>
                 <Text color="dark.3">{formatTime("1999-01-01")} </Text>
-                <div className="lg:hidden">""</div>
                 <div className="flex flex-wrap gap-2">
                   <Button variant="default" radius="md" onClick={() => setOpenedRemove(true)}>
                     Remove
