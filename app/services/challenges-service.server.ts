@@ -43,8 +43,8 @@ export const findChallenge = async (id: string) => {
 };
 
 /**
- * Creates or updates a new LaborMarket. This is only really used by the indexer.
- * @param {ServiceRequest} challenge - The labor market to create.
+ * Creates a new challenge/serviceRequest. This is only really used by the indexer.
+ * @param {Challenge} challenge - The challenge to create.
  */
 export const upsertServiceRequest = async (challenge: ServiceRequest) => {
   const { id, title, laborMarketAddress } = challenge;
