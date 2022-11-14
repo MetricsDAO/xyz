@@ -1,5 +1,5 @@
 import { Title, Text, List, Button, Badge } from "@mantine/core";
-import { CountDown } from "~/components/CountDown";
+import { CountDownCard } from "~/components/CountDownCard";
 
 export default function ClaimToSubmit() {
   return (
@@ -31,11 +31,11 @@ export default function ClaimToSubmit() {
         <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-2">
             <Title order={4}>Claim Deadline</Title>
-            <CountDown progress={64} time="42d 3h 22m" />
+            <CountDownCard progress={64} time={"2023-01-25"} />
           </div>
           <div className="space-y-2">
             <Title order={4}>Submit Deadline</Title>
-            <CountDown progress={22} time="42d 3h 22m" />
+            <CountDownCard progress={22} time={"2022-11-25"} />
           </div>
         </div>
       </div>
