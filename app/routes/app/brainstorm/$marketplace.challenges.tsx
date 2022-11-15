@@ -242,7 +242,7 @@ function Prerequisites() {
   );
 }
 
-function Rewards(tokens) {
+function Rewards({ tokens }: { tokens: any[] }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -284,7 +284,7 @@ function Rewards(tokens) {
                 TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
               </Text>
               <div className="flex flex-row space-x-3 mt-1">
-                {tokens.map((t) => (
+                {tokens.map((t: { symbol: string; name: string }) => (
                   <TokenBadge key={t.symbol} slug={t.name} />
                 ))}
               </div>
