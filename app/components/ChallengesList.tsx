@@ -1,12 +1,12 @@
+import type { ServiceRequest } from "@prisma/client";
 import { Link } from "@remix-run/react";
-import type { ChallengeWithMarketplace } from "~/domain";
 import { Badge } from "./Badge";
 
 export function ChallengeList({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col space-y-6">{children}</div>;
 }
 
-ChallengeList.Item = function ChallengeListItem({ challenge }: { challenge: ChallengeWithMarketplace }) {
+ChallengeList.Item = function ChallengeListItem({ challenge }: { challenge: ServiceRequest }) {
   return (
     <div className="text-gray-500 flex justify-between">
       <div>
@@ -14,9 +14,9 @@ ChallengeList.Item = function ChallengeListItem({ challenge }: { challenge: Chal
           {challenge.title}
         </Link>
         <p className="text-sm">
-          Sponsored by{" "}
+          Sponsored by
           <Badge asChild>
-            <Link to="/">{challenge.sponsor}</Link>
+            <Link to="/">SPONSOR HERE</Link>
           </Badge>
         </p>
       </div>

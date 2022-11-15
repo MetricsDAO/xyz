@@ -21,19 +21,32 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
-import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadge";
+import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
+import { findLaborMarket } from "~/services/marketplace-service.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ChallengeSearchSchema);
+
+  if (params.laborMarket == undefined) {
+    params.laborMarket = data.params.id;
+  }
+
+  let laborMarket = undefined;
+
+  if (data.params.id != undefined) {
+    laborMarket = await findLaborMarket(data.params.id);
+  }
+
   const challenges = await searchChallenges(params);
   const totalResults = await countChallenges(params);
-  return typedjson({ challenges, totalResults, params });
+  return typedjson({ challenges, totalResults, params, laborMarket });
 };
 
 export default function MarketplaceChallenges() {
-  const { challenges, totalResults, params } = useTypedLoaderData<typeof loader>();
+  const { challenges, totalResults, params, laborMarket } = useTypedLoaderData<typeof loader>();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const onPaginationChange = (page: number) => {
@@ -44,13 +57,13 @@ export default function MarketplaceChallenges() {
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <Title order={2}>Challenge Title</Title>
+        <Title order={2}>{laborMarket?.title} </Title>
         <Center className="flex flex-wrap gap-5">
-          {/* <Link to="/app/brainstorm/[marketplaceId]/claim"> */}
-          <Button radius="md" className="mx-auto">
-            Launch Challenge
-          </Button>
-          {/* </Link> */}
+          <Link to="/app/brainstorm/[marketplaceId]/claim">
+            <Button radius="md" className="mx-auto">
+              Launch Challenge
+            </Button>
+          </Link>
         </Center>
       </section>
       <section className="flex flex-col space-y-7 pb-12">
@@ -222,6 +235,16 @@ function Prerequisites() {
                   <Text>0x1234</Text>
                 </div>
               </Paper>
+              <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
+                <Text weight={600}>You must hold this badge to launch new challenges</Text>
+                <Text color="dimmed" size="xs">
+                  MDAO S4 CONTRIBUTOR BADGE
+                </Text>
+                <div className="flex gap-2">
+                  <Avatar size={26} radius="xl" alt="" />
+                  <Text>0x1234</Text>
+                </div>
+              </Paper>
             </div>
           </div>
         </div>
@@ -236,23 +259,43 @@ function Rewards() {
       <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
+            <Text color="dimmed">
+              How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
+              is
+            </Text>
             <Paper shadow="xs" radius="md" p="md" withBorder>
-              <Text weight={600}>Reward Pool</Text>
+              <Text weight={600}>Challenge Pools Total</Text>
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                TOTAL REWARDS TO BE DISTRIBUTED ACROSS WINNERS
+                SUM OF ALL ACTIVE CHALLENGE REWARD POOLS
+              </Text>
+              <Text weight={400}>100 SOL</Text>
+            </Paper>
+            <Paper shadow="xs" radius="md" p="md" withBorder>
+              <Text weight={600}>Avg. Challenge Pool</Text>
+              <Text weight={500} color="dimmed" size="xs" className="mt-3">
+                AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </Text>
               <Text weight={400}>100 SOL</Text>
             </Paper>
             <Paper shadow="xs" radius="md" p="md" withBorder>
               <Text weight={600}>Reward Curve</Text>
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                HOW THE REWARD POOL IS DISTRIBUTED
+                HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED
               </Text>
               <div className="flex flex-row space-x-3 mt-1">
                 <Badge size="sm" radius="sm">
                   Aggresive
                 </Badge>
                 <Text size="sm">Rewards the top 10% of submissions. Winners are determined through peer review</Text>
+              </div>
+            </Paper>
+            <Paper shadow="xs" radius="md" p="md" withBorder>
+              <Text weight={600}>Reward Tokens</Text>
+              <Text weight={500} color="dimmed" size="xs" className="mt-3">
+                TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
+              </Text>
+              <div className="flex flex-row space-x-3 mt-1">
+                <TokenBadge slug="Solana" />
               </div>
             </Paper>
           </div>
@@ -276,7 +319,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <Text color="dark.3">Challenge Marketplace</Text>
+          <Text color="dark.3">Challenge</Text>
         </div>
         <Text color="dark.3">Chain/Project</Text>
         <Text color="dark.3">Reward Pool</Text>
@@ -288,7 +331,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
         {challenges.map((c) => {
           return (
             <Link
-              to="/app/brainstorm/c/[id]"
+              to={`/app/brainstorm/c/${c.id}`}
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={c.id}
@@ -304,11 +347,15 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                 ))}
               </div>
               <div className="lg:hidden">Reward Pool Totals</div>
-              <TextWithIcon text={`${10000} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" />
               <div className="lg:hidden">Submit Deadline</div>
-              <Text color="dark.3">{`TODO`} </Text>
+              <span>
+                <CountDown date={"2023-01-25"} />
+              </span>
               <div className="lg:hidden">Review Deadline</div>
-              <Text color="dark.3">TODO</Text>
+              <span>
+                <CountDown date={"2022-11-25"} />
+              </span>
             </Link>
           );
         })}

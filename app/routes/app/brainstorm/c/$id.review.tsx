@@ -1,15 +1,33 @@
 import { Title, Text, List, Button, Badge, SegmentedControl } from "@mantine/core";
-import { CountDown } from "~/components/CountDown";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { notFound } from "remix-utils";
+import { z } from "zod";
+import { findChallenge } from "~/services/challenges-service.server";
+import { CountDownCard } from "~/components/CountDownCard";
+
+const paramsSchema = z.object({ id: z.string() });
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id);
+  if (!challenge) {
+    throw notFound({ id });
+  }
+
+  return typedjson({ challenge }, { status: 200 });
+};
 
 export default function ClaimToReview() {
+  const { challenge } = useTypedLoaderData<typeof loader>();
+
   return (
     <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
       <div className="space-y-2">
         <Title order={2} weight={600}>
-          {"Claim to Review {Challenge title}"}
+          {`Claim to Review ${challenge.title}`}
         </Title>
         <div>
-          <Title order={4} color="brand" weight={400}>
+          <Title order={4} color="brand.4" weight={400}>
             {"Claiming is an up front commitment to review and score a minumum number of submissions"}
           </Title>
           <Text color="dimmed">
@@ -35,11 +53,11 @@ export default function ClaimToReview() {
         <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-2">
             <Title order={4}>Claim to Review Deadline</Title>
-            <CountDown progress={64} time="42d 3h 22m" />
+            <CountDownCard progress={64} time={"2022-11-25"} />
           </div>
           <div className="space-y-2">
             <Title order={4}>Review Deadline</Title>
-            <CountDown progress={22} time="42d 3h 22m" />
+            <CountDownCard progress={22} time={"2022-12-25"} />
           </div>
         </div>
       </div>

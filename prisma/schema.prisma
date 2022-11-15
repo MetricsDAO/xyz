@@ -3,11 +3,11 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -65,8 +65,6 @@ model LaborMarket {
   tokens              Token[]
   projects            Project[]
   serviceRequests     ServiceRequest[]
-
-  @@fulltext([title, description])
 }
 
 model ServiceRequest {
@@ -77,9 +75,25 @@ model ServiceRequest {
   submissions        Submission[]
 }
 
+model Review {
+  id           String     @id @unique
+  submissionId String
+  comment      String
+  scoreStatus  String
+  createdAt    DateTime   @default(now())
+  creatorId    String
+  submission   Submission @relation(fields: [submissionId], references: [id])
+}
+
 // Represents an on-chain submission to a service request.
 model Submission {
   id               String         @id @unique
   serviceRequestId String
+  createdAt        DateTime       @default(now())
+  creatorId        String
+  title            String
+  description      String
+  scoreStatus      String
   serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
+  Reviews          Review[]
 }
