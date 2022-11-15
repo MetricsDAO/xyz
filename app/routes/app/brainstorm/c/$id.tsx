@@ -23,7 +23,9 @@ import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
+import { CountDown } from "~/components/CountDown";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -32,21 +34,25 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!challenge) {
     throw notFound({ id });
   }
+
   return typedjson({ challenge }, { status: 200 });
 };
 
 export default function Challenge() {
+  const { challenge } = useTypedLoaderData<typeof loader>();
+  const submissions = challenge.submissions;
+
   return (
     <div className="mx-auto container mb-12 px-10 pt-12">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <Title order={2}>Challenge Title</Title>
+        <Title order={2}>{challenge.title}</Title>
         <Center className="flex flex-wrap gap-5">
-          <Link to="/app/brainstorm/c/[challengeId]/review">
+          <Link to={`/app/brainstorm/c/${challenge.id}/review`}>
             <Button variant="default" color="dark" radius="md" className="mx-auto">
               Claim to Review
             </Button>
           </Link>
-          <Link to="/app/brainstorm/c/[challengeId]/claim">
+          <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>
             <Button radius="md" className="mx-auto">
               Claim to Submit
             </Button>
@@ -111,7 +117,7 @@ export default function Challenge() {
             </Tabs.List>
 
             <Tabs.Panel value="submissions" pt="xs">
-              <Submissions submissions={[]} />
+              <Submissions submissions={submissions} />
             </Tabs.Panel>
 
             <Tabs.Panel value="prerequisites" pt="xs">
@@ -127,7 +133,7 @@ export default function Challenge() {
             </Tabs.Panel>
 
             <Tabs.Panel value="participants" pt="xs">
-              <Participants submissions={[]} />
+              <Participants />
             </Tabs.Panel>
           </Tabs>
         </main>
@@ -145,21 +151,20 @@ function Submissions({ submissions }: SubmissionsProps) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full border-spacing-4 border-separate space-y-3">
-        {submissions.map((m) => {
+        {submissions.map((s) => {
           return (
             <Link
-              to="/app/brainstorm/s/[submissionId]"
+              to={`/app/brainstorm/s/${s.id}`}
               className="flex flex-col md:flex-row gap-x-10 gap-y-3 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center space-between"
-              key={m.id}
+              key={s.id}
             >
               <div className="flex flex-col flex-1 gap-2">
-                <Text weight={500}>Some bold words</Text>
-                <Text>
-                  What are wallets/users swapping their $NEAR for? Analyse the distribution of $NEAR outflow swaps by
-                  daily and also show the distribution of $NEAR outflow swaps over time.
-                </Text>
-                <div className="flex space-x-1 items-center">
-                  <Text size="xs">12 hours ago</Text>
+                <Text weight={500}>{s.title}</Text>
+                <Text>{s.description}</Text>
+                <div className="flex space-x-1 items-center text-xs">
+                  <span>
+                    <CountDown date={s.createdAt}></CountDown>
+                  </span>
                   <Text size="xs" color="dimmed">
                     by
                   </Text>
@@ -310,7 +315,7 @@ function Timeline() {
   );
 }
 
-function Participants({ submissions }: SubmissionsProps) {
+function Participants() {
   return (
     <section className="space-y-7">
       <div className="flex items-center space-x-2 text-left px-4">
@@ -319,12 +324,13 @@ function Participants({ submissions }: SubmissionsProps) {
       </div>
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="w-full border-spacing-4 border-separate space-y-4">
-          {submissions.map((m) => {
+          {/* Mocking for now */}
+          {[1, 2].map((m) => {
             return (
               <Link
                 to="/u/[uId]"
                 className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
-                key={m.id}
+                key={m}
               >
                 <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                   <Avatar alt="" />
