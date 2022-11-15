@@ -132,7 +132,7 @@ export default function Challenge() {
             </Tabs.Panel>
 
             <Tabs.Panel value="participants" pt="xs">
-              <Participants submissions={[]} />
+              <Participants />
             </Tabs.Panel>
           </Tabs>
         </main>
@@ -315,7 +315,7 @@ function Timeline() {
   );
 }
 
-function Participants({ submissions }: SubmissionsProps) {
+function Participants() {
   return (
     <section className="space-y-7">
       <div className="flex items-center space-x-2 text-left px-4">
@@ -324,12 +324,13 @@ function Participants({ submissions }: SubmissionsProps) {
       </div>
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="w-full border-spacing-4 border-separate space-y-4">
-          {submissions.map((m) => {
+          {/* Mocking for now */}
+          {[1, 2].map((m) => {
             return (
               <Link
                 to="/u/[uId]"
                 className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
-                key={m.id}
+                key={m}
               >
                 <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                   <Avatar alt="" />
