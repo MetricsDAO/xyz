@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { Submission } from "@prisma/client";
+import type { Review, Submission } from "@prisma/client";
 import type { Challenge } from "~/domain";
 import type { LaborMarket } from "~/domain";
 
@@ -88,6 +88,22 @@ export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress:
 export const fakeSubmission = (data: Partial<Submission>, serviceRequestId: string): Submission => {
   return {
     id: faker.datatype.uuid(),
+    title: faker.random.words(3),
+    description: faker.random.words(10),
+    createdAt: faker.date.past(),
+    creatorId: faker.datatype.uuid(),
+    scoreStatus: "Bad",
     serviceRequestId: serviceRequestId,
+  };
+};
+
+export const fakeReview = (data: Partial<Review>, submissionId: string): Review => {
+  return {
+    id: faker.datatype.uuid(),
+    comment: faker.random.words(3),
+    scoreStatus: "Bad",
+    createdAt: faker.date.past(),
+    creatorId: faker.datatype.uuid(),
+    submissionId: submissionId,
   };
 };

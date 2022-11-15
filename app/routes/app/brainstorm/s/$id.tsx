@@ -40,14 +40,11 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 export default function ChallengeSubmission() {
   const [opened, setOpened] = useState(false);
   const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
+  const { submission } = useTypedLoaderData<typeof loader>();
 
   const isWinner = true;
 
-  const reviews = [
-    { id: "1", author: "1234" },
-    { id: "2", author: "2234" },
-    { id: "3", author: "3234" },
-  ];
+  const reviews = submission.Reviews;
 
   return (
     <>
@@ -124,7 +121,7 @@ export default function ChallengeSubmission() {
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
           <div className="flex items-center gap-2">
-            <Title order={2}>Title goes here </Title>
+            <Title order={2}>{submission.title}</Title>
             {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
           </div>
           <Center className="flex flex-wrap gap-5">

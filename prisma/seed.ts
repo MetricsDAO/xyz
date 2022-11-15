@@ -1,10 +1,11 @@
 import { upsertLaborMarket } from "~/services/marketplace-service.server";
-import { fakeLaborMarket, fakeServiceRequest, fakeSubmission } from "~/utils/fakes";
+import { fakeLaborMarket, fakeReview, fakeServiceRequest, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
 import { upsertServiceRequest } from "~/services/challenges-service.server";
 import { upsertSubmission } from "~/services/submission-service.server";
-import type { LaborMarket, ServiceRequest } from "@prisma/client";
+import type { LaborMarket, ServiceRequest, Submission } from "@prisma/client";
+import { upsertReview } from "~/services/review-service.server";
 
 async function main() {
   await prisma.project.createMany({
@@ -55,18 +56,28 @@ async function main() {
     }
   }
 
-  function seedSubmissions(allChallenges: ServiceRequest[]) {
+  async function seedSubmissions(allChallenges: ServiceRequest[]) {
     for (const challenge of allChallenges) {
-      // create 10 fake submissions for each challenge in Prisma
+      // create 3 fake submissions for each challenge in Prisma
       for (let i = 0; i < 3; i++) {
-        upsertSubmission(fakeSubmission({}, challenge.id));
+        await upsertSubmission(fakeSubmission({}, challenge.id));
+      }
+    }
+  }
+
+  async function seedReviews(allSubmissions: Submission[]) {
+    for (const submission of allSubmissions) {
+      // create 3 fake reviews for each submission in Prisma
+      for (let i = 0; i < 3; i++) {
+        await upsertReview(fakeReview({}, submission.id));
       }
     }
   }
 
   await seedLaborMarkets();
   await seedServiceRequests(await prisma.laborMarket.findMany());
-  seedSubmissions(await prisma.serviceRequest.findMany());
+  await seedSubmissions(await prisma.serviceRequest.findMany());
+  await seedReviews(await prisma.submission.findMany());
 }
 
 main()

@@ -9,18 +9,23 @@ import { prisma } from "./prisma.server";
 export const findSubmission = async (submissionId: string) => {
   return prisma.submission.findFirst({
     where: { id: submissionId },
-    include: { serviceRequest: true },
+    include: { serviceRequest: true, Reviews: true },
   });
 };
 
 /**
- * Creates or updates a new LaborMarket. This is only really used by the indexer.
- * @param {ServiceRequest} challenge - The labor market to create.
+ * Creates or updates a new submission. This is only really used by the indexer.
+ * @param {Submission} submission - The submission to create.
  */
 export const upsertSubmission = async (submission: Submission) => {
-  const { id, serviceRequestId } = submission;
-  const newSubmission = await prisma.submission.create({
-    data: { id, serviceRequestId },
+  const { id, ...data } = submission;
+  const newSubmission = await prisma.submission.upsert({
+    where: { id },
+    update: data,
+    create: {
+      id,
+      ...data,
+    },
   });
   return newSubmission;
 };
