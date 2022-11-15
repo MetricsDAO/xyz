@@ -1,5 +1,5 @@
 import { Title, Text, List, Button, Badge, SegmentedControl } from "@mantine/core";
-import { CountDown } from "~/components/CountDown";
+import { CountDownCard } from "~/components/CountDownCard";
 
 export default function ClaimToReview() {
   return (
@@ -9,7 +9,7 @@ export default function ClaimToReview() {
           {"Claim to Review {Challenge title}"}
         </Title>
         <div>
-          <Title order={4} color="brand" weight={400}>
+          <Title order={4} color="brand.4" weight={400}>
             {"Claiming is an up front commitment to review and score a minumum number of submissions"}
           </Title>
           <Text color="dimmed">
@@ -35,11 +35,11 @@ export default function ClaimToReview() {
         <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-2">
             <Title order={4}>Claim to Review Deadline</Title>
-            <CountDown progress={64} time="42d 3h 22m" />
+            <CountDownCard progress={64} time={"2022-11-25"} />
           </div>
           <div className="space-y-2">
             <Title order={4}>Review Deadline</Title>
-            <CountDown progress={22} time="42d 3h 22m" />
+            <CountDownCard progress={22} time={"2022-12-25"} />
           </div>
         </div>
       </div>

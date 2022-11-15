@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { useRef } from "react";
-import SocialIcons from "~/components/SocialIcons";
+import SocialIcons from "~/components/marketing/SocialIcons";
 
 const Header = () => {
   const navRef = useRef<any>(null);
@@ -36,6 +36,19 @@ const Header = () => {
         <span className="block w-6 h-0.5 bg-gray-600"></span>
       </div>
       <ul ref={navRef} className="nav w-3/4 justify-end list-none hidden lg:flex items-center">
+        <a
+          className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1"
+          href="https://blog.metricsdao.xyz/101/"
+          rel="noreferrer"
+        >
+          BECOME AN ANALYST
+        </a>
+        <a
+          className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1"
+          href="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
+        >
+          BOUNTIES
+        </a>
         <Link className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1" to="/dashboard">
           DASHBOARD
         </Link>
