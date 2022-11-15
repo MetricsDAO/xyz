@@ -24,7 +24,7 @@ import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
-import { findLaborMarket } from "~/services/marketplace-service.server";
+import { findLaborMarket } from "~/services/labor-market.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);

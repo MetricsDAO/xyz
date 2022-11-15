@@ -14,7 +14,7 @@ import {
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
-import { countLaborMarkets, searchLaborMarkets } from "~/services/marketplace-service.server";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
