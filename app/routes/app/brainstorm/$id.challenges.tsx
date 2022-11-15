@@ -318,7 +318,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                 ))}
               </div>
               <div className="lg:hidden">Reward Pool Totals</div>
-              <TextWithIcon text="3 ETH" iconUrl="/img/icons/project-icons/eth.svg" />
+              <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" />
               <div className="lg:hidden">Submit Deadline</div>
               <span>
                 <CountDown date={"2023-01-25"} />
