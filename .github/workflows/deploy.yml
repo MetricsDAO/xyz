@@ -25,6 +25,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      # Generate a random SSH key at runtime due ethereumjs-abi https://github.com/ethereumjs/ethereumjs-abi/issues/67#issuecomment-681944008
+      - name: Generate SSH key for Github authentication
+        run: ssh-keygen -q -t rsa -N '' <<< $'\ny' >/dev/null 2>&1
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
@@ -48,6 +51,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      # Generate a random SSH key at runtime due ethereumjs-abi https://github.com/ethereumjs/ethereumjs-abi/issues/67#issuecomment-681944008
+      - name: Generate SSH key for Github authentication
+        run: ssh-keygen -q -t rsa -N '' <<< $'\ny' >/dev/null 2>&1
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
