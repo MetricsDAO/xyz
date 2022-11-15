@@ -39,7 +39,7 @@ async function main() {
     const projectIds = (await prisma.project.findMany()).map((p) => p.id);
     const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
     // create 100 fake labor markets in prisma
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 15; i++) {
       await upsertLaborMarket(
         fakeLaborMarket({
           projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
