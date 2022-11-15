@@ -25,7 +25,6 @@ import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/marketplace-service.server";
-import { PROJECT_ICONS } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
