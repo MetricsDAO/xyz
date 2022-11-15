@@ -25,6 +25,7 @@ import { typedjson } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
+import { CountDown } from "~/components/CountDown";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -150,21 +151,20 @@ function Submissions({ submissions }: SubmissionsProps) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full border-spacing-4 border-separate space-y-3">
-        {submissions.map((m) => {
+        {submissions.map((s) => {
           return (
             <Link
-              to={`/app/brainstorm/s/${m.id}`}
+              to={`/app/brainstorm/s/${s.id}`}
               className="flex flex-col md:flex-row gap-x-10 gap-y-3 border-solid border-2 border-[#EDEDED] py-5 px-6 rounded-lg hover:bg-stone-100 items-center space-between"
-              key={m.id}
+              key={s.id}
             >
               <div className="flex flex-col flex-1 gap-2">
-                <Text weight={500}>Some bold words</Text>
-                <Text>
-                  What are wallets/users swapping their $NEAR for? Analyse the distribution of $NEAR outflow swaps by
-                  daily and also show the distribution of $NEAR outflow swaps over time.
-                </Text>
-                <div className="flex space-x-1 items-center">
-                  <Text size="xs">12 hours ago</Text>
+                <Text weight={500}>{s.title}</Text>
+                <Text>{s.description}</Text>
+                <div className="flex space-x-1 items-center text-xs">
+                  <span>
+                    <CountDown date={s.createdAt}></CountDown>
+                  </span>
                   <Text size="xs" color="dimmed">
                     by
                   </Text>
