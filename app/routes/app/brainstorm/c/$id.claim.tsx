@@ -19,7 +19,7 @@ export default function ClaimToSubmit() {
         </div>
       </div>
       <div className="space-y-2">
-        <Title order={4}>How Claims Work</Title>
+        <Title order={4}>How Claiming to Submit Works</Title>
         <List withPadding>
           <List.Item>Commit to entering at least one submission by locking xMETRIC against this challenge</List.Item>
           <List.Item>Enter at least one submission before the submission deadline</List.Item>
@@ -30,11 +30,11 @@ export default function ClaimToSubmit() {
       <div className="flex">
         <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-2">
-            <Title order={4}>Claim Deadline</Title>
+            <Title order={4}>Claim to Submit Deadline</Title>
             <CountDownCard progress={64} time={"2023-01-25"} />
           </div>
           <div className="space-y-2">
-            <Title order={4}>Submit Deadline</Title>
+            <Title order={4}>Submission Deadline</Title>
             <CountDownCard progress={22} time={"2022-11-25"} />
           </div>
         </div>

@@ -21,7 +21,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
-import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 
@@ -42,6 +42,7 @@ export default function MarketplaceChallenges() {
     setSearchParams(searchParams);
   };
 
+  const tokens = [{ symbol: "Algo", name: "Algorand" }];
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
@@ -108,7 +109,7 @@ export default function MarketplaceChallenges() {
             </Tabs.Panel>
 
             <Tabs.Panel value="rewards" pt="xs">
-              <Rewards />
+              <Rewards tokens={tokens} />
             </Tabs.Panel>
           </Tabs>
         </main>
@@ -223,6 +224,16 @@ function Prerequisites() {
                   <Text>0x1234</Text>
                 </div>
               </Paper>
+              <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
+                <Text weight={600}>You must hold this badge to launch new challenges</Text>
+                <Text color="dimmed" size="xs">
+                  MDAO S4 CONTRIBUTOR BADGE
+                </Text>
+                <div className="flex gap-2">
+                  <Avatar size={26} radius="xl" alt="" />
+                  <Text>0x1234</Text>
+                </div>
+              </Paper>
             </div>
           </div>
         </div>
@@ -231,29 +242,51 @@ function Prerequisites() {
   );
 }
 
-function Rewards() {
+function Rewards(tokens) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
+            <Text color="dimmed">
+              How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
+              is
+            </Text>
             <Paper shadow="xs" radius="md" p="md" withBorder>
-              <Text weight={600}>Reward Pool</Text>
+              <Text weight={600}>Challenge Pools Total</Text>
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                TOTAL REWARDS TO BE DISTRIBUTED ACROSS WINNERS
+                SUM OF ALL ACTIVE CHALLENGE REWARD POOLS
+              </Text>
+              <Text weight={400}>100 SOL</Text>
+            </Paper>
+            <Paper shadow="xs" radius="md" p="md" withBorder>
+              <Text weight={600}>Avg. Challenge Pool</Text>
+              <Text weight={500} color="dimmed" size="xs" className="mt-3">
+                AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </Text>
               <Text weight={400}>100 SOL</Text>
             </Paper>
             <Paper shadow="xs" radius="md" p="md" withBorder>
               <Text weight={600}>Reward Curve</Text>
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                HOW THE REWARD POOL IS DISTRIBUTED
+                HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED
               </Text>
               <div className="flex flex-row space-x-3 mt-1">
                 <Badge size="sm" radius="sm">
                   Aggresive
                 </Badge>
                 <Text size="sm">Rewards the top 10% of submissions. Winners are determined through peer review</Text>
+              </div>
+            </Paper>
+            <Paper shadow="xs" radius="md" p="md" withBorder>
+              <Text weight={600}>Reward Tokens</Text>
+              <Text weight={500} color="dimmed" size="xs" className="mt-3">
+                TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
+              </Text>
+              <div className="flex flex-row space-x-3 mt-1">
+                {tokens.map((t) => (
+                  <TokenBadge key={t.symbol} slug={t.name} />
+                ))}
               </div>
             </Paper>
           </div>
