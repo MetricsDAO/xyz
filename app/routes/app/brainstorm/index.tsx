@@ -191,7 +191,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         {marketplaces.map((m) => {
           return (
             <Link
-              to="/app/brainstorm/[marketplaceId]/challenges"
+              to={`/app/brainstorm/${m.address}/challenges`}
               // On mobile, two column grid with "labels". On desktop hide the "labels".
               className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
               key={m.address}

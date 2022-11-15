@@ -1,12 +1,30 @@
 import { Title, Text, List, Button, Badge, SegmentedControl } from "@mantine/core";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { notFound } from "remix-utils";
+import { z } from "zod";
+import { findChallenge } from "~/services/challenges-service.server";
 import { CountDownCard } from "~/components/CountDownCard";
 
+const paramsSchema = z.object({ id: z.string() });
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id);
+  if (!challenge) {
+    throw notFound({ id });
+  }
+
+  return typedjson({ challenge }, { status: 200 });
+};
+
 export default function ClaimToReview() {
+  const { challenge } = useTypedLoaderData<typeof loader>();
+
   return (
     <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
       <div className="space-y-2">
         <Title order={2} weight={600}>
-          {"Claim to Review {Challenge title}"}
+          {`Claim to Review ${challenge.title}`}
         </Title>
         <div>
           <Title order={4} color="brand.4" weight={400}>

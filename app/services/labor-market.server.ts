@@ -80,3 +80,16 @@ export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
   });
   return newLaborMarket;
 };
+
+/**
+ * Counts the number of LaborMarkets that match a given LaborMarketSearch.
+ * @param {address} params - The address to search for.
+ * @returns {LaborMarket} - The Labor Market that matches the address.
+ */
+export const findLaborMarket = async (address: string) => {
+  return prisma.laborMarket.findFirst({
+    where: {
+      address: address,
+    },
+  });
+};

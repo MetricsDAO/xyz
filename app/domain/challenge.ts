@@ -1,15 +1,11 @@
 import { z } from "zod";
-import { LaborMarketSchema } from "./labor-market";
 
 export const ChallengeSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
-  sponsor: z.string(),
-  status: z.enum(["pending", "active", "review", "closed"]),
-  payCurve: z.enum(["flat"]),
-  programId: z.string(),
-  marketplace: LaborMarketSchema,
+  id: z.string({ description: "The id of the service request." }),
+  title: z.string({ description: "The title of the service request." }),
+  description: z.string({ description: "The description of the service request." }),
+  laborMarketAddress: z.string({ description: "The address of the labor market on-chain." }),
+  submissions: z.array(z.string(), { description: "The list of submissions." }),
 });
 
 export const ChallengeSearchSchema = z.object({
