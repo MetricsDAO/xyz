@@ -4,14 +4,7 @@ import { AppHeader } from "./AppHeader";
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
-      <AppHeader
-        links={[
-          { link: "/app/ecosystem", label: "Ecosystem" },
-          { link: "/app/brainstorm", label: "Brainstorm" },
-          { link: "/app/analyze", label: "Analyze" },
-        ]}
-        userLinks={[{ link: "/app/rewards", label: "Rewards" }]}
-      />
+      <AppHeader />
       <main className="flex-grow">{children}</main>
 
       {/* TODO: Not sticking to footer properly */}

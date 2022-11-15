@@ -3,8 +3,8 @@ import { useAccount, useDisconnect } from "wagmi";
 import { useEffect, useState } from "react";
 import { logger } from "ethers";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Button } from "@mantine/core";
 import { useChainalysisContract } from "~/hooks/useChainalysisContract";
+import { Button } from "./Button";
 
 function CustomConnectButton() {
   const { disconnect } = useDisconnect();
@@ -52,21 +52,10 @@ function CustomConnectButton() {
           >
             {(() => {
               if (authenticationStatus === "unauthenticated") {
-                return (
-                  <Button color="red" onClick={openConnectModal} type="button">
-                    Sanctioned Address
-                  </Button>
-                );
+                return <Button onClick={openConnectModal}>Sanctioned Address</Button>;
               } else if (!connected) {
                 return (
-                  <Button
-                    sx={{ color: "black" }}
-                    variant="gradient"
-                    gradient={{ from: "#00C2FF", to: "#B9E09B", deg: 60 }}
-                    size="sm"
-                    onClick={openConnectModal}
-                    type="button"
-                  >
+                  <Button variant="gradient" onClick={openConnectModal}>
                     Connect Wallet
                   </Button>
                 );
@@ -74,7 +63,7 @@ function CustomConnectButton() {
 
               if (chain.unsupported || chain.name == "Ethereum") {
                 return (
-                  <Button color="red" onClick={openChainModal} type="button">
+                  <Button variant="danger" onClick={openChainModal}>
                     Switch to Polygon
                   </Button>
                 );
@@ -82,15 +71,8 @@ function CustomConnectButton() {
 
               return (
                 <div>
-                  <Button
-                    variant="outline"
-                    color="white"
-                    sx={{ borderColor: "#A2DDF1", borderWidth: "2px" }}
-                    onClick={openAccountModal}
-                    type="button"
-                    radius="sm"
-                  >
-                    <div className="flex flex-row gap-2 text-black items-center align-middle">
+                  <Button onClick={openAccountModal} variant="gradient">
+                    <div className="flex flex-row gap-2 items-center align-middle">
                       {account.ensAvatar ? (
                         account.ensAvatar
                       ) : (
