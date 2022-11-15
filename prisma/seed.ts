@@ -64,8 +64,8 @@ async function main() {
     }
   }
 
-  seedLaborMarkets();
-  seedServiceRequests(await prisma.laborMarket.findMany());
+  await seedLaborMarkets();
+  await seedServiceRequests(await prisma.laborMarket.findMany());
   seedSubmissions(await prisma.serviceRequest.findMany());
 }
 
