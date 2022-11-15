@@ -25,6 +25,7 @@ import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/marketplace-service.server";
+import { PROJECT_ICONS } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -317,7 +318,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                 ))}
               </div>
               <div className="lg:hidden">Reward Pool Totals</div>
-              <TextWithIcon text={`${10000} USD`} iconUrl="/img/icons/dollar.svg" />
+              <TextWithIcon text="3 ETH" iconUrl="/img/icons/project-icons/eth.svg" />
               <div className="lg:hidden">Submit Deadline</div>
               <span>
                 <CountDown date={"2023-01-25"} />
