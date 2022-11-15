@@ -42,7 +42,6 @@ export default function MarketplaceChallenges() {
     setSearchParams(searchParams);
   };
 
-  const tokens = [{ symbol: "Algo", name: "Algorand" }];
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
@@ -109,7 +108,7 @@ export default function MarketplaceChallenges() {
             </Tabs.Panel>
 
             <Tabs.Panel value="rewards" pt="xs">
-              <Rewards tokens={tokens} />
+              <Rewards />
             </Tabs.Panel>
           </Tabs>
         </main>
@@ -242,7 +241,7 @@ function Prerequisites() {
   );
 }
 
-function Rewards({ tokens }: { tokens: any[] }) {
+function Rewards() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -284,9 +283,7 @@ function Rewards({ tokens }: { tokens: any[] }) {
                 TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
               </Text>
               <div className="flex flex-row space-x-3 mt-1">
-                {tokens.map((t: { symbol: string; name: string }) => (
-                  <TokenBadge key={t.symbol} slug={t.name} />
-                ))}
+                <TokenBadge slug="Solana" />
               </div>
             </Paper>
           </div>
