@@ -1,4 +1,6 @@
 import { faker } from "@faker-js/faker";
+import type { Submission } from "@prisma/client";
+import type { Challenge } from "~/domain";
 import type { LaborMarket } from "~/domain";
 
 // This module export utlity functions to generate fake data for testing and development
@@ -73,9 +75,19 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeChallenges = (count: number) => {
-  // deterministic results
-  faker.seed(20);
-  return [];
-  // return Array.from({ length: count }).map(fakeChallenge);
+export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress: string): Challenge => {
+  return {
+    id: faker.datatype.uuid(),
+    title: faker.random.words(3),
+    description: faker.random.words(10),
+    laborMarketAddress: laborMarketAddress,
+    submissions: [],
+  };
+};
+
+export const fakeSubmission = (data: Partial<Submission>, serviceRequestId: string): Submission => {
+  return {
+    id: faker.datatype.uuid(),
+    serviceRequestId: serviceRequestId,
+  };
 };

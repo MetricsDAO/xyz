@@ -14,10 +14,28 @@ import {
   Checkbox,
   Paper,
   Drawer,
-  Group,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 import { useState } from "react";
+import { z } from "zod";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { typedjson } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
+import { findSubmission } from "~/services/submission-service.server";
+
+const paramsSchema = z.object({ id: z.string() });
+
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+
+  const submission = await findSubmission(id);
+  if (!submission) {
+    throw notFound({ id });
+  }
+
+  return typedjson({ submission }, { status: 200 });
+};
 
 export default function ChallengeSubmission() {
   const [opened, setOpened] = useState(false);
@@ -106,7 +124,7 @@ export default function ChallengeSubmission() {
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
           <div className="flex items-center gap-2">
-            <Title order={2}>Question Title </Title>
+            <Title order={2}>Title goes here </Title>
             {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
           </div>
           <Center className="flex flex-wrap gap-5">

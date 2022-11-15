@@ -1,3 +1,4 @@
+import type { ServiceRequest } from "@prisma/client";
 import type { ChallengeSearch } from "~/domain/challenge";
 import { prisma } from "./prisma.server";
 
@@ -39,4 +40,16 @@ export const findChallenge = async (id: string) => {
     where: { id },
     include: { submissions: true, laborMarket: { include: { projects: true } } },
   });
+};
+
+/**
+ * Creates a new challenge/serviceRequest. This is only really used by the indexer.
+ * @param {Challenge} challenge - The challenge to create.
+ */
+export const upsertServiceRequest = async (challenge: ServiceRequest) => {
+  const { id, title, laborMarketAddress } = challenge;
+  const newChallenge = await prisma.serviceRequest.create({
+    data: { id, title, laborMarketAddress },
+  });
+  return newChallenge;
 };

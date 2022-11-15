@@ -14,7 +14,7 @@ ChallengeList.Item = function ChallengeListItem({ challenge }: { challenge: Serv
           {challenge.title}
         </Link>
         <p className="text-sm">
-          Sponsored by{" "}
+          Sponsored by
           <Badge asChild>
             <Link to="/">SPONSOR HERE</Link>
           </Badge>
