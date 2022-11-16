@@ -2,12 +2,9 @@ import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch }
 import { useEffect } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "./components/WalletProvider";
-import { MantineProvider, createEmotionCache } from "@mantine/core";
-import { StylesPlaceholder } from "@mantine/remix";
+
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-
-createEmotionCache({ key: "mantine" });
 
 export const meta: MetaFunction = () => {
   return {
@@ -44,7 +41,7 @@ export const links: LinksFunction = () => {
     },
     {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap",
+      href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
     },
     {
       rel: "apple-touch-icon",
@@ -113,34 +110,7 @@ export default function App() {
   return (
     <Document>
       <WalletProvider>
-        <MantineProvider
-          withGlobalStyles
-          withNormalizeCSS
-          theme={{
-            colors: {
-              brand: [
-                "#dbfaff",
-                "#b1e9fc",
-                "#86daf5",
-                "#59caf0",
-                "#2ebbea",
-                "#15a1d1",
-                "#037ea3",
-                "#005a76",
-                "#00374a",
-                "#00141d",
-              ],
-            },
-            primaryColor: "brand",
-            fontFamily: "Inter, sans-serif",
-            headings: {
-              fontFamily: "Inter, sans-serif",
-              fontWeight: 600,
-            },
-          }}
-        >
-          <Outlet />
-        </MantineProvider>
+        <Outlet />
       </WalletProvider>
     </Document>
   );
@@ -150,7 +120,6 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
   return (
     <html lang="en">
       <head>
-        <StylesPlaceholder />
         {title ? <title>{title}</title> : null}
         <Links />
         <Meta />

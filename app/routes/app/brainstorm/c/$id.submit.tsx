@@ -72,7 +72,7 @@ export default function SubmitQuestion() {
                 </Text>
                 <Text>
                   What is “active“? What is “use”? These terms can (and will) mean different things to different people.
-                  It doesn’t matter what definition you use as long as you communicate your expectations. Alternately
+                  It doesn’t matter what definition you use as long as you communicate your expectations. Alternatively,
                   you can ask for the metric to be defined as part of the question.
                 </Text>
                 <Text weight={500} italic>

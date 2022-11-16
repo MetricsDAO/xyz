@@ -1,8 +1,14 @@
 import { Avatar, Text } from "@mantine/core";
-import { PROJECT_ICONS } from "~/utils/helpers";
+import { PROJECT_ICONS, TOKEN_ICONS } from "~/utils/helpers";
 
 export function ProjectBadge({ slug }: { slug: string }) {
   const iconUrl = PROJECT_ICONS[slug];
+
+  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
+}
+
+export function TokenBadge({ slug }: { slug: string }) {
+  const iconUrl = TOKEN_ICONS[slug];
 
   return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
 }
