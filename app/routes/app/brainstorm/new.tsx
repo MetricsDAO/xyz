@@ -1,4 +1,5 @@
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { useTypedActionData } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson";
 import { MarketplaceForm } from "~/components/MarketplaceForm";
@@ -9,6 +10,10 @@ import { ValidatedForm, validationError } from "remix-validated-form";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
+import { Button } from "~/components/Button";
+import { useAccount } from "wagmi";
+import { useTransition } from "@remix-run/react";
+import { Container } from "~/components/Container";
 
 export const loader = async () => {
   const projects = await listProjects();
@@ -27,21 +32,30 @@ export const action = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function CreateMarketplace() {
-  // const actionData = useTypedActionData<typeof action>;
+  const transition = useTransition();
+  const { isConnected } = useAccount();
   const { projects, tokens } = useTypedLoaderData<typeof loader>();
 
   return (
-    <div className="container mx-auto max-w-6xl">
+    <Container className="py-16">
       <div className="max-w-2xl">
         <ValidatedForm<LaborMarketNew>
           validator={validator}
           method="post"
           defaultValues={{ launchAccess: "anyone", projectIds: [], tokenSymbols: [] }}
         >
-          <h1 className="text-2xl font-bold">Create Challenge Marketplace</h1>
+          <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
+          <div className="flex space-x-4 mt-6">
+            <Button size="lg" type="submit" disabled={!isConnected} loading={transition.state === "submitting"}>
+              Create Marketplace
+            </Button>
+            <Button size="lg" variant="cancel">
+              Cancel
+            </Button>
+          </div>
         </ValidatedForm>
       </div>
-    </div>
+    </Container>
   );
 }
