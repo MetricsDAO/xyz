@@ -1,17 +1,5 @@
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16, Search16 } from "@carbon/icons-react";
-import {
-  Input,
-  Pagination,
-  Select,
-  Title,
-  Text,
-  Button,
-  Center,
-  Divider,
-  MultiSelect,
-  UnstyledButton,
-} from "@mantine/core";
-import { Form, Link, useSearchParams } from "@remix-run/react";
+import { Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
@@ -20,6 +8,13 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { Button } from "~/components/Button";
+import { Input } from "~/components/Input";
+import { Select } from "~/components/Select";
+import { MultiSelect } from "~/components/MultiSelect";
+import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
+import { withZod } from "@remix-validated-form/with-zod";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -32,49 +27,41 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Brainstorm() {
   const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  // const [searchParams, setSearchParams] = useSearchParams();
 
-  const onPaginationChange = (page: number) => {
-    searchParams.set("page", page.toString());
-    setSearchParams(searchParams);
-  };
+  // const onPaginationChange = (page: number) => {
+  //   searchParams.set("page", page.toString());
+  //   setSearchParams(searchParams);
+  // };
 
   return (
     <div className="mx-auto container space-y-7 px-3 mb-10">
       <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
-          <div className="space-y-5 max-w-3xl">
-            <Title order={1}>Challenge Marketplaces</Title>
-            <div className="space-y-2">
-              <Text size="lg" color="brand.4">
-                Crowdsource the best questions for crypto analysts to answer about any web3 topic
-              </Text>
-              <Text color="dimmed">
-                Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
-                your best question ideas or review peers' submissions to surface and reward winners
-              </Text>
-            </div>
+          <div className="space-y-3 max-w-3xl">
+            <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
+            <p className="text-lg text-[#16ABDD]">
+              Crowdsource the best questions for crypto analysts to answer about any web3 topic
+            </p>
+            <p className="text-[#666666]">
+              Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
+              your best question ideas or review peers' submissions to surface and reward winners
+            </p>
           </div>
         </main>
-        <aside className="md:w-1/5">
-          <Center>
-            <Link to="/app/brainstorm/new">
-              <Button radius="md" className="mx-auto">
-                Create Marketplace
-              </Button>
-            </Link>
-          </Center>
+        <aside className="md:w-1/4">
+          <Link to="/app/brainstorm/new">
+            <Button className="mx-auto">Create Marketplace</Button>
+          </Link>
         </aside>
       </section>
 
-      <section>
-        <Title order={3}>
-          Challenge Marketplaces
-          <Text span color="dimmed">
-            ({totalResults})
-          </Text>
-        </Title>
-        <Divider />
+      <section className="space-y-3">
+        <h2 className="text-2xl font-semibold">
+          Challenge Marketplaces <span className="text-[#A5A5A5]">({totalResults})</span>
+        </h2>
+        {/* TODO: Divider */}
+        <div className="border-b-2 border-b-[#EDEDED]" />
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -82,16 +69,16 @@ export default function Brainstorm() {
           <div className="space-y-5">
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              <Pagination
+              {/* TODO <Pagination
                 page={params.page}
                 hidden={totalResults === 0}
                 total={Math.ceil(totalResults / params.first)}
                 onChange={onPaginationChange}
-              />
+              /> */}
             </div>
           </div>
         </main>
-        <aside className="md:w-1/5">
+        <aside className="md:w-1/4">
           <SearchAndFilter />
         </aside>
       </section>
@@ -101,22 +88,24 @@ export default function Brainstorm() {
 
 function SearchAndFilter() {
   return (
-    <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
-      <Text size="lg" weight={600} className="md:hidden">
-        Sort:
-      </Text>
-      <Select
-        radius="md"
-        placeholder="Select option"
-        name="sortBy"
-        className="md:hidden"
-        clearable
-        data={[{ label: "Chain/Project", value: "project" }]}
-      />
-      <Text size="lg" weight={600}>
-        Filter:
-      </Text>
+    <ValidatedForm
+      noValidate
+      validator={withZod(z.any())}
+      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
+    >
+      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
+      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
+      <div className="md:hidden">
+        <Select
+          placeholder="Select option"
+          name="sortBy"
+          options={[
+            { label: "None", value: "none" },
+            { label: "Chain/Project", value: "project" },
+          ]}
+        />
+      </div>
+      <h3 className="font-semibold text-lg">Filter:</h3>
       <MultiSelect
         radius="md"
         label="I am able to"
@@ -152,10 +141,8 @@ function SearchAndFilter() {
           { label: "Ethereum", value: "Ethereum" },
         ]}
       />
-      <Button radius="md" variant="light" size="xs" type="submit">
-        Apply Filters
-      </Button>
-    </Form>
+      <Button>Apply Filters</Button>
+    </ValidatedForm>
   );
 }
 
@@ -166,7 +153,7 @@ type MarketplaceTableProps = {
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
-    return <Text>No results. Try changing search and filter options.</Text>;
+    return <p>No results. Try changing search and filter options.</p>;
   }
   return (
     <>
@@ -175,15 +162,9 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <div className="col-span-2">
           <SortButton label="title" title="Challenge Marketplace" />
         </div>
-        <UnstyledButton>
-          <Text color="dark.3">Chain/Project</Text>
-        </UnstyledButton>
-        <UnstyledButton>
-          <Text color="dark.3">Challenge Pool Totals</Text>
-        </UnstyledButton>
-        <UnstyledButton>
-          <Text color="dark.3">Avg. Challenge Pool</Text>
-        </UnstyledButton>
+        <p>Chain/Project</p>
+        <p>Challenge Pool Totals</p>
+        <p>Avg. Challenge Pool</p>
         <SortButton label="serviceRequests" title="# Challenges" />
       </div>
       {/* Rows */}
@@ -197,21 +178,23 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
               key={m.address}
             >
               <div className="lg:hidden">Challenge Marketplaces</div>
-              <div className="lg:col-span-2">
-                <Text>{m.title}</Text>
-              </div>
+              <div className="lg:col-span-2">{m.title}</div>
+
               <div className="lg:hidden">Chain/Project</div>
               <div>
                 {m.projects.map((p) => (
                   <ProjectBadge key={p.slug} slug={p.slug} />
                 ))}
               </div>
+
               <div className="lg:hidden">Challenge Pool Totals</div>
               <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
+
               <div className="lg:hidden">Avg. Challenge Pool</div>
               <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
+
               <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m._count.serviceRequests.toLocaleString()}</Text>
+              <div>{m._count.serviceRequests.toLocaleString()}</div>
             </Link>
           );
         })}
@@ -233,8 +216,8 @@ function SortButton({ label, title }: { label: string; title: string }) {
   };
 
   return (
-    <UnstyledButton onClick={() => onSort(label)} className="flex">
-      <Text color="dark.3">{title}</Text>
+    <button onClick={() => onSort(label)} className="flex">
+      <p>{title}</p>
       {searchParams.get("sortBy") === label ? (
         searchParams.get("order") === "asc" ? (
           <ChevronSortUp16 className="mt-2" />
@@ -244,6 +227,6 @@ function SortButton({ label, title }: { label: string; title: string }) {
       ) : (
         <ChevronSort16 className="mt-1" />
       )}
-    </UnstyledButton>
+    </button>
   );
 }
