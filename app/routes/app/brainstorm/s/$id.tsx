@@ -44,7 +44,7 @@ export default function ChallengeSubmission() {
 
   const isWinner = true;
 
-  const reviews = submission.Reviews;
+  const reviews = submission.reviews;
 
   return (
     <>

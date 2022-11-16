@@ -90,10 +90,10 @@ model Submission {
   id               String         @id @unique
   serviceRequestId String
   createdAt        DateTime       @default(now())
-  creatorId        String
-  title            String
-  description      String
-  scoreStatus      String
+  creatorId        String         @default("")
+  title            String         @default("")
+  description      String         @default("")
+  scoreStatus      String         @default("")
   serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
-  Reviews          Review[]
+  reviews          Review[]
 }
