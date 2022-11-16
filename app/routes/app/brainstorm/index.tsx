@@ -15,6 +15,7 @@ import { MultiSelect } from "~/components/MultiSelect";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
+import { Pagination } from "~/components/Pagination";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -27,12 +28,6 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Brainstorm() {
   const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
-  // const [searchParams, setSearchParams] = useSearchParams();
-
-  // const onPaginationChange = (page: number) => {
-  //   searchParams.set("page", page.toString());
-  //   setSearchParams(searchParams);
-  // };
 
   return (
     <div className="mx-auto container space-y-7 px-3 mb-10">
@@ -60,7 +55,7 @@ export default function Brainstorm() {
         <h2 className="text-2xl font-semibold">
           Challenge Marketplaces <span className="text-[#A5A5A5]">({totalResults})</span>
         </h2>
-        {/* TODO: Divider */}
+        {/* Divider */}
         <div className="border-b-2 border-b-[#EDEDED]" />
       </section>
 
@@ -69,12 +64,7 @@ export default function Brainstorm() {
           <div className="space-y-5">
             <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              {/* TODO <Pagination
-                page={params.page}
-                hidden={totalResults === 0}
-                total={Math.ceil(totalResults / params.first)}
-                onChange={onPaginationChange}
-              /> */}
+              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
           </div>
         </main>

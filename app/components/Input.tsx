@@ -11,19 +11,17 @@ type InputProps = { rightSection?: ReactNode } & FieldProps & JSX.IntrinsicEleme
  * TextInput component that integrates with remix-validated-form.
  * Also so we can switch out the underlying component without affecting things higher up the tree.
  */
-export function Input(props: InputProps) {
+export function Input({ rightSection, ...props }: InputProps) {
   return (
     <Field {...props}>
       <FieldWrapper error={props.error}>
         <div className="relative w-full">
-          {props.rightSection && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              {props.rightSection}
-            </div>
+          {rightSection && (
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">{rightSection}</div>
           )}
           <input
             {...props}
-            className={clsx({ "pr-10": props.rightSection !== undefined }, "w-full h-12 outline-none px-3")}
+            className={clsx({ "pr-10": rightSection !== undefined }, "w-full h-12 outline-none px-3")}
           />
         </div>
       </FieldWrapper>
