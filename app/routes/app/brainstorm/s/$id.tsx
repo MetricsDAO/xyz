@@ -23,6 +23,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { findSubmission } from "~/services/submission-service.server";
+import { Review } from ".prisma/client";
 
 const paramsSchema = z.object({ id: z.string() });
 
@@ -44,7 +45,7 @@ export default function ChallengeSubmission() {
 
   const isWinner = true;
 
-  const reviews = submission.Reviews;
+  const reviews = submission.reviews;
 
   return (
     <>
@@ -192,7 +193,7 @@ export default function ChallengeSubmission() {
           <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
             <main className="flex-1">
               <div className="w-full border-spacing-4 border-separate space-y-5">
-                {reviews.map((m) => {
+                {reviews.map((m: Review) => {
                   return (
                     <Link
                       to="/u/[uId]"
