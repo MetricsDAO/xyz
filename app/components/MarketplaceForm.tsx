@@ -1,6 +1,5 @@
-import { Alert, Button } from "@mantine/core";
 import { useAccount } from "wagmi";
-import { useControlField, useIsSubmitting } from "remix-validated-form";
+import { useControlField } from "remix-validated-form";
 import { ValidatedInput } from "./Input";
 import { ValidatedTextarea } from "./Textarea";
 import { ValidatedSelect } from "./Select";
@@ -9,40 +8,16 @@ import type { Project, Token } from "@prisma/client";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
   const { isDisconnected } = useAccount();
-  // const [modalOpen, setModalOpened] = useState(false);
 
-  // const form = useForm<Partial<LaborMarketNew>>({
-  //   initialValues: {
-  //     type: "brainstorm",
-  //     launchAccess: "anyone",
-  //   },
-  //   validate: zodResolver(LaborMarketNewSchema),
-  // });
-
-  // const { mutate: prepareLaborMarket, data, isLoading, isSuccess } = usePrepareLaborMarket();
-
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     setModalOpened(true);
-  //   }
-  // }, [isSuccess]);
-
-  // function handleSubmit() {
-  //   return form.onSubmit((values) => {
-  //     const laborMarketNew = LaborMarketNewSchema.parse(values);
-  //     prepareLaborMarket(laborMarketNew);
-  //   });
-  // }
   const [launchAccess] = useControlField("launchAccess");
-  const isSubmitting = useIsSubmitting();
 
   return (
     <div className="space-y-10 py-5">
       <section className="space-y-1">
-        <p className="text-sky-500 text-lg">
+        <p className="text-cyan-500 text-lg">
           Crowdsource the best questions for crypto analysts to answer about any web3 topic
         </p>
-        <p className="text-sm">
+        <p className="text-sm text-gray-500">
           Control challenge permissions, set up token and blockchain/project allowlists for challenges, and define
           reward curves
         </p>
@@ -117,72 +92,6 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
           <ValidatedInput label="Reviewer Badger Token ID" type="text" name="reviewBadgerTokenId" />
         </div>
       </section>
-
-      {/* 
-
-      <Field>
-        <FieldLabel>Blockchain/Project(s)</FieldLabel>
-        <Combobox name="projectIds" options={projects.map((p) => ({ label: p.name, value: p.id }))} />
-      </Field>
-
-      <Field>
-        <div className="flex space-x-3">
-          <FieldLabel className="flex-1">Who has permission to launch challenges?</FieldLabel>
-          <a href="/" className="text-sm text-sky-500">
-            Launch Badger
-          </a>
-          <a href="/" className="text-sm text-sky-500">
-            Badger Docs
-          </a>
-        </div>
-        <Select
-          name="launchAccess"
-          options={[
-            { value: "anyone", label: "Anyone" },
-            { value: "delegates", label: "Delegates Only" },
-          ]}
-        />
-      </Field>
-
-      <Field>
-        <FieldLabel>Challenge Rewards</FieldLabel>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Field>
-            <FieldLabel className="text-sm text-gray-700">Reward Token Allowlist</FieldLabel>
-            <Combobox name="tokenSymbols" options={tokens.map((t) => ({ value: t.symbol, label: t.name }))} />
-          </Field>
-          <Field>
-            <FieldLabel className="text-sm text-gray-700">Reward Curve</FieldLabel>
-            <Select name="rewardCurve" options={[{ value: "linear", label: "Linear" }]} />
-          </Field>
-        </div>
-      </Field>
-
-      <Field>
-        <FieldLabel>Control who has permission to submit on challenges</FieldLabel>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextInput type="number" name="submitRepMin" placeholder="xMetric Min" />
-          <TextInput type="number" name="submitRepMax" placeholder="xMetric Max" />
-        </div>
-      </Field>
-
-      <Field>
-        <FieldLabel>Control who has permission to review challenge submissions</FieldLabel>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TextInput name="reviewBadgerAddress" placeholder="Reviewer Badger Contact Address" />
-          <TextInput name="reviewBadgerTokenId" placeholder="Token ID" />
-        </div>
-      </Field> */}
-
-      {isDisconnected && (
-        <Alert color="red" variant="outline" title="Disconnected">
-          Please connect wallet
-        </Alert>
-      )}
-
-      <Button size="md" color="brand.5" type="submit" disabled={isDisconnected} loading={isSubmitting}>
-        Next
-      </Button>
     </div>
   );
 }
