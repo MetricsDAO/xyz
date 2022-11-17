@@ -1,16 +1,27 @@
-import { Paper, Title, Text, Progress } from "@mantine/core";
 import { CountDown } from "./CountDown";
 
 export function CountDownCard({ progress, time, subText }: { progress: number; time: string; subText?: string }) {
   return (
-    <Paper withBorder>
-      <Progress value={progress} radius="xs" />
+    <div className="border border-[#EDEDED] rounded-md">
+      {progress >= 100 ? (
+        <div className="w-full bg-[#EDEDED] h-2.5 rounded-t-md " />
+      ) : (
+        <div className="w-full bg-[#16ABDDCC] h-2.5 rounded-t-md ">
+          <label className="sr-only">Progess bar with {100 - progress} percent left</label>
+          <div
+            style={{
+              width: `${100 - progress}%`,
+            }}
+            className="visible w-full rounded-tl-md h-2.5 bg-[#EDEDED]"
+          />
+        </div>
+      )}
       <div className="flex flex-col items-center my-6 px-3">
-        <Title weight={400}>
+        <p className="text-3xl font-normal">
           <CountDown date={time} />
-        </Title>
-        <Text>{subText}</Text>
+        </p>
+        <p>{subText}</p>
       </div>
-    </Paper>
+    </div>
   );
 }
