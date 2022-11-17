@@ -16,7 +16,7 @@ export function TokenBadge({ slug }: { slug: string }) {
 export function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
   return (
     <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size={6} src={iconUrl} alt="" />}
+      {iconUrl && <Avatar size="sm" src={iconUrl} alt="" />}
       <p className="text-black font-normal">{text}</p>
     </div>
   );
