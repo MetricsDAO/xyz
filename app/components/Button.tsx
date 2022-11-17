@@ -3,7 +3,7 @@ import clsx from "clsx";
 import React from "react";
 
 const baseStyles =
-  "rounded-lg font-medium cursor-pointer inline-flex items-center justify-center transition-colors duration-200 ease-in-out";
+  "rounded-lg font-medium cursor-pointer inline-flex items-center justify-center transition-colors duration-200 ease-in-out whitespace-nowrap";
 
 const sizeClasses = {
   sm: "h-8 px-3 text-sm",
@@ -32,14 +32,7 @@ type Props = React.ComponentProps<"button"> & {
 export const Button = React.forwardRef<HTMLButtonElement, Props>((props, ref) => {
   const { fullWidth, asChild, className, variant = "primary", size = "md", loading, ...rest } = props;
   const Comp = asChild ? Slot : "button";
-  const classes = clsx(
-    { "w-full": fullWidth },
-    "rounded-lg tracking-wide font-medium cursor-pointer",
-    "inline-block flex items-center justify-center",
-    sizeClasses[size],
-    variantClasses[variant],
-    className
-  );
+  const classes = clsx({ "w-full": fullWidth }, baseStyles, sizeClasses[size], variantClasses[variant], className);
   return <Comp className={classes} {...rest} ref={ref} />;
 });
 
