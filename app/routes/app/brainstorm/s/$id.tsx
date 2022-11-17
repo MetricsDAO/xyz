@@ -134,43 +134,24 @@ export default function ChallengeSubmission() {
           <div className="flex flex-wrap gap-x-8 gap-y-4">
             <Detail>
               <Detail.Title>Author</Detail.Title>
-              <Author.Author />
+              <Detail.User url="u/$id" name="joth.ETH" balance={400} />
             </Detail>
             <Detail>
               <Detail.Title>Created At</Detail.Title>
-              <Badge color="gray" size="lg">
-                <Text size="sm" className="normal-case font-normal">
-                  1 month 5 days ago
-                </Text>
-              </Badge>
+              <Detail.Badge>1 month 5 days ago</Detail.Badge>
             </Detail>
             <Detail>
               <Detail.Title>Overall Score</Detail.Title>
-              <div className="flex rounded-full bg-[#6993FF] items-center w-28">
-                <div className="rounded-full bg-[#D1DEFF] w-3/4">
-                  <Text align="center" className="normal-case font-normal">
-                    Good
-                  </Text>
-                </div>
-                <Text color="white" className="mx-auto pl-1 pr-2">
-                  80
-                </Text>
-              </div>
+              <Detail.Score score={83} />
             </Detail>
             <Detail>
               <Detail.Title>Reviews</Detail.Title>
-              <Badge color="gray" size="lg">
-                99
-              </Badge>
+              <Detail.Badge>99</Detail.Badge>
             </Detail>
             {isWinner ? (
               <Detail>
                 <Detail.Title>Winner</Detail.Title>
-                <Badge color="yellow" size="lg" leftSection={<Avatar size={20} src="/img/trophy.svg" />}>
-                  <Text color="dark" size="sm" className="normal-case font-normal">
-                    100 SOL
-                  </Text>
-                </Badge>
+                <Detail.Winner pending={false} winner={isWinner} tokenAmount={40} token="SOL" rMetric={500} />
               </Detail>
             ) : (
               <></>

@@ -63,40 +63,30 @@ export default function Challenge() {
         <div className="flex flex-wrap gap-x-8 gap-y-4">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
-            <Author.Author />
+            <Detail.User url="u/$id" name="joth.ETH" balance={400} />
           </Detail>
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
             <div className="flex space-x-2">
-              <ProjectBadge slug="solana" />
-              <ProjectBadge slug="solana" />
+              <Detail.Project slug="Solana" />
+              <Detail.Project slug="Ethereum" />
             </div>
           </Detail>
           <Detail>
             <Detail.Title>Reward Pool</Detail.Title>
-            <Badge color="gray" size="lg">
-              100 SOL
-            </Badge>
+            <Detail.Reward tokenAmount={40} token="SOL" rMetric={500} />
           </Detail>
           <Detail>
             <Detail.Title>Submissions</Detail.Title>
-            <Badge color="gray" size="lg">
-              1000
-            </Badge>
+            <Detail.Badge>1000</Detail.Badge>
           </Detail>
           <Detail>
             <Detail.Title>Reviews</Detail.Title>
-            <Badge color="gray" size="lg">
-              99
-            </Badge>
+            <Detail.Badge>99</Detail.Badge>
           </Detail>
           <Detail>
             <Detail.Title>Winners</Detail.Title>
-            <Badge color="gray" size="lg">
-              <Text size="sm" className="normal-case font-normal">
-                Pending
-              </Text>
-            </Badge>
+            <Detail.Winner pending={true} />
           </Detail>
         </div>
         <Text color="dimmed" className="max-w-2xl">
