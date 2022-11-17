@@ -9,7 +9,7 @@ import { prisma } from "./prisma.server";
 export const findSubmission = async (submissionId: string) => {
   return prisma.submission.findFirst({
     where: { id: submissionId },
-    include: { serviceRequest: true, Reviews: true },
+    include: { serviceRequest: true, reviews: true },
   });
 };
 

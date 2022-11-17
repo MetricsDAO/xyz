@@ -1,18 +1,5 @@
 import { Search16 } from "@carbon/icons-react";
-import {
-  Input,
-  Select,
-  Title,
-  Text,
-  Button,
-  Center,
-  Divider,
-  Tabs,
-  Paper,
-  Badge,
-  Avatar,
-  Checkbox,
-} from "@mantine/core";
+import { Input, Select, Title, Text, Button, Center, Divider, Paper, Badge, Avatar, Checkbox } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
@@ -26,6 +13,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { CountDown } from "~/components/CountDown";
+import { Tabs } from "~/components/tabs";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -41,6 +29,15 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 export default function Challenge() {
   const { challenge } = useTypedLoaderData<typeof loader>();
   const submissions = challenge.submissions;
+
+  const tabs = Array.of("Submissions", "Prerequisites", "Rewards", "Timeline & Deadline", "Participants");
+  const panels = Array.of(
+    <Submissions submissions={submissions} />,
+    <Prerequisites />,
+    <Rewards />,
+    <Timeline />,
+    <Participants />
+  );
 
   return (
     <div className="mx-auto container mb-12 px-10 pt-12">
@@ -107,35 +104,7 @@ export default function Challenge() {
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 gap-x-5">
         <main className="flex-1">
-          <Tabs defaultValue="submissions">
-            <Tabs.List className="mb-5">
-              <Tabs.Tab value="submissions">Submissions</Tabs.Tab>
-              <Tabs.Tab value="prerequisites">Prerequisites</Tabs.Tab>
-              <Tabs.Tab value="rewards">Rewards</Tabs.Tab>
-              <Tabs.Tab value="timeline">Timeline & Deadlines</Tabs.Tab>
-              <Tabs.Tab value="participants">Participants</Tabs.Tab>
-            </Tabs.List>
-
-            <Tabs.Panel value="submissions" pt="xs">
-              <Submissions submissions={submissions} />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="prerequisites" pt="xs">
-              <Prerequisites />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="rewards" pt="xs">
-              <Rewards />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="timeline" pt="xs">
-              <Timeline />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="participants" pt="xs">
-              <Participants />
-            </Tabs.Panel>
-          </Tabs>
+          <Tabs tabs={tabs} panels={panels} />
         </main>
       </section>
     </div>
