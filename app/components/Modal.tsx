@@ -1,17 +1,15 @@
-import { Close24 } from "@carbon/icons-react";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
 // https://headlessui.com/react/dialog
 export function Modal({
   title,
-  withCloseButton,
   isOpen,
   onClose,
   children,
 }: {
   title?: string;
-  withCloseButton?: boolean;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
@@ -49,11 +47,9 @@ export function Modal({
                     className="flex justify-between items-center text-xl font-medium leading-6 text-gray-900"
                   >
                     <h1>{title}</h1>
-                    {withCloseButton && (
-                      <button onClick={onClose}>
-                        <Close24 />
-                      </button>
-                    )}
+                    <button onClick={onClose}>
+                      <XMarkIcon className="h-7 w-7" />
+                    </button>
                   </Dialog.Title>
                   {children}
                 </Dialog.Panel>
