@@ -1,5 +1,4 @@
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
-import { useTypedActionData } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson";
 import { MarketplaceForm } from "~/components/MarketplaceForm";

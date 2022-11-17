@@ -14,7 +14,7 @@ export function Field({ children, name, error, label, level = 1 }: FieldProps & 
   return (
     <div>
       {label ? (
-        <label htmlFor={name} className="block text-sm mb-2">
+        <label htmlFor={name} className="block text-sm mb-2 text-gray-600">
           {label}
         </label>
       ) : null}
@@ -29,9 +29,9 @@ export function Field({ children, name, error, label, level = 1 }: FieldProps & 
 export function FieldWrapper({ children, error }: { children: React.ReactNode; error?: React.ReactNode }) {
   return (
     <div
-      className={clsx("border flex rounded-lg overflow-hidden", {
-        "border-red-500": error,
-        "border-gray-400/40": !error,
+      className={clsx("ring-1 ring-black/10 flex rounded-lg overflow-hidden", {
+        "ring-red-500": error,
+        "ring-black/10": !error,
       })}
     >
       {children}

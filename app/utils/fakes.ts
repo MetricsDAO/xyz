@@ -81,7 +81,6 @@ export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress:
     title: faker.random.words(3),
     description: faker.random.words(10),
     laborMarketAddress: laborMarketAddress,
-    submissions: [],
   };
 };
 
