@@ -30,7 +30,13 @@ export default function Challenge() {
   const { challenge } = useTypedLoaderData<typeof loader>();
   const submissions = challenge.submissions;
 
-  const tabs = Array.of("Submissions", "Prerequisites", "Rewards", "Timeline & Deadline", "Participants");
+  const tabs = Array.of(
+    `Submissions (${submissions.length})`,
+    "Prerequisites",
+    "Rewards",
+    "Timeline & Deadline",
+    "Participants"
+  );
   const panels = Array.of(
     <Submissions submissions={submissions} />,
     <Prerequisites />,

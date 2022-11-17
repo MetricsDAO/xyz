@@ -46,9 +46,9 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 export default function MarketplaceChallenges() {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
+  const { laborMarket, challenges } = useTypedLoaderData<typeof loader>();
 
-  const tabs = Array.of("Challenges", "Prerequisites", "Rewards");
+  let tabs = Array.of(`Challenges (${challenges.length})`, "Prerequisites", "Rewards");
   const panels = Array.of(<WrappedMarketplacesChallengesTable />, <Prerequisites />, <Rewards />);
 
   return (

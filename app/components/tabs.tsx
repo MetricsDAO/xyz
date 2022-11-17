@@ -10,13 +10,13 @@ export function Tabs({ tabs, panels }: Props) {
   return (
     <Tab.Group>
       <Tab.List className="flex flex-row space-x-4 border-b border-[#EDEDED] mb-5 text-[#666666] text-[14px]">
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <Tab as={Fragment} key={tab}>
             {({ selected }) => (
               <button
                 className={
                   selected
-                    ? "border-b-2 border-[#16ABDD] outline-none hover:bg-[#F6F6F6] px-2 py-1 rounded-t-md"
+                    ? "border-b-2 border-[#16ABDD] text-[#16ABDD] outline-none hover:bg-[#F6F6F6] px-2 py-1 rounded-t-md"
                     : "outline-none border-none hover:bg-[#F6F6F6] px-2 py-1 rounded-t-md"
                 }
               >
