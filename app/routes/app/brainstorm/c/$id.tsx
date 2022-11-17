@@ -225,21 +225,13 @@ function Prerequisites() {
             <Text size="xs" color="gray" className="mb-2">
               MIN BALANCE
             </Text>
-            <Badge color="gray" radius="sm">
-              <Text weight={600} className="normal-case">
-                15 xMetric
-              </Text>
-            </Badge>
+            <Detail.Badge>15 rMETRIC</Detail.Badge>
           </Center>
           <Center className="flex flex-col">
             <Text size="xs" color="gray" className="mb-2">
               MAX BALANCE
             </Text>
-            <Badge color="gray" radius="sm">
-              <Text weight={600} className="normal-case">
-                100 xMetric
-              </Text>
-            </Badge>
+            <Detail.Badge>100 rMETRIC</Detail.Badge>
           </Center>
         </div>
       </Paper>
@@ -309,8 +301,8 @@ function Participants() {
   return (
     <section className="space-y-7">
       <div className="flex items-center space-x-2 text-left px-4">
-        <Text size="sm">Average user xMETRIC</Text>
-        <Badge color="dark">1,000</Badge>
+        <Text size="sm">Average user rMETRIC</Text>
+        <Detail.Badge>1000</Detail.Badge>
       </div>
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="w-full border-spacing-4 border-separate space-y-4">

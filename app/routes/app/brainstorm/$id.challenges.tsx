@@ -70,12 +70,12 @@ export default function MarketplaceChallenges() {
         <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
-            <Author.Author />
+            <Detail.User url="u/$id" name="joth.ETH" balance={400} />
           </Detail>
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
             <div className="flex space-x-2">
-              <ProjectBadge slug={"Solana"} />
+              <Detail.Project slug="Ethereum" />
             </div>
           </Detail>
         </div>
@@ -207,21 +207,13 @@ function Prerequisites() {
                     <Text size="xs" color="gray" className="mb-2">
                       MIN BALANCE
                     </Text>
-                    <Badge color="gray" radius="sm">
-                      <Text weight={600} className="normal-case">
-                        15 xMetric
-                      </Text>
-                    </Badge>
+                    <Detail.Badge>15 rMETRIC</Detail.Badge>
                   </Center>
                   <Center className="flex flex-col">
                     <Text size="xs" color="gray" className="mb-2">
                       MAX BALANCE
                     </Text>
-                    <Badge color="gray" radius="sm">
-                      <Text weight={600} className="normal-case">
-                        100 xMetric
-                      </Text>
-                    </Badge>
+                    <Detail.Badge>100 rMETRIC</Detail.Badge>
                   </Center>
                 </div>
               </Paper>
@@ -295,7 +287,7 @@ function Rewards() {
                 TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
               </Text>
               <div className="flex flex-row space-x-3 mt-1">
-                <TokenBadge slug="Solana" />
+                <Detail.Token name="Solana" symbol="SOL" />
               </div>
             </Paper>
           </div>

@@ -151,7 +151,13 @@ export default function ChallengeSubmission() {
             {isWinner ? (
               <Detail>
                 <Detail.Title>Winner</Detail.Title>
-                <Detail.Winner pending={false} winner={isWinner} tokenAmount={40} token="SOL" rMetric={500} />
+                <div className="flex rounded-full bg-[#D0972A] items-center pr-1">
+                  <div className="flex rounded-full bg-[#FFF2C6] px-1 items-center gap-x-1 uppercase py-1">
+                    <img src="/img/trophy.svg" alt="" width="15" height="15" />
+                    <p className="text-sm text-[#946100] uppercase">40 SOL</p>
+                  </div>
+                  <p className="text-xs text-white px-1">50 rMETRIC</p>
+                </div>
               </Detail>
             ) : (
               <></>

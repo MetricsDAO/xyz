@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import * as RadixAvatar from "@radix-ui/react-avatar";
-import { PROJECT_ICONS } from "~/utils/helpers";
+import { PROJECT_ICONS, TOKEN_ICONS } from "~/utils/helpers";
 import { UserAvatarFilledAlt32 } from "@carbon/icons-react";
 import clsx from "clsx";
 
@@ -43,15 +43,32 @@ Detail.Project = function DetailProject({ slug }: { slug: string }) {
   );
 };
 
+Detail.Token = function DetailToken({ name, symbol }: { name: string; symbol: String }) {
+  const iconUrl = TOKEN_ICONS[name];
+  return (
+    <div className="flex rounded-full bg-[#F6F6F6] items-center gap-x-1 pl-1 pr-2 py-1">
+      {iconUrl && (
+        <RadixAvatar.Root>
+          <RadixAvatar.Image className="w-5 h-5 rounded-full" src={iconUrl} alt="" />
+          <RadixAvatar.Fallback delayMs={500}>
+            <UserAvatarFilledAlt32 height={16} width={16} />
+          </RadixAvatar.Fallback>
+        </RadixAvatar.Root>
+      )}
+      <p className="text-black font-normal uppercase">{symbol}</p>
+    </div>
+  );
+};
+
 Detail.Score = function DetailScore({ score }: { score: number }) {
   let result = "Spam";
-  if (score > 90) {
+  if (score === 100) {
     result = "Great";
-  } else if (score > 80) {
+  } else if (score > 75) {
     result = "Good";
-  } else if (score > 70) {
+  } else if (score > 50) {
     result = "Average";
-  } else if (score > 60) {
+  } else if (score > 25) {
     result = "Bad";
   }
 
@@ -106,40 +123,20 @@ Detail.Reward = function DetailReward({
 
 Detail.Badge = function DetailBadge({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-full bg-[#F6F6F6] w-min-15 px-2 py-1">
+    <div className="rounded-full bg-[#F6F6F6] w-min-15 px-3 py-1">
       <p className="text-black text-sm text-center">{children}</p>
     </div>
   );
 };
 
-Detail.Winner = function DetailWinner({
-  pending,
-  winner = false,
-  tokenAmount,
-  token,
-  rMetric,
-}: {
-  pending: boolean;
-  winner?: boolean;
-  tokenAmount?: number;
-  token?: string;
-  rMetric?: number;
-}) {
+Detail.Winner = function DetailWinner({ pending, amount = 0 }: { pending: boolean; amount?: number }) {
   return pending ? (
     <div className="flex rounded-full bg-[#16ABDD14] items-center px-3 py-1">
       <p className="text-[#005D7C] text-sm">Pending</p>
     </div>
-  ) : winner ? (
-    <div className="flex rounded-full bg-[#D0972A] items-center pr-1">
-      <div className="flex rounded-full bg-[#FFF2C6] px-1 items-center gap-x-1 uppercase py-1">
-        <img src="/img/trophy.svg" alt="" width="15" height="15" />
-        <p className="text-sm text-[#946100]">
-          {tokenAmount} {token}
-        </p>
-      </div>
-      <p className="text-xs text-white px-1">{rMetric} rMETRIC</p>
-    </div>
   ) : (
-    <></>
+    <div className="flex rounded-full bg-[#FFEAA080] items-center px-3 py-1">
+      <p className="text-[#946100] text-sm">{amount}</p>
+    </div>
   );
 };
