@@ -78,7 +78,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       </section>
 
       <section>
-        <h4 className="font-semibold mb-4">Control who hass permission to submit on challenges</h4>
+        <h4 className="font-semibold mb-4">Control who has permission to submit on challenges</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ValidatedInput label="Minimum rMETRIC Balance" name="submitRepMin" />
           <ValidatedInput label="Maximum rMETRIC Balance" name="submitRepMax" />

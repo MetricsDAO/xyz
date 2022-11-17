@@ -9,7 +9,7 @@ import { FieldWrapper } from "./Field";
 
 type Props = {
   name: string;
-  label: string;
+  label?: string;
   error?: string;
   multiple?: boolean;
   options: Option[];
@@ -29,10 +29,10 @@ export function Combobox({ label, error, options, name }: Props) {
         <input key={s.value} type="hidden" name={name} value={s.value} />
       ))}
 
-      <HCombobox as="div" value={selected} onChange={setSelected} multiple>
-        <div className="relative mt-1">
+      <HCombobox as="div" value={selected ?? []} onChange={setSelected} multiple>
+        <div className="relative">
           <FieldWrapper error={error}>
-            {selected.length > 0 && (
+            {selected?.length > 0 && (
               <ul className="flex space-x-1 p-2 pr-0">
                 {selected.map((s) => (
                   <li

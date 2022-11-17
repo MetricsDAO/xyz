@@ -12,22 +12,27 @@ type Props = {
   loading?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export function Button({ asChild, fullWidth, size = "md", className, variant = "primary", ...props }: Props) {
+const sizeClasses = {
+  sm: "px-3 py-1 text-sm",
+  md: "px-4 py-2 text-base",
+  lg: "h-12 px-6 text-base",
+};
+
+const variantClasses = {
+  primary: "bg-sky-500 text-white",
+  gradient: "bg-gradient-to-r from-[#A0DDA9] to-[#01C2FF] text-black/90",
+  outline: "border border-sky-200 text-sky-500 hover:bg-sky-100 shadow",
+  danger: "bg-red-500 hover:bg-red-700 text-white",
+  cancel: "bg-white ring-1 ring-black/10 hover:bg-black/5 text-gray-900",
+};
+
+export function Button({ asChild, fullWidth, size = "md", className, variant = "primary", loading, ...props }: Props) {
   const classes = clsx(
     { "w-full": fullWidth },
-    // Sizes
-    { "px-3 py-3 text-sm": size === "sm" },
-    { "px-4 h-10 text-sm": size === "md" },
-    { "px-4 py-3 text-base": size === "lg" },
-    { "bg-gradient-to-r from-[#A0DDA9] to-[#01C2FF] text-black/90": variant === "gradient" },
-    // Variants
-    { "bg-sky-500 text-white": variant === "primary" },
-    { "border border-blue-500 text-blue-500": variant === "outline" },
-    { "bg-red-500 text-white": variant === "danger" },
-    { "bg-white ring-1 ring-black/10 text-gray-900": variant === "cancel" },
-    // Base styles
     "rounded-lg tracking-wide font-medium cursor-pointer",
     "inline-block flex items-center justify-center",
+    sizeClasses[size],
+    variantClasses[variant],
     className
   );
 
