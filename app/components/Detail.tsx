@@ -3,5 +3,5 @@ export function Detail({ children }: { children: React.ReactNode }) {
 }
 
 Detail.Title = function DetailTitle({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2 text-xs text-[#666666] uppercase">{children}</p>;
+  return <p className="mb-2 text-xs text-neutral-700 uppercase">{children}</p>;
 };
