@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Submission" ALTER COLUMN "creatorId" DROP DEFAULT,
+ALTER COLUMN "description" DROP DEFAULT,
+ALTER COLUMN "scoreStatus" DROP DEFAULT,
+ALTER COLUMN "title" DROP DEFAULT;
