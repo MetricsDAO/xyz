@@ -13,7 +13,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { CountDown } from "~/components/CountDown";
-import { Tabs } from "~/components/tabs";
+import { Tabs } from "~/components/Tabs";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {

@@ -32,10 +32,6 @@ Tabs.List = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-Tabs.Panels = ({ children }: { children: React.ReactNode }) => {
-  return <HTab.Panels>{children}</HTab.Panels>;
-};
+Tabs.Panels = HTab.Panels;
 
-Tabs.Panel = ({ children }: { children: React.ReactNode }) => {
-  return <HTab.Panel>{children}</HTab.Panel>;
-};
+Tabs.Panel = HTab.Panel;

@@ -24,7 +24,7 @@ import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadg
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { Tabs } from "~/components/tabs";
+import { Tabs } from "~/components/Tabs";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
