@@ -37,7 +37,7 @@ export default function Brainstorm() {
         <main className="flex-1">
           <div className="space-y-3 max-w-3xl">
             <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
-            <p className="text-lg text-[#16ABDD]">
+            <p className="text-lg text-cyan-500">
               Crowdsource the best questions for crypto analysts to answer about any web3 topic
             </p>
             <p className="text-[#666666]">
