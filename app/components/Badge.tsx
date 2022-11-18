@@ -12,7 +12,7 @@ export function Badge({ asChild, className, ...props }: Props) {
   return (
     <Comp
       className={clsx(
-        "flex items-center text-sm text-gray-700 bg-zinc-100 rounded-full px-2 h-8 w-fit whitespace-nowrap",
+        "flex items-center text-sm text-gray-600 bg-zinc-100 rounded-full px-3 h-8 w-fit whitespace-nowrap",
         className
       )}
       {...props}

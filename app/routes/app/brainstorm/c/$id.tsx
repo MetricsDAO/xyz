@@ -57,12 +57,14 @@ export default function Challenge() {
           <Badge>Pending</Badge>
         </DetailItem>
       </Detail>
+
       <article className="text-zinc-500 text-sm space-y-4 mb-20">
         <p>
           What's the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What’s
           the challenge What web3 topic do you want to crowdsource potential analytics questions
         </p>
       </article>
+
       <Outlet />
     </Container>
   );

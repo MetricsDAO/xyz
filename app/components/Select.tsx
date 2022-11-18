@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { Fragment, useState } from "react";
 import { useControlField, useField } from "remix-validated-form";
 import type { FieldProps } from "./Field";
-import { FieldWrapper } from "./Field";
 import { Field } from "./Field";
 import type { InputBaseSize } from "./InputBase";
 import { InputBase } from "./InputBase";
