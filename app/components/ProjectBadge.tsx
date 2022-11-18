@@ -1,23 +1,11 @@
-import { PROJECT_ICONS, TOKEN_ICONS } from "~/utils/helpers";
-import Avatar from "./Avatar";
+import type { Project } from "@prisma/client";
+import { Badge } from "./Badge";
 
-export function ProjectBadge({ slug }: { slug: string }) {
-  const iconUrl = PROJECT_ICONS[slug];
-
-  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
-}
-
-export function TokenBadge({ slug }: { slug: string }) {
-  const iconUrl = TOKEN_ICONS[slug];
-
-  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
-}
-
-export function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
+export function ProjectBadge({ project }: { project: Project }) {
   return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} alt="" />}
-      <p className="text-black font-normal">{text}</p>
-    </div>
+    <Badge>
+      <img src={`/logos/${project.slug}.svg`} alt={`${project.name} logo`} className="h-4 w-4" />
+      <span className="mx-1">{project.name}</span>
+    </Badge>
   );
 }

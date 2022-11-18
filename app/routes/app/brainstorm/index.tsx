@@ -19,7 +19,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { ProjectBadge } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -203,13 +203,13 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
               <div className="lg:hidden">Chain/Project</div>
               <div>
                 {m.projects.map((p) => (
-                  <ProjectBadge key={p.slug} slug={p.slug} />
+                  <ProjectBadge key={p.slug} project={p} />
                 ))}
               </div>
               <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
+              {/* <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" /> */}
               <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
+              {/* <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" /> */}
               <div className="lg:hidden"># Challenges</div>
               <Text color="dark.3">{m._count.serviceRequests.toLocaleString()}</Text>
             </Link>

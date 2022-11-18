@@ -1,20 +1,16 @@
-import { Search16 } from "@carbon/icons-react";
-import { Input, Select, Title, Text, Center, Divider, Tabs, Paper, Badge, Avatar, Checkbox } from "@mantine/core";
-import { Form, Link } from "@remix-run/react";
-import { Detail } from "~/components/Detail";
-import * as Author from "~/components/Author";
+import { Outlet } from "@remix-run/react";
+import { Detail, DetailItem } from "~/components/Detail";
+import { Author } from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
-import { CountDownCard } from "~/components/CountDownCard";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
-import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
-import { CountDown } from "~/components/CountDown";
 import { Container } from "~/components/Container";
 import { Button } from "~/components/Button";
+import { Badge } from "~/components/Badge";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -23,16 +19,14 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!challenge) {
     throw notFound({ id });
   }
-
   return typedjson({ challenge }, { status: 200 });
 };
 
 export default function Challenge() {
   const { challenge } = useTypedLoaderData<typeof loader>();
-  const submissions = challenge.submissions;
   return (
     <Container className="py-16">
-      <header className="flex space-x-4">
+      <header className="flex space-x-4 mb-16">
         <h1 className="text-3xl font-medium w-full">{challenge.title}</h1>
         <Button variant="cancel" size="lg">
           Claim to Review
@@ -41,6 +35,35 @@ export default function Challenge() {
           Claim to Submit
         </Button>
       </header>
+      <Detail className="mb-6">
+        <DetailItem title="Sponsor">
+          <Author />
+        </DetailItem>
+        <DetailItem title="Chain/Project">
+          <div className="flex space-x-4">
+            {challenge.laborMarket.projects.map((p) => (
+              <ProjectBadge key={p.id} project={p} />
+            ))}
+          </div>
+        </DetailItem>
+        <DetailItem title="Reward Pool">100sol 500rmetric</DetailItem>
+        <DetailItem title="Submissions">
+          <Badge className="px-4">99</Badge>
+        </DetailItem>
+        <DetailItem title="Reviews">
+          <Badge className="px-4">99</Badge>
+        </DetailItem>
+        <DetailItem title="Winner">
+          <Badge>Pending</Badge>
+        </DetailItem>
+      </Detail>
+      <article className="text-zinc-500 text-sm space-y-4 mb-20">
+        <p>
+          What's the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What’s
+          the challenge What web3 topic do you want to crowdsource potential analytics questions
+        </p>
+      </article>
+      <Outlet />
     </Container>
   );
   // return (

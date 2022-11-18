@@ -22,7 +22,7 @@ import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
-import { findSubmission } from "~/services/submission-service.server";
+import { findSubmission } from "~/services/submissions.server";
 
 const paramsSchema = z.object({ id: z.string() });
 
