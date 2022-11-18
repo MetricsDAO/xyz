@@ -9,12 +9,13 @@ import { Field } from "./Field";
 
 type Props = {
   name: string;
+  placeholder?: string;
   options?: Option[];
 } & FieldProps;
 
 type Option = { value: string; label: React.ReactNode; prefix?: React.ReactNode };
 
-export function Select({ options, ...props }: Props) {
+export function Select({ options, placeholder, ...props }: Props) {
   const [value, setValue] = useControlField<string>(props.name);
   const selected = options?.find((o) => o.value === value);
   return (
@@ -26,7 +27,9 @@ export function Select({ options, ...props }: Props) {
             <div className="relative mt-1">
               <FieldWrapper error={props.error}>
                 <Listbox.Button className="input input-text">
-                  <span className="block truncate text-left">{selected?.label}</span>
+                  <span className={clsx({ "text-gray-500": !selected }, "block truncate text-left")}>
+                    {selected ? selected.label : placeholder}
+                  </span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                     <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
                   </span>
