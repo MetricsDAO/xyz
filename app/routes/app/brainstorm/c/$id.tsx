@@ -13,7 +13,8 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { CountDown } from "~/components/CountDown";
-import { Tabs } from "~/components/tabs";
+import { Tab, TabsList } from "~/components/tabs";
+import { Tab as HTab } from "@headlessui/react";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -29,21 +30,6 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 export default function Challenge() {
   const { challenge } = useTypedLoaderData<typeof loader>();
   const submissions = challenge.submissions;
-
-  const tabs = Array.of(
-    `Submissions (${submissions.length})`,
-    "Prerequisites",
-    "Rewards",
-    "Timeline & Deadline",
-    "Participants"
-  );
-  const panels = Array.of(
-    <Submissions submissions={submissions} />,
-    <Prerequisites />,
-    <Rewards />,
-    <Timeline />,
-    <Participants />
-  );
 
   return (
     <div className="mx-auto container mb-12 px-10 pt-12">
@@ -110,7 +96,32 @@ export default function Challenge() {
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 gap-x-5">
         <main className="flex-1">
-          <Tabs tabs={tabs} panels={panels} />
+          <HTab.Group>
+            <TabsList>
+              <Tab> {`Submissions (${submissions.length})`} </Tab>
+              <Tab> Prerequisites </Tab>
+              <Tab> Rewards </Tab>
+              <Tab> Timeline & Deadline </Tab>
+              <Tab> Participants </Tab>
+            </TabsList>
+            <HTab.Panels>
+              <HTab.Panel>
+                <Submissions submissions={submissions} />
+              </HTab.Panel>
+              <HTab.Panel>
+                <Prerequisites />
+              </HTab.Panel>
+              <HTab.Panel>
+                <Rewards />
+              </HTab.Panel>
+              <HTab.Panel>
+                <Timeline />
+              </HTab.Panel>
+              <HTab.Panel>
+                <Participants />
+              </HTab.Panel>
+            </HTab.Panels>
+          </HTab.Group>
         </main>
       </section>
     </div>

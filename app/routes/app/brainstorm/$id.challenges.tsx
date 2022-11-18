@@ -24,7 +24,8 @@ import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadg
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { Tabs } from "~/components/tabs";
+import { Tab, TabsList } from "~/components/tabs";
+import { Tab as HTab } from "@headlessui/react";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -47,9 +48,6 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function MarketplaceChallenges() {
   const { laborMarket, challenges } = useTypedLoaderData<typeof loader>();
-
-  let tabs = Array.of(`Challenges (${challenges.length})`, "Prerequisites", "Rewards");
-  const panels = Array.of(<WrappedMarketplacesChallengesTable />, <Prerequisites />, <Rewards />);
 
   return (
     <div className="mx-auto container mb-12 px-10">
@@ -84,7 +82,24 @@ export default function MarketplaceChallenges() {
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
-          <Tabs tabs={tabs} panels={panels} />
+          <HTab.Group>
+            <TabsList>
+              <Tab> {`Challenges (${challenges.length})`} </Tab>
+              <Tab> Prerequisites </Tab>
+              <Tab> Rewards </Tab>
+            </TabsList>
+            <HTab.Panels>
+              <HTab.Panel>
+                <WrappedMarketplacesChallengesTable />
+              </HTab.Panel>
+              <HTab.Panel>
+                <Prerequisites />
+              </HTab.Panel>
+              <HTab.Panel>
+                <Rewards />
+              </HTab.Panel>
+            </HTab.Panels>
+          </HTab.Group>
         </main>
       </section>
     </div>
