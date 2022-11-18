@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useInterval } from "@mantine/hooks";
+import { useInterval } from "react-use";
 
 export function useUpdateInterval(interval: number) {
   const [, setTick] = useState(0);

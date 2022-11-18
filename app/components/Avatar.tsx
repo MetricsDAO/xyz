@@ -1,6 +1,12 @@
-import { UserAvatarFilledAlt32 } from "@carbon/icons-react";
-import { clsx } from "@mantine/core";
+import { UserCircleIcon } from "@heroicons/react/20/solid";
 import * as RadixAvatar from "@radix-ui/react-avatar";
+import clsx from "clsx";
+
+const sizeClasses = {
+  sm: "w-8 h-8",
+  md: "w-12 h-12",
+  lg: "w-16 h-16",
+};
 
 export default function Avatar({
   src,
@@ -15,21 +21,11 @@ export default function Avatar({
   delay?: number;
   fallback?: React.ReactNode;
 }) {
-  const fallBackHeight = size === "lg" ? 64 : size === "md" ? 48 : 32;
   return (
     <RadixAvatar.Root>
-      <RadixAvatar.Image
-        className={clsx(
-          { "w-8 h-8": size === "sm" },
-          { "w-12 h-12": size === "md" },
-          { "w-16 h-16": size === "lg" },
-          "rounded-full"
-        )}
-        src={src}
-        alt={alt}
-      />
+      <RadixAvatar.Image className={clsx(sizeClasses[size], "rounded-full")} src={src} alt={alt} />
       <RadixAvatar.Fallback delayMs={delay ?? 500}>
-        {fallback ?? <UserAvatarFilledAlt32 height={fallBackHeight} width={fallBackHeight} />}
+        {fallback ?? <UserCircleIcon className={clsx(sizeClasses[size])} />}
       </RadixAvatar.Fallback>
     </RadixAvatar.Root>
   );

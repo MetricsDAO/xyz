@@ -1,9 +1,6 @@
-import { createStylesServer, injectStyles } from "@mantine/remix";
-import type { EntryContext } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
+import type { EntryContext } from "@remix-run/server-runtime/dist/entry";
 import { renderToString } from "react-dom/server";
-
-const server = createStylesServer();
 
 export default function handleRequest(
   request: Request,
@@ -12,9 +9,10 @@ export default function handleRequest(
   remixContext: EntryContext
 ) {
   let markup = renderToString(<RemixServer context={remixContext} url={request.url} />);
+
   responseHeaders.set("Content-Type", "text/html");
 
-  return new Response(`<!DOCTYPE html>${injectStyles(markup, server)}`, {
+  return new Response("<!DOCTYPE html>" + markup, {
     status: responseStatusCode,
     headers: responseHeaders,
   });
