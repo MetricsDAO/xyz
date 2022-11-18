@@ -1,7 +1,12 @@
+/* eslint-disable react/display-name */
 import { Tab as HTab } from "@headlessui/react";
 import { Fragment } from "react";
 
-export const Tab = ({ children }: { children: React.ReactNode }) => {
+export const Tabs = ({ children }: { children: React.ReactNode }) => {
+  return <HTab.Group>{children}</HTab.Group>;
+};
+
+Tabs.Tab = ({ children }: { children: React.ReactNode }) => {
   return (
     <HTab as={Fragment}>
       {({ selected }) => (
@@ -19,10 +24,18 @@ export const Tab = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const TabsList = ({ children }: { children: React.ReactNode }) => {
+Tabs.List = ({ children }: { children: React.ReactNode }) => {
   return (
     <HTab.List className="flex flex-row space-x-4 border-b border-[#EDEDED] mb-5 text-[#666666] text-[14px]">
       {children}
     </HTab.List>
   );
+};
+
+Tabs.Panels = ({ children }: { children: React.ReactNode }) => {
+  return <HTab.Panels>{children}</HTab.Panels>;
+};
+
+Tabs.Panel = ({ children }: { children: React.ReactNode }) => {
+  return <HTab.Panel>{children}</HTab.Panel>;
 };

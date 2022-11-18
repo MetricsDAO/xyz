@@ -13,8 +13,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { CountDown } from "~/components/CountDown";
-import { Tab, TabsList } from "~/components/tabs";
-import { Tab as HTab } from "@headlessui/react";
+import { Tabs } from "~/components/tabs";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -96,32 +95,32 @@ export default function Challenge() {
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 gap-x-5">
         <main className="flex-1">
-          <HTab.Group>
-            <TabsList>
-              <Tab> {`Submissions (${submissions.length})`} </Tab>
-              <Tab> Prerequisites </Tab>
-              <Tab> Rewards </Tab>
-              <Tab> Timeline & Deadline </Tab>
-              <Tab> Participants </Tab>
-            </TabsList>
-            <HTab.Panels>
-              <HTab.Panel>
+          <Tabs>
+            <Tabs.List>
+              <Tabs.Tab> {`Submissions (${submissions.length})`} </Tabs.Tab>
+              <Tabs.Tab> Prerequisites </Tabs.Tab>
+              <Tabs.Tab> Rewards </Tabs.Tab>
+              <Tabs.Tab> Timeline & Deadline </Tabs.Tab>
+              <Tabs.Tab> Participants </Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panels>
+              <Tabs.Panel>
                 <Submissions submissions={submissions} />
-              </HTab.Panel>
-              <HTab.Panel>
+              </Tabs.Panel>
+              <Tabs.Panel>
                 <Prerequisites />
-              </HTab.Panel>
-              <HTab.Panel>
+              </Tabs.Panel>
+              <Tabs.Panel>
                 <Rewards />
-              </HTab.Panel>
-              <HTab.Panel>
+              </Tabs.Panel>
+              <Tabs.Panel>
                 <Timeline />
-              </HTab.Panel>
-              <HTab.Panel>
+              </Tabs.Panel>
+              <Tabs.Panel>
                 <Participants />
-              </HTab.Panel>
-            </HTab.Panels>
-          </HTab.Group>
+              </Tabs.Panel>
+            </Tabs.Panels>
+          </Tabs>
         </main>
       </section>
     </div>
