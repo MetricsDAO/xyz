@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useField } from "remix-validated-form";
 import type { FieldProps } from "./Field";
