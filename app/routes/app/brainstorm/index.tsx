@@ -1,4 +1,4 @@
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16, Search16 } from "@carbon/icons-react";
+import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
@@ -17,6 +17,7 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { Pagination } from "~/components/Pagination";
 import { Combobox } from "~/components/Combobox";
 import { useCallback, useRef } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -93,7 +94,12 @@ function SearchAndFilter() {
       validator={withZod(z.any())}
       className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
     >
-      <Input onChange={(e) => submit(e.currentTarget.form)} placeholder="Search" name="q" rightSection={<Search16 />} />
+      <Input
+        onChange={(e) => submit(e.currentTarget.form)}
+        placeholder="Search"
+        name="q"
+        rightSection={<MagnifyingGlassIcon className="w-5 h-5" />}
+      />
       <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
       <div className="md:hidden">
         <Select

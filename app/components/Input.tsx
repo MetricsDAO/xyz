@@ -15,15 +15,8 @@ export function Input({ rightSection, ...props }: InputProps) {
   return (
     <Field {...props}>
       <FieldWrapper error={props.error}>
-        <div className="relative w-full">
-          {rightSection && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">{rightSection}</div>
-          )}
-          <input
-            {...props}
-            className={clsx({ "pr-10": rightSection !== undefined }, "w-full h-12 outline-none px-3")}
-          />
-        </div>
+        <input {...props} className="w-full h-12 outline-none px-3" />
+        {rightSection && <div className="pr-3 self-center">{rightSection}</div>}
       </FieldWrapper>
     </Field>
   );
