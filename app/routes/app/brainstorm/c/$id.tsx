@@ -27,7 +27,7 @@ export default function Challenge() {
   return (
     <Container className="py-16">
       <header className="flex space-x-4 mb-16">
-        <h1 className="text-3xl font-medium w-full">{challenge.title}</h1>
+        <h1 className="text-3xl font-semibold w-full">{challenge.title}</h1>
         <Button variant="cancel" size="lg">
           Claim to Review
         </Button>
