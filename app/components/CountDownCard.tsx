@@ -2,7 +2,7 @@ import { CountDown } from "./CountDown";
 
 export function CountDownCard({ progress, time, subText }: { progress: number; time: string; subText?: string }) {
   return (
-    <div className="border border-[#EDEDED] rounded-md">
+    <div className="border border-[#EDEDED] rounded-md shadow-md">
       {progress >= 100 ? (
         <div className="w-full bg-[#EDEDED] h-2.5 rounded-t-md " />
       ) : (
@@ -17,7 +17,7 @@ export function CountDownCard({ progress, time, subText }: { progress: number; t
         </div>
       )}
       <div className="flex flex-col items-center my-6 px-3">
-        <p className="text-3xl font-normal">
+        <p className="text-2xl">
           <CountDown date={time} />
         </p>
         <p>{subText}</p>
