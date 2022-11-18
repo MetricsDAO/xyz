@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   Center,
-  Tabs,
   Paper,
   Badge,
   Avatar,
@@ -16,7 +15,7 @@ import {
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
-import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
@@ -25,6 +24,7 @@ import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadg
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
+import { Tabs } from "~/components/Tabs";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -46,13 +46,7 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 export default function MarketplaceChallenges() {
-  const { challenges, totalResults, params, laborMarket } = useTypedLoaderData<typeof loader>();
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onPaginationChange = (page: number) => {
-    searchParams.set("page", page.toString());
-    setSearchParams(searchParams);
-  };
+  const { laborMarket, challenges } = useTypedLoaderData<typeof loader>();
 
   return (
     <div className="mx-auto container mb-12 px-10">
@@ -87,41 +81,23 @@ export default function MarketplaceChallenges() {
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
-          <Tabs defaultValue="challenges">
-            <Tabs.List className="mb-5">
-              <Tabs.Tab value="challenges">Challenges</Tabs.Tab>
-              <Tabs.Tab value="prerequisites">Prerequisites</Tabs.Tab>
-              <Tabs.Tab value="rewards">Rewards</Tabs.Tab>
+          <Tabs>
+            <Tabs.List>
+              <Tabs.Tab> {`Challenges (${challenges.length})`} </Tabs.Tab>
+              <Tabs.Tab> Prerequisites </Tabs.Tab>
+              <Tabs.Tab> Rewards </Tabs.Tab>
             </Tabs.List>
-
-            <Tabs.Panel value="challenges" pt="xs">
-              <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-                <main className="flex-1">
-                  <div className="space-y-5">
-                    <MarketplacesChallengesTable challenges={challenges} />
-                    <div className="w-fit m-auto">
-                      <Pagination
-                        page={params.page}
-                        hidden={challenges.length === 0}
-                        onChange={onPaginationChange}
-                        total={Math.ceil(totalResults / params.first)}
-                      />
-                    </div>
-                  </div>
-                </main>
-                <aside className="md:w-1/5">
-                  <SearchAndFilter />
-                </aside>
-              </section>
-            </Tabs.Panel>
-
-            <Tabs.Panel value="prerequisites" pt="xs">
-              <Prerequisites />
-            </Tabs.Panel>
-
-            <Tabs.Panel value="rewards" pt="xs">
-              <Rewards />
-            </Tabs.Panel>
+            <Tabs.Panels>
+              <Tabs.Panel>
+                <WrappedMarketplacesChallengesTable />
+              </Tabs.Panel>
+              <Tabs.Panel>
+                <Prerequisites />
+              </Tabs.Panel>
+              <Tabs.Panel>
+                <Rewards />
+              </Tabs.Panel>
+            </Tabs.Panels>
           </Tabs>
         </main>
       </section>
@@ -305,12 +281,10 @@ function Rewards() {
   );
 }
 
-type MarketplaceChallengesTableProps = {
-  challenges: UseDataFunctionReturn<typeof loader>["challenges"];
-};
-
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableProps) {
+function MarketplacesChallengesTable() {
+  const { challenges } = useTypedLoaderData<typeof loader>();
+
   if (challenges.length === 0) {
     return <Text>No results. Try changing search and filter options.</Text>;
   }
@@ -361,5 +335,35 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
         })}
       </div>
     </>
+  );
+}
+
+function WrappedMarketplacesChallengesTable() {
+  const { totalResults, params, challenges } = useTypedLoaderData<typeof loader>();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onPaginationChange = (page: number) => {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  };
+  return (
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+      <main className="flex-1">
+        <div className="space-y-5">
+          <MarketplacesChallengesTable />
+          <div className="w-fit m-auto">
+            <Pagination
+              page={params.page}
+              hidden={challenges.length === 0}
+              onChange={onPaginationChange}
+              total={Math.ceil(totalResults / params.first)}
+            />
+          </div>
+        </div>
+      </main>
+      <aside className="md:w-1/5">
+        <SearchAndFilter />
+      </aside>
+    </section>
   );
 }
