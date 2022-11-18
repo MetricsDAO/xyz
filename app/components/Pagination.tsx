@@ -8,7 +8,7 @@ interface PageButtonProps {
 }
 
 export function Pagination({ page, totalPages }: { page: number; totalPages: number }) {
-  if (totalPages === 1) {
+  if (totalPages <= 0) {
     return null;
   }
 

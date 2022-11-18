@@ -1,5 +1,5 @@
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16, Search16 } from "@carbon/icons-react";
-import { Link, useSearchParams } from "@remix-run/react";
+import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
@@ -11,11 +11,12 @@ import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
 import { Button } from "~/components/Button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
-import { MultiSelect } from "~/components/MultiSelect";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { Pagination } from "~/components/Pagination";
+import { Combobox } from "~/components/Combobox";
+import { useCallback, useRef } from "react";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -77,13 +78,22 @@ export default function Brainstorm() {
 }
 
 function SearchAndFilter() {
+  const submit = useSubmit();
+  const ref = useRef<HTMLFormElement>(null);
+
+  const memoizedSubmit = useCallback(() => {
+    submit(ref.current);
+  }, [submit]);
+
   return (
     <ValidatedForm
+      formRef={ref}
+      method="get"
       noValidate
       validator={withZod(z.any())}
       className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
     >
-      <Input placeholder="Search" name="q" rightSection={<Search16 />} />
+      <Input onChange={(e) => submit(e.currentTarget.form)} placeholder="Search" name="q" rightSection={<Search16 />} />
       <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
       <div className="md:hidden">
         <Select
@@ -96,42 +106,38 @@ function SearchAndFilter() {
         />
       </div>
       <h3 className="font-semibold text-lg">Filter:</h3>
-      <MultiSelect
-        radius="md"
+      <Combobox
+        onChange={memoizedSubmit}
         label="I am able to"
         placeholder="Select option"
         name="filter"
-        clearable
-        data={[
+        options={[
           { value: "launch", label: "Launch" },
           { value: "submit", label: "Submit" },
           { value: "review", label: "Review" },
         ]}
       />
-      <MultiSelect
-        radius="md"
+      <Combobox
+        onChange={memoizedSubmit}
         label="Reward Token"
         placeholder="Select option"
         name="rewardToken"
-        clearable
-        data={[
+        options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
           { label: "USD", value: "USD" },
         ]}
       />
-      <MultiSelect
-        radius="md"
+      <Combobox
+        onChange={memoizedSubmit}
         label="Chain/Project"
         placeholder="Select option"
         name="chainProject"
-        clearable
-        data={[
+        options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
         ]}
       />
-      <Button>Apply Filters</Button>
     </ValidatedForm>
   );
 }
@@ -146,9 +152,9 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
     return <p>No results. Try changing search and filter options.</p>;
   }
   return (
-    <>
+    <div>
       {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
+      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
         <div className="col-span-2">
           <SortButton label="title" title="Challenge Marketplace" />
         </div>
@@ -189,7 +195,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
 

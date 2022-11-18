@@ -1,5 +1,5 @@
 import { Combobox as HCombobox } from "@headlessui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useControlField, useField } from "remix-validated-form";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
@@ -13,12 +13,18 @@ type Props = {
   error?: string;
   multiple?: boolean;
   options: Option[];
+  placeholder?: string;
+  onChange?: (values: Option[]) => void;
 } & FieldProps;
 
 type Option = { value: string; label: string; prefix?: React.ReactNode };
 
-export function Combobox({ label, error, options, name }: Props) {
+export function Combobox({ label, error, options, name, onChange, placeholder }: Props) {
   const [selected, setSelected] = useControlField<Option[]>(name);
+
+  useEffect(() => {
+    onChange?.(selected);
+  }, [selected, onChange]);
 
   const [query, setQuery] = useState("");
   const filteredOptions = options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()));
@@ -46,6 +52,7 @@ export function Combobox({ label, error, options, name }: Props) {
             )}
             <HCombobox.Input<"input", Option[]>
               onChange={(event) => setQuery(event.target.value)}
+              placeholder={!selected ? placeholder : undefined}
               className="h-12 flex-1 outline-none px-3"
             />
             <HCombobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
