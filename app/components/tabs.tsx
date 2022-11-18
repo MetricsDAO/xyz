@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { Tab as HTab } from "@headlessui/react";
 import { Fragment } from "react";
 
