@@ -17,7 +17,7 @@ const sizeStyles: Record<InputBaseSize, string> = {
 
 const errorStyles = "ring-1 ring-red-500";
 /** Base input wrapper with styling for errors */
-export function InputBase({ size, children, isError = false }: InputBaseProps) {
+export function InputWrapper({ size, children, isError = false }: InputBaseProps) {
   const classes = clsx(baseStyles, sizeStyles[size], { [errorStyles]: isError });
   return <div className={classes}>{children}</div>;
 }
