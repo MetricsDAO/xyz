@@ -4,17 +4,20 @@ import { InputBase } from "./InputBase";
 import type { FieldProps } from "./Field";
 import type { InputBaseSize } from "./InputBase";
 
-type InputProps = FieldProps & Omit<JSX.IntrinsicElements["input"], "size"> & { size?: InputBaseSize };
+type InputProps = { prefix?: React.ReactNode; suffix?: React.ReactNode } & FieldProps &
+  Omit<JSX.IntrinsicElements["input"], "size"> & { size?: InputBaseSize };
 
 /**
  * TextInput component that integrates with remix-validated-form.
  * Also so we can switch out the underlying component without affecting things higher up the tree.
  */
-export function Input({ size = "md", ...props }: InputProps) {
+export function Input({ prefix, suffix, size = "md", ...props }: InputProps) {
   return (
     <Field {...props}>
       <InputBase size={size} isError={Boolean(props.error)}>
+        {prefix}
         <input {...props} className="w-full h-12 outline-none px-3" />
+        {suffix}
       </InputBase>
     </Field>
   );

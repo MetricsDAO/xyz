@@ -6,10 +6,11 @@ import { useControlField, useField } from "remix-validated-form";
 import type { FieldProps } from "./Field";
 import { Field } from "./Field";
 import type { InputBaseSize } from "./InputBase";
-import { InputBase } from "./InputBase";
+import { InputWrapper } from "./InputBase";
 
 type Props = {
   name: string;
+  placeholder?: string;
   options?: Option[];
   size?: InputBaseSize;
 } & FieldProps;
@@ -31,7 +32,7 @@ export function ControlledSelect({ options, value, setValue, size = "md", ...pro
           <>
             <input type="hidden" name={props.name} value={value} />
             <div className="relative mt-1">
-              <InputBase size={size} isError={Boolean(props.error)}>
+              <InputWrapper size={size} isError={Boolean(props.error)}>
                 <Listbox.Button className={clsx("flex-1 px-3", { "h-10": size === "sm", "h-12": size === "md" })}>
                   <span className={clsx("block truncate text-left", { "text-sm": size === "sm" })}>
                     {selected?.label}
@@ -40,7 +41,7 @@ export function ControlledSelect({ options, value, setValue, size = "md", ...pro
                     <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
                   </span>
                 </Listbox.Button>
-              </InputBase>
+              </InputWrapper>
 
               <Transition
                 show={open}
