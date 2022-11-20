@@ -3,7 +3,6 @@ import clsx from "clsx";
 
 type Props = {
   src?: string;
-  alt: string;
   size?: "sm" | "md" | "lg";
 };
 
@@ -14,11 +13,11 @@ const sizeStyles = {
   lg: "w-8 h-8",
 };
 
-export default function Avatar({ src, alt, size = "md" }: Props) {
+export function Avatar({ src, size = "md" }: Props) {
   const classes = clsx("inline-block rounded-full bg-neutral-300", sizeStyles[size]);
   return (
     <RadixAvatar.Root className={classes}>
-      <RadixAvatar.Image className="w-full h-full" src={src} alt={alt} />
+      <RadixAvatar.Image className="w-full h-full" src={src} alt="avatar" />
       <RadixAvatar.Fallback
         className="w-full h-full flex items-center justify-center"
         delayMs={500}

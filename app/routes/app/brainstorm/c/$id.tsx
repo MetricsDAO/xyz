@@ -11,7 +11,7 @@ import { notFound } from "remix-utils";
 import { Container } from "~/components/Container";
 import { Button } from "~/components/Button";
 import { Badge } from "~/components/Badge";
-import { TabNav, TabNavLink } from "~/components/tab-nav/tab-nav";
+import { TabNav, TabNavLink } from "~/components/tab-nav";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
