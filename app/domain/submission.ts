@@ -7,6 +7,7 @@ export const SubmissionSearchSchema = z.object({
   scores: z.enum(["great", "good", "average", "bad", "spam"]).optional(),
   first: z.number().default(10),
   page: z.number().default(1),
+  serviceRequestId: z.string().optional(),
 });
 
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;

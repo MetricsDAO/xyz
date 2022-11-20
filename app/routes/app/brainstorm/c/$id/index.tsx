@@ -3,6 +3,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Author } from "~/components/Author";
+import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/Checkbox";
 import { CountDown } from "~/components/CountDown";
 import { Input } from "~/components/Input";
@@ -10,11 +11,13 @@ import { Score } from "~/components/Score";
 import { Select } from "~/components/Select";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { searchSubmissions } from "~/services/submissions.server";
+import invariant from "tiny-invariant";
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+export const loader = async ({ request, params }: DataFunctionArgs) => {
+  invariant(params.id, "id is required");
   const url = new URL(request.url);
-  const params = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissions(params);
+  const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
+  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.id });
   return typedjson({ submissions });
 };
 
@@ -25,23 +28,24 @@ export default function ChallengeIdSubmissions() {
       <main className="min-w-[300px] w-full space-y-4">
         {submissions.map((s) => {
           return (
-            <Link
-              to={`/app/brainstorm/s/${s.id}`}
-              className="flex flex-col md:flex-row ring-1 ring-inset ring-gray-100 bg-white rounded-lg text-sm p-6 hover:bg-stone-100 items-center space-x-4 shadow shadow-black/5"
-              key={s.id}
-            >
-              <main className="space-y-2 flex-1">
-                <h4 className="font-medium text-gray-900">{s.title}</h4>
-                <section className="text-gray-900">{s.description}</section>
-                <div className="flex space-x-1 items-center text-xs">
-                  <CountDown date={s.createdAt}></CountDown> by <Author />
+            <Card asChild key={s.id}>
+              <Link
+                to={`/app/brainstorm/s/${s.id}`}
+                className="flex flex-col md:flex-row text-sm p-6 items-center space-x-4"
+              >
+                <main className="space-y-2 flex-1">
+                  <h4 className="font-medium text-gray-900">{s.title}</h4>
+                  <section className="text-gray-900">{s.description}</section>
+                  <div className="flex space-x-1 items-center text-xs">
+                    <CountDown date={s.createdAt}></CountDown> by <Author />
+                  </div>
+                </main>
+                <div className="space-y-3">
+                  <Score score={50} />
+                  <p className="text-xs text-gray-500 text-center">55 reviews</p>
                 </div>
-              </main>
-              <div className="space-y-3">
-                <Score score={50} />
-                <p className="text-xs text-gray-500 text-center">55 reviews</p>
-              </div>
-            </Link>
+              </Link>
+            </Card>
           );
         })}
       </main>

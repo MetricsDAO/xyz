@@ -9,5 +9,13 @@ type CardProps = {
 
 export function Card({ asChild, className, ...props }: CardProps) {
   const Comp = asChild ? Slot : "div";
-  return <Comp className={clsx("bg-white ring-1 ring-black/5 rounded-lg", className)} {...props} />;
+  return (
+    <Comp
+      className={clsx(
+        "bg-white hover:bg-gray-100 ring-1 ring-black/5 ring-inset shadow shadow-black/5 rounded-lg",
+        className
+      )}
+      {...props}
+    />
+  );
 }

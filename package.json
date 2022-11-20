@@ -14,6 +14,7 @@
     "dev:css": "yarn generate:css --watch",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
     "dev:server": "cross-env NODE_ENV=development node --inspect --require ./node_modules/dotenv/config ./build/server.js",
+    "dev:ladle": "ladle serve",
     "docker": "docker compose up -d --remove-orphans",
     "generate:css": "tailwindcss -i ./styles/app.css -o app/styles/app.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint '**/*.{ts,tsx}'",
@@ -21,7 +22,6 @@
     "start": "cross-env NODE_ENV=production node ./build/server.js",
     "reset": "prisma migrate reset",
     "prod": "yarn build && remix-serve api",
-    "ladle:dev": "concurrently \"yarn dev:css\" \"ladle serve --stories=ladle\"",
     "typecheck": "tsc -b"
   },
   "dependencies": {
