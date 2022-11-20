@@ -1,5 +1,5 @@
 import { useRouteData } from "remix-utils";
-import Avatar from "~/components/Avatar";
+import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Card } from "~/components/Card";
 import { Detail, DetailItem } from "~/components/Detail";
@@ -38,7 +38,7 @@ export default function ChallengeIdPrereqs() {
           <Detail>
             <DetailItem title="MDAO S4 Reviewer Badge">
               <Badge className="pl-2 flex space-x-1">
-                <Avatar alt="user" />
+                <Avatar />
                 <span>0x12345</span>
               </Badge>
             </DetailItem>
