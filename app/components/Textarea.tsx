@@ -19,7 +19,7 @@ export function Textarea({ name, error, label, ...props }: Props) {
   // return <MTextarea {...props} error={field.error} />;
 }
 
-export function ValidatedTextarea(props: Props) {
+export function ValidatedTextarea(props: Props & { name: string }) {
   const { error } = useField(props.name);
   return <Textarea {...props} error={error} />;
 }

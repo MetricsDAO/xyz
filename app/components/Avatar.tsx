@@ -1,6 +1,5 @@
-import { User16, UserAvatarFilledAlt32 } from "@carbon/icons-react";
-import { clsx } from "@mantine/core";
 import * as RadixAvatar from "@radix-ui/react-avatar";
+import clsx from "clsx";
 
 type Props = {
   src?: string;
