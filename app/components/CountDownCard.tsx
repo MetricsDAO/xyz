@@ -1,27 +1,24 @@
 import { CountDown } from "./CountDown";
+import { Progress } from "./Progress";
 
-export function CountDownCard({ progress, time, subText }: { progress: number; time: string; subText?: string }) {
+export function CountDownCard({
+  progress,
+  time,
+  children,
+}: {
+  progress: number;
+  time: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="border border-[#EDEDED] rounded-md">
-      {progress >= 100 ? (
-        <div className="w-full bg-[#EDEDED] h-2.5 rounded-t-md " />
-      ) : (
-        <div className="w-full bg-[#16ABDDCC] h-2.5 rounded-t-md ">
-          <label className="sr-only">Progess bar with {100 - progress} percent left</label>
-          <div
-            style={{
-              width: `${100 - progress}%`,
-            }}
-            className="visible w-full rounded-tl-md h-2.5 bg-[#EDEDED]"
-          />
-        </div>
-      )}
-      <div className="flex flex-col items-center my-6 px-3">
-        <p className="text-3xl font-normal">
+    <div className="ring-1 ring-black/5 ring-inset rounded-lg shadow shadow-black/10 overflow-hidden">
+      <Progress progress={10} />
+      <main className="flex flex-col items-center justify-center py-12 space-y-2">
+        <span className="text-4xl">
           <CountDown date={time} />
-        </p>
-        <p>{subText}</p>
-      </div>
+        </span>
+        {children ? <div className="text-lg text-gray-500">{children}</div> : null}
+      </main>
     </div>
   );
 }

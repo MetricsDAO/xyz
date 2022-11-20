@@ -1,23 +1,22 @@
-import { PROJECT_ICONS, TOKEN_ICONS } from "~/utils/helpers";
-import Avatar from "./Avatar";
+import type { Project } from "@prisma/client";
+import { Badge } from "./Badge";
+import * as Avatar from "@radix-ui/react-avatar";
 
-export function ProjectBadge({ slug }: { slug: string }) {
-  const iconUrl = PROJECT_ICONS[slug];
-
-  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
-}
-
-export function TokenBadge({ slug }: { slug: string }) {
-  const iconUrl = TOKEN_ICONS[slug];
-
-  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
-}
-
-export function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
+export function ProjectBadge({ project }: { project: Project }) {
   return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} alt="" />}
-      <p className="text-black font-normal">{text}</p>
-    </div>
+    <Badge className="pl-2">
+      <Avatar.Root className="h-5 w-5 items-center justify-center rounded-full bg-gray-200">
+        <Avatar.Image
+          src={`/img/icons/project-icons/${project.slug}.svg`}
+          alt={`${project.name} logo`}
+          className="object-contain"
+        />
+        <Avatar.Fallback className="w-full h-full flex items-center justify-center text-xs text-gray-100 bg-gray-400 rounded-full">
+          {project.slug.at(0)?.toUpperCase()}
+        </Avatar.Fallback>
+      </Avatar.Root>
+      {/* <img src={`/logos/${project.slug}.svg`} alt={`${project.name} logo`} className="h-4 w-4" /> */}
+      <span className="mx-1">{project.name}</span>
+    </Badge>
   );
 }

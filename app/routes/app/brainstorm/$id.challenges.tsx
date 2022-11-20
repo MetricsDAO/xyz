@@ -20,7 +20,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
-import { ProjectBadge, TextWithIcon, TokenBadge } from "~/components/ProjectBadge";
+import { ProjectBadge } from "~/components/ProjectBadge";
 import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
@@ -61,7 +61,7 @@ export default function MarketplaceChallenges() {
         </Center>
       </section>
       <section className="flex flex-col space-y-7 pb-12">
-        <div className="flex flex-wrap gap-x-8">
+        {/* <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
             <Author.Author />
@@ -72,7 +72,7 @@ export default function MarketplaceChallenges() {
               <ProjectBadge slug={"Solana"} />
             </div>
           </Detail>
-        </div>
+        </div> */}
         <Text color="dimmed" className="max-w-2xl">
           Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
           DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
@@ -270,9 +270,7 @@ function Rewards() {
               <Text weight={500} color="dimmed" size="xs" className="mt-3">
                 TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
               </Text>
-              <div className="flex flex-row space-x-3 mt-1">
-                <TokenBadge slug="Solana" />
-              </div>
+              <div className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</div>
             </Paper>
           </div>
         </div>
@@ -316,12 +314,12 @@ function MarketplacesChallengesTable() {
               </div>
               <div className="lg:hidden">Chain/Project</div>
               <div>
-                {c.laborMarket.projects.map((p) => (
+                {/* {c.laborMarket.projects.map((p) => (
                   <ProjectBadge key={p.id} slug={p.slug} />
-                ))}
+                ))} */}
               </div>
               <div className="lg:hidden">Reward Pool Totals</div>
-              <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" />
+              {/* <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" /> */}
               <div className="lg:hidden">Submit Deadline</div>
               <span>
                 <CountDown date={"2023-01-25"} />

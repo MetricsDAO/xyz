@@ -1,22 +1,29 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { useControlField, useField } from "remix-validated-form";
 import type { FieldProps } from "./Field";
-import { FieldWrapper } from "./Field";
 import { Field } from "./Field";
+import type { InputBaseSize } from "./InputBase";
+import { InputWrapper } from "./InputBase";
 
 type Props = {
   name: string;
   placeholder?: string;
   options?: Option[];
+  size?: InputBaseSize;
 } & FieldProps;
 
 type Option = { value: string; label: React.ReactNode; prefix?: React.ReactNode };
 
-export function Select({ options, placeholder, ...props }: Props) {
-  const [value, setValue] = useControlField<string>(props.name);
+type ControlledSelectProps = Props & {
+  value: string | undefined;
+  setValue: (value: string) => void;
+};
+
+/** A Select component that's controlled from parent state. */
+export function ControlledSelect({ options, value, setValue, size = "md", ...props }: ControlledSelectProps) {
   const selected = options?.find((o) => o.value === value);
   return (
     <Field {...props}>
@@ -25,16 +32,16 @@ export function Select({ options, placeholder, ...props }: Props) {
           <>
             <input type="hidden" name={props.name} value={value} />
             <div className="relative mt-1">
-              <FieldWrapper error={props.error}>
-                <Listbox.Button className="input input-text">
-                  <span className={clsx({ "text-gray-500": !selected }, "block truncate text-left")}>
-                    {selected ? selected.label : placeholder}
+              <InputWrapper size={size} isError={Boolean(props.error)}>
+                <Listbox.Button className={clsx("flex-1 px-3", { "h-10": size === "sm", "h-12": size === "md" })}>
+                  <span className={clsx("block truncate text-left", { "text-sm": size === "sm" })}>
+                    {selected?.label}
                   </span>
                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                     <ChevronDownIcon className="h-3 w-3" aria-hidden="true" />
                   </span>
                 </Listbox.Button>
-              </FieldWrapper>
+              </InputWrapper>
 
               <Transition
                 show={open}
@@ -85,7 +92,20 @@ export function Select({ options, placeholder, ...props }: Props) {
   );
 }
 
+/** A Select component that's controlled from remix-validated-form. */
 export function ValidatedSelect(props: Props) {
   const { error } = useField(props.name);
-  return <Select {...props} error={error} />;
+  const [value, setValue] = useControlField<string>(props.name);
+  return <ControlledSelect {...props} error={error} value={value} setValue={setValue} />;
+}
+
+/** Select comopnent that controls itself. */
+export function Select({ options, ...props }: Props) {
+  const [value, setValue] = useState<string>();
+  return (
+    <>
+      <input type="hidden" name={props.name} value={value} />
+      <ControlledSelect value={value} setValue={setValue} {...props} options={options} />
+    </>
+  );
 }

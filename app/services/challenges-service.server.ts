@@ -38,7 +38,11 @@ export const countChallenges = async (params: ChallengeSearch) => {
 export const findChallenge = async (id: string) => {
   return prisma.serviceRequest.findUnique({
     where: { id },
-    include: { submissions: true, laborMarket: { include: { projects: true } } },
+    include: {
+      submissions: true,
+      laborMarket: { include: { projects: true } },
+      _count: { select: { submissions: true } },
+    },
   });
 };
 
