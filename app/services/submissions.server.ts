@@ -1,5 +1,25 @@
 import type { Submission } from "@prisma/client";
+import type { SubmissionSearch } from "~/domain/submission";
 import { prisma } from "./prisma.server";
+
+/**
+ * Returns an array of LaborMarkets for a given LaborMarketSearch.
+ * @param params - The search parameters.
+ */
+export const searchSubmissions = async (params: SubmissionSearch) => {
+  return prisma.submission.findMany({
+    where: {
+      title: { search: params.q },
+      description: { search: params.q },
+      serviceRequestId: params.serviceRequestId,
+    },
+    orderBy: {
+      [params.sortBy]: params.order,
+    },
+    take: params.first,
+    skip: params.first * (params.page - 1),
+  });
+};
 
 /**
  * Finds a submission by its id.

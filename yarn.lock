@@ -2250,6 +2250,21 @@
     "@radix-ui/react-use-callback-ref" "1.0.0"
     "@radix-ui/react-use-layout-effect" "1.0.0"
 
+"@radix-ui/react-checkbox@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@radix-ui/react-checkbox/-/react-checkbox-1.0.1.tgz#80cb38b1fd2cbe73f3ad0f4db8aebead0ab0617a"
+  integrity sha512-TisH0B8hWmYP3ONRduYCyN04rR9yLPIw/Rwyn1RoC1suSoGCa8Wn+YPdSSSarSszeIbcg3p2lBkDp2XXit4sZw==
+  dependencies:
+    "@babel/runtime" "^7.13.10"
+    "@radix-ui/primitive" "1.0.0"
+    "@radix-ui/react-compose-refs" "1.0.0"
+    "@radix-ui/react-context" "1.0.0"
+    "@radix-ui/react-presence" "1.0.0"
+    "@radix-ui/react-primitive" "1.0.1"
+    "@radix-ui/react-use-controllable-state" "1.0.0"
+    "@radix-ui/react-use-previous" "1.0.0"
+    "@radix-ui/react-use-size" "1.0.0"
+
 "@radix-ui/react-collection@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-collection/-/react-collection-1.0.1.tgz#259506f97c6703b36291826768d3c1337edd1de5"
@@ -11014,10 +11029,10 @@ remix-typedjson@^0.1.3:
   resolved "https://registry.yarnpkg.com/remix-typedjson/-/remix-typedjson-0.1.6.tgz#ff8c83538cc51f9b4686fac3be2b93087449d2ad"
   integrity sha512-3weYEM1drz7la8orRQPJS0iwIj6Zzk4Fimr9cm7srTQow2TArtxTmeZIHicEYrq0EAcBOhXAyxCaik7zmoavXQ==
 
-remix-utils@^3.2.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/remix-utils/-/remix-utils-3.4.0.tgz#cc940490e6cd766154291ddf169d35c30067e018"
-  integrity sha512-rfRZlqUj49jmsqm/T7lKG/TDCf3WD3r+CzbkPxwTxX52YQULWLY55+jfS7OwuQ/H9+iJS+YG0N+P1+dml3o02A==
+remix-utils@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/remix-utils/-/remix-utils-4.1.0.tgz#d46cce6661befecdb3ed40269c3215377e719b58"
+  integrity sha512-Ii/+6bd56t2D3ADeXD4RGc3Ym7Yn/rA/n7GZ9naTjF+fire7vqsDhBPwhZV0gIJBLIbw8ZRUlIAg+Ia95+CLBA==
   dependencies:
     intl-parse-accept-language "^1.0.0"
     is-ip "^3.1.0"

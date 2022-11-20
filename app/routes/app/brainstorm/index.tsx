@@ -7,7 +7,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { ProjectBadge } from "~/components/ProjectBadge";
 import { Button } from "~/components/Button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
@@ -18,6 +18,7 @@ import { Pagination } from "~/components/Pagination";
 import { Combobox } from "~/components/Combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { TokenBadge } from "~/components/TokenBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -98,7 +99,7 @@ function SearchAndFilter() {
         onChange={(e) => submit(e.currentTarget.form)}
         placeholder="Search"
         name="q"
-        rightSection={<MagnifyingGlassIcon className="w-5 h-5" />}
+        iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
       />
       <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
       <div className="md:hidden">
@@ -185,15 +186,15 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
               <div className="lg:hidden">Chain/Project</div>
               <div>
                 {m.projects.map((p) => (
-                  <ProjectBadge key={p.slug} slug={p.slug} />
+                  <ProjectBadge key={p.slug} project={p} />
                 ))}
               </div>
 
               <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
+              <TokenBadge token={{ symbol: "usd", name: "USD" }} value={1000} />
 
               <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
+              <TokenBadge token={{ symbol: "usd", name: "USD" }} value={10000} />
 
               <div className="lg:hidden"># Challenges</div>
               <div>{m._count.serviceRequests.toLocaleString()}</div>

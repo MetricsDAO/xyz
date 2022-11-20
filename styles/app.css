@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    @apply antialiased;
+  }
+}
+
 @layer components {
   .input-wrapper {
     @apply border border-gray-400/40 rounded-lg overflow-hidden flex;
