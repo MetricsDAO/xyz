@@ -19,6 +19,7 @@ import { Combobox } from "~/components/Combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { TokenBadge } from "~/components/TokenBadge";
+import { Container } from "~/components/Container";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -33,49 +34,51 @@ export default function Brainstorm() {
   const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
 
   return (
-    <div className="mx-auto container space-y-7 px-3 mb-10">
-      <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-        <main className="flex-1">
-          <div className="space-y-3 max-w-3xl">
-            <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
-            <p className="text-lg text-[#16ABDD]">
-              Crowdsource the best questions for crypto analysts to answer about any web3 topic
-            </p>
-            <p className="text-[#666666]">
-              Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
-              your best question ideas or review peers' submissions to surface and reward winners
-            </p>
-          </div>
-        </main>
-        <aside className="md:w-1/4">
-          <Link to="/app/brainstorm/new">
-            <Button className="mx-auto">Create Marketplace</Button>
-          </Link>
-        </aside>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-2xl font-semibold">
-          Challenge Marketplaces <span className="text-[#A5A5A5]">({totalResults})</span>
-        </h2>
-        {/* Divider */}
-        <div className="border-b-2 border-b-[#EDEDED]" />
-      </section>
-
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-        <main className="flex-1">
-          <div className="space-y-5">
-            <MarketplacesTable marketplaces={marketplaces} />
-            <div className="w-fit m-auto">
-              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
+    <Container className="py-16">
+      <div className="mx-auto container space-y-7 px-3 mb-10">
+        <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+          <main className="flex-1">
+            <div className="space-y-3 max-w-3xl">
+              <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
+              <p className="text-lg text-[#16ABDD]">
+                Crowdsource the best questions for crypto analysts to answer about any web3 topic
+              </p>
+              <p className="text-[#666666]">
+                Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
+                your best question ideas or review peers' submissions to surface and reward winners
+              </p>
             </div>
-          </div>
-        </main>
-        <aside className="md:w-1/4">
-          <SearchAndFilter />
-        </aside>
-      </section>
-    </div>
+          </main>
+          <aside className="md:w-1/4">
+            <Link to="/app/brainstorm/new">
+              <Button className="mx-auto">Create Marketplace</Button>
+            </Link>
+          </aside>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-2xl font-semibold">
+            Challenge Marketplaces <span className="text-[#A5A5A5]">({totalResults})</span>
+          </h2>
+          {/* Divider */}
+          <div className="border-b-2 border-b-[#EDEDED]" />
+        </section>
+
+        <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+          <main className="flex-1">
+            <div className="space-y-5">
+              <MarketplacesTable marketplaces={marketplaces} />
+              <div className="w-fit m-auto">
+                <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
+              </div>
+            </div>
+          </main>
+          <aside className="md:w-1/4">
+            <SearchAndFilter />
+          </aside>
+        </section>
+      </div>
+    </Container>
   );
 }
 
