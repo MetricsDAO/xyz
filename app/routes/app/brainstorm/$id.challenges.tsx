@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { Detail } from "~/components/detail";
-import { UserBadge } from "~/components/UserBadge";
+import { UserBadge } from "~/components/user-badge";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";

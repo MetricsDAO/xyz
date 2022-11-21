@@ -1,6 +1,6 @@
 import { Search16 } from "@carbon/icons-react";
 import { Detail, DetailItem } from "~/components/detail";
-import { UserBadge } from "~/components/UserBadge";
+import { UserBadge } from "~/components/user-badge";
 import {
   Badge,
   Button,
