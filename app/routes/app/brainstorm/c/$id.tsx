@@ -18,6 +18,7 @@ import { Detail } from "~/components/Detail";
 import * as Author from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
 import { CountDownCard } from "~/components/CountDownCard";
+import { RewardBadge } from "~/components/RewardBadge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
@@ -41,6 +42,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 export default function Challenge() {
   const { challenge } = useTypedLoaderData<typeof loader>();
   const submissions = challenge.submissions;
+  const pendingWinner = true;
 
   return (
     <div className="mx-auto container mb-12 px-10 pt-12">
@@ -74,7 +76,7 @@ export default function Challenge() {
           </Detail>
           <Detail>
             <Detail.Title>Reward Pool</Detail.Title>
-            <Detail.Reward tokenAmount={40} token="SOL" rMetric={500} />
+            <RewardBadge tokenAmount={40} token="SOL" rMetric={500} />
           </Detail>
           <Detail>
             <Detail.Title>Submissions</Detail.Title>
@@ -86,7 +88,15 @@ export default function Challenge() {
           </Detail>
           <Detail>
             <Detail.Title>Winners</Detail.Title>
-            <Detail.Winner pending={true} />
+            {pendingWinner ? (
+              <div className="flex rounded-full bg-[#16ABDD14] items-center px-3 py-1">
+                <p className="text-[#005D7C] text-sm">Pending</p>
+              </div>
+            ) : (
+              <div className="flex rounded-full bg-[#FFEAA080] items-center px-3 py-1">
+                <p className="text-[#946100] text-sm">2</p>
+              </div>
+            )}
           </Detail>
         </div>
         <Text color="dimmed" className="max-w-2xl">

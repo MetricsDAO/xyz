@@ -128,15 +128,3 @@ Detail.Badge = function DetailBadge({ children }: { children: React.ReactNode })
     </div>
   );
 };
-
-Detail.Winner = function DetailWinner({ pending, amount = 0 }: { pending: boolean; amount?: number }) {
-  return pending ? (
-    <div className="flex rounded-full bg-[#16ABDD14] items-center px-3 py-1">
-      <p className="text-[#005D7C] text-sm">Pending</p>
-    </div>
-  ) : (
-    <div className="flex rounded-full bg-[#FFEAA080] items-center px-3 py-1">
-      <p className="text-[#946100] text-sm">{amount}</p>
-    </div>
-  );
-};
