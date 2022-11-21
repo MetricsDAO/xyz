@@ -1,18 +1,19 @@
 import { Button } from "~/components/button";
+import { Container } from "~/components/Container";
 import { Input } from "~/components/Input";
 import { Textarea } from "~/components/Textarea";
 
 export default function SubmitQuestion() {
   return (
-    <div className="container mx-auto px-10 space-y-3 mb-12">
+    <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
         <main className="lg:max-w-xl space-y-7">
-          <h1 className="p-3xl font-semibold">Submit Question</h1>
-          <h2 className="p-lg p-cyan-500">
+          <h1 className="text-3xl font-semibold">Submit Question</h1>
+          <h2 className="text-lg text-cyan-500">
             Brainstorm the best question for crypto analysts to answer about Challenge title
           </h2>
-          <p className="p-gray-500">
-            Submit your best question idea. Peers will review and score your question. If you’re a winner, you’ll earn
+          <p className="text-gray-500">
+            Submit your best question idea. Peers will review and score your question. If you're a winner, you'll earn
             tokens and xMETRIC from the challenge reward pool!
           </p>
           <div className="space-y-5">
@@ -70,6 +71,6 @@ export default function SubmitQuestion() {
           </div>
         </aside>
       </div>
-    </div>
+    </Container>
   );
 }

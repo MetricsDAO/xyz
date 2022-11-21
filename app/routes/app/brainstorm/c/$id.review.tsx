@@ -26,8 +26,8 @@ export default function ClaimToReview() {
   const { challenge } = useTypedLoaderData<typeof loader>();
 
   return (
-    <Container>
-      <ValidatedForm validator={withZod(z.any())} className="space-y-7 max-w-4xl mx-auto mt-6 mb-12">
+    <Container className="py-16">
+      <ValidatedForm validator={withZod(z.any())} className="mx-auto px-10 max-w-4xl space-y-7 mb-12">
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{`Claim to Review ${challenge.title}`}</h1>
           <p className="text-cyan-500 text-lg">
