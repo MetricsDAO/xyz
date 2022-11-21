@@ -3,7 +3,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/button";
 import { useTransition } from "@remix-run/react";
 import { Container } from "~/components/Container";
 import type { ChallengeNew } from "~/domain/challenge";

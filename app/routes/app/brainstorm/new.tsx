@@ -9,7 +9,7 @@ import { ValidatedForm, validationError } from "remix-validated-form";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/button";
 import { useAccount } from "wagmi";
 import { useTransition } from "@remix-run/react";
 import { Container } from "~/components/Container";

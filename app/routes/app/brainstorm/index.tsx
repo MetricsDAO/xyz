@@ -8,7 +8,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectBadge } from "~/components/ProjectBadge";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
 import { ValidatedForm } from "remix-validated-form";
@@ -20,6 +20,7 @@ import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { TokenBadge } from "~/components/TokenBadge";
 import { Container } from "~/components/Container";
+import { Card } from "~/components/Card";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -35,49 +36,41 @@ export default function Brainstorm() {
 
   return (
     <Container className="py-16">
-      <div className="mx-auto container space-y-7 px-3 mb-10">
-        <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-          <main className="flex-1">
-            <div className="space-y-3 max-w-3xl">
-              <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
-              <p className="text-lg text-[#16ABDD]">
-                Crowdsource the best questions for crypto analysts to answer about any web3 topic
-              </p>
-              <p className="text-[#666666]">
-                Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
-                your best question ideas or review peers' submissions to surface and reward winners
-              </p>
-            </div>
-          </main>
-          <aside className="md:w-1/4">
-            <Link to="/app/brainstorm/new">
-              <Button className="mx-auto">Create Marketplace</Button>
-            </Link>
-          </aside>
-        </section>
+      <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
+        <main className="flex-1 space-y-3 max-w-2xl">
+          <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
+          <p className="text-lg text-cyan-500">
+            Crowdsource the best questions for crypto analysts to answer about any web3 topic
+          </p>
+          <p className="text-gray-500 text-sm">
+            Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit your
+            best question ideas or review peers' submissions to surface and reward winners
+          </p>
+        </main>
+        <aside>
+          <Button size="lg" asChild>
+            <Link to="/app/brainstorm/new">Create Marketplace</Link>
+          </Button>
+        </aside>
+      </header>
 
-        <section className="space-y-3">
-          <h2 className="text-2xl font-semibold">
-            Challenge Marketplaces <span className="text-[#A5A5A5]">({totalResults})</span>
-          </h2>
-          {/* Divider */}
-          <div className="border-b-2 border-b-[#EDEDED]" />
-        </section>
+      <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">
+        Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
+      </h2>
 
-        <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-          <main className="flex-1">
-            <div className="space-y-5">
-              <MarketplacesTable marketplaces={marketplaces} />
-              <div className="w-fit m-auto">
-                <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
-              </div>
+      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+        <main className="flex-1">
+          <div className="space-y-5">
+            <MarketplacesTable marketplaces={marketplaces} />
+            <div className="w-fit m-auto">
+              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
-          </main>
-          <aside className="md:w-1/4">
-            <SearchAndFilter />
-          </aside>
-        </section>
-      </div>
+          </div>
+        </main>
+        <aside className="md:w-1/4">
+          <SearchAndFilter />
+        </aside>
+      </section>
     </Container>
   );
 }
@@ -164,7 +157,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   return (
     <div>
       {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
+      <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
         <div className="col-span-2">
           <SortButton label="title" title="Challenge Marketplace" />
         </div>
@@ -174,34 +167,35 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <SortButton label="serviceRequests" title="# Challenges" />
       </div>
       {/* Rows */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {marketplaces.map((m) => {
           return (
-            <Link
-              to={`/app/brainstorm/${m.address}/challenges`}
-              // On mobile, two column grid with "labels". On desktop hide the "labels".
-              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={m.address}
-            >
-              <div className="lg:hidden">Challenge Marketplaces</div>
-              <div className="lg:col-span-2">{m.title}</div>
+            <Card asChild key={m.address}>
+              <Link
+                to={`/app/brainstorm/${m.address}/challenges`}
+                // On mobile, two column grid with "labels". On desktop hide the "labels".
+                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-4 py-5"
+              >
+                <div className="lg:hidden">Challenge Marketplaces</div>
+                <div className="lg:col-span-2 text-sm font-medium">{m.title}</div>
 
-              <div className="lg:hidden">Chain/Project</div>
-              <div>
-                {m.projects.map((p) => (
-                  <ProjectBadge key={p.slug} project={p} />
-                ))}
-              </div>
+                <div className="lg:hidden">Chain/Project</div>
+                <div className="flex">
+                  {m.projects.map((p) => (
+                    <ProjectBadge key={p.slug} project={p} variant="transparent" />
+                  ))}
+                </div>
 
-              <div className="lg:hidden">Challenge Pool Totals</div>
-              <TokenBadge token={{ symbol: "usd", name: "USD" }} value={1000} />
+                <div className="lg:hidden">Challenge Pool Totals</div>
+                <TokenBadge token={{ symbol: "usd", name: "USD" }} value={1000} />
 
-              <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TokenBadge token={{ symbol: "usd", name: "USD" }} value={10000} />
+                <div className="lg:hidden">Avg. Challenge Pool</div>
+                <TokenBadge token={{ symbol: "usd", name: "USD" }} value={10000} />
 
-              <div className="lg:hidden"># Challenges</div>
-              <div>{m._count.serviceRequests.toLocaleString()}</div>
-            </Link>
+                <div className="lg:hidden"># Challenges</div>
+                <div>{m._count.serviceRequests.toLocaleString()}</div>
+              </Link>
+            </Card>
           );
         })}
       </div>

@@ -26,7 +26,7 @@ Tabs.Tab = ({ children }: { children: React.ReactNode }) => {
 
 Tabs.List = ({ children }: { children: React.ReactNode }) => {
   return (
-    <HTab.List className="flex flex-row space-x-4 border-b border-[#EDEDED] mb-5 text-[#666666] text-[14px]">
+    <HTab.List className="flex flex-row flex-wrap gap-4 border-b border-[#EDEDED] mb-5 text-[#666666] text-[14px]">
       {children}
     </HTab.List>
   );

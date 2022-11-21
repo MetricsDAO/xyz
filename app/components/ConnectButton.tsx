@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { logger } from "ethers";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useChainalysisContract } from "~/hooks/useChainalysisContract";
-import { Button } from "./Button";
+import { Button } from "~/components/button";
 
 function CustomConnectButton() {
   const { disconnect } = useDisconnect();

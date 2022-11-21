@@ -1,5 +1,5 @@
 import { useRouteData } from "remix-utils";
-import { CountDownCard } from "~/components/CountDownCard";
+import { CountdownCard } from "~/components/countdown-card";
 import type { findChallenge } from "~/services/challenges-service.server";
 
 export default function ChallengeIdPrereqs() {
@@ -13,24 +13,14 @@ export default function ChallengeIdPrereqs() {
     <section className="w-full border-spacing-4 border-separate space-y-4">
       <h3 className="font-semibold">Upcoming</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <CountDownCard progress={10} time={"2023-01-25"}>
-          claim to submit deadline
-        </CountDownCard>
-        <CountDownCard progress={43} time={"2023-01-25"}>
-          submission deadline
-        </CountDownCard>
-        <CountDownCard progress={22} time={"2023-01-25"}>
-          claim to review deadline
-        </CountDownCard>
-        <CountDownCard progress={61} time={"2023-01-25"}>
-          review deadline &amp; winners
-        </CountDownCard>
+        <CountdownCard start={"2023-01-25"}>claim to submit deadline</CountdownCard>
+        <CountdownCard start={"2023-01-25"}>submission deadline</CountdownCard>
+        <CountdownCard start={"2023-01-25"}>claim to review deadline</CountdownCard>
+        <CountdownCard start={"2023-01-25"}>review deadline &amp; winners</CountdownCard>
       </div>
       <h3 className="font-semibold">Passed</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <CountDownCard progress={100} time={"2023-01-25"}>
-          submissions open
-        </CountDownCard>
+        <CountdownCard start={"2023-01-25"}>submissions open</CountdownCard>
       </div>
     </section>
   );

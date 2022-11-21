@@ -4,8 +4,8 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
-import { CountDownCard } from "~/components/CountDownCard";
 import { Container } from "~/components/Container";
+import { CountdownCard } from "~/components/countdown-card";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -27,35 +27,30 @@ export default function ClaimToSubmit() {
           <Title order={2} weight={600}>
             {`Claim to Submit on ${challenge.title}`}
           </Title>
-          <div>
-            <Title order={4} color="brand.4" weight={400}>
-              {"Claiming is an up front commitment to submit at least one submission"}
-            </Title>
-            <Text color="dimmed">
-              You must temporarily lock xMETRIC to claim. If you claim and don’t submit before the deadline, all your
-              locked xMETRIC will be slashed.
-            </Text>
+          <Text color="dimmed">
+            You must temporarily lock xMETRIC to claim. If you claim and don’t submit before the deadline, all your
+            locked xMETRIC will be slashed.
+          </Text>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Title order={4}>How Claiming to Submit Works</Title>
+        <List withPadding>
+          <List.Item>Commit to entering at least one submission by locking xMETRIC against this challenge</List.Item>
+          <List.Item>Enter at least one submission before the submission deadline</List.Item>
+          <List.Item>If you submit before the deadline, your xMETRIC will be unlocked</List.Item>
+          <List.Item>If you don’t submit before the deadline, all your locked xMETRIC will be slashed</List.Item>
+        </List>
+      </div>
+      <div className="flex">
+        <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="space-y-2">
+            <Title order={4}>Claim to Submit Deadline</Title>
+            <CountdownCard start={"2023-01-25"} />
           </div>
-        </div>
-        <div className="space-y-2">
-          <Title order={4}>How Claiming to Submit Works</Title>
-          <List withPadding>
-            <List.Item>Commit to entering at least one submission by locking xMETRIC against this challenge</List.Item>
-            <List.Item>Enter at least one submission before the submission deadline</List.Item>
-            <List.Item>If you submit before the deadline, your xMETRIC will be unlocked</List.Item>
-            <List.Item>If you don’t submit before the deadline, all your locked xMETRIC will be slashed</List.Item>
-          </List>
-        </div>
-        <div className="flex">
-          <div className="lg:basis-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Title order={4}>Claim to Submit Deadline</Title>
-              <CountDownCard progress={64} time={"2023-01-25"} />
-            </div>
-            <div className="space-y-2">
-              <Title order={4}>Submission Deadline</Title>
-              <CountDownCard progress={22} time={"2022-11-25"} />
-            </div>
+          <div className="space-y-2">
+            <Title order={4}>Submission Deadline</Title>
+            <CountdownCard start={"2022-11-25"} />
           </div>
         </div>
         <div>

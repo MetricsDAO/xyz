@@ -1,28 +1,27 @@
 import { Search16 } from "@carbon/icons-react";
 import {
-  Input,
-  Select,
-  Title,
-  Text,
+  Avatar,
+  Badge,
   Button,
   Center,
-  Paper,
-  Badge,
-  Avatar,
+  Input,
   MultiSelect,
   Pagination,
+  Paper,
+  Select,
+  Text,
+  Title,
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { Container } from "~/components/Container";
+import { Countdown } from "~/components/countdown";
+import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
-import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { Tabs } from "~/components/Tabs";
-import { Container } from "~/components/Container";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -322,11 +321,11 @@ function MarketplacesChallengesTable() {
               {/* <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" /> */}
               <div className="lg:hidden">Submit Deadline</div>
               <span>
-                <CountDown date={"2023-01-25"} />
+                <Countdown date={"2023-01-25"} />
               </span>
               <div className="lg:hidden">Review Deadline</div>
               <span>
-                <CountDown date={"2022-11-25"} />
+                <Countdown date={"2022-11-25"} />
               </span>
             </Link>
           );
