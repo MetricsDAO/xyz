@@ -27,7 +27,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 };
 
 export default function ChallengeSubmission() {
-  const [showDrawer, setShowDrawer] = useState(false);
+  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
   const { submission } = useTypedLoaderData<typeof loader>();
 
@@ -39,8 +39,8 @@ export default function ChallengeSubmission() {
     <>
       <Drawer
         props={{
-          showDrawer,
-          setShowDrawer,
+          open,
+          onClose: () => setOpen(false),
         }}
       >
         <div className="flex flex-col mx-auto space-y-10 px-2">
@@ -120,7 +120,7 @@ export default function ChallengeSubmission() {
               {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
             </div>
             <Center className="flex flex-wrap gap-5">
-              <Button radius="md" className="mx-auto" onClick={() => setShowDrawer(true)}>
+              <Button radius="md" className="mx-auto" onClick={() => setOpen(true)}>
                 Review Question
               </Button>
             </Center>

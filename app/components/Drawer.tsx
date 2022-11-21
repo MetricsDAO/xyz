@@ -5,12 +5,12 @@ import { Fragment } from "react";
 type DrawerProps = {
   open: boolean;
   onClose: () => void;
-}
+};
 
 export const Drawer = ({ children, props }: { children: React.ReactNode; props: DrawerProps }) => {
   return (
-    <Transition.Root show={props.showDrawer} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => props.setShowDrawer(false)}>
+    <Transition.Root show={props.open} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={props.onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -49,7 +49,7 @@ export const Drawer = ({ children, props }: { children: React.ReactNode; props: 
                       <button
                         type="button"
                         className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                        onClick={() => props.setShowDrawer(false)}
+                        onClick={() => props.onClose}
                       >
                         <span className="sr-only">Close panel</span>
                         <XMarkIcon className="h-6 w-6" aria-hidden="true" />
