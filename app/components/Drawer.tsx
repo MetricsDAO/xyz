@@ -3,9 +3,9 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 
 type DrawerProps = {
-  showDrawer: boolean;
-  setShowDrawer: (showDrawer: boolean) => void;
-};
+  open: boolean;
+  onClose: () => void;
+}
 
 export const Drawer = ({ children, props }: { children: React.ReactNode; props: DrawerProps }) => {
   return (
