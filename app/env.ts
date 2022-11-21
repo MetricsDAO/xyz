@@ -8,5 +8,4 @@ function requireEnv(key: string): string {
 
 export default {
   DATABASE_URL: requireEnv("DATABASE_URL"),
-  NFT_STORAGE_KEY: requireEnv("NFT_STORAGE_KEY"),
 };

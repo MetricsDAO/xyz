@@ -1,6 +1,6 @@
 import { Search16 } from "@carbon/icons-react";
-import { Detail } from "~/components/Detail";
-import * as Author from "~/components/Author";
+import { Detail, DetailItem } from "~/components/detail";
+import { Author } from "~/components/Author";
 import {
   Badge,
   Button,
@@ -17,18 +17,34 @@ import {
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 import { useState } from "react";
+import { z } from "zod";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { typedjson } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
+import { findSubmission } from "~/services/submissions.server";
+
+const paramsSchema = z.object({ id: z.string() });
+
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
+
+  const submission = await findSubmission(id);
+  if (!submission) {
+    throw notFound({ id });
+  }
+
+  return typedjson({ submission }, { status: 200 });
+};
 
 export default function ChallengeSubmission() {
   const [opened, setOpened] = useState(false);
   const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
+  const { submission } = useTypedLoaderData<typeof loader>();
 
   const isWinner = true;
 
-  const reviews = [
-    { id: "1", author: "1234" },
-    { id: "2", author: "2234" },
-    { id: "3", author: "3234" },
-  ];
+  const reviews = submission.reviews;
 
   return (
     <>
@@ -105,7 +121,7 @@ export default function ChallengeSubmission() {
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
           <div className="flex items-center gap-2">
-            <Title order={2}>Question Title </Title>
+            <Title order={2}>{submission.title}</Title>
             {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
           </div>
           <Center className="flex flex-wrap gap-5">
@@ -117,48 +133,30 @@ export default function ChallengeSubmission() {
         <section className="flex flex-col space-y-7 pb-24">
           <div className="flex flex-wrap gap-x-8 gap-y-4">
             <Detail>
-              <Detail.Title>Author</Detail.Title>
-              <Author.Author />
-            </Detail>
-            <Detail>
-              <Detail.Title>Created At</Detail.Title>
-              <Badge color="gray" size="lg">
-                <Text size="sm" className="normal-case font-normal">
-                  1 month 5 days ago
-                </Text>
-              </Badge>
-            </Detail>
-            <Detail>
-              <Detail.Title>Overall Score</Detail.Title>
-              <div className="flex rounded-full bg-[#6993FF] items-center w-28">
-                <div className="rounded-full bg-[#D1DEFF] w-3/4">
-                  <Text align="center" className="normal-case font-normal">
-                    Good
-                  </Text>
-                </div>
-                <Text color="white" className="mx-auto pl-1 pr-2">
-                  80
-                </Text>
-              </div>
-            </Detail>
-            <Detail>
-              <Detail.Title>Reviews</Detail.Title>
-              <Badge color="gray" size="lg">
-                99
-              </Badge>
-            </Detail>
-            {isWinner ? (
-              <Detail>
-                <Detail.Title>Winner</Detail.Title>
-                <Badge color="yellow" size="lg" leftSection={<Avatar size={20} src="/img/trophy.svg" />}>
-                  <Text color="dark" size="sm" className="normal-case font-normal">
-                    100 SOL
-                  </Text>
+              <DetailItem title="Author">
+                <Author />
+              </DetailItem>
+              <DetailItem title="Created">
+                <Badge>1 month 5 days ago</Badge>
+              </DetailItem>
+              <DetailItem title="Overall Score">
+                <Badge className="bg-blue-500">
+                  <Badge className="bg-blue-300">Good</Badge>
+                  <span>80</span>
                 </Badge>
-              </Detail>
-            ) : (
-              <></>
-            )}
+              </DetailItem>
+              <DetailItem title="Reviews">
+                <Badge>99</Badge>
+              </DetailItem>
+              {isWinner ? (
+                <DetailItem title="Winner">
+                  <Badge className="bg-yellow-600">
+                    <Badge className="bg-yellow-300 text-yellow-700">🏆 100 SOL</Badge>
+                    <span className="text-white">100 SOL</span>
+                  </Badge>
+                </DetailItem>
+              ) : null}
+            </Detail>
           </div>
           <Text color="dimmed" className="max-w-2xl">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus

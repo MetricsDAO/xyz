@@ -1,21 +1,25 @@
 import { z } from "zod";
-
+import { zfd } from "zod-form-data";
+import { EthAddressSchema } from "./address";
 // Main LaborMarket schema.
 export const LaborMarketSchema = z.object({
   address: z.string({ description: "The address of the labor market on-chain." }),
-  title: z.string({ description: "Title of the labor market." }),
-  description: z.string({ description: "Description of the labor market." }),
+  title: z.string({ description: "Title of the labor market." }).min(1, "Required"),
+  description: z.string({ description: "Description of the labor market." }).min(1, "Required"),
   type: z.enum(["brainstorm", "analyze"], { description: "Type of the labor market (MDAO specific)." }),
   launchAccess: z.enum(["delegates", "anyone"], {
     description: "Can (anyone) launch a requests or only badge owners (delegates).",
   }),
   launchBadgerAddress: z.string({ description: "Badger Address of the badge needed to launch a request." }).optional(),
   launchBadgerTokenId: z.string({ description: "Token ID of the badge needed to launch a request." }).optional(),
-  rewardCurveAddress: z.string({ description: "Address of the reward curve contract on-chain." }),
-  submitRepMin: z.number({ description: "Minimum xMETRIC needed to submit a request." }),
-  submitRepMax: z.number({ description: "Maximum xMETRIC allowed to submit a request." }),
-  reviewBadgerAddress: z.string({ description: "Badger Address of the badge needed to review a request." }),
-  reviewBadgerTokenId: z.string({ description: "Token ID of the badge needed to review a request." }),
+  rewardCurveAddress: z.string({ description: "Address of the reward curve contract on-chain." }).min(1, "Required"),
+  submitRepMin: zfd.numeric(z.number({ description: "Minimum xMETRIC needed to submit a request." })),
+  submitRepMax: zfd.numeric(z.number({ description: "Maximum xMETRIC allowed to submit a request." })),
+  // reviewBadgerAddress: z.string({ description: "Badger Address of the badge needed to review a request." }),
+  reviewBadgerAddress: EthAddressSchema,
+  reviewBadgerTokenId: z
+    .string({ description: "Token ID of the badge needed to review a request." })
+    .min(1, "Required"),
   tokenSymbols: z.array(z.string(), { description: "List of reward tokens." }),
   projectIds: z.array(z.string(), { description: "List of project IDs." }),
   sponsorAddress: z.string({ description: "ID of the user who sponsored it." }),
@@ -31,7 +35,13 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
 });
 
 // Schema for a new labor market.
-export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true });
+export const LaborMarketNewSchema = LaborMarketSchema.omit({
+  address: true,
+  sponsorAddress: true,
+});
+
+// Schema for a labor market with an IPFS CID.
+export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({ ipfsHash: z.string() });
 
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({
@@ -47,5 +57,6 @@ export const LaborMarketSearchSchema = z.object({
 
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 export type LaborMarketNew = z.infer<typeof LaborMarketNewSchema>;
+export type LaborMarketPrepared = z.infer<typeof LaborMarketPreparedSchema>;
 export type LaborMarketMeta = z.infer<typeof LaborMarketMetaSchema>;
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;

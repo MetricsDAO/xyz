@@ -1,117 +1,81 @@
-import { createStyles, Header, Container, Group, Burger, Transition, Paper } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { Bars3Icon } from "@heroicons/react/20/solid";
 import { Link, NavLink } from "@remix-run/react";
+import clsx from "clsx";
 import CustomConnectButton from "./ConnectButton";
 import { LogoMark, LogoType } from "./Logo";
 
-const HEADER_HEIGHT = 60;
+const primaryLinks = [
+  { link: "/app/ecosystem", label: "Ecosystem" },
+  { link: "/app/brainstorm", label: "Brainstorm" },
+  { link: "/app/analyze", label: "Analyze" },
+];
 
-const useStyles = createStyles((theme) => ({
-  outer: {
-    height: HEADER_HEIGHT,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
+const userLinks = [{ link: "/app/rewards", label: "Rewards" }];
 
-  links: {
-    [theme.fn.smallerThan("sm")]: {
-      display: "none",
-    },
-  },
-
-  burger: {
-    [theme.fn.largerThan("sm")]: {
-      display: "none",
-    },
-  },
-
-  dropdown: {
-    position: "absolute",
-    top: HEADER_HEIGHT,
-    left: 0,
-    right: 0,
-    zIndex: 0,
-    borderTopRightRadius: 0,
-    borderTopLeftRadius: 0,
-    borderTopWidth: 0,
-    overflow: "hidden",
-
-    [theme.fn.largerThan("sm")]: {
-      display: "none",
-    },
-  },
-}));
-
-interface AppHeaderProps {
-  links: { link: string; label: string }[];
-  userLinks: { link: string; label: string }[];
-}
-
-const activeLinkStyle = {
-  backgroundColor: "#E6EBF0",
-  color: "#333333",
-  display: "block",
-  lineHeight: 1,
-  padding: "8px 12px",
-  borderRadius: "3px",
-  textDecoration: "none",
-  fontSize: "sm",
-  fontWeight: 500,
-};
-
-const linkStyle = {
-  display: "block",
-  lineHeight: 1,
-  padding: "8px 12px",
-  borderRadius: "3px",
-  textDecoration: "none",
-  color: "#666666",
-  fontSize: "sm",
-  fontWeight: 500,
-};
-
-export function AppHeader({ links, userLinks }: AppHeaderProps) {
-  const [opened, { toggle }] = useDisclosure(false);
-  const { classes } = useStyles();
-
-  const items = links.map((link) => (
-    <NavLink key={link.label} to={link.link} style={({ isActive }) => (isActive ? activeLinkStyle : linkStyle)}>
+export function AppHeader() {
+  const items = primaryLinks.map((link) => (
+    <NavLink
+      key={link.link}
+      to={link.link}
+      className={({ isActive }) =>
+        clsx("block rounded-lg px-2 py-1.5", {
+          "text-gray-400": !isActive,
+          "text-gray-900 bg-gray-200 font-medium": isActive,
+        })
+      }
+    >
       {link.label}
     </NavLink>
   ));
 
   const secondaryItems = userLinks.map((item) => (
-    <NavLink key={item.label} to={item.link} style={({ isActive }) => (isActive ? activeLinkStyle : linkStyle)}>
+    <NavLink
+      key={item.link}
+      to={item.link}
+      className={({ isActive }) =>
+        clsx("block rounded-lg px-2 py-1.5", { "text-gray-400": !isActive, "text-gray-900 bg-gray-200": isActive })
+      }
+    >
       {item.label}
     </NavLink>
   ));
 
   return (
-    <Header height={HEADER_HEIGHT} sx={{ marginBottom: "4rem", borderBottomWidth: "2px", borderColor: "#FAFAFA" }}>
-      <Container className={classes.outer} fluid>
-        <Group>
-          <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
-          <Transition transition="pop-top-right" duration={200} mounted={opened}>
-            {(styles) => (
-              <Paper className={classes.dropdown} withBorder style={styles}>
-                {items.concat(secondaryItems)}
-              </Paper>
-            )}
+    <header className="h-16 border-b border-gray-100 flex items-center justify-between px-6">
+      <div className="flex items-center space-x-4">
+        <Menu as="div" className="relative">
+          <Menu.Button className="md:hidden">
+            <Bars3Icon className="h-5 w-5" />
+          </Menu.Button>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Menu.Items className="absolute left-0 mt-2 w-56 origin-top-left rounded-lg bg-white shadow-lg p-4 flex flex-col space-y-3 ring-1 ring-black ring-opacity-5">
+              {items.concat(secondaryItems).map((item) => (
+                <Menu.Item key={item.key}>{item}</Menu.Item>
+              ))}
+            </Menu.Items>
           </Transition>
-          <Link className="flex flex-row items-center gap-2" to="/">
-            <LogoMark /> <LogoType className="hidden md:block" />
-          </Link>
-        </Group>
-        <Group position="center" spacing={5} className={classes.links}>
-          {items}
-        </Group>
-        <Group position="right" spacing={5}>
-          <Group className={classes.links}> {secondaryItems}</Group>
-          <CustomConnectButton />
-        </Group>
-      </Container>
-    </Header>
+        </Menu>
+        <Link className="flex flex-row items-center gap-2" to="/">
+          <LogoMark className="h-5 w-5" /> <LogoType className="hidden md:block" />
+        </Link>
+      </div>
+
+      <menu className="hidden md:flex flex-row gap-4 ml-4">{items}</menu>
+
+      <div className="flex items-center space-x-4">
+        <div className="hidden md:block">{secondaryItems}</div>
+        <CustomConnectButton />
+      </div>
+    </header>
   );
 }
