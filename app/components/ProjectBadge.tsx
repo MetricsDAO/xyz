@@ -1,11 +1,17 @@
 import type { Project } from "@prisma/client";
+import type { BadgeProps } from "./Badge";
 import { Badge } from "./Badge";
 import * as Avatar from "@radix-ui/react-avatar";
 
-export function ProjectBadge({ project }: { project: Project }) {
+type ProjectBadgeProps = {
+  project: Project;
+  variant?: BadgeProps["variant"];
+};
+
+export function ProjectBadge({ project, variant }: ProjectBadgeProps) {
   return (
-    <Badge className="pl-2">
-      <Avatar.Root className="h-5 w-5 items-center justify-center rounded-full bg-gray-200">
+    <Badge className="pl-2" variant={variant}>
+      <Avatar.Root className="h-5 w-5 items-center justify-center rounded-full">
         <Avatar.Image
           src={`/img/icons/project-icons/${project.slug}.svg`}
           alt={`${project.name} logo`}
