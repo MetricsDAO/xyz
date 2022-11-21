@@ -5,9 +5,10 @@ import { Fragment } from "react";
 type DrawerProps = {
   open: boolean;
   onClose: () => void;
+  children: React.ReactNode;
 };
 
-export const Drawer = ({ children, props }: { children: React.ReactNode; props: DrawerProps }) => {
+export const Drawer = (props: DrawerProps) => {
   return (
     <Transition.Root show={props.open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={props.onClose}>
