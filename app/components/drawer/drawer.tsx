@@ -8,10 +8,10 @@ type DrawerProps = {
   children: React.ReactNode;
 };
 
-export const Drawer = (props: DrawerProps) => {
+export const Drawer = ({ open, onClose, children }: DrawerProps) => {
   return (
-    <Transition.Root show={props.open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={props.onClose}>
+    <Transition.Root show={open} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -50,7 +50,7 @@ export const Drawer = (props: DrawerProps) => {
                       <button
                         type="button"
                         className="rounded-md text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                        onClick={props.onClose}
+                        onClick={onClose}
                       >
                         <span className="sr-only">Close panel</span>
                         <XMarkIcon className="h-6 w-6" aria-hidden="true" />
