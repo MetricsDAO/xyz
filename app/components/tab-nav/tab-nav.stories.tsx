@@ -1,9 +1,3 @@
-import { TabNav, TabNavLink } from "./tab-nav";
-
 export const NavTabs = () => {
-  return (
-    <TabNav>
-      <TabNavLink to="/tab-nav">Tab 1</TabNavLink>
-    </TabNav>
-  );
+  return <p>Ladle doesn't like us importing remix modules (NavLink) yet. So no stories here.</p>;
 };

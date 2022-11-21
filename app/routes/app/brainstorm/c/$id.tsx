@@ -1,5 +1,5 @@
 import { Outlet } from "@remix-run/react";
-import { Detail, DetailItem } from "~/components/Detail";
+import { Detail, DetailItem } from "~/components/detail";
 import { Author } from "~/components/Author";
 import { ProjectBadge } from "~/components/ProjectBadge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
@@ -9,7 +9,7 @@ import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { Container } from "~/components/Container";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/button";
 import { Badge } from "~/components/Badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 

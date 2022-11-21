@@ -13,7 +13,7 @@ import {
   Pagination,
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import { Detail } from "~/components/Detail";
+import { Detail } from "~/components/detail";
 import * as Author from "~/components/Author";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -21,10 +21,10 @@ import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge } from "~/components/ProjectBadge";
-import { CountDown } from "~/components/CountDown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { Tabs } from "~/components/Tabs";
+import { Countdown } from "~/components/countdown";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -322,11 +322,11 @@ function MarketplacesChallengesTable() {
               {/* <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" /> */}
               <div className="lg:hidden">Submit Deadline</div>
               <span>
-                <CountDown date={"2023-01-25"} />
+                <Countdown date={"2023-01-25"} />
               </span>
               <div className="lg:hidden">Review Deadline</div>
               <span>
-                <CountDown date={"2022-11-25"} />
+                <Countdown date={"2022-11-25"} />
               </span>
             </Link>
           );

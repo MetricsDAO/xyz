@@ -1,6 +1,6 @@
 import { Badge } from "~/components/Badge";
 import { Card } from "~/components/Card";
-import { Detail, DetailItem } from "~/components/Detail";
+import { Detail, DetailItem } from "~/components/detail";
 
 export default function ChallengeIdRewards() {
   return (

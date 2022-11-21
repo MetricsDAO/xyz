@@ -14,7 +14,7 @@ const sizeStyles = {
 };
 
 export function Avatar({ src, size = "md" }: Props) {
-  const classes = clsx("inline-block rounded-full bg-neutral-300", sizeStyles[size]);
+  const classes = clsx("inline-block rounded-full bg-neutral-300 overflow-hidden", sizeStyles[size]);
   return (
     <RadixAvatar.Root className={classes}>
       <RadixAvatar.Image className="w-full h-full" src={src} alt="avatar" />
