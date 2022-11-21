@@ -21,7 +21,7 @@ import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { ProjectBadge } from "~/components/ProjectBadge";
-import { CountDown } from "~/components/CountDown";
+import { CountDown } from "~/hooks/use-countdown";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { Tabs } from "~/components/Tabs";

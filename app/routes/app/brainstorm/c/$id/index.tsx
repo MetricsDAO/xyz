@@ -5,7 +5,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Author } from "~/components/Author";
 import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/Checkbox";
-import { CountDown } from "~/components/CountDown";
+import { CountDown } from "~/hooks/use-countdown";
 import { Input } from "~/components/Input";
 import { Score } from "~/components/Score";
 import { Select } from "~/components/Select";
