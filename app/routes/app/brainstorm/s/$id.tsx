@@ -10,7 +10,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { findSubmission } from "~/services/submissions.server";
-import { Drawer } from "~/components/drawer/Drawer";
+import { Drawer } from "~/components/drawer/drawer";
 import { Container } from "~/components/Container";
 
 const paramsSchema = z.object({ id: z.string() });
