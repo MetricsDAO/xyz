@@ -10,8 +10,9 @@ import { findLaborMarket } from "~/services/labor-market.server";
 import { Tabs } from "~/components/Tabs";
 import { Countdown } from "~/components/countdown";
 import { Pagination } from "~/components/Pagination";
-import { AspectRatio } from "@headlessui/react";
 import { Button } from "~/components/button";
+import { Avatar } from "~/components/avatar";
+import { Badge } from "~/components/Badge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -58,7 +59,7 @@ export default function MarketplaceChallenges() {
             </div>
           </Detail>
         </div> */}
-        <div className="max-w-2xl">
+        <div className="max-w-2xl text-[#666666] text-[14px]">
           Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
           DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
         </div>
@@ -155,114 +156,101 @@ function SearchAndFilter() {
 function Prerequisites() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-      {/* <main className="flex-1">
+      <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate">
             <div className="space-y-4 md:w-4/5">
-              <Text color="dimmed">
+              <div className="text-[14px] text-[#666666]">
                 What you must hold in your connected wallet to perform various actions on this challenge
-              </Text>
-              <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
-                <Text weight={600}>You must hold this much xMETRIC to enter submissions for this challenge</Text>
+              </div>
+              <Card>
+                <div className="font-weight-500 text-[16px] text-[#252525]">
+                  You must hold this much xMETRIC to enter submissions for this challenge
+                </div>
                 <div className="flex flex-wrap gap-3">
-                  <Center className="flex flex-col">
-                    <Text size="xs" color="gray" className="mb-2">
-                      MIN BALANCE
-                    </Text>
-                    <Badge color="gray" radius="sm">
-                      <Text weight={600} className="normal-case">
-                        15 xMetric
-                      </Text>
+                  <div className="flex flex-col">
+                    <div className="text-[12px] text-[#666666] mb-2">MIN BALANCE</div>
+                    <Badge>
+                      <div className="normal-case">15 xMetric</div>
                     </Badge>
-                  </Center>
-                  <Center className="flex flex-col">
-                    <Text size="xs" color="gray" className="mb-2">
-                      MAX BALANCE
-                    </Text>
-                    <Badge color="gray" radius="sm">
-                      <Text weight={600} className="normal-case">
-                        100 xMetric
-                      </Text>
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="text-[12px] text-[#666666] mb-2">MAX BALANCE</div>
+                    <Badge>
+                      <div className="normal-case">100 xMetric</div>
                     </Badge>
-                  </Center>
+                  </div>
                 </div>
-              </Paper>
-              <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
-                <Text weight={600}>You must hold this badge to review and score submissions on this challenge</Text>
-                <Text color="dimmed" size="xs">
-                  MDAO S4 REVIEWER BADGE
-                </Text>
+              </Card>
+              <Card>
+                <div className="font-weight-500 text-[16px] text-[#252525]">
+                  You must hold this badge to review and score submissions on this challenge
+                </div>
+                <div className="text-[12px] text-[#666666]">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
-                  <Avatar size={26} radius="xl" alt="" />
-                  <Text>0x1234</Text>
+                  <Avatar />
+                  <div className="text-[16px] text-[#252525]">0x1234</div>
                 </div>
-              </Paper>
-              <Paper shadow="xs" radius="md" p="md" withBorder className="space-y-3">
-                <Text weight={600}>You must hold this badge to launch new challenges</Text>
-                <Text color="dimmed" size="xs">
-                  MDAO S4 CONTRIBUTOR BADGE
-                </Text>
+              </Card>
+              <Card>
+                <div className="font-weight-500 text-[16px] text-[#252525]">
+                  You must hold this badge to launch new challenges
+                </div>
+                <div className="text-[12px] text-[#666666]">MDAO S4 CONTRIBUTOR BADGE</div>
                 <div className="flex gap-2">
-                  <Avatar size={26} radius="xl" alt="" />
-                  <Text>0x1234</Text>
+                  <Avatar />
+                  <div className="text-[16px] text-[#252525]">0x1234</div>
                 </div>
-              </Paper>
+              </Card>
             </div>
           </div>
         </div>
-      </main> */}
+      </main>
     </section>
   );
 }
 
 function Rewards() {
   return (
-    // <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-    //   <main className="flex-1">
-    //     <div className="space-y-5">
-    //       <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
-    //         <div className="text-dimmed">
-    //           How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
-    //           is
-    //         </div>
-    //         <Paper shadow="xs" radius="md" p="md" withBorder>
-    //           <Text weight={600}>Challenge Pools Total</Text>
-    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
-    //             SUM OF ALL ACTIVE CHALLENGE REWARD POOLS
-    //           </Text>
-    //           <Text weight={400}>100 SOL</Text>
-    //         </Paper>
-    //         <Paper shadow="xs" radius="md" p="md" withBorder>
-    //           <Text weight={600}>Avg. Challenge Pool</Text>
-    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
-    //             AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
-    //           </Text>
-    //           <Text weight={400}>100 SOL</Text>
-    //         </Paper>
-    //         <Paper shadow="xs" radius="md" p="md" withBorder>
-    //           <Text weight={600}>Reward Curve</Text>
-    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
-    //             HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED
-    //           </Text>
-    //           <div className="flex flex-row space-x-3 mt-1">
-    //             <Badge size="sm" radius="sm">
-    //               Aggresive
-    //             </Badge>
-    //             <Text size="sm">Rewards the top 10% of submissions. Winners are determined through peer review</Text>
-    //           </div>
-    //         </Paper>
-    //         <Paper shadow="xs" radius="md" p="md" withBorder>
-    //           <Text weight={600}>Reward Tokens</Text>
-    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
-    //             TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
-    //           </Text>
-    //           <div className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</div>
-    //         </Paper>
-    //       </div>
-    //     </div>
-    //   </main>
-    // </section>
-    <></>
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+      <main className="flex-1">
+        <div className="space-y-5">
+          <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
+            <div className="text-[14px] text-[#666666]">
+              How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
+              is
+            </div>
+            <Card>
+              <div className="font-weight-500 text-[16px] text-[#252525]">Challenge Pools Total</div>
+              <div className="text-[12px] text-[#666666]">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</div>
+              <div>100 SOL</div>
+            </Card>
+            <Card>
+              <div className="font-weight-500 text-[16px] text-[#252525]">Avg. Challenge Pool</div>
+              <div className="text-[14px] text-[#666666]">
+                AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
+              </div>
+              <div>100 SOL</div>
+            </Card>
+            <Card>
+              <div className="font-weight-500 text-[16px] text-[#252525]">Reward Curve</div>
+              <div className="text-[12px] text-[#666666]">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</div>
+              <div className="flex flex-row space-x-3 mt-1">
+                <Badge>Aggresive</Badge>
+                <div className="text-[12px]">
+                  Rewards the top 10% of submissions. Winners are determined through peer review
+                </div>
+              </div>
+            </Card>
+            <Card>
+              <div className="font-weight-500 text-[16px] text-[#252525]">Reward Tokens</div>
+              <div className="text-[12px] text-[#666666]">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</div>
+              <div className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</div>
+            </Card>
+          </div>
+        </div>
+      </main>
+    </section>
   );
 }
 
@@ -278,12 +266,12 @@ function MarketplacesChallengesTable() {
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <div className="text-dark.3">Challenge</div>
+          <div className="text-[#666666] text-[12px]">Challenge</div>
         </div>
-        <div className="text-dark.3">Chain/Project</div>
-        <div className="text-dark.3">Reward Pool</div>
-        <div className="text-dark.3">Submit Deadline</div>
-        <div className="text-dark.3">Review Deadline</div>
+        <div className="text-[#666666] text-[12px]">Chain/Project</div>
+        <div className="text-[#666666] text-[12px]">Reward Pool</div>
+        <div className="text-[#666666] text-[12px]">Submit Deadline</div>
+        <div className="text-[#666666] text-[12px]">Review Deadline</div>
       </div>
       {/* Rows */}
       <div className="space-y-3">
@@ -296,7 +284,7 @@ function MarketplacesChallengesTable() {
               key={c.id}
             >
               <div className="lg:hidden">Challenge Marketplaces</div>
-              <div className="lg:col-span-2">{c.title}</div>
+              <div className="lg:col-span-2 text-[#252525] text-[14px]">{c.title}</div>
               <div className="lg:hidden">Chain/Project</div>
               <div>
                 {/* {c.laborMarket.projects.map((p) => (
@@ -306,11 +294,11 @@ function MarketplacesChallengesTable() {
               <div className="lg:hidden">Reward Pool Totals</div>
               {/* <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" /> */}
               <div className="lg:hidden">Submit Deadline</div>
-              <span>
+              <span className="text-[#666666] text-[14px]">
                 <Countdown date={"2023-01-25"} />
               </span>
               <div className="lg:hidden">Review Deadline</div>
-              <span>
+              <span className="text-[#666666] text-[14px]">
                 <Countdown date={"2022-11-25"} />
               </span>
             </Link>
@@ -339,4 +327,8 @@ function WrappedMarketplacesChallengesTable() {
       </aside>
     </section>
   );
+}
+
+function Card({ children }: { children: React.ReactNode }) {
+  return <div className="container border-2 rounded-md p-4 space-y-3">{children}</div>;
 }
