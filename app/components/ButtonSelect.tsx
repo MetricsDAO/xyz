@@ -18,7 +18,9 @@ export function ButtonSelect({ options, ...props }: Props) {
           <RadioGroup.Option
             key={option.value}
             value={option.value}
-            className={({ active }) => clsx(active ? "bg-[#EDEDED]" : "bg-white", "border-2 rounded-md py-3 px-10")}
+            className={({ active }) =>
+              clsx(active ? "bg-[#EDEDED]" : "bg-white", "border-2 rounded-md py-3 px-10 cursor-pointer")
+            }
           >
             {option.label}
           </RadioGroup.Option>

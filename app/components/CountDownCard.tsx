@@ -14,6 +14,7 @@ export function CountDownCard({
     <div className="ring-1 ring-black/5 ring-inset rounded-lg shadow shadow-black/10 overflow-hidden">
       <Progress progress={10} />
       <main className="flex flex-col items-center justify-center py-12 space-y-2">
+        <div className="sr-only">Progess bar with {100 - progress} percent left</div>
         <span className="text-4xl">
           <CountDown date={time} />
         </span>
