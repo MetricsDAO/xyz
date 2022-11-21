@@ -1,30 +1,17 @@
 import { Search16 } from "@carbon/icons-react";
-import {
-  Input,
-  Select,
-  Title,
-  Text,
-  Button,
-  Center,
-  Paper,
-  Badge,
-  Avatar,
-  MultiSelect,
-  Pagination,
-} from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import { Detail } from "~/components/detail";
-import * as Author from "~/components/Author";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { ChallengeSearchSchema } from "~/domain/challenge";
-import { ProjectBadge } from "~/components/ProjectBadge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { Tabs } from "~/components/Tabs";
 import { Countdown } from "~/components/countdown";
+import { Pagination } from "~/components/Pagination";
+import { AspectRatio } from "@headlessui/react";
+import { Button } from "~/components/button";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -51,14 +38,12 @@ export default function MarketplaceChallenges() {
   return (
     <div className="mx-auto container mb-12 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <Title order={2}>{laborMarket?.title} </Title>
-        <Center className="flex flex-wrap gap-5">
+        <div>{laborMarket?.title} </div>
+        <div className="flex flex-wrap gap-5">
           <Link to="/app/brainstorm/[marketplaceId]/claim">
-            <Button radius="md" className="mx-auto">
-              Launch Challenge
-            </Button>
+            <Button className="mx-auto radius-md">Launch Challenge</Button>
           </Link>
-        </Center>
+        </div>
       </section>
       <section className="flex flex-col space-y-7 pb-12">
         {/* <div className="flex flex-wrap gap-x-8">
@@ -73,10 +58,10 @@ export default function MarketplaceChallenges() {
             </div>
           </Detail>
         </div> */}
-        <Text color="dimmed" className="max-w-2xl">
+        <div className="max-w-2xl">
           Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
           DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
-        </Text>
+        </div>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
@@ -107,69 +92,70 @@ export default function MarketplaceChallenges() {
 
 function SearchAndFilter() {
   return (
-    <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input placeholder="Search" name="q" radius="md" rightSection={<Search16 />} />
-      <Text size="lg" weight={600}>
-        Sort:
-      </Text>
-      <Select
-        radius="md"
-        placeholder="Select option"
-        name="sortBy"
-        clearable
-        data={[
-          { label: "Chain/Project", value: "project" },
-          { label: "Reward Pool", value: "reward" },
-        ]}
-      />
-      <Text size="lg" weight={600}>
-        Filter:
-      </Text>
-      <MultiSelect
-        radius="md"
-        label="I am able to"
-        placeholder="Select option"
-        name="filter"
-        clearable
-        data={[
-          { value: "submit", label: "Submit" },
-          { value: "review", label: "Review" },
-        ]}
-      />
-      <MultiSelect
-        radius="md"
-        label="Reward Token"
-        placeholder="Select option"
-        name="rewardToken"
-        clearable
-        data={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-          { label: "USD", value: "USD" },
-        ]}
-      />
-      <MultiSelect
-        radius="md"
-        label="Chain/Project"
-        placeholder="Select option"
-        name="chainProject"
-        clearable
-        data={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />
-      <Button radius="md" variant="light" size="xs" type="submit">
-        Apply Filters
-      </Button>
-    </Form>
+    // <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
+    //   <Input placeholder="Search" name="q" radius="md" rightSection={<Search16 />} />
+    //   <Text size="lg" weight={600}>
+    //     Sort:
+    //   </Text>
+    //   <Select
+    //     radius="md"
+    //     placeholder="Select option"
+    //     name="sortBy"
+    //     clearable
+    //     data={[
+    //       { label: "Chain/Project", value: "project" },
+    //       { label: "Reward Pool", value: "reward" },
+    //     ]}
+    //   />
+    //   <Text size="lg" weight={600}>
+    //     Filter:
+    //   </Text>
+    //   <MultiSelect
+    //     radius="md"
+    //     label="I am able to"
+    //     placeholder="Select option"
+    //     name="filter"
+    //     clearable
+    //     data={[
+    //       { value: "submit", label: "Submit" },
+    //       { value: "review", label: "Review" },
+    //     ]}
+    //   />
+    //   <MultiSelect
+    //     radius="md"
+    //     label="Reward Token"
+    //     placeholder="Select option"
+    //     name="rewardToken"
+    //     clearable
+    //     data={[
+    //       { label: "Solana", value: "Solana" },
+    //       { label: "Ethereum", value: "Ethereum" },
+    //       { label: "USD", value: "USD" },
+    //     ]}
+    //   />
+    //   <MultiSelect
+    //     radius="md"
+    //     label="Chain/Project"
+    //     placeholder="Select option"
+    //     name="chainProject"
+    //     clearable
+    //     data={[
+    //       { label: "Solana", value: "Solana" },
+    //       { label: "Ethereum", value: "Ethereum" },
+    //     ]}
+    //   />
+    //   <Button radius="md" variant="light" size="xs" type="submit">
+    //     Apply Filters
+    //   </Button>
+    // </Form>
+    <></>
   );
 }
 
 function Prerequisites() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-      <main className="flex-1">
+      {/* <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate">
             <div className="space-y-4 md:w-4/5">
@@ -224,58 +210,59 @@ function Prerequisites() {
             </div>
           </div>
         </div>
-      </main>
+      </main> */}
     </section>
   );
 }
 
 function Rewards() {
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-      <main className="flex-1">
-        <div className="space-y-5">
-          <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
-            <Text color="dimmed">
-              How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
-              is
-            </Text>
-            <Paper shadow="xs" radius="md" p="md" withBorder>
-              <Text weight={600}>Challenge Pools Total</Text>
-              <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                SUM OF ALL ACTIVE CHALLENGE REWARD POOLS
-              </Text>
-              <Text weight={400}>100 SOL</Text>
-            </Paper>
-            <Paper shadow="xs" radius="md" p="md" withBorder>
-              <Text weight={600}>Avg. Challenge Pool</Text>
-              <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
-              </Text>
-              <Text weight={400}>100 SOL</Text>
-            </Paper>
-            <Paper shadow="xs" radius="md" p="md" withBorder>
-              <Text weight={600}>Reward Curve</Text>
-              <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED
-              </Text>
-              <div className="flex flex-row space-x-3 mt-1">
-                <Badge size="sm" radius="sm">
-                  Aggresive
-                </Badge>
-                <Text size="sm">Rewards the top 10% of submissions. Winners are determined through peer review</Text>
-              </div>
-            </Paper>
-            <Paper shadow="xs" radius="md" p="md" withBorder>
-              <Text weight={600}>Reward Tokens</Text>
-              <Text weight={500} color="dimmed" size="xs" className="mt-3">
-                TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
-              </Text>
-              <div className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</div>
-            </Paper>
-          </div>
-        </div>
-      </main>
-    </section>
+    // <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+    //   <main className="flex-1">
+    //     <div className="space-y-5">
+    //       <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
+    //         <div className="text-dimmed">
+    //           How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
+    //           is
+    //         </div>
+    //         <Paper shadow="xs" radius="md" p="md" withBorder>
+    //           <Text weight={600}>Challenge Pools Total</Text>
+    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
+    //             SUM OF ALL ACTIVE CHALLENGE REWARD POOLS
+    //           </Text>
+    //           <Text weight={400}>100 SOL</Text>
+    //         </Paper>
+    //         <Paper shadow="xs" radius="md" p="md" withBorder>
+    //           <Text weight={600}>Avg. Challenge Pool</Text>
+    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
+    //             AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
+    //           </Text>
+    //           <Text weight={400}>100 SOL</Text>
+    //         </Paper>
+    //         <Paper shadow="xs" radius="md" p="md" withBorder>
+    //           <Text weight={600}>Reward Curve</Text>
+    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
+    //             HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED
+    //           </Text>
+    //           <div className="flex flex-row space-x-3 mt-1">
+    //             <Badge size="sm" radius="sm">
+    //               Aggresive
+    //             </Badge>
+    //             <Text size="sm">Rewards the top 10% of submissions. Winners are determined through peer review</Text>
+    //           </div>
+    //         </Paper>
+    //         <Paper shadow="xs" radius="md" p="md" withBorder>
+    //           <Text weight={600}>Reward Tokens</Text>
+    //           <Text weight={500} color="dimmed" size="xs" className="mt-3">
+    //             TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE
+    //           </Text>
+    //           <div className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</div>
+    //         </Paper>
+    //       </div>
+    //     </div>
+    //   </main>
+    // </section>
+    <></>
   );
 }
 
@@ -284,19 +271,19 @@ function MarketplacesChallengesTable() {
   const { challenges } = useTypedLoaderData<typeof loader>();
 
   if (challenges.length === 0) {
-    return <Text>No results. Try changing search and filter options.</Text>;
+    return <div>No results. Try changing search and filter options.</div>;
   }
   return (
     <>
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
-          <Text color="dark.3">Challenge</Text>
+          <div className="text-dark.3">Challenge</div>
         </div>
-        <Text color="dark.3">Chain/Project</Text>
-        <Text color="dark.3">Reward Pool</Text>
-        <Text color="dark.3">Submit Deadline</Text>
-        <Text color="dark.3">Review Deadline</Text>
+        <div className="text-dark.3">Chain/Project</div>
+        <div className="text-dark.3">Reward Pool</div>
+        <div className="text-dark.3">Submit Deadline</div>
+        <div className="text-dark.3">Review Deadline</div>
       </div>
       {/* Rows */}
       <div className="space-y-3">
@@ -309,9 +296,7 @@ function MarketplacesChallengesTable() {
               key={c.id}
             >
               <div className="lg:hidden">Challenge Marketplaces</div>
-              <div className="lg:col-span-2">
-                <Text>{c.title}</Text>
-              </div>
+              <div className="lg:col-span-2">{c.title}</div>
               <div className="lg:hidden">Chain/Project</div>
               <div>
                 {/* {c.laborMarket.projects.map((p) => (
@@ -337,25 +322,15 @@ function MarketplacesChallengesTable() {
 }
 
 function WrappedMarketplacesChallengesTable() {
-  const { totalResults, params, challenges } = useTypedLoaderData<typeof loader>();
+  const { totalResults, params } = useTypedLoaderData<typeof loader>();
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onPaginationChange = (page: number) => {
-    searchParams.set("page", page.toString());
-    setSearchParams(searchParams);
-  };
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <MarketplacesChallengesTable />
           <div className="w-fit m-auto">
-            <Pagination
-              page={params.page}
-              hidden={challenges.length === 0}
-              onChange={onPaginationChange}
-              total={Math.ceil(totalResults / params.first)}
-            />
+            <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
         </div>
       </main>
