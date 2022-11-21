@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 export type FieldProps = {
-  name: string;
+  name?: string;
   level?: 1 | 2;
   label?: React.ReactNode;
   error?: React.ReactNode;

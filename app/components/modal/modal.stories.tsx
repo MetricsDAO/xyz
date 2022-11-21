@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal } from "~/components/Modal";
+import { Modal } from "./modal";
 
 export const Basic = () => {
   const [open, setOpen] = useState(false);
