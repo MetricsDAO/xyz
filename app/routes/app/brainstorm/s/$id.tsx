@@ -1,6 +1,6 @@
 import { Search16 } from "@carbon/icons-react";
 import { Detail, DetailItem } from "~/components/detail";
-import { Author } from "~/components/Author";
+import { UserBadge } from "~/components/UserBadge";
 import {
   Badge,
   Button,
@@ -134,7 +134,7 @@ export default function ChallengeSubmission() {
           <div className="flex flex-wrap gap-x-8 gap-y-4">
             <Detail>
               <DetailItem title="Author">
-                <Author />
+                <UserBadge url="u/id" name="jo.Eth" balance={200} />
               </DetailItem>
               <DetailItem title="Created">
                 <Badge>1 month 5 days ago</Badge>

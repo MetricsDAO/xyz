@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
 import { Detail } from "~/components/detail";
-import * as Author from "~/components/Author";
+import { UserBadge } from "~/components/UserBadge";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
@@ -64,7 +64,7 @@ export default function MarketplaceChallenges() {
         {/* <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
-            <Author.Author />
+            <UserBadge />
           </Detail>
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
