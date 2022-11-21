@@ -4,6 +4,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
+import { Container } from "~/components/Container";
 import { CountdownCard } from "~/components/countdown-card";
 
 const paramsSchema = z.object({ id: z.string() });
@@ -20,14 +21,11 @@ export default function ClaimToSubmit() {
   const { challenge } = useTypedLoaderData<typeof loader>();
 
   return (
-    <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
-      <div className="space-y-2">
-        <Title order={2} weight={600}>
-          {`Claim to Submit on ${challenge.title}`}
-        </Title>
-        <div>
-          <Title order={4} color="brand.4" weight={400}>
-            {"Claiming is an up front commitment to submit at least one submission"}
+    <Container className="py-16">
+      <div className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
+        <div className="space-y-2">
+          <Title order={2} weight={600}>
+            {`Claim to Submit on ${challenge.title}`}
           </Title>
           <Text color="dimmed">
             You must temporarily lock xMETRIC to claim. If you claim and don’t submit before the deadline, all your
@@ -55,33 +53,33 @@ export default function ClaimToSubmit() {
             <CountdownCard start={"2022-11-25"} />
           </div>
         </div>
-      </div>
-      <div>
-        <Title order={4}>Lock xMetric</Title>
-        <div className="flex flex-col md:flex-row space-y-2 md:space-x-5 items-center">
-          <Text>
-            You must lock
-            <Badge radius="sm" color="dark" className="mt-1">
-              10
-            </Badge>
-            xMetric to claim
+        <div>
+          <Title order={4}>Lock xMetric</Title>
+          <div className="flex flex-col md:flex-row space-y-2 md:space-x-5 items-center">
+            <Text>
+              You must lock
+              <Badge radius="sm" color="dark" className="mt-1">
+                10
+              </Badge>
+              xMetric to claim
+            </Text>
+            <Button radius="md" variant="outline" size="lg" className="self-start">
+              Lock xMetric
+            </Button>
+          </div>
+          <Text italic color="dimmed" className="mt-2">
+            If you claim and don’t submit before the deadline, all your locked xMETRIC will be slashed
           </Text>
-          <Button radius="md" variant="outline" size="lg" className="self-start">
-            Lock xMetric
+        </div>
+        <div className="flex flex-wrap gap-5">
+          <Button radius="md" size="lg">
+            Claim to Submit
+          </Button>
+          <Button radius="md" variant="default" color="dark" size="lg">
+            Cancel
           </Button>
         </div>
-        <Text italic color="dimmed" className="mt-2">
-          If you claim and don’t submit before the deadline, all your locked xMETRIC will be slashed
-        </Text>
       </div>
-      <div className="flex flex-wrap gap-5">
-        <Button radius="md" size="lg">
-          Claim to Submit
-        </Button>
-        <Button radius="md" variant="default" color="dark" size="lg">
-          Cancel
-        </Button>
-      </div>
-    </div>
+    </Container>
   );
 }

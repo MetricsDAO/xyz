@@ -1,30 +1,27 @@
 import { Search16 } from "@carbon/icons-react";
 import {
-  Input,
-  Select,
-  Title,
-  Text,
+  Avatar,
+  Badge,
   Button,
   Center,
-  Paper,
-  Badge,
-  Avatar,
+  Input,
   MultiSelect,
   Pagination,
+  Paper,
+  Select,
+  Text,
+  Title,
 } from "@mantine/core";
 import { Form, Link, useSearchParams } from "@remix-run/react";
-import { Detail } from "~/components/detail";
-import * as Author from "~/components/Author";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { Container } from "~/components/Container";
+import { Countdown } from "~/components/countdown";
+import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
-import { ProjectBadge } from "~/components/ProjectBadge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { Tabs } from "~/components/Tabs";
-import { Countdown } from "~/components/countdown";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -49,19 +46,20 @@ export default function MarketplaceChallenges() {
   const { laborMarket, challenges } = useTypedLoaderData<typeof loader>();
 
   return (
-    <div className="mx-auto container mb-12 px-10">
-      <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <Title order={2}>{laborMarket?.title} </Title>
-        <Center className="flex flex-wrap gap-5">
-          <Link to="/app/brainstorm/[marketplaceId]/claim">
-            <Button radius="md" className="mx-auto">
-              Launch Challenge
-            </Button>
-          </Link>
-        </Center>
-      </section>
-      <section className="flex flex-col space-y-7 pb-12">
-        {/* <div className="flex flex-wrap gap-x-8">
+    <Container className="py-16">
+      <div className="mx-auto container mb-12 px-10">
+        <section className="flex flex-wrap gap-5 justify-between pb-5">
+          <Title order={2}>{laborMarket?.title} </Title>
+          <Center className="flex flex-wrap gap-5">
+            <Link to="/app/brainstorm/[marketplaceId]/claim">
+              <Button radius="md" className="mx-auto">
+                Launch Challenge
+              </Button>
+            </Link>
+          </Center>
+        </section>
+        <section className="flex flex-col space-y-7 pb-12">
+          {/* <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
             <Author.Author />
@@ -73,35 +71,36 @@ export default function MarketplaceChallenges() {
             </div>
           </Detail>
         </div> */}
-        <Text color="dimmed" className="max-w-2xl">
-          Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
-          DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
-        </Text>
-      </section>
+          <Text color="dimmed" className="max-w-2xl">
+            Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
+            DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
+          </Text>
+        </section>
 
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-        <main className="flex-1">
-          <Tabs>
-            <Tabs.List>
-              <Tabs.Tab> {`Challenges (${challenges.length})`} </Tabs.Tab>
-              <Tabs.Tab> Prerequisites </Tabs.Tab>
-              <Tabs.Tab> Rewards </Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panels>
-              <Tabs.Panel>
-                <WrappedMarketplacesChallengesTable />
-              </Tabs.Panel>
-              <Tabs.Panel>
-                <Prerequisites />
-              </Tabs.Panel>
-              <Tabs.Panel>
-                <Rewards />
-              </Tabs.Panel>
-            </Tabs.Panels>
-          </Tabs>
-        </main>
-      </section>
-    </div>
+        <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+          <main className="flex-1">
+            <Tabs>
+              <Tabs.List>
+                <Tabs.Tab> {`Challenges (${challenges.length})`} </Tabs.Tab>
+                <Tabs.Tab> Prerequisites </Tabs.Tab>
+                <Tabs.Tab> Rewards </Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panels>
+                <Tabs.Panel>
+                  <WrappedMarketplacesChallengesTable />
+                </Tabs.Panel>
+                <Tabs.Panel>
+                  <Prerequisites />
+                </Tabs.Panel>
+                <Tabs.Panel>
+                  <Rewards />
+                </Tabs.Panel>
+              </Tabs.Panels>
+            </Tabs>
+          </main>
+        </section>
+      </div>
+    </Container>
   );
 }
 
