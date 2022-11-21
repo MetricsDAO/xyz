@@ -37,12 +37,7 @@ export default function ChallengeSubmission() {
 
   return (
     <>
-      <Drawer
-        props={{
-          open,
-          onClose: () => setOpen(false),
-        }}
-      >
+      <Drawer open={open} onClose={() => setOpen(false)}>
         <div className="flex flex-col mx-auto space-y-10 px-2">
           <div className="space-y-3">
             <Title order={2} weight={600} className="mb-1">

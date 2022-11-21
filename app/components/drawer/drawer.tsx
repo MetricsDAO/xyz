@@ -5,7 +5,7 @@ import { Fragment } from "react";
 type DrawerProps = {
   open: boolean;
   onClose: () => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 export const Drawer = ({ open, onClose, children }: DrawerProps) => {
@@ -58,7 +58,7 @@ export const Drawer = ({ open, onClose, children }: DrawerProps) => {
                     </div>
                   </Transition.Child>
                   <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
-                    <div className="relative mt-6 flex-1 px-4 sm:px-6">{children}</div>
+                    {children ? <div className="relative mt-6 flex-1 px-4 sm:px-6">{children}</div> : null}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
