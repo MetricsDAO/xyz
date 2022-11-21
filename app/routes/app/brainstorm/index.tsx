@@ -8,7 +8,7 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectBadge } from "~/components/ProjectBadge";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
 import { ValidatedForm } from "remix-validated-form";

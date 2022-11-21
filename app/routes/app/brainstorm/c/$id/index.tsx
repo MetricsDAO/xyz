@@ -5,7 +5,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Author } from "~/components/Author";
 import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/Checkbox";
-import { CountDown } from "~/hooks/use-countdown";
+import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/Input";
 import { Score } from "~/components/Score";
 import { Select } from "~/components/Select";
@@ -37,7 +37,7 @@ export default function ChallengeIdSubmissions() {
                   <h4 className="font-medium text-gray-900">{s.title}</h4>
                   <section className="text-gray-900">{s.description}</section>
                   <div className="flex space-x-1 items-center text-xs">
-                    <CountDown date={s.createdAt}></CountDown> by <Author />
+                    <Countdown date={s.createdAt} /> by <Author />
                   </div>
                 </main>
                 <div className="space-y-3">

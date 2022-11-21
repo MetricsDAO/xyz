@@ -1,5 +1,5 @@
 import { Search16 } from "@carbon/icons-react";
-import { Detail, DetailItem } from "~/components/Detail";
+import { Detail, DetailItem } from "~/components/detail";
 import { Author } from "~/components/Author";
 import {
   Badge,

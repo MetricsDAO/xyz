@@ -5,9 +5,9 @@ import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Badge } from "~/components/Badge";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/button";
 import { ButtonSelect } from "~/components/ButtonSelect";
-import { CountDownCard } from "~/components/CountDownCard";
+import { CountdownCard } from "~/components/countdown-card";
 import { findChallenge } from "~/services/challenges-service.server";
 
 const paramsSchema = z.object({ id: z.string() });
@@ -49,11 +49,11 @@ export default function ClaimToReview() {
       <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Claim to Review Deadline</h2>
-          <CountDownCard progress={64} time={"2022-11-25"} />
+          <CountdownCard start={"2022-11-25"} />
         </div>
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">Review Deadline</h2>
-          <CountDownCard progress={22} time={"2022-12-25"} />
+          <CountdownCard start={"2022-12-25"} />
         </div>
       </div>
       <div className="space-y-2">
