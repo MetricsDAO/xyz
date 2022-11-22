@@ -7,7 +7,6 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectIcon } from "~/components/project-icon/project-icon";
 import { Button } from "~/components/button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
