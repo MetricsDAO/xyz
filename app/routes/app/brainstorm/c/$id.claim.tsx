@@ -24,7 +24,7 @@ export default function ClaimToSubmit() {
   return (
     <Container className="max-w-4xl space-y-7 mb-12 mt-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">{`Claim to Submit on ${challenge.title}`}</h1>
+        <h1 className="text-3xl font-semibold">Claim to Submit on {challenge.title}</h1>
         <h2 className="text-xl text-cyan-500">Claiming is an up front commitment to submit at least one submission</h2>
         <p className="text-gray-500">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked
