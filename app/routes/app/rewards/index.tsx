@@ -29,7 +29,7 @@ export default function RewardsTab() {
   const params = { first: 1, page: 1 };
 
   return (
-    <section className="container mx-auto px-10 flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+    <section className="container mx-auto flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
         <div className="space-y-5">
           <RewardsTable rewards={rewards} />

@@ -68,7 +68,7 @@ export default function PayoutAddresses() {
           </div>
         </div>
       </Modal>
-      <div className="container mx-auto px-10 space-y-7 mb-12">
+      <div className="container mx-auto space-y-7 mb-12">
         {/* Header (hide on mobile) */}
         <div className="hidden lg:grid grid-cols-5 gap-x-1 items-end px-2">
           <SortButton title="Chain/Project" label="todo" />

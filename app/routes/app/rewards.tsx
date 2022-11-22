@@ -1,12 +1,12 @@
 import { CheckboxCheckedFilled16, WarningSquareFilled16, ChevronSortDown16 } from "@carbon/icons-react";
-import { Outlet, useSearchParams } from "@remix-run/react";
+import { Outlet } from "@remix-run/react";
 import { Modal } from "~/components/modal";
 import { Button } from "~/components/button";
 import { useState } from "react";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { Container } from "~/components/Container";
 
 export default function Rewards() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [openedAdd, setOpenedAdd] = useState(false);
 
   //to be replaced
@@ -48,7 +48,7 @@ export default function Rewards() {
           </div>
         </div>
       </Modal>
-      <div className="mx-auto container mb-12 px-10 space-y-16">
+      <Container className="space-y-16 py-16 px-10">
         {activeTab === "rewards" ? (
           <section className="space-y-2 max-w-3xl">
             <h1 className="text-3xl font-semibold">Rewards</h1>
@@ -84,8 +84,9 @@ export default function Rewards() {
           </TabNavLink>
           <TabNavLink to="./addresses">Payout Addresses ({wallets.length})</TabNavLink>
         </TabNav>
-      </div>
-      <Outlet />
+
+        <Outlet />
+      </Container>
     </>
   );
 }
