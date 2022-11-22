@@ -1,4 +1,6 @@
 import { Avatar } from "./avatar";
+import { ProjectAvatar } from "./project-avatar";
+import { TokenAvatar } from "./token-avatar";
 
 export const Fallback = () => {
   return (
@@ -18,6 +20,14 @@ export const Basic = () => {
       <Avatar src="https://avatars.githubusercontent.com/u/11708259?v=4" size="lg" />
     </div>
   );
+};
+
+export const Project = () => {
+  return <ProjectAvatar project={{ name: "Bitcoin", slug: "bitcoin" }} />;
+};
+
+export const Token = () => {
+  return <TokenAvatar token={{ name: "Bitcoin", symbol: "BTC" }} />;
 };
 
 export const Group = () => {
