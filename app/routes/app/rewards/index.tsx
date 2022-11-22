@@ -48,9 +48,6 @@ export default function RewardsTab() {
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function RewardsTable({ rewards }: { rewards: any }) {
   const [opened, setOpened] = useState(false);
-  if (rewards.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
   const unclaimed = true;
   return (
     <>
@@ -89,36 +86,42 @@ function RewardsTable({ rewards }: { rewards: any }) {
         <SortButton title="Status" label="todo" />
       </div>
       {/* Rows */}
-      <div className="space-y-3">
-        {rewards.map((r: { id: string; title: string }) => {
-          return (
-            <div
-              // On mobile, two column grid with "labels". On desktop hide the "labels".
-              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={r.id}
-            >
-              <div className="lg:hidden">Challenge Title</div>
-              <div className="lg:col-span-2">
-                <p>{r.title}</p>
+      {rewards.length < 1 ? (
+        <div className="flex">
+          <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {rewards.map((r: { id: string; title: string }) => {
+            return (
+              <div
+                // On mobile, two column grid with "labels". On desktop hide the "labels".
+                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
+                key={r.id}
+              >
+                <div className="lg:hidden">Challenge Title</div>
+                <div className="lg:col-span-2">
+                  <p>{r.title}</p>
+                </div>
+                <div className="lg:hidden">Reward</div>
+                <p>20 SOL</p>
+                <div className="lg:hidden">Submitted</div>
+                <p className="text-black">{formatTime("2022-01-01")} </p>
+                <div className="lg:hidden">Rewarded</div>
+                <p className="text-black" color="dark.3">
+                  {formatTime("2022-11-01")}{" "}
+                </p>
+                <div className="lg:hidden">Status</div>
+                {unclaimed ? (
+                  <Button onClick={() => setOpened(true)}>Claim</Button>
+                ) : (
+                  <Button variant="cancel">View Tx</Button>
+                )}
               </div>
-              <div className="lg:hidden">Reward</div>
-              <p>20 SOL</p>
-              <div className="lg:hidden">Submitted</div>
-              <p className="text-black">{formatTime("2022-01-01")} </p>
-              <div className="lg:hidden">Rewarded</div>
-              <p className="text-black" color="dark.3">
-                {formatTime("2022-11-01")}{" "}
-              </p>
-              <div className="lg:hidden">Status</div>
-              {unclaimed ? (
-                <Button onClick={() => setOpened(true)}>Claim</Button>
-              ) : (
-                <Button variant="cancel">View Tx</Button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

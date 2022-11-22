@@ -10,7 +10,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useSearchParams } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "~/components/button";
-import { Input } from "~/components/Input";
 import { Modal } from "~/components/modal";
 
 export default function PayoutAddresses() {
@@ -18,7 +17,6 @@ export default function PayoutAddresses() {
   const [openedRemove, setOpenedRemove] = useState(false);
 
   const validAddress = false;
-  const minInput = true;
   const wallets = [
     { address: "0x75638840948190490890", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
     { address: "0x32849854983758727987", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
@@ -30,20 +28,23 @@ export default function PayoutAddresses() {
     <>
       <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
         <div className="space-y-5 mt-5">
-          <div className="flex border-solid border rounded-md border-[#DEDEDE]">
-            <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
-            <div className="flex items-center ml-2">
-              {minInput ? (
-                validAddress ? (
+          <div className="space-y-2">
+            <div className="flex border-solid border rounded-md border-[#DEDEDE]">
+              <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
+              <div className="flex items-center ml-2">
+                {validAddress ? (
                   <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
                 ) : (
                   <WarningSquareFilled16 className="mr-1 text-[#EC5962]" />
-                )
-              ) : (
-                <></>
-              )}
-              <input id="update" placeholder="Update address" />
+                )}
+                <input id="update" placeholder="Update address" />
+              </div>
             </div>
+            {validAddress ? (
+              <></>
+            ) : (
+              <p className="text-xs text-red-500">Please enter a valid address. If you are having issues go here</p>
+            )}
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedUpdate(false)}>
@@ -77,34 +78,40 @@ export default function PayoutAddresses() {
           <SortButton title="Last Updated" label="todo" />
         </div>
         {/* Rows */}
-        <div className="space-y-3">
-          {wallets.map((w: { address: string; chain: string }) => {
-            return (
-              <div
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-                key={w.address}
-              >
-                <div className="lg:hidden">Chain/Project</div>
-                <p>project</p>
-                <div className="lg:hidden">Address</div>
-                <div className="lg:col-span-2">
-                  <p className="text-black">{w.address}</p>
+        {wallets.length < 1 ? (
+          <div className="flex">
+            <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {wallets.map((w: { address: string; chain: string }) => {
+              return (
+                <div
+                  // On mobile, two column grid with "labels". On desktop hide the "labels".
+                  className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
+                  key={w.address}
+                >
+                  <div className="lg:hidden">Chain/Project</div>
+                  <p>project</p>
+                  <div className="lg:hidden">Address</div>
+                  <div className="lg:col-span-2">
+                    <p className="text-black">{w.address}</p>
+                  </div>
+                  <div className="lg:hidden">Last Updated</div>
+                  <p className="text-black">{formatTime("1999-01-01")} </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="cancel" onClick={() => setOpenedRemove(true)}>
+                      Remove
+                    </Button>
+                    <Button variant="primary" onClick={() => setOpenedUpdate(true)}>
+                      Update
+                    </Button>
+                  </div>
                 </div>
-                <div className="lg:hidden">Last Updated</div>
-                <p className="text-black">{formatTime("1999-01-01")} </p>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="cancel" onClick={() => setOpenedRemove(true)}>
-                    Remove
-                  </Button>
-                  <Button variant="primary" onClick={() => setOpenedUpdate(true)}>
-                    Update
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </>
   );

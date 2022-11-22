@@ -1,21 +1,16 @@
 import { CheckboxCheckedFilled16, WarningSquareFilled16, ChevronSortDown16 } from "@carbon/icons-react";
 import { Outlet, useSearchParams } from "@remix-run/react";
 import { Modal } from "~/components/modal";
-import { Input } from "~/components/Input";
 import { Button } from "~/components/button";
-import { Avatar } from "~/components/avatar";
 import { useState } from "react";
-import { PROJECT_ICONS } from "~/utils/helpers";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 export default function Rewards() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openedAdd, setOpenedAdd] = useState(false);
 
   //to be replaced
-  const activeTab = "address";
-  const rewards = [{ id: 123, title: "silly string" }];
+  const activeTab = "rewards";
   const wallets = [
     { address: "0x75638840948190490890", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
     { address: "0x32849854983758727987", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
@@ -24,11 +19,6 @@ export default function Rewards() {
   ];
   const validAddress = false;
   const minInput = true;
-  const chains = [
-    { name: "Ethereum", subtext: "ETH" },
-    { name: "Solana", subtext: "SOL" },
-    { name: "Ethereum", subtext: "SOL" },
-  ];
 
   return (
     <>
