@@ -29,22 +29,20 @@ export default function PayoutAddresses() {
   return (
     <>
       <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <div className="flex border-solid border rounded-md border-[#DEDEDE]">
-              <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
-              <div className="flex items-center ml-2">
-                {minInput ? (
-                  validAddress ? (
-                    <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
-                  ) : (
-                    <WarningSquareFilled16 className="mr-1 text-[#EC5962]" />
-                  )
+        <div className="space-y-5 mt-5">
+          <div className="flex border-solid border rounded-md border-[#DEDEDE]">
+            <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
+            <div className="flex items-center ml-2">
+              {minInput ? (
+                validAddress ? (
+                  <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
                 ) : (
-                  <></>
-                )}
-                <Input placeholder="Update address" />
-              </div>
+                  <WarningSquareFilled16 className="mr-1 text-[#EC5962]" />
+                )
+              ) : (
+                <></>
+              )}
+              <input id="update" placeholder="Update address" />
             </div>
           </div>
           <div className="flex gap-2 justify-end">
@@ -56,12 +54,10 @@ export default function PayoutAddresses() {
         </div>
       </Modal>
       <Modal isOpen={openedRemove} onClose={() => setOpenedRemove(false)} title="Are you sure you want to remove?">
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <div className="flex border-solid border rounded-md border-[#DEDEDE] items-center">
-              <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
-              <p className="pl-2">0x381764734678365783648</p>
-            </div>
+        <div className="space-y-5 mt-5">
+          <div className="flex border-solid border rounded-md border-[#DEDEDE] items-center">
+            <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
+            <p className="pl-2">0x381764734678365783648</p>
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedRemove(false)}>
@@ -71,7 +67,7 @@ export default function PayoutAddresses() {
           </div>
         </div>
       </Modal>
-      <section>
+      <div className="container mx-auto px-10 space-y-7 mb-12">
         {/* Header (hide on mobile) */}
         <div className="hidden lg:grid grid-cols-5 gap-x-1 items-end px-2">
           <SortButton title="Chain/Project" label="todo" />
@@ -109,7 +105,7 @@ export default function PayoutAddresses() {
             );
           })}
         </div>
-      </section>
+      </div>
     </>
   );
 }

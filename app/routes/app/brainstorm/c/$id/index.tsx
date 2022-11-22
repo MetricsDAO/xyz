@@ -24,7 +24,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 export default function ChallengeIdSubmissions() {
   const { submissions } = useTypedLoaderData<typeof loader>();
   return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
+    <section className="container mx-auto px-10 mb-12 flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
         {submissions.map((s) => {
           return (
