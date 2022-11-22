@@ -1,6 +1,5 @@
-import { Search16 } from "@carbon/icons-react";
-import { Form, Link, useSearchParams } from "@remix-run/react";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { Link, useSearchParams, useSubmit } from "@remix-run/react";
+import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { typedjson } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
@@ -13,6 +12,17 @@ import { Pagination } from "~/components/Pagination";
 import { Button } from "~/components/button";
 import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
+import { Input } from "~/components/Input";
+import { useCallback, useRef } from "react";
+import { ValidatedForm } from "remix-validated-form";
+import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
+import { withZod } from "@remix-validated-form/with-zod";
+import { Combobox } from "~/components/Combobox";
+import { Select } from "~/components/Select";
+import { z } from "zod";
+import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
+import { Card } from "~/components/Card";
+import { ProjectBadge } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -92,64 +102,72 @@ export default function MarketplaceChallenges() {
 }
 
 function SearchAndFilter() {
+  const submit = useSubmit();
+  const ref = useRef<HTMLFormElement>(null);
+
+  const memoizedSubmit = useCallback(() => {
+    submit(ref.current);
+  }, [submit]);
+
   return (
-    // <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-    //   <Input placeholder="Search" name="q" radius="md" rightSection={<Search16 />} />
-    //   <Text size="lg" weight={600}>
-    //     Sort:
-    //   </Text>
-    //   <Select
-    //     radius="md"
-    //     placeholder="Select option"
-    //     name="sortBy"
-    //     clearable
-    //     data={[
-    //       { label: "Chain/Project", value: "project" },
-    //       { label: "Reward Pool", value: "reward" },
-    //     ]}
-    //   />
-    //   <Text size="lg" weight={600}>
-    //     Filter:
-    //   </Text>
-    //   <MultiSelect
-    //     radius="md"
-    //     label="I am able to"
-    //     placeholder="Select option"
-    //     name="filter"
-    //     clearable
-    //     data={[
-    //       { value: "submit", label: "Submit" },
-    //       { value: "review", label: "Review" },
-    //     ]}
-    //   />
-    //   <MultiSelect
-    //     radius="md"
-    //     label="Reward Token"
-    //     placeholder="Select option"
-    //     name="rewardToken"
-    //     clearable
-    //     data={[
-    //       { label: "Solana", value: "Solana" },
-    //       { label: "Ethereum", value: "Ethereum" },
-    //       { label: "USD", value: "USD" },
-    //     ]}
-    //   />
-    //   <MultiSelect
-    //     radius="md"
-    //     label="Chain/Project"
-    //     placeholder="Select option"
-    //     name="chainProject"
-    //     clearable
-    //     data={[
-    //       { label: "Solana", value: "Solana" },
-    //       { label: "Ethereum", value: "Ethereum" },
-    //     ]}
-    //   />
-    //   <Button radius="md" variant="light" size="xs" type="submit">
-    //     Apply Filters
-    //   </Button>
-    // </Form>
-    <></>
+    <ValidatedForm
+      formRef={ref}
+      method="get"
+      noValidate
+      validator={withZod(z.any())}
+      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
+    >
+      <Input
+        onChange={(e) => submit(e.currentTarget.form)}
+        placeholder="Search"
+        name="q"
+        iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
+      />
+      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
+      <div className="md:hidden">
+        <Select
+          placeholder="Select option"
+          name="sortBy"
+          options={[
+            { label: "None", value: "none" },
+            { label: "Chain/Project", value: "project" },
+          ]}
+        />
+      </div>
+      <h3 className="font-semibold text-lg">Filter:</h3>
+      <Combobox
+        onChange={memoizedSubmit}
+        label="I am able to"
+        placeholder="Select option"
+        name="filter"
+        options={[
+          { value: "launch", label: "Launch" },
+          { value: "submit", label: "Submit" },
+          { value: "review", label: "Review" },
+        ]}
+      />
+      <Combobox
+        onChange={memoizedSubmit}
+        label="Reward Token"
+        placeholder="Select option"
+        name="rewardToken"
+        options={[
+          { label: "Solana", value: "Solana" },
+          { label: "Ethereum", value: "Ethereum" },
+          { label: "USD", value: "USD" },
+        ]}
+      />
+      <Combobox
+        onChange={memoizedSubmit}
+        label="Chain/Project"
+        placeholder="Select option"
+        name="chainProject"
+        options={[
+          { label: "Solana", value: "Solana" },
+          { label: "Ethereum", value: "Ethereum" },
+        ]}
+      />
+    </ValidatedForm>
   );
 }
 
@@ -160,13 +178,13 @@ function Prerequisites() {
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate">
             <div className="space-y-4 md:w-4/5">
-              <div className="text-[14px] text-[#666666]">
+              <p className="text-[14px] text-[#666666]">
                 What you must hold in your connected wallet to perform various actions on this challenge
-              </div>
+              </p>
               <Card>
-                <div className="font-weight-500 text-[16px] text-[#252525]">
+                <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this much xMETRIC to enter submissions for this challenge
-                </div>
+                </p>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex flex-col">
                     <div className="text-[12px] text-[#666666] mb-2">MIN BALANCE</div>
@@ -183,9 +201,9 @@ function Prerequisites() {
                 </div>
               </Card>
               <Card>
-                <div className="font-weight-500 text-[16px] text-[#252525]">
+                <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this badge to review and score submissions on this challenge
-                </div>
+                </p>
                 <div className="text-[12px] text-[#666666]">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
@@ -193,9 +211,9 @@ function Prerequisites() {
                 </div>
               </Card>
               <Card>
-                <div className="font-weight-500 text-[16px] text-[#252525]">
+                <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this badge to launch new challenges
-                </div>
+                </p>
                 <div className="text-[12px] text-[#666666]">MDAO S4 CONTRIBUTOR BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
@@ -216,36 +234,36 @@ function Rewards() {
       <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
-            <div className="text-[14px] text-[#666666]">
+            <p className="text-[14px] text-[#666666]">
               How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
               is
-            </div>
+            </p>
             <Card>
-              <div className="font-weight-500 text-[16px] text-[#252525]">Challenge Pools Total</div>
-              <div className="text-[12px] text-[#666666]">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</div>
-              <div>100 SOL</div>
+              <p className="font-weight-500 text-[16px] text-[#252525]">Challenge Pools Total</p>
+              <p className="text-[12px] text-[#666666]">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
+              <p>100 SOL</p>
             </Card>
             <Card>
-              <div className="font-weight-500 text-[16px] text-[#252525]">Avg. Challenge Pool</div>
-              <div className="text-[14px] text-[#666666]">
+              <p className="font-weight-500 text-[16px] text-[#252525]">Avg. Challenge Pool</p>
+              <p className="text-[12px] text-[#666666]">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
-              </div>
-              <div>100 SOL</div>
+              </p>
+              <p>100 SOL</p>
             </Card>
             <Card>
-              <div className="font-weight-500 text-[16px] text-[#252525]">Reward Curve</div>
-              <div className="text-[12px] text-[#666666]">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</div>
+              <p className="font-weight-500 text-[16px] text-[#252525]">Reward Curve</p>
+              <p className="text-[12px] text-[#666666]">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
               <div className="flex flex-row space-x-3 mt-1">
                 <Badge>Aggresive</Badge>
-                <div className="text-[12px]">
+                <p className="text-[12px]">
                   Rewards the top 10% of submissions. Winners are determined through peer review
-                </div>
+                </p>
               </div>
             </Card>
             <Card>
-              <div className="font-weight-500 text-[16px] text-[#252525]">Reward Tokens</div>
-              <div className="text-[12px] text-[#666666]">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</div>
-              <div className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</div>
+              <p className="font-weight-500 text-[16px] text-[#252525]">Reward Tokens</p>
+              <p className="text-[12px] text-[#666666]">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
+              <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</p>
             </Card>
           </div>
         </div>
@@ -254,69 +272,75 @@ function Rewards() {
   );
 }
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesChallengesTable() {
-  const { challenges } = useTypedLoaderData<typeof loader>();
+type MarketplaceChallengesTableProps = {
+  challenges: UseDataFunctionReturn<typeof loader>["challenges"];
+};
 
+function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableProps) {
   if (challenges.length === 0) {
-    return <div>No results. Try changing search and filter options.</div>;
+    return <p>No results. Try changing search and filter options.</p>;
   }
   return (
-    <>
+    <div>
       {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
+      <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
         <div className="col-span-2">
-          <div className="text-[#666666] text-[12px]">Challenge</div>
+          <SortButton label="title" title="Challenge Marketplace" />
         </div>
-        <div className="text-[#666666] text-[12px]">Chain/Project</div>
-        <div className="text-[#666666] text-[12px]">Reward Pool</div>
-        <div className="text-[#666666] text-[12px]">Submit Deadline</div>
-        <div className="text-[#666666] text-[12px]">Review Deadline</div>
+        <p>Chain/Project</p>
+        <p>Challenge Pool Totals</p>
+        <p>Avg. Challenge Pool</p>
+        <SortButton label="serviceRequests" title="# Challenges" />
       </div>
       {/* Rows */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {challenges.map((c) => {
           return (
-            <Link
-              to={`/app/brainstorm/c/${c.id}`}
-              // On mobile, two column grid with "labels". On desktop hide the "labels".
-              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={c.id}
-            >
-              <div className="lg:hidden">Challenge Marketplaces</div>
-              <div className="lg:col-span-2 text-[#252525] text-[14px]">{c.title}</div>
-              <div className="lg:hidden">Chain/Project</div>
-              <div>
-                {/* {c.laborMarket.projects.map((p) => (
-                  <ProjectBadge key={p.id} slug={p.slug} />
-                ))} */}
-              </div>
-              <div className="lg:hidden">Reward Pool Totals</div>
-              {/* <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" /> */}
-              <div className="lg:hidden">Submit Deadline</div>
-              <span className="text-[#666666] text-[14px]">
-                <Countdown date={"2023-01-25"} />
-              </span>
-              <div className="lg:hidden">Review Deadline</div>
-              <span className="text-[#666666] text-[14px]">
-                <Countdown date={"2022-11-25"} />
-              </span>
-            </Link>
+            <Card asChild key={c.id}>
+              <Link
+                to={`/app/brainstorm/c/${c.id}`}
+                // On mobile, two column grid with "labels". On desktop hide the "labels".
+                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-4 py-5"
+              >
+                <div className="lg:hidden">Challenges</div>
+                <div className="lg:col-span-2 text-sm font-medium">{c.title}</div>
+
+                <div className="lg:hidden">Chain/Project</div>
+                <div className="flex">
+                  <div>
+                    {c.laborMarket.projects.map((p) => (
+                      <ProjectBadge key={p.slug} variant="transparent" project={p} />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="lg:hidden">Reward Pool Totals</div>
+                {/* <TextWithIcon text="5 SOL" iconUrl="/img/icons/project-icons/sol.svg" /> */}
+                <div className="lg:hidden">Submit Deadline</div>
+                <div className="text-[#666666] text-[14px]">
+                  <Countdown date={"2023-01-25"} />
+                </div>
+                <div className="lg:hidden">Review Deadline</div>
+                <div className="text-[#666666] text-[14px]">
+                  <Countdown date={"2022-11-25"} />
+                </div>
+              </Link>
+            </Card>
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
 
 function WrappedMarketplacesChallengesTable() {
-  const { totalResults, params } = useTypedLoaderData<typeof loader>();
+  const { totalResults, params, challenges } = useTypedLoaderData<typeof loader>();
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <MarketplacesChallengesTable />
+          <MarketplacesChallengesTable challenges={challenges} />
           <div className="w-fit m-auto">
             <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
@@ -329,6 +353,30 @@ function WrappedMarketplacesChallengesTable() {
   );
 }
 
-function Card({ children }: { children: React.ReactNode }) {
-  return <div className="container border-2 rounded-md p-4 space-y-3">{children}</div>;
+function SortButton({ label, title }: { label: string; title: string }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const onSort = (header: string) => {
+    searchParams.set("sortBy", header);
+    if (searchParams.get("order") === "asc") {
+      searchParams.set("order", "desc");
+    } else {
+      searchParams.set("order", "asc");
+    }
+    setSearchParams(searchParams);
+  };
+
+  return (
+    <button onClick={() => onSort(label)} className="flex">
+      <p>{title}</p>
+      {searchParams.get("sortBy") === label ? (
+        searchParams.get("order") === "asc" ? (
+          <ChevronSortUp16 className="mt-2" />
+        ) : (
+          <ChevronSortDown16 />
+        )
+      ) : (
+        <ChevronSort16 className="mt-1" />
+      )}
+    </button>
+  );
 }
