@@ -202,7 +202,7 @@ function Prerequisites() {
                   </div>
                 </div>
               </Card>
-              <Card>
+              <Card className="p-4">
                 <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this badge to review and score submissions on this challenge
                 </p>
@@ -212,7 +212,7 @@ function Prerequisites() {
                   <div className="text-[16px] text-[#252525]">0x1234</div>
                 </div>
               </Card>
-              <Card>
+              <Card className="p-4">
                 <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this badge to launch new challenges
                 </p>
@@ -240,19 +240,19 @@ function Rewards() {
               How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
               is
             </p>
-            <Card>
+            <Card className="p-4">
               <p className="font-weight-500 text-[16px] text-[#252525]">Challenge Pools Total</p>
               <p className="text-[12px] text-[#666666]">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
               <p>100 SOL</p>
             </Card>
-            <Card>
+            <Card className="p-4">
               <p className="font-weight-500 text-[16px] text-[#252525]">Avg. Challenge Pool</p>
               <p className="text-[12px] text-[#666666]">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </p>
               <p>100 SOL</p>
             </Card>
-            <Card>
+            <Card className="p-4">
               <p className="font-weight-500 text-[16px] text-[#252525]">Reward Curve</p>
               <p className="text-[12px] text-[#666666]">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
               <div className="flex flex-row space-x-3 mt-1">
@@ -262,7 +262,7 @@ function Rewards() {
                 </p>
               </div>
             </Card>
-            <Card>
+            <Card className="p-4">
               <p className="font-weight-500 text-[16px] text-[#252525]">Reward Tokens</p>
               <p className="text-[12px] text-[#666666]">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
               <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</p>
