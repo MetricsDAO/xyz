@@ -1,5 +1,5 @@
+import type { Token } from "@prisma/client";
 import * as Avatar from "@radix-ui/react-avatar";
-import type { Token } from "~/domain/token";
 
 export function TokenIcon({ token }: { token: Token }) {
   return (
