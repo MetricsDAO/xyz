@@ -1,28 +1,28 @@
+import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
+import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
-import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { typedjson } from "remix-typedjson/dist/remix";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useCallback, useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
+import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
+import { Avatar } from "~/components/avatar";
+import { Badge } from "~/components/Badge";
+import { Button } from "~/components/button";
+import { Card } from "~/components/Card";
+import { Combobox } from "~/components/Combobox";
+import { Container } from "~/components/Container";
+import { Countdown } from "~/components/countdown";
+import { Input } from "~/components/Input";
+import { Pagination } from "~/components/Pagination";
+import { ProjectBadge } from "~/components/ProjectBadge";
+import { Select } from "~/components/Select";
+import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { Tabs } from "~/components/Tabs";
-import { Countdown } from "~/components/countdown";
-import { Pagination } from "~/components/Pagination";
-import { Button } from "~/components/button";
-import { Avatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
-import { Input } from "~/components/Input";
-import { useCallback, useRef } from "react";
-import { ValidatedForm } from "remix-validated-form";
-import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
-import { withZod } from "@remix-validated-form/with-zod";
-import { Combobox } from "~/components/Combobox";
-import { Select } from "~/components/Select";
-import { z } from "zod";
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
-import { Card } from "~/components/Card";
-import { ProjectBadge } from "~/components/ProjectBadge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -47,17 +47,18 @@ export default function MarketplaceChallenges() {
   const { laborMarket, challenges } = useTypedLoaderData<typeof loader>();
 
   return (
-    <div className="mx-auto container mb-12 px-10">
-      <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <div>{laborMarket?.title} </div>
-        <div className="flex flex-wrap gap-5">
-          <Link to="/app/brainstorm/[marketplaceId]/claim">
-            <Button className="mx-auto radius-md">Launch Challenge</Button>
-          </Link>
-        </div>
-      </section>
-      <section className="flex flex-col space-y-7 pb-12">
-        {/* <div className="flex flex-wrap gap-x-8">
+    <Container className="py-16">
+      <div className="mx-auto container mb-12 px-10">
+        <section className="flex flex-wrap gap-5 justify-between pb-5">
+          <div>{laborMarket?.title} </div>
+          <div className="flex flex-wrap gap-5">
+            <Link to="/app/brainstorm/[marketplaceId]/claim">
+              <Button className="mx-auto radius-md">Launch Challenge</Button>
+            </Link>
+          </div>
+        </section>
+        <section className="flex flex-col space-y-7 pb-12">
+          {/* <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
             <Author.Author />
@@ -69,35 +70,36 @@ export default function MarketplaceChallenges() {
             </div>
           </Detail>
         </div> */}
-        <div className="max-w-2xl text-[#666666] text-[14px]">
-          Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
-          DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
-        </div>
-      </section>
+          <div className="max-w-2xl text-[#666666] text-[14px]">
+            Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
+            DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
+          </div>
+        </section>
 
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-        <main className="flex-1">
-          <Tabs>
-            <Tabs.List>
-              <Tabs.Tab> {`Challenges (${challenges.length})`} </Tabs.Tab>
-              <Tabs.Tab> Prerequisites </Tabs.Tab>
-              <Tabs.Tab> Rewards </Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panels>
-              <Tabs.Panel>
-                <WrappedMarketplacesChallengesTable />
-              </Tabs.Panel>
-              <Tabs.Panel>
-                <Prerequisites />
-              </Tabs.Panel>
-              <Tabs.Panel>
-                <Rewards />
-              </Tabs.Panel>
-            </Tabs.Panels>
-          </Tabs>
-        </main>
-      </section>
-    </div>
+        <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+          <main className="flex-1">
+            <Tabs>
+              <Tabs.List>
+                <Tabs.Tab> {`Challenges (${challenges.length})`} </Tabs.Tab>
+                <Tabs.Tab> Prerequisites </Tabs.Tab>
+                <Tabs.Tab> Rewards </Tabs.Tab>
+              </Tabs.List>
+              <Tabs.Panels>
+                <Tabs.Panel>
+                  <WrappedMarketplacesChallengesTable />
+                </Tabs.Panel>
+                <Tabs.Panel>
+                  <Prerequisites />
+                </Tabs.Panel>
+                <Tabs.Panel>
+                  <Rewards />
+                </Tabs.Panel>
+              </Tabs.Panels>
+            </Tabs>
+          </main>
+        </section>
+      </div>
+    </Container>
   );
 }
 
@@ -181,7 +183,7 @@ function Prerequisites() {
               <p className="text-[14px] text-[#666666]">
                 What you must hold in your connected wallet to perform various actions on this challenge
               </p>
-              <Card>
+              <Card className="p-4">
                 <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this much xMETRIC to enter submissions for this challenge
                 </p>
@@ -285,12 +287,11 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       {/* Header (hide on mobile) */}
       <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
         <div className="col-span-2">
-          <SortButton label="title" title="Challenge Marketplace" />
+          <SortButton label="title" title="Challenge" />
         </div>
         <p>Chain/Project</p>
         <p>Challenge Pool Totals</p>
         <p>Avg. Challenge Pool</p>
-        <SortButton label="serviceRequests" title="# Challenges" />
       </div>
       {/* Rows */}
       <div className="space-y-4">
