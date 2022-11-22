@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
 import { Author } from "~/components/Author";
-import { ProjectIcon } from "~/components/ProjectIcon";
+import { ProjectIcon } from "~/components/project-icon/project-icon";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
