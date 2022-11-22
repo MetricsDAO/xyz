@@ -48,15 +48,21 @@ export default function RewardsTab() {
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function RewardsTable({ rewards }: { rewards: any }) {
   const [opened, setOpened] = useState(false);
+  const [openedClaimed, setOpenedClaimed] = useState(false);
   const unclaimed = true;
+
+  function processClaim() {
+    setOpened(false);
+    setOpenedClaimed(true);
+  }
   return (
     <>
       <Modal isOpen={opened} onClose={() => setOpened(false)} title="Claim your reward!">
-        <div className="space-y-5">
+        <div className="space-y-5 mt-5">
           <div className="space-y-2">
             <div className="flex items-center">
               <Avatar src="/img/trophy.svg" />
-              <p className="text-[#946100] text-lg ml-2">10 SOL</p>
+              <p className="text-[#946100] text-2xl ml-2">10 SOL</p>
             </div>
             <div className="flex border-solid border rounded-md border-[#DEDEDE]">
               <p className="text-sm font-semiboldborder-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
@@ -71,7 +77,27 @@ function RewardsTable({ rewards }: { rewards: any }) {
             <Button variant="cancel" onClick={() => setOpened(false)}>
               Cancel
             </Button>
-            <Button>Claim</Button>
+            <Button onClick={() => processClaim()}>Claim</Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal isOpen={openedClaimed} onClose={() => setOpenedClaimed(false)}>
+        <div className="mx-auto space-y-7">
+          <img src="/img/check-circle.svg" alt="" className="mx-auto" />
+          <div className="space-y-2">
+            <h1 className="text-center text-2xl font-semibold">Claim proccessing</h1>
+            <p className="text-gray-500 text-center text-md">
+              {"This transaction could take up to {x amount of time}. Please check back in a bit."}
+            </p>
+            <p className="text-gray-500 text-center text-sm">
+              {"If there are any issues please reach out to {discord?}"}
+            </p>
+          </div>
+          <div className="flex gap-2 w-full">
+            <Button variant="cancel" fullWidth>
+              Cancel
+            </Button>
+            <Button fullWidth>Got it</Button>
           </div>
         </div>
       </Modal>
