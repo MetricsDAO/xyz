@@ -1,19 +1,28 @@
-import { Avatar, Text } from "@mantine/core";
-import { PROJECT_ICONS } from "~/utils/helpers";
+import type { Project } from "@prisma/client";
+import type { BadgeProps } from "./Badge";
+import { Badge } from "./Badge";
+import * as Avatar from "@radix-ui/react-avatar";
 
-export function ProjectBadge({ slug }: { slug: string }) {
-  const iconUrl = PROJECT_ICONS[slug];
+type ProjectBadgeProps = {
+  project: Project;
+  variant?: BadgeProps["variant"];
+};
 
-  return <TextWithIcon text={slug} iconUrl={iconUrl ?? null} />;
-}
-
-export function TextWithIcon({ text, iconUrl }: { text: string; iconUrl: string | null }) {
+export function ProjectBadge({ project, variant }: ProjectBadgeProps) {
   return (
-    <div className="flex items-center space-x-1">
-      {iconUrl && <Avatar size="sm" src={iconUrl} />}
-      <Text color="dark.3" weight={400}>
-        {text}
-      </Text>
-    </div>
+    <Badge className="pl-2" variant={variant}>
+      <Avatar.Root className="h-5 w-5 items-center justify-center rounded-full">
+        <Avatar.Image
+          src={`/img/icons/project-icons/${project.slug}.svg`}
+          alt={`${project.name} logo`}
+          className="object-contain"
+        />
+        <Avatar.Fallback className="w-full h-full flex items-center justify-center text-xs text-gray-100 bg-gray-400 rounded-full">
+          {project.slug.at(0)?.toUpperCase()}
+        </Avatar.Fallback>
+      </Avatar.Root>
+      {/* <img src={`/logos/${project.slug}.svg`} alt={`${project.name} logo`} className="h-4 w-4" /> */}
+      <span className="mx-1">{project.name}</span>
+    </Badge>
   );
 }

@@ -1,16 +1,14 @@
 import { z } from "zod";
-import { LaborMarketSchema } from "./labor-market";
+import { EthAddressSchema } from "./address";
 
 export const ChallengeSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
-  sponsor: z.string(),
-  status: z.enum(["pending", "active", "review", "closed"]),
-  payCurve: z.enum(["flat"]),
-  programId: z.string(),
-  marketplace: LaborMarketSchema,
+  id: z.string({ description: "The id of the service request." }),
+  title: z.string({ description: "The title of the service request." }).min(1, "Required"),
+  description: z.string({ description: "The description of the service request." }).min(1, "Required"),
+  laborMarketAddress: EthAddressSchema,
 });
+
+export const ChallengeNewSchema = ChallengeSchema.omit({ id: true });
 
 export const ChallengeSearchSchema = z.object({
   page: z.number().default(1),
@@ -24,4 +22,5 @@ export const ChallengeSearchSchema = z.object({
 });
 
 export type Challenge = z.infer<typeof ChallengeSchema>;
+export type ChallengeNew = z.infer<typeof ChallengeNewSchema>;
 export type ChallengeSearch = z.infer<typeof ChallengeSearchSchema>;

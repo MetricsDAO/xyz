@@ -31,11 +31,11 @@ const Header = () => {
              cursor-pointer absolute right-2"
         onClick={toggleMenu}
       >
-        <span className="block w-6 h-0.5 bg-gray-600"></span>
-        <span className="block w-6 h-0.5 bg-gray-600"></span>
-        <span className="block w-6 h-0.5 bg-gray-600"></span>
+        <span className="block w-6 h-0.5 bg-[#6B7280]"></span>
+        <span className="block w-6 h-0.5 bg-[#6B7280]"></span>
+        <span className="block w-6 h-0.5 bg-[#6B7280]"></span>
       </div>
-      <ul ref={navRef} className="nav w-3/4 justify-end list-none hidden lg:flex items-center">
+      <ul ref={navRef} className="nav w-3/4 justify-end list-none hidden lg:flex items-center gap-y-2">
         <a
           className="btn btn-outline-dark rounded-pill xl:px-4 lg:px-3 xl:mr-4 lg:mr-2 md:mr-1"
           href="https://blog.metricsdao.xyz/101/"
@@ -67,7 +67,9 @@ const Header = () => {
         >
           Partner with Us
         </Link>
-        <SocialIcons />
+        <div className="flex flex-row">
+          <SocialIcons />
+        </div>
       </ul>
     </header>
   );
