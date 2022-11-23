@@ -65,7 +65,7 @@ export default function Brainstorm() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesTable2 marketplaces={marketplaces} />
+            <MarketplacesTable marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
@@ -153,118 +153,55 @@ type MarketplaceTableProps = {
   marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
 };
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
   }
   return (
-    <div>
-      {/* Header (hide on mobile) */}
-      <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
-        <div className="col-span-2">
-          <SortButton label="title" title="Challenge Marketplace" />
-        </div>
-        <p>Chain/Project</p>
-        <p>Challenge Pool Totals</p>
-        <p>Avg. Challenge Pool</p>
-        <SortButton label="serviceRequests" title="# Challenges" />
-      </div>
-      {/* Rows */}
-      <div className="space-y-4">
-        {marketplaces.map((m) => {
-          return (
-            <Card asChild key={m.address}>
-              <Link
-                to={`/app/brainstorm/${m.address}/challenges`}
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-4 py-5"
-              >
-                <div className="lg:hidden">Challenge Marketplaces</div>
-                <div className="lg:col-span-2 text-sm font-medium">{m.title}</div>
-
-                <div className="lg:hidden">Chain/Project</div>
-                <div className="flex flex-wrap gap-2">
-                  {m.projects.map((p) => (
-                    <Badge key={p.slug} className="pl-2">
-                      <ProjectIcon project={p} />
-                      <span className="mx-1">{p.name}</span>
-                    </Badge>
-                  ))}
-                </div>
-
-                <div className="lg:hidden">Challenge Pool Totals</div>
-                <Badge>
-                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-
-                <div className="lg:hidden">Avg. Challenge Pool</div>
-                <Badge>
-                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-
-                <div className="lg:hidden"># Challenges</div>
-                <div>{m._count.serviceRequests.toLocaleString()}</div>
-              </Link>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function MarketplacesTable2({ marketplaces }: MarketplaceTableProps) {
-  if (marketplaces.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
-  return (
     <Table>
-      <Header>
-        <Header.Column className="col-span-4">
-          <SortButton label="title" title="Challenge Marketplace" />
+      <Header columns={6}>
+        <Header.Column span={2}>
+          <SortButton label="title" title="Challenge Marketplaces" />
         </Header.Column>
-        <Header.Column className="col-span-3">Chain/Project</Header.Column>
-        <Header.Column className="col-span-2">Challenge Pool Totals</Header.Column>
-        <Header.Column className="col-span-2">Avg. Challenge Pool</Header.Column>
-        <Header.Column className="col-span-1 flex justify-end">
+        <Header.Column>Chain/Project</Header.Column>
+        <Header.Column>Challenge Pool Totals</Header.Column>
+        <Header.Column>Avg. Challenge Pool</Header.Column>
+        <Header.Column>
           <SortButton label="serviceRequests" title="# Challenges" />
         </Header.Column>
       </Header>
       {marketplaces.map((m) => {
         return (
-          <Row to={`/app/brainstorm/${m.address}/challenges`} key={m.address}>
-            <Row.Column label="Challenge Marketplaces" className="lg:col-span-4">
+          <Row columns={6} to={`/app/brainstorm/${m.address}/challenges`} key={m.address}>
+            <Row.Column label="Challenge Marketplaces" span={2}>
               {m.title}
             </Row.Column>
-            <Row.Column className="lg:col-span-3 flex items-center gap-2 flex-wrap" label="Chain/Project">
-              {m.projects.map((p) => (
-                <Badge key={p.slug} className="pl-2">
-                  <ProjectIcon project={p} />
-                  <span className="mx-1">{p.name}</span>
-                </Badge>
-              ))}
+            <Row.Column label="Chain/Project">
+              <div className="flex items-center gap-2 flex-wrap">
+                {m.projects.map((p) => (
+                  <Badge key={p.slug} className="pl-2">
+                    <ProjectIcon project={p} />
+                    <span className="mx-1">{p.name}</span>
+                  </Badge>
+                ))}
+              </div>
             </Row.Column>
 
-            <Row.Column className="lg:col-span-2" label="Challenge Pool Totals">
+            <Row.Column label="Challenge Pool Totals">
               <Badge>
                 <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
                 <span className="mx-1">1000 USDC</span>
               </Badge>
             </Row.Column>
 
-            <Row.Column className="lg:col-span-2" label="Avg. Challenge Pool">
+            <Row.Column label="Avg. Challenge Pool">
               <Badge>
                 <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
                 <span className="mx-1">1000 USDC</span>
               </Badge>
             </Row.Column>
 
-            <Row.Column label="# Challenges" className="lg:col-span-1 lg:text-right">
-              {m._count.serviceRequests.toLocaleString()}
-            </Row.Column>
+            <Row.Column label="# Challenges">{m._count.serviceRequests.toLocaleString()}</Row.Column>
           </Row>
         );
       })}
