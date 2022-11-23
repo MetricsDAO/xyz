@@ -50,7 +50,7 @@ export default function MarketplaceChallenges() {
     <Container className="py-16">
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pb-5">
-          <div>{laborMarket?.title} </div>
+          <h1 className="text-3xl font-semibold">{laborMarket?.title} </h1>
           <div className="flex flex-wrap gap-5">
             <Link to="/app/brainstorm/[marketplaceId]/claim">
               <Button className="mx-auto radius-md">Launch Challenge</Button>
