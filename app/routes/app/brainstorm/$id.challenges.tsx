@@ -51,11 +51,9 @@ export default function MarketplaceChallenges() {
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pb-5">
           <div>{laborMarket?.title} </div>
-          <div className="flex flex-wrap gap-5">
-            <Link to="/app/brainstorm/[marketplaceId]/claim">
-              <Button className="mx-auto radius-md">Launch Challenge</Button>
-            </Link>
-          </div>
+          <Link to="/app/brainstorm/[marketplaceId]/claim">
+            <Button className="mx-auto radius-md">Launch Challenge</Button>
+          </Link>
         </section>
         <section className="flex flex-col space-y-7 pb-12">
           {/* <div className="flex flex-wrap gap-x-8">
@@ -70,10 +68,10 @@ export default function MarketplaceChallenges() {
             </div>
           </Detail>
         </div> */}
-          <div className="max-w-2xl text-[#666666] text-[14px]">
+          <p className="max-w-2xl text-gray-500 text-sm">
             Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
             DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
-          </div>
+          </p>
         </section>
 
         <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
@@ -180,7 +178,7 @@ function Prerequisites() {
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate">
             <div className="space-y-4 md:w-4/5">
-              <p className="text-[14px] text-[#666666]">
+              <p className="text-sm text-gray-500">
                 What you must hold in your connected wallet to perform various actions on this challenge
               </p>
               <Card className="p-4 space-y-2">
@@ -189,13 +187,13 @@ function Prerequisites() {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex flex-col">
-                    <div className="text-[12px] text-[#666666] mb-2">MIN BALANCE</div>
+                    <div className="text-[12px] text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
                       <div className="normal-case">15 xMetric</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
-                    <div className="text-[12px] text-[#666666] mb-2">MAX BALANCE</div>
+                    <div className="text-[12px] text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
                       <div className="normal-case">100 xMetric</div>
                     </Badge>
@@ -206,7 +204,7 @@ function Prerequisites() {
                 <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this badge to review and score submissions on this challenge
                 </p>
-                <div className="text-[12px] text-[#666666]">MDAO S4 REVIEWER BADGE</div>
+                <div className="text-[12px] text-gray-500">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
                   <div className="text-[16px] text-[#252525]">0x1234</div>
@@ -216,7 +214,7 @@ function Prerequisites() {
                 <p className="font-weight-500 text-[16px] text-[#252525]">
                   You must hold this badge to launch new challenges
                 </p>
-                <div className="text-[12px] text-[#666666]">MDAO S4 CONTRIBUTOR BADGE</div>
+                <div className="text-[12px] text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
                   <div className="text-[16px] text-[#252525]">0x1234</div>
@@ -236,25 +234,25 @@ function Rewards() {
       <main className="flex-1">
         <div className="space-y-5">
           <div className="min-w-[350px] w-full border-spacing-4 border-separate space-y-4 md:w-4/5">
-            <p className="text-[14px] text-[#666666]">
+            <p className="text-sm text-gray-500">
               How rewards are distributed for all challenges in this challenge marketplace and how liquid it currently
               is
             </p>
             <Card className="p-4 space-around space-y-2">
               <p className="font-weight-500 text-[16px] text-[#252525]">Challenge Pools Total</p>
-              <p className="text-[12px] text-[#666666]">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
+              <p className="text-[12px] text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
               <p>100 SOL</p>
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-[16px] text-[#252525]">Avg. Challenge Pool</p>
-              <p className="text-[12px] text-[#666666]">
+              <p className="text-[12px] text-gray-500">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </p>
               <p>100 SOL</p>
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-[16px] text-[#252525]">Reward Curve</p>
-              <p className="text-[12px] text-[#666666]">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
+              <p className="text-[12px] text-gray-500">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
               <div className="flex flex-row space-x-3 mt-1">
                 <Badge>Aggresive</Badge>
                 <p className="text-[12px]">
@@ -264,7 +262,7 @@ function Rewards() {
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-[16px] text-[#252525]">Reward Tokens</p>
-              <p className="text-[12px] text-[#666666]">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
+              <p className="text-[12px] text-gray-500">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
               <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</p>
             </Card>
           </div>
@@ -322,11 +320,11 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                 <div className="lg:hidden">Reward Pool</div>
                 <div> 5 Sol</div>
                 <div className="lg:hidden">Submit Deadline</div>
-                <div className="text-[#666666] text-[14px]">
+                <div className="text-gray-500 text-sm">
                   <Countdown date={"2023-01-25"} />
                 </div>
                 <div className="lg:hidden">Review Deadline</div>
-                <div className="text-[#666666] text-[14px]">
+                <div className="text-gray-500 text-sm">
                   <Countdown date={"2022-11-25"} />
                 </div>
               </Link>
