@@ -69,9 +69,6 @@ function SearchAndFilter() {
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function IOUTable({ iouTokens }: { iouTokens: any }) {
-  const [openedBurn, setOpenedBurn] = useState(false);
-  const [openedAlert, setOpenedAlert] = useState(false);
-  const [openedIssue, setOpenedIssue] = useState(false);
   if (iouTokens.length === 0) {
     return (
       <div className="flex py-16">
@@ -80,66 +77,8 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
     );
   }
 
-  function closeAlert() {
-    setOpenedAlert(false);
-    setOpenedIssue(true);
-  }
   return (
     <>
-      <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
-        <div className="mx-auto space-y-7">
-          <WarningAltFilled32 className="text-yellow-700 mx-auto" />
-          <div className="space-y-2">
-            <h1 className="text-center text-lg font-semibold">Please check token liquidity</h1>
-            <p className="text-gray-500 text-center text-md">
-              You must ensure the DAO has enough token liquidity before issuing more iouTokens
-            </p>
-          </div>
-          <div className="flex gap-2 w-full">
-            <Button variant="cancel" fullWidth onClick={() => setOpenedAlert(false)}>
-              Cancel
-            </Button>
-            <Button fullWidth onClick={() => closeAlert()}>
-              All set
-            </Button>
-          </div>
-        </div>
-      </Modal>
-      <Modal isOpen={openedBurn} onClose={() => setOpenedBurn(false)} title="Burn iouTODO">
-        <div className="space-y-5 mt-5">
-          <Input
-            id="burn"
-            placeholder="Burn amount"
-            label="The tokens will be burned and cease to exist."
-            className="w-full"
-          />
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedBurn(false)}>
-              Cancel
-            </Button>
-            <Button>Burn</Button>
-          </div>
-        </div>
-      </Modal>
-      <Modal isOpen={openedIssue} onClose={() => setOpenedIssue(false)} title="Issue iouTODO">
-        <div className="space-y-5 mt-5">
-          <Input
-            placeholder="Issue amount"
-            label="The tokens will be created and start circulating."
-            className="w-full"
-          />
-          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <WarningAltFilled16 className="text-yellow-700 mx-2" />
-            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
-              Cancel
-            </Button>
-            <Button>Issue</Button>
-          </div>
-        </div>
-      </Modal>
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <SortButton title="Name" label="todo" />
@@ -163,16 +102,96 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
                 <div className="lg:hidden">Burned</div>
                 <p>1000</p>
                 <div className="flex flex-wrap gap-2 lg:col-span-3 justify-end">
-                  <Button onClick={() => setOpenedBurn(true)} variant="cancel">
-                    Burn
-                  </Button>
-                  <Button onClick={() => setOpenedAlert(true)}>Issue</Button>
+                  <BurnButton />
+                  <IssueButton />
                 </div>
               </div>
             </Card>
           );
         })}
       </div>
+    </>
+  );
+}
+
+function BurnButton() {
+  const [openedBurn, setOpenedBurn] = useState(false);
+
+  return (
+    <>
+      <Button onClick={() => setOpenedBurn(true)} variant="cancel">
+        Burn
+      </Button>
+      <Modal isOpen={openedBurn} onClose={() => setOpenedBurn(false)} title="Burn iouTODO">
+        <div className="space-y-5 mt-5">
+          <Input
+            id="burn"
+            placeholder="Burn amount"
+            label="The tokens will be burned and cease to exist."
+            className="w-full"
+          />
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={() => setOpenedBurn(false)}>
+              Cancel
+            </Button>
+            <Button>Burn</Button>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}
+
+function IssueButton() {
+  const [openedAlert, setOpenedAlert] = useState(false);
+  const [openedIssue, setOpenedIssue] = useState(false);
+
+  function closeAlert() {
+    setOpenedAlert(false);
+    setOpenedIssue(true);
+  }
+
+  return (
+    <>
+      <Button onClick={() => setOpenedAlert(true)}>Issue</Button>
+      <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
+        <div className="mx-auto space-y-7">
+          <WarningAltFilled32 className="text-yellow-700 mx-auto" />
+          <div className="space-y-2">
+            <h1 className="text-center text-lg font-semibold">Please check token liquidity</h1>
+            <p className="text-gray-500 text-center text-md">
+              You must ensure the DAO has enough token liquidity before issuing more iouTokens
+            </p>
+          </div>
+          <div className="flex gap-2 w-full">
+            <Button variant="cancel" fullWidth onClick={() => setOpenedAlert(false)}>
+              Cancel
+            </Button>
+            <Button fullWidth onClick={() => closeAlert()}>
+              All set
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal isOpen={openedIssue} onClose={() => setOpenedIssue(false)} title="Issue iouTODO">
+        <div className="space-y-5 mt-5">
+          <Input
+            placeholder="Issue amount"
+            label="The tokens will be created and start circulating."
+            className="w-full"
+          />
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+            <WarningAltFilled16 className="text-yellow-700 mx-2" />
+            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
+              Cancel
+            </Button>
+            <Button>Issue</Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
