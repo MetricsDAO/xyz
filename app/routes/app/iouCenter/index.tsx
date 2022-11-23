@@ -48,7 +48,7 @@ function SearchAndFilter() {
       method="get"
       noValidate
       validator={withZod(z.any())}
-      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
+      className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
       <Input placeholder="Search" name="q" iconLeft={<Search16 className="ml-2" />} />
       <p className="text-lg font-semibold">Filter</p>
@@ -88,7 +88,7 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
     <>
       <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
         <div className="mx-auto space-y-7">
-          <WarningAltFilled32 className="text-[#946100] mx-auto" />
+          <WarningAltFilled32 className="text-yellow-700 mx-auto" />
           <div className="space-y-2">
             <h1 className="text-center text-lg font-semibold">Please check token liquidity</h1>
             <p className="text-gray-500 text-center text-md">
@@ -128,9 +128,9 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
             label="The tokens will be created and start circulating."
             className="w-full"
           />
-          <div className="bg-[#FFD9911A] flex items-center rounded-md p-2">
-            <WarningAltFilled16 className="text-[#946100] mx-2" />
-            <p className="text-[#946100] text-sm">Ensure there is enough token liquidity before issuing</p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+            <WarningAltFilled16 className="text-yellow-700 mx-2" />
+            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedIssue(false)}>

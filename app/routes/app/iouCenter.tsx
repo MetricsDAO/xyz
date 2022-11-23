@@ -21,9 +21,9 @@ export default function IOUCenter() {
           <p>The tokens will be created and start circulating</p>
           <Input label="Name the iouToken" placeholder="iouToken name" />
           <Input label="Amount of iouToken" placeholder="Issue amount" />
-          <div className="bg-[#FFD9911A] flex items-center rounded-md p-2">
-            <WarningAltFilled16 className="text-[#946100] mx-2" />
-            <p className="text-[#946100] text-sm">Ensure there is enough token liquidity before issuing</p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+            <WarningAltFilled16 className="text-yellow-700 mx-2" />
+            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
@@ -43,9 +43,9 @@ export default function IOUCenter() {
             <p className="text-lg text-cyan-500">
               Create iouTokens to facilitate multi-chain payouts in partners’ native tokens
             </p>
-            <div className="bg-[#FFD9911A] flex items-center rounded-md p-2">
-              <WarningAltFilled16 className="text-[#946100] mx-2" />
-              <p className="text-[#946100]">
+            <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+              <WarningAltFilled16 className="text-yellow-700 mx-2" />
+              <p className="text-yellow-700">
                 You must ensure the DAO has enough token liquidity before issuing more iouTokens
               </p>
             </div>
