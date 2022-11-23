@@ -3,6 +3,7 @@ import {
   ChevronSort16,
   ChevronSortDown16,
   ChevronSortUp16,
+  Copy16,
   WarningSquareFilled16,
 } from "@carbon/icons-react";
 import dayjs from "dayjs";
@@ -41,13 +42,13 @@ export default function PayoutAddresses() {
       <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
         <div className="space-y-5 mt-5">
           <div className="space-y-2">
-            <div className="flex border-solid border rounded-md border-[#DEDEDE]">
-              <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
+            <div className="flex border-solid border rounded-md border-trueGray-200">
+              <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
               <div className="flex items-center ml-2">
                 {validAddress ? (
-                  <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
+                  <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
                 ) : (
-                  <WarningSquareFilled16 className="mr-1 text-[#EC5962]" />
+                  <WarningSquareFilled16 className="mr-1 text-rose-500" />
                 )}
                 <input id="update" placeholder="Update address" />
               </div>
@@ -68,8 +69,8 @@ export default function PayoutAddresses() {
       </Modal>
       <Modal isOpen={openedRemove} onClose={() => setOpenedRemove(false)} title="Are you sure you want to remove?">
         <div className="space-y-5 mt-5">
-          <div className="flex border-solid border rounded-md border-[#DEDEDE] items-center">
-            <p className="text-sm font-semibold border-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
+          <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
+            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
             <p className="pl-2">0x381764734678365783648</p>
           </div>
           <div className="flex gap-2 justify-end">
@@ -82,14 +83,14 @@ export default function PayoutAddresses() {
       </Modal>
       <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
         <div className="space-y-5 mt-5">
-          <div className="flex border-solid border rounded-md border-[#DEDEDE]">
+          <div className="flex border-solid border rounded-md border-trueGray-200">
             <ChevronSortDown16 className="m-3" />
 
-            <div className="flex items-center pl-2 border-solid border-0 border-l border-[#DEDEDE]">
+            <div className="flex items-center pl-2 border-solid border-0 border-l border-trueGray-200">
               {validAddress ? (
-                <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
+                <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
               ) : (
-                <WarningSquareFilled16 className="mr-1 text-[#EC5962]" />
+                <WarningSquareFilled16 className="mr-1 text-rose-500" />
               )}
               <input id="address" placeholder="Select a chain and enter an address" className="text-sm" />
             </div>
@@ -141,8 +142,14 @@ export default function PayoutAddresses() {
                   <div className="lg:hidden">Chain/Project</div>
                   <p>project</p>
                   <div className="lg:hidden">Address</div>
-                  <div className="lg:col-span-2">
+                  <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
+                    {validAddress ? (
+                      <CheckboxCheckedFilled16 className="text-lime-500" />
+                    ) : (
+                      <WarningSquareFilled16 className="text-rose-500" />
+                    )}
                     <p className="text-black">{w.address}</p>
+                    <Copy16 className="ml-0.5" />
                   </div>
                   <div className="lg:hidden">Last Updated</div>
                   <p className="text-black">{formatTime("1999-01-01")} </p>

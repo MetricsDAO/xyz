@@ -84,12 +84,12 @@ function RewardsTable({ rewards }: { rewards: any }) {
           <div className="space-y-2">
             <div className="flex items-center">
               <Avatar src="/img/trophy.svg" />
-              <p className="text-[#946100] text-2xl ml-2">10 SOL</p>
+              <p className="text-yellow-700 text-2xl ml-2">10 SOL</p>
             </div>
-            <div className="flex border-solid border rounded-md border-[#DEDEDE]">
-              <p className="text-sm font-semiboldborder-solid border-0 border-r border-[#DEDEDE] p-3">SOL</p>
+            <div className="flex border-solid border rounded-md border-trueGray-200">
+              <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
               <div className="flex items-center p-3">
-                <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
+                <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
                 <p className="text-sm text-gray-600">0xs358437485395889094</p>
               </div>
             </div>
@@ -181,7 +181,7 @@ function SearchAndFilter() {
       method="get"
       noValidate
       validator={withZod(z.any())}
-      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
+      className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
       <Input placeholder="Search" name="q" iconLeft={<Search16 className="w-5 h-5 ml-2" />} />
       <p className="text-lg font-semibold">Filter:</p>
