@@ -7,9 +7,9 @@ import { z } from "zod";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { ButtonSelect } from "~/components/ButtonSelect";
+import { Container } from "~/components/Container";
 import { CountdownCard } from "~/components/countdown-card";
 import { findChallenge } from "~/services/challenges-service.server";
-import { Container } from "~/components/Container";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -27,7 +27,7 @@ export default function ClaimToReview() {
 
   return (
     <Container className="py-16">
-      <ValidatedForm validator={withZod(z.any())} className="container mx-auto px-10 max-w-4xl space-y-7 mb-12">
+      <ValidatedForm validator={withZod(z.any())} className="mx-auto px-10 max-w-4xl space-y-7 mb-12">
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{`Claim to Review ${challenge.title}`}</h1>
           <p className="text-cyan-500 text-lg">
