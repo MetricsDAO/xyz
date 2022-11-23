@@ -184,18 +184,18 @@ function Prerequisites() {
                 What you must hold in your connected wallet to perform various actions on this challenge
               </p>
               <Card className="p-4 space-y-2">
-                <p className="font-weight-500 text-[16px] text-[#252525]">
+                <p className="font-weight-500 text-base text-[#252525]">
                   You must hold this much xMETRIC to enter submissions for this challenge
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex flex-col">
-                    <div className="text-[12px] text-gray-500 mb-2">MIN BALANCE</div>
+                    <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
                       <div className="normal-case">15 xMetric</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
-                    <div className="text-[12px] text-gray-500 mb-2">MAX BALANCE</div>
+                    <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
                       <div className="normal-case">100 xMetric</div>
                     </Badge>
@@ -203,23 +203,23 @@ function Prerequisites() {
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
-                <p className="font-weight-500 text-[16px] text-[#252525]">
+                <p className="font-weight-500 text-base text-[#252525]">
                   You must hold this badge to review and score submissions on this challenge
                 </p>
-                <div className="text-[12px] text-gray-500">MDAO S4 REVIEWER BADGE</div>
+                <div className="text-xs text-gray-500">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
-                  <div className="text-[16px] text-[#252525]">0x1234</div>
+                  <div className="text-base text-[#252525]">0x1234</div>
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
-                <p className="font-weight-500 text-[16px] text-[#252525]">
+                <p className="font-weight-500 text-base text-[#252525]">
                   You must hold this badge to launch new challenges
                 </p>
-                <div className="text-[12px] text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
+                <div className="text-xs text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
-                  <div className="text-[16px] text-[#252525]">0x1234</div>
+                  <div className="text-base text-[#252525]">0x1234</div>
                 </div>
               </Card>
             </div>
@@ -241,30 +241,30 @@ function Rewards() {
               is
             </p>
             <Card className="p-4 space-around space-y-2">
-              <p className="font-weight-500 text-[16px] text-[#252525]">Challenge Pools Total</p>
-              <p className="text-[12px] text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
+              <p className="font-weight-500 text-base text-[#252525]">Challenge Pools Total</p>
+              <p className="text-xs text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
               <p>100 SOL</p>
             </Card>
             <Card className="p-4 space-y-2">
-              <p className="font-weight-500 text-[16px] text-[#252525]">Avg. Challenge Pool</p>
-              <p className="text-[12px] text-gray-500">
+              <p className="font-weight-500 text-base text-[#252525]">Avg. Challenge Pool</p>
+              <p className="text-xs text-gray-500">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </p>
               <p>100 SOL</p>
             </Card>
             <Card className="p-4 space-y-2">
-              <p className="font-weight-500 text-[16px] text-[#252525]">Reward Curve</p>
-              <p className="text-[12px] text-gray-500">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
+              <p className="font-weight-500 text-base text-[#252525]">Reward Curve</p>
+              <p className="text-xs text-gray-500">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
               <div className="flex flex-row space-x-3 mt-1">
                 <Badge>Aggresive</Badge>
-                <p className="text-[12px]">
+                <p className="text-xs">
                   Rewards the top 10% of submissions. Winners are determined through peer review
                 </p>
               </div>
             </Card>
             <Card className="p-4 space-y-2">
-              <p className="font-weight-500 text-[16px] text-[#252525]">Reward Tokens</p>
-              <p className="text-[12px] text-gray-500">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
+              <p className="font-weight-500 text-base text-[#252525]">Reward Tokens</p>
+              <p className="text-xs text-gray-500">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
               <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</p>
             </Card>
           </div>
