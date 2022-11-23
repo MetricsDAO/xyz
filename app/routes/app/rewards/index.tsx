@@ -61,8 +61,6 @@ export default function Rewards() {
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
 function RewardsTable({ rewards }: { rewards: any }) {
-  const [opened, setOpened] = useState(false);
-  const [openedClaimed, setOpenedClaimed] = useState(false);
   const unclaimed = true;
 
   if (rewards.length === 0) {
@@ -73,56 +71,8 @@ function RewardsTable({ rewards }: { rewards: any }) {
     );
   }
 
-  function processClaim() {
-    setOpened(false);
-    setOpenedClaimed(true);
-  }
   return (
     <>
-      <Modal isOpen={opened} onClose={() => setOpened(false)} title="Claim your reward!">
-        <div className="space-y-5 mt-5">
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Avatar src="/img/trophy.svg" />
-              <p className="text-yellow-700 text-2xl ml-2">10 SOL</p>
-            </div>
-            <div className="flex border-solid border rounded-md border-trueGray-200">
-              <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
-              <div className="flex items-center p-3">
-                <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
-                <p className="text-sm text-gray-600">0xs358437485395889094</p>
-              </div>
-            </div>
-            <p className="text-xs">To chage or update this address head to Payout Addresses</p>
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpened(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => processClaim()}>Claim</Button>
-          </div>
-        </div>
-      </Modal>
-      <Modal isOpen={openedClaimed} onClose={() => setOpenedClaimed(false)}>
-        <div className="mx-auto space-y-7">
-          <img src="/img/check-circle.svg" alt="" className="mx-auto" />
-          <div className="space-y-2">
-            <h1 className="text-center text-2xl font-semibold">Claim proccessing</h1>
-            <p className="text-gray-500 text-center text-md">
-              {"This transaction could take up to {x amount of time}. Please check back in a bit."}
-            </p>
-            <p className="text-gray-500 text-center text-sm">
-              {"If there are any issues please reach out to {discord?}"}
-            </p>
-          </div>
-          <div className="flex gap-2 w-full">
-            <Button variant="cancel" fullWidth>
-              Cancel
-            </Button>
-            <Button fullWidth>Got it</Button>
-          </div>
-        </div>
-      </Modal>
       {/* Header (hide on mobile) */}
       <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
         <div className="col-span-2">
@@ -155,15 +105,70 @@ function RewardsTable({ rewards }: { rewards: any }) {
                 {formatTime("2022-11-01")}{" "}
               </p>
               <div className="lg:hidden">Status</div>
-              {unclaimed ? (
-                <Button onClick={() => setOpened(true)}>Claim</Button>
-              ) : (
-                <Button variant="cancel">View Tx</Button>
-              )}
+              {unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}
             </Card>
           );
         })}
       </div>
+    </>
+  );
+}
+
+function ClaimButton() {
+  const [opened, setOpened] = useState(false);
+  const [openedProcess, setOpenedProcess] = useState(false);
+
+  function processClaim() {
+    setOpened(false);
+    setOpenedProcess(true);
+  }
+  return (
+    <>
+      <Button onClick={() => setOpened(true)}>Claim</Button>
+      <Modal isOpen={opened} onClose={() => setOpened(false)} title="Claim your reward!">
+        <div className="space-y-5 mt-5">
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <Avatar src="/img/trophy.svg" />
+              <p className="text-yellow-700 text-2xl ml-2">10 SOL</p>
+            </div>
+            <div className="flex border-solid border rounded-md border-trueGray-200">
+              <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
+              <div className="flex items-center p-3">
+                <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
+                <p className="text-sm text-gray-600">0xs358437485395889094</p>
+              </div>
+            </div>
+            <p className="text-xs">To chage or update this address head to Payout Addresses</p>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={() => setOpened(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => processClaim()}>Claim</Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal isOpen={openedProcess} onClose={() => setOpenedProcess(false)}>
+        <div className="mx-auto space-y-7">
+          <img src="/img/check-circle.svg" alt="" className="mx-auto" />
+          <div className="space-y-2">
+            <h1 className="text-center text-2xl font-semibold">Claim proccessing</h1>
+            <p className="text-gray-500 text-center text-md">
+              {"This transaction could take up to {x amount of time}. Please check back in a bit."}
+            </p>
+            <p className="text-gray-500 text-center text-sm">
+              {"If there are any issues please reach out to {discord?}"}
+            </p>
+          </div>
+          <div className="flex gap-2 w-full">
+            <Button variant="cancel" fullWidth>
+              Cancel
+            </Button>
+            <Button fullWidth>Got it</Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
