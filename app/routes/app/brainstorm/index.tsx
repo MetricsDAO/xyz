@@ -22,6 +22,9 @@ import { TokenIcon } from "~/components/token-icon/token-icon";
 import { Container } from "~/components/Container";
 import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
+import type { RemixLinkProps } from "@remix-run/react/dist/components";
+import clsx from "clsx";
+import { Header, Row, Table } from "~/components/table";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -62,7 +65,7 @@ export default function Brainstorm() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesTable marketplaces={marketplaces} />
+            <MarketplacesTable2 marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
@@ -210,6 +213,62 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         })}
       </div>
     </div>
+  );
+}
+
+function MarketplacesTable2({ marketplaces }: MarketplaceTableProps) {
+  if (marketplaces.length === 0) {
+    return <p>No results. Try changing search and filter options.</p>;
+  }
+  return (
+    <Table>
+      <Header>
+        <Header.Column className="col-span-4">
+          <SortButton label="title" title="Challenge Marketplace" />
+        </Header.Column>
+        <Header.Column className="col-span-3">Chain/Project</Header.Column>
+        <Header.Column className="col-span-2">Challenge Pool Totals</Header.Column>
+        <Header.Column className="col-span-2">Avg. Challenge Pool</Header.Column>
+        <Header.Column className="col-span-1 flex justify-end">
+          <SortButton label="serviceRequests" title="# Challenges" />
+        </Header.Column>
+      </Header>
+      {marketplaces.map((m) => {
+        return (
+          <Row to={`/app/brainstorm/${m.address}/challenges`} key={m.address}>
+            <Row.Column label="Challenge Marketplaces" className="lg:col-span-4">
+              {m.title}
+            </Row.Column>
+            <Row.Column className="lg:col-span-3 flex items-center gap-2 flex-wrap" label="Chain/Project">
+              {m.projects.map((p) => (
+                <Badge key={p.slug} className="pl-2">
+                  <ProjectIcon project={p} />
+                  <span className="mx-1">{p.name}</span>
+                </Badge>
+              ))}
+            </Row.Column>
+
+            <Row.Column className="lg:col-span-2" label="Challenge Pool Totals">
+              <Badge>
+                <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                <span className="mx-1">1000 USDC</span>
+              </Badge>
+            </Row.Column>
+
+            <Row.Column className="lg:col-span-2" label="Avg. Challenge Pool">
+              <Badge>
+                <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                <span className="mx-1">1000 USDC</span>
+              </Badge>
+            </Row.Column>
+
+            <Row.Column label="# Challenges" className="lg:col-span-1 lg:text-right">
+              {m._count.serviceRequests.toLocaleString()}
+            </Row.Column>
+          </Row>
+        );
+      })}
+    </Table>
   );
 }
 
