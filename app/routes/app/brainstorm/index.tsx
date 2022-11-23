@@ -20,8 +20,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Container } from "~/components/Container";
 import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
-import { ProjectAvatar } from "~/components/avatar/project-avatar";
-import { TokenAvatar } from "~/components/avatar/token-avatar";
+import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
