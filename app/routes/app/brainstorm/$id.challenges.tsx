@@ -17,6 +17,7 @@ import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/Input";
 import { Pagination } from "~/components/Pagination";
+import { ProjectIcon } from "~/components/project-icon";
 import { Select } from "~/components/Select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
@@ -309,9 +310,12 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                 <div className="lg:hidden">Chain/Project</div>
                 <div className="flex">
                   <div>
-                    {/* {c.laborMarket.projects?.map((p) => (
-                      <ProjectBadge key={p.slug} variant="transparent" project={p} />
-                    ))} */}
+                    {c.laborMarket.projects?.map((p) => (
+                      <Badge key={p.slug} className="pl-2">
+                        <ProjectIcon project={p} />
+                        <span className="mx-1">{p.name}</span>
+                      </Badge>
+                    ))}
                   </div>
                 </div>
 
