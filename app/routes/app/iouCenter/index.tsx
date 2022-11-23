@@ -28,7 +28,7 @@ export default function IOUTab() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="flex-1 space-y-4">
-        <RewardsTable iouTokens={rewards} />
+        <IOUTable iouTokens={rewards} />
         <div className="w-fit m-auto">
           <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
         </div>
@@ -68,7 +68,7 @@ function SearchAndFilter() {
 }
 
 // Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function RewardsTable({ iouTokens }: { iouTokens: any }) {
+function IOUTable({ iouTokens }: { iouTokens: any }) {
   const [openedBurn, setOpenedBurn] = useState(false);
   const [openedAlert, setOpenedAlert] = useState(false);
   const [openedIssue, setOpenedIssue] = useState(false);
