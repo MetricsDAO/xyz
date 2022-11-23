@@ -10,7 +10,6 @@ import { useRef } from "react";
 import { z } from "zod";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { ProjectBadge } from "~/components/ProjectBadge";
 import { Checkbox } from "~/components/Checkbox";
 import { Pagination } from "~/components/Pagination";
 import { Modal } from "~/components/modal";
@@ -21,27 +20,42 @@ import { useState } from "react";
 import { Combobox } from "~/components/Combobox";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
+import { Container } from "~/components/Container";
+import RewardsTab from "~/components/RewardsTab";
+import { Card } from "~/components/Card";
 
-export default function RewardsTab() {
+export default function Rewards() {
   //to be replaced
   const rewards = [{ id: 123, title: "silly string" }];
   const totalResults = rewards.length;
   const params = { first: 1, page: 1 };
 
   return (
-    <section className="container mx-auto flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-      <main className="flex-1">
-        <div className="space-y-5">
-          <RewardsTable rewards={rewards} />
-          <div className="w-fit m-auto">
-            <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
-          </div>
+    <Container className="py-16 px-10">
+      <section className="space-y-2 max-w-3xl mb-16">
+        <h1 className="text-3xl font-semibold">Rewards</h1>
+        <div>
+          <p className="text-lg text-cyan-500">Claim reward tokens for all the challenges you’ve won</p>
+          <p className="text-gray-500 text-sm">
+            View all your pending and claimed rewards and manage all your payout addresses
+          </p>
         </div>
-      </main>
-      <aside className="md:w-1/5">
-        <SearchAndFilter />
-      </aside>
-    </section>
+      </section>
+      <RewardsTab rewardsNum={rewards.length} addressesNum={22} />
+      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+        <main className="flex-1">
+          <div className="space-y-5">
+            <RewardsTable rewards={rewards} />
+            <div className="w-fit m-auto">
+              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
+            </div>
+          </div>
+        </main>
+        <aside className="md:w-1/4 lg:md-1/5">
+          <SearchAndFilter />
+        </aside>
+      </section>
+    </Container>
   );
 }
 
@@ -50,6 +64,14 @@ function RewardsTable({ rewards }: { rewards: any }) {
   const [opened, setOpened] = useState(false);
   const [openedClaimed, setOpenedClaimed] = useState(false);
   const unclaimed = true;
+
+  if (rewards.length === 0) {
+    return (
+      <div className="flex">
+        <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
+      </div>
+    );
+  }
 
   function processClaim() {
     setOpened(false);
@@ -112,42 +134,36 @@ function RewardsTable({ rewards }: { rewards: any }) {
         <SortButton title="Status" label="todo" />
       </div>
       {/* Rows */}
-      {rewards.length < 1 ? (
-        <div className="flex">
-          <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {rewards.map((r: { id: string; title: string }) => {
-            return (
-              <div
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-                key={r.id}
-              >
-                <div className="lg:hidden">Challenge Title</div>
-                <div className="lg:col-span-2">
-                  <p>{r.title}</p>
-                </div>
-                <div className="lg:hidden">Reward</div>
-                <p>20 SOL</p>
-                <div className="lg:hidden">Submitted</div>
-                <p className="text-black">{formatTime("2022-01-01")} </p>
-                <div className="lg:hidden">Rewarded</div>
-                <p className="text-black" color="dark.3">
-                  {formatTime("2022-11-01")}{" "}
-                </p>
-                <div className="lg:hidden">Status</div>
-                {unclaimed ? (
-                  <Button onClick={() => setOpened(true)}>Claim</Button>
-                ) : (
-                  <Button variant="cancel">View Tx</Button>
-                )}
+      <div className="space-y-3">
+        {rewards.map((r: { id: string; title: string }) => {
+          return (
+            <Card
+              // On mobile, two column grid with "labels". On desktop hide the "labels".
+              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-2 py-5"
+              key={r.id}
+            >
+              <div className="lg:hidden">Challenge Title</div>
+              <div className="lg:col-span-2">
+                <p>{r.title}</p>
               </div>
-            );
-          })}
-        </div>
-      )}
+              <div className="lg:hidden">Reward</div>
+              <p>20 SOL</p>
+              <div className="lg:hidden">Submitted</div>
+              <p className="text-black">{formatTime("2022-01-01")} </p>
+              <div className="lg:hidden">Rewarded</div>
+              <p className="text-black" color="dark.3">
+                {formatTime("2022-11-01")}{" "}
+              </p>
+              <div className="lg:hidden">Status</div>
+              {unclaimed ? (
+                <Button onClick={() => setOpened(true)}>Claim</Button>
+              ) : (
+                <Button variant="cancel">View Tx</Button>
+              )}
+            </Card>
+          );
+        })}
+      </div>
     </>
   );
 }

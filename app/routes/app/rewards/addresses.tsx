@@ -11,10 +11,14 @@ import { useSearchParams } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
+import { Container } from "~/components/Container";
+import RewardsTab from "~/components/RewardsTab";
+import { Card } from "~/components/Card";
 
 export default function PayoutAddresses() {
   const [openedUpdate, setOpenedUpdate] = useState(false);
   const [openedRemove, setOpenedRemove] = useState(false);
+  const [openedAdd, setOpenedAdd] = useState(false);
 
   const validAddress = false;
   const wallets = [
@@ -23,6 +27,14 @@ export default function PayoutAddresses() {
     { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
     { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
   ];
+
+  if (wallets.length === 0) {
+    return (
+      <div className="flex">
+        <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -68,27 +80,62 @@ export default function PayoutAddresses() {
           </div>
         </div>
       </Modal>
-      <div className="container mx-auto space-y-7 mb-12">
-        {/* Header (hide on mobile) */}
-        <div className="hidden lg:grid grid-cols-5 gap-x-1 items-end px-2">
-          <SortButton title="Chain/Project" label="todo" />
-          <div className="col-span-2">
-            <SortButton title="Address" label="todo" />
+      <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
+        <div className="space-y-5 mt-5">
+          <div className="flex border-solid border rounded-md border-[#DEDEDE]">
+            <ChevronSortDown16 className="m-3" />
+
+            <div className="flex items-center pl-2 border-solid border-0 border-l border-[#DEDEDE]">
+              {validAddress ? (
+                <CheckboxCheckedFilled16 className="mr-1 text-[#68C132]" />
+              ) : (
+                <WarningSquareFilled16 className="mr-1 text-[#EC5962]" />
+              )}
+              <input id="address" placeholder="Select a chain and enter an address" className="text-sm" />
+            </div>
           </div>
-          <SortButton title="Last Updated" label="todo" />
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
+              Cancel
+            </Button>
+            <Button disabled={!validAddress}>Save</Button>
+          </div>
         </div>
-        {/* Rows */}
-        {wallets.length < 1 ? (
-          <div className="flex">
-            <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
+      </Modal>
+      <Container className="py-16 px-10">
+        <div className="mb-16">
+          <section className="flex flex-wrap gap-5 justify-between pb-2">
+            <h1 className="text-3xl font-semibold">Manage Addresses</h1>
+            <div className="flex flex-wrap gap-5 items-center">
+              <Button className="mx-auto" onClick={() => setOpenedAdd(true)}>
+                Add Address
+              </Button>
+            </div>
+          </section>
+          <section className="max-w-3xl">
+            <p className="text-lg text-cyan-500">Manage all your payout addresses to receive reward tokens</p>
+            <p className="text-gray-500 text-sm">
+              Reward tokens will automatically be sent to these wallets when you claim rewards
+            </p>
+          </section>
+        </div>
+        <RewardsTab rewardsNum={10} addressesNum={wallets.length} />
+        <div className="space-y-7 mb-12">
+          {/* Header (hide on mobile) */}
+          <div className="hidden lg:grid grid-cols-5 gap-x-1 items-end px-2">
+            <SortButton title="Chain/Project" label="todo" />
+            <div className="col-span-2">
+              <SortButton title="Address" label="todo" />
+            </div>
+            <SortButton title="Last Updated" label="todo" />
           </div>
-        ) : (
+          {/* Rows */}
           <div className="space-y-3">
             {wallets.map((w: { address: string; chain: string }) => {
               return (
-                <div
+                <Card
                   // On mobile, two column grid with "labels". On desktop hide the "labels".
-                  className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
+                  className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
                   key={w.address}
                 >
                   <div className="lg:hidden">Chain/Project</div>
@@ -107,12 +154,12 @@ export default function PayoutAddresses() {
                       Update
                     </Button>
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      </Container>
     </>
   );
 }
