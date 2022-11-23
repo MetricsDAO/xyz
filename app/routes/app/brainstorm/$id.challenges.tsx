@@ -17,7 +17,6 @@ import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/Input";
 import { Pagination } from "~/components/Pagination";
-import { ProjectBadge } from "~/components/ProjectBadge";
 import { Select } from "~/components/Select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
