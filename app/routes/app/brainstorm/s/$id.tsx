@@ -6,7 +6,7 @@ import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { z } from "zod";
-import { UserBadge } from "~/components/user-badge";
+import { UserBadge } from "~/components/UserBadge";
 import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";

@@ -2,7 +2,7 @@ import { Form, Link } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { UserBadge } from "~/components/user-badge";
+import { UserBadge } from "~/components/UserBadge";
 import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/Checkbox";
 import { Countdown } from "~/components/countdown";

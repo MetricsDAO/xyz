@@ -1,6 +1,6 @@
 import { Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { UserBadge } from "~/components/user-badge";
+import { UserBadge } from "~/components/UserBadge";
 import { ProjectIcon } from "~/components/project-icon/project-icon";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";

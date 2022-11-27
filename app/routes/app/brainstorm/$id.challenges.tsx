@@ -1,4 +1,4 @@
-import { UserBadge } from "~/components/user-badge";
+import { UserBadge } from "~/components/UserBadge";
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";

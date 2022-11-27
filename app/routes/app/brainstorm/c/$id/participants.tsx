@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react";
-import { UserBadge } from "~/components/user-badge";
+import { UserBadge } from "~/components/UserBadge";
 import { Badge } from "~/components/Badge";
 import { Card } from "~/components/Card";
 
