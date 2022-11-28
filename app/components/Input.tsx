@@ -30,7 +30,7 @@ export function Input({ name, label, iconLeft, error, iconRight, size = "md", ..
     <Field name={name} label={label}>
       <InputWrapper size={size} isError={error !== undefined}>
         {iconLeft}
-        <input {...props} className="w-full h-12 outline-none px-3" />
+        <input {...props} className="w-full h-12 text-sm outline-none px-3 placeholder:text-gray-400" />
         {iconRight}
       </InputWrapper>
     </Field>

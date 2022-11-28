@@ -3,7 +3,7 @@ import { useControlField } from "remix-validated-form";
 import { ValidatedInput } from "./Input";
 import { ValidatedTextarea } from "./Textarea";
 import { ValidatedSelect } from "./Select";
-import { ValidatedCombobox } from "./Combobox";
+import { ValidatedCombobox } from "./combobox/combobox";
 import type { Project, Token } from "@prisma/client";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {

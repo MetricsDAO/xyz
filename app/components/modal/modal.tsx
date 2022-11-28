@@ -5,18 +5,18 @@ import { Fragment } from "react";
 // https://headlessui.com/react/dialog
 export function Modal({
   title,
-  isOpen,
+  open,
   onClose,
   children,
 }: {
   title?: string;
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }) {
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={onClose}>
           <Transition.Child
             as={Fragment}

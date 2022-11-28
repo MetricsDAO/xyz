@@ -15,7 +15,7 @@ import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { Pagination } from "~/components/Pagination";
-import { Combobox } from "~/components/Combobox";
+import { Combobox } from "~/components/combobox/combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { TokenBadge } from "~/components/TokenBadge";

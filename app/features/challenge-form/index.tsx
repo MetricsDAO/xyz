@@ -2,7 +2,7 @@ import type { LaborMarket } from "@prisma/client";
 import { Fragment } from "react";
 import { useControlField } from "remix-validated-form";
 import { Button } from "~/components/button";
-import { ValidatedCombobox } from "~/components/Combobox";
+import { ValidatedCombobox } from "~/components/combobox/combobox";
 import { ValidatedInput } from "~/components/Input";
 import { ValidatedSelect } from "~/components/Select";
 import { ValidatedTextarea } from "~/components/Textarea";

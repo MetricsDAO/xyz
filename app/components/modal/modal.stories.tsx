@@ -11,7 +11,7 @@ export const Basic = () => {
       >
         Open Modal
       </button>
-      <Modal title="Payment Success" isOpen={open} onClose={() => setOpen(false)}>
+      <Modal title="Payment Success" open={open} onClose={() => setOpen(false)}>
         <div className="mt-2">
           <p className="text-sm text-gray-500">
             Your payment has been successfully submitted. We’ve sent you an email with all of the details of your order.
