@@ -20,7 +20,7 @@ type ColumnSize = 6 | 12;
 type ColSpan = 1 | 2 | 3 | 4;
 
 /**
- * Responsive "table" that collapses into a card on mobile. Choose between 6 and 12 columns. Up to the user to ensure headers and columns line up.
+ * "table" of cards with a header. Choose between 6 and 12 columns. Up to the user to ensure headers and columns line up.
  */
 export function Table({ children }: { children: React.ReactNode }) {
   return <div>{children}</div>;
@@ -28,16 +28,7 @@ export function Table({ children }: { children: React.ReactNode }) {
 
 export function Header({ columns, ...props }: { columns: ColumnSize } & React.ComponentProps<"div">) {
   return (
-    <div
-      className={clsx(
-        "hidden text-xs text-gray-500 font-medium lg:grid gap-x-1 items-end px-2 lg:mb-3",
-        ColumnSizes[columns],
-        props.className
-      )}
-      {...props}
-    >
-      {props.children}
-    </div>
+    <div className={clsx("grid gap-x-1 items-end px-4", ColumnSizes[columns], props.className)}>{props.children}</div>
   );
 }
 
@@ -53,13 +44,8 @@ export function Row({ columns, ...props }: { columns: ColumnSize } & RemixLinkPr
   return (
     <Card asChild>
       <Link
-        // On mobile, two column grid with labels.
-        className={clsx(
-          "grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5 mb-4",
-          `lg:${ColumnSizes[columns]}`,
-          props.className
-        )}
         {...props}
+        className={clsx("grid gap-y-3 gap-x-1 items-center px-4 py-5 mb-4", ColumnSizes[columns], props.className)}
       >
         {props.children}
       </Link>
@@ -67,16 +53,6 @@ export function Row({ columns, ...props }: { columns: ColumnSize } & RemixLinkPr
   );
 }
 
-Row.Column = function RowColumn({
-  label,
-  span = 1,
-  ...props
-}: { label: string; span?: ColSpan } & React.ComponentProps<"div">) {
-  return (
-    <>
-      {/* The label in the first grid column on mobile. On desktop (lg) hide the labels. */}
-      <div className="lg:hidden">{label}</div>
-      <div className={clsx("text-sm font-medium", `lg:${ColSpans[span]}`, props.className)}>{props.children}</div>
-    </>
-  );
+Row.Column = function RowColumn({ span = 1, ...props }: { span?: ColSpan } & React.ComponentProps<"div">) {
+  return <div className={clsx(ColSpans[span], props.className)}>{props.children}</div>;
 };
