@@ -8,8 +8,6 @@ import {
 import { useSearchParams } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { Checkbox } from "~/components/Checkbox";
 import { Pagination } from "~/components/Pagination";
 import { Modal } from "~/components/modal";
@@ -23,6 +21,7 @@ import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/Container";
 import RewardsTab from "~/components/RewardsTab";
 import { Card } from "~/components/Card";
+import { fromNow } from "~/utils/date";
 
 export default function Rewards() {
   //to be replaced
@@ -99,10 +98,10 @@ function RewardsTable({ rewards }: { rewards: any }) {
               <div className="lg:hidden">Reward</div>
               <p>20 SOL</p>
               <div className="lg:hidden">Submitted</div>
-              <p className="text-black">{formatTime("2022-01-01")} </p>
+              <p className="text-black">{fromNow("2022-01-01")} </p>
               <div className="lg:hidden">Rewarded</div>
               <p className="text-black" color="dark.3">
-                {formatTime("2022-11-01")}{" "}
+                {fromNow("2022-11-01")}{" "}
               </p>
               <div className="lg:hidden">Status</div>
               {unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}
@@ -171,11 +170,6 @@ function ClaimButton() {
       </Modal>
     </>
   );
-}
-
-function formatTime(time: string | number | Date) {
-  dayjs.extend(relativeTime);
-  return dayjs(time).fromNow();
 }
 
 function SearchAndFilter() {

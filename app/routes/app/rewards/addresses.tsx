@@ -6,8 +6,6 @@ import {
   Copy16,
   WarningSquareFilled16,
 } from "@carbon/icons-react";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useSearchParams } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "~/components/button";
@@ -15,6 +13,7 @@ import { Modal } from "~/components/modal";
 import { Container } from "~/components/Container";
 import RewardsTab from "~/components/RewardsTab";
 import { Card } from "~/components/Card";
+import { fromNow } from "~/utils/date";
 
 export default function PayoutAddresses() {
   const validAddress = false;
@@ -81,7 +80,7 @@ export default function PayoutAddresses() {
                   <Copy16 className="ml-0.5" />
                 </div>
                 <div className="lg:hidden">Last Updated</div>
-                <p className="text-black">{formatTime("1999-01-01")} </p>
+                <p className="text-black">{fromNow("1999-01-01")} </p>
                 <div className="flex flex-wrap gap-2">
                   <RemoveAddressButton />
                   <UpdateAddressButton />
@@ -196,11 +195,6 @@ function UpdateAddressButton() {
       </Modal>
     </>
   );
-}
-
-function formatTime(time: string | number | Date) {
-  dayjs.extend(relativeTime);
-  return dayjs(time).fromNow();
 }
 
 function SortButton({ label, title }: { label: string; title: string }) {
