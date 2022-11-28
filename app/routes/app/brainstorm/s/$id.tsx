@@ -11,11 +11,11 @@ import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Checkbox } from "~/components/Checkbox";
+import { Checkbox } from "~/components/checkbox/checkbox";
 import { Container } from "~/components/Container";
 import { Detail, DetailItem } from "~/components/detail";
 import { Drawer } from "~/components/drawer/drawer";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Select } from "~/components/Select";
 import { findSubmission } from "~/services/submissions.server";
 

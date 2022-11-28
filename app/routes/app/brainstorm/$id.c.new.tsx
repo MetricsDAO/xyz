@@ -2,7 +2,7 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Button } from "~/components/button";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Select } from "~/components/Select";
 import { Textarea } from "~/components/Textarea";
 

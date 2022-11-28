@@ -9,19 +9,20 @@ import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { ProjectIcon } from "~/components/project-icon/project-icon";
 import { Button } from "~/components/button";
-import { Input } from "~/components/Input";
-import { Select } from "~/components/Select";
+import { Input } from "~/components/input";
+import { ValidatedSelect } from "~/components/select";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { Pagination } from "~/components/Pagination";
-import { Combobox } from "~/components/combobox/combobox";
+import { Combobox } from "~/components/combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { TokenIcon } from "~/components/token-icon/token-icon";
 import { Container } from "~/components/Container";
 import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
+import { Checkbox } from "~/components/checkbox";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -55,7 +56,7 @@ export default function Brainstorm() {
         </aside>
       </header>
 
-      <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">
+      <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
         Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
       </h2>
 
@@ -68,7 +69,7 @@ export default function Brainstorm() {
             </div>
           </div>
         </main>
-        <aside className="md:w-1/4">
+        <aside className="md:w-1/5">
           <SearchAndFilter />
         </aside>
       </section>
@@ -82,6 +83,7 @@ function SearchAndFilter() {
 
   const memoizedSubmit = useCallback(() => {
     submit(ref.current);
+    console.log("changed");
   }, [submit]);
 
   return (
@@ -89,49 +91,64 @@ function SearchAndFilter() {
       formRef={ref}
       method="get"
       noValidate
+      onInput={(e) => submit(e.currentTarget, { replace: true })}
       validator={withZod(z.any())}
-      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
+      className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
     >
       <Input
         onChange={(e) => submit(e.currentTarget.form)}
         placeholder="Search"
         name="q"
-        iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
+        size="sm"
+        iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
-      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
-      <div className="md:hidden">
-        <Select
-          placeholder="Select option"
-          name="sortBy"
-          options={[
-            { label: "None", value: "none" },
-            { label: "Chain/Project", value: "project" },
-          ]}
-        />
-      </div>
-      <h3 className="font-semibold text-lg">Filter:</h3>
-      <Combobox
+
+      <h3 className="font-semibold ">Sort:</h3>
+
+      <ValidatedSelect
+        placeholder="Select option"
+        name="sortBy"
+        size="sm"
         onChange={memoizedSubmit}
+        options={[
+          { label: "# Challenges", value: "serviceRequests" },
+          { label: "Chain/Project", value: "project" },
+        ]}
+      />
+
+      <h3 className="font-semibold">Filter:</h3>
+      <p className="text-gray-600">I'm able to:</p>
+      <Checkbox name="can" label="Launch" value="launch" />
+      <Checkbox name="can" label="Submit" value="submit" />
+      <Checkbox name="can" label="Review" value="review" />
+
+      <Combobox
         label="I am able to"
         placeholder="Select option"
         name="filter"
+        size="sm"
         options={[
           { value: "launch", label: "Launch" },
           { value: "submit", label: "Submit" },
           { value: "review", label: "Review" },
         ]}
       />
+
+      <label>Reward Token</label>
       <Combobox
         onChange={memoizedSubmit}
         label="Reward Token"
         placeholder="Select option"
         name="rewardToken"
+        size="sm"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
           { label: "USD", value: "USD" },
         ]}
       />
+
+      <label>Chain/Project</label>
       <Combobox
         onChange={memoizedSubmit}
         label="Chain/Project"

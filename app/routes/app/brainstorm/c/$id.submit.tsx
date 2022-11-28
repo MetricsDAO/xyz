@@ -1,6 +1,6 @@
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Textarea } from "~/components/Textarea";
 
 export default function SubmitQuestion() {

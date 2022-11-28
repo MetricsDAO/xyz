@@ -1,7 +1,8 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
+import { usePrevious } from "react-use";
 import { useControlField } from "remix-validated-form";
 
 type Props = {
@@ -19,7 +20,7 @@ type Option = {
   label: string;
 };
 
-const buttonStyles = "w-full border border-gray-200 rounded-lg flex items-center overflow-hidden";
+const buttonStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-hidden";
 
 const sizeStyles = {
   sm: "h-10",
@@ -73,16 +74,23 @@ export function Select({ label, size = "md", value, onChange, options, placehold
 
 export function ValidatedSelect({ onChange, ...props }: Props & { name: string }) {
   const [value, setValue] = useControlField<string>(props.name);
+
+  const handleChange = (value: string) => {
+    setValue(value);
+    onChange?.(value);
+  };
+
+  const prevValue = usePrevious(value);
+  useEffect(() => {
+    if (prevValue !== value) {
+      onChange?.(value);
+      console.log(value);
+    }
+  }, [value, prevValue, onChange]);
+
   return (
     <>
-      <Select
-        {...props}
-        value={value}
-        onChange={(value) => {
-          setValue(value);
-          onChange?.(value);
-        }}
-      />
+      <Select {...props} value={value} onChange={handleChange} />
       {value ? <input type="hidden" name={props.name} value={value} /> : null}
     </>
   );

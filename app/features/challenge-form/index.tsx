@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { useControlField } from "remix-validated-form";
 import { Button } from "~/components/button";
 import { ValidatedCombobox } from "~/components/combobox/combobox";
-import { ValidatedInput } from "~/components/Input";
+import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/Select";
 import { ValidatedTextarea } from "~/components/Textarea";
 

@@ -15,7 +15,7 @@ import { Card } from "~/components/Card";
 import { Combobox } from "~/components/Combobox";
 import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Pagination } from "~/components/Pagination";
 import { ProjectIcon } from "~/components/project-icon";
 import { Select } from "~/components/Select";

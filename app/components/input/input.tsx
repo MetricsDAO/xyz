@@ -1,9 +1,10 @@
 import { useField } from "remix-validated-form";
-import { Field } from "./Field";
-import { InputWrapper } from "./InputBase";
-import type { FieldProps } from "./Field";
-import type { InputBaseSize } from "./InputBase";
+import { Field } from "../Field";
+import { InputWrapper } from "../InputBase";
+import type { FieldProps } from "../Field";
+import type { InputBaseSize } from "../InputBase";
 import React from "react";
+import clsx from "clsx";
 
 // type InputProps = { prefix?: React.ReactNode; suffix?: React.ReactNode } & FieldProps &
 //   Omit<JSX.IntrinsicElements["input"], "size"> & { size?: InputBaseSize };
@@ -21,19 +22,24 @@ type NativeProps = Omit<React.InputHTMLAttributes<any>, keyof OwnProps>;
 
 export type InputProps = OwnProps & NativeProps;
 
+const baseStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-auto px-3";
+
+const sizeStyles = {
+  sm: "h-10",
+  md: "h-12",
+};
+
 /**
  * TextInput component that integrates with remix-validated-form.
  * Also so we can switch out the underlying component without affecting things higher up the tree.
  */
 export function Input({ name, label, iconLeft, error, iconRight, size = "md", ...props }: InputProps) {
   return (
-    <Field name={name} label={label}>
-      <InputWrapper size={size} isError={error !== undefined}>
-        {iconLeft}
-        <input {...props} className="w-full h-12 text-sm outline-none px-3 placeholder:text-gray-400" />
-        {iconRight}
-      </InputWrapper>
-    </Field>
+    <div className={clsx(baseStyles, sizeStyles[size])}>
+      {iconLeft}
+      <input {...props} name={name} className="w-full h-12 text-sm outline-none placeholder:text-gray-400" />
+      {iconRight}
+    </div>
   );
 }
 

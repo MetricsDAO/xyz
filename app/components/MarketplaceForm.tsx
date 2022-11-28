@@ -1,6 +1,6 @@
 import { useAccount } from "wagmi";
 import { useControlField } from "remix-validated-form";
-import { ValidatedInput } from "./Input";
+import { ValidatedInput } from "./input/input";
 import { ValidatedTextarea } from "./Textarea";
 import { ValidatedSelect } from "./Select";
 import { ValidatedCombobox } from "./combobox/combobox";
