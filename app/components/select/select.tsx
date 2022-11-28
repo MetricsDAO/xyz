@@ -82,9 +82,8 @@ export function ValidatedSelect({ onChange, ...props }: Props & { name: string }
 
   const prevValue = usePrevious(value);
   useEffect(() => {
-    if (prevValue !== value) {
-      onChange?.(value);
-      console.log(value);
+    if (onChange && prevValue !== value) {
+      onChange(value);
     }
   }, [value, prevValue, onChange]);
 
