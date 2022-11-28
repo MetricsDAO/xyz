@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
 import { Author } from "~/components/Author";
-import { ProjectBadge } from "~/components/ProjectBadge";
+import { ProjectIcon } from "~/components/project-icon/project-icon";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
@@ -43,7 +43,10 @@ export default function Challenge() {
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
             {challenge.laborMarket.projects.map((p) => (
-              <ProjectBadge key={p.id} project={p} />
+              <Badge key={p.slug} className="pl-2">
+                <ProjectIcon project={p} />
+                <span className="mx-1">{p.name}</span>
+              </Badge>
             ))}
           </div>
         </DetailItem>

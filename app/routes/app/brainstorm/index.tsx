@@ -7,7 +7,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectBadge } from "~/components/ProjectBadge";
+import { ProjectIcon } from "~/components/project-icon/project-icon";
 import { Button } from "~/components/button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
@@ -18,9 +18,10 @@ import { Pagination } from "~/components/Pagination";
 import { Combobox } from "~/components/combobox/combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { TokenBadge } from "~/components/TokenBadge";
+import { TokenIcon } from "~/components/token-icon/token-icon";
 import { Container } from "~/components/Container";
 import { Card } from "~/components/Card";
+import { Badge } from "~/components/Badge";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -180,17 +181,26 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                 <div className="lg:col-span-2 text-sm font-medium">{m.title}</div>
 
                 <div className="lg:hidden">Chain/Project</div>
-                <div className="flex">
+                <div className="flex flex-wrap gap-2">
                   {m.projects.map((p) => (
-                    <ProjectBadge key={p.slug} project={p} variant="transparent" />
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectIcon project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
                   ))}
                 </div>
 
                 <div className="lg:hidden">Challenge Pool Totals</div>
-                <TokenBadge token={{ symbol: "usd", name: "USD" }} value={1000} />
+                <Badge>
+                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
 
                 <div className="lg:hidden">Avg. Challenge Pool</div>
-                <TokenBadge token={{ symbol: "usd", name: "USD" }} value={10000} />
+                <Badge>
+                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
 
                 <div className="lg:hidden"># Challenges</div>
                 <div>{m._count.serviceRequests.toLocaleString()}</div>
