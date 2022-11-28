@@ -7,7 +7,6 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectIcon } from "~/components/project-icon/project-icon";
 import { Button } from "~/components/button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
@@ -18,10 +17,10 @@ import { Pagination } from "~/components/Pagination";
 import { Combobox } from "~/components/Combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { TokenIcon } from "~/components/token-icon/token-icon";
 import { Container } from "~/components/Container";
 import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
+import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -184,7 +183,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                 <div className="flex flex-wrap gap-2">
                   {m.projects.map((p) => (
                     <Badge key={p.slug} className="pl-2">
-                      <ProjectIcon project={p} />
+                      <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
                     </Badge>
                   ))}
@@ -192,13 +191,13 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
 
                 <div className="lg:hidden">Challenge Pool Totals</div>
                 <Badge>
-                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
                 <div className="lg:hidden">Avg. Challenge Pool</div>
                 <Badge>
-                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
