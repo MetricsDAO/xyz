@@ -1,6 +1,6 @@
 import { Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { Author } from "~/components/Author";
+import { UserBadge } from "~/components/UserBadge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
@@ -38,7 +38,7 @@ export default function Challenge() {
       </header>
       <Detail className="mb-6">
         <DetailItem title="Sponsor">
-          <Author />
+          <UserBadge url="u/id" name="jo.Eth" balance={200} />
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
