@@ -5,7 +5,7 @@ import {
   ChevronSortUp16,
   Search16,
 } from "@carbon/icons-react";
-import { useSearchParams } from "@remix-run/react";
+import { Link, useSearchParams } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
 import { Checkbox } from "~/components/Checkbox";
@@ -138,7 +138,12 @@ function ClaimButton() {
                 <p className="text-sm text-gray-600">0xs358437485395889094</p>
               </div>
             </div>
-            <p className="text-xs">To chage or update this address head to Payout Addresses</p>
+            <p className="text-xs">
+              To chage or update this address head to{" "}
+              <Link to="/app/rewards/addresses" className="text-blue-600">
+                Payout Addresses
+              </Link>
+            </p>
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpened(false)}>

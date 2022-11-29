@@ -105,7 +105,7 @@ export default function ChallengeSubmission() {
                             <Avatar />
                             <p className="font-medium">user.ETH</p>
                             <Badge>
-                              <p>400 xMetric</p>
+                              <p>400 rMetric</p>
                             </Badge>
                           </div>
                           <p>12 hours ago</p>

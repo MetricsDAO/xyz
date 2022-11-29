@@ -34,8 +34,8 @@ export default function ClaimToReview() {
             Claiming is an up front commitment to review and score a minumum number of submissions
           </p>
           <p className="text-gray-500">
-            You must temporarily lock xMETRIC to claim. If you claim and don’t complete review before the deadline, 5
-            xMETRIC will be slashed for each submission you fail to review.
+            You must temporarily lock rMETRIC to claim. If you claim and don’t complete review before the deadline, 5
+            rMETRIC will be slashed for each submission you fail to review.
           </p>
         </div>
         <div className="space-y-2">
@@ -75,15 +75,15 @@ export default function ClaimToReview() {
           </p>
         </div>
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Lock xMetric</h2>
+          <h2 className="text-lg font-semibold">LockrMetric</h2>
           <div className="flex flex-col md:flex-row gap-2 md:items-center">
             <p>
-              You must lock <Badge>50</Badge> xMetric to claim
+              You must lock <Badge>50</Badge> rMetric to claim
             </p>
-            <Button variant="outline">Lock xMetric</Button>
+            <Button variant="outline">Lock rMetric</Button>
           </div>
           <p className="mt-2 text-gray-500 italic">
-            Important: 5 xMETRIC will be slashed for each submission you fail to review before the deadline.
+            Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
           </p>
         </div>
         <div className="flex flex-wrap gap-5">

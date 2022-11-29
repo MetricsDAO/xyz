@@ -30,7 +30,7 @@ export default function ChallengeIdParticipants() {
                   <Text weight={500}>user.ETH</Text>
                   <Badge color="gray" radius="sm">
                     <Text weight={400} className="normal-case">
-                      400 xMetric
+                      400 rMetric
                     </Text>
                   </Badge>
                 </div>
