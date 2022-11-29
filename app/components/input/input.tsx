@@ -1,7 +1,4 @@
 import { useField } from "remix-validated-form";
-import { Field } from "../Field";
-import { InputWrapper } from "../InputBase";
-import type { FieldProps } from "../Field";
 import type { InputBaseSize } from "../InputBase";
 import React from "react";
 import clsx from "clsx";
@@ -12,7 +9,6 @@ import clsx from "clsx";
 type OwnProps = {
   label?: React.ReactNode;
   placeholder?: string;
-  error?: React.ReactNode;
   size?: InputBaseSize;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
@@ -33,7 +29,7 @@ const sizeStyles = {
  * TextInput component that integrates with remix-validated-form.
  * Also so we can switch out the underlying component without affecting things higher up the tree.
  */
-export function Input({ name, label, iconLeft, error, iconRight, size = "md", ...props }: InputProps) {
+export function Input({ name, iconLeft, iconRight, size = "md", ...props }: InputProps) {
   return (
     <div className={clsx(baseStyles, sizeStyles[size])}>
       {iconLeft}
@@ -45,6 +41,6 @@ export function Input({ name, label, iconLeft, error, iconRight, size = "md", ..
 
 /** Integration with remix-validated-form */
 export function ValidatedInput(props: InputProps & { name: string }) {
-  const { error } = useField(props.name);
-  return <Input {...props} error={error} />;
+  const { getInputProps } = useField(props.name);
+  return <Input {...getInputProps(props)} />;
 }

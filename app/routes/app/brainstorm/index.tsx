@@ -23,6 +23,8 @@ import { Container } from "~/components/Container";
 import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
 import { Checkbox } from "~/components/checkbox";
+import { useUpdateSearchParams } from "~/utils/use-update-search-params";
+import { Field, Label } from "~/components/field";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -78,25 +80,24 @@ export default function Brainstorm() {
 }
 
 function SearchAndFilter() {
-  const submit = useSubmit();
   const ref = useRef<HTMLFormElement>(null);
-
-  const memoizedSubmit = useCallback(() => {
-    submit(ref.current);
-    console.log("changed");
-  }, [submit]);
+  const updateParams = useUpdateSearchParams();
+  const handleChange = useCallback(() => {
+    if (ref.current) {
+      updateParams(new FormData(ref.current));
+    }
+  }, [updateParams]);
 
   return (
     <ValidatedForm
       formRef={ref}
       method="get"
       noValidate
-      onChange={(e) => submit(e.currentTarget, { replace: true })}
       validator={withZod(z.any())}
+      onChange={handleChange}
       className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
     >
       <Input
-        onChange={(e) => submit(e.currentTarget.form)}
         placeholder="Search"
         name="q"
         size="sm"
@@ -109,7 +110,7 @@ function SearchAndFilter() {
         placeholder="Select option"
         name="sortBy"
         size="sm"
-        onChange={memoizedSubmit}
+        onChange={handleChange}
         options={[
           { label: "Trending", value: "trending" },
           { label: "# Challenges", value: "serviceRequests" },
@@ -135,23 +136,25 @@ function SearchAndFilter() {
         ]}
       />
 
-      <label>Reward Token</label>
-      <Combobox
-        onChange={memoizedSubmit}
-        label="Reward Token"
-        placeholder="Select option"
-        name="rewardToken"
-        size="sm"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-          { label: "USD", value: "USD" },
-        ]}
-      />
+      <Field>
+        <Label>Reward Token</Label>
+        <Combobox
+          onChange={handleChange}
+          label="Reward Token"
+          placeholder="Select option"
+          name="rewardToken"
+          size="sm"
+          options={[
+            { label: "Solana", value: "Solana" },
+            { label: "Ethereum", value: "Ethereum" },
+            { label: "USD", value: "USD" },
+          ]}
+        />
+      </Field>
 
       <label>Chain/Project</label>
       <Combobox
-        onChange={memoizedSubmit}
+        onChange={handleChange}
         label="Chain/Project"
         placeholder="Select option"
         name="chainProject"

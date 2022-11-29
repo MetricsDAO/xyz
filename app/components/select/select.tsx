@@ -3,15 +3,15 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { Fragment, useEffect } from "react";
 import { usePrevious } from "react-use";
-import { useControlField } from "remix-validated-form";
+import { useControlField, useField } from "remix-validated-form";
 
 type Props = {
   name?: string;
   size?: "sm" | "md";
   options: Option[];
-  label?: React.ReactNode;
   placeholder?: string;
   value?: string;
+  isError?: boolean;
   onChange?: (value: string) => void;
 };
 
@@ -28,7 +28,7 @@ const sizeStyles = {
 };
 
 /** Controlled select input with support for multiple values. */
-export function Select({ label, size = "md", value, onChange, options, placeholder }: Props) {
+export function Select({ isError, size = "md", value, onChange, options, placeholder }: Props) {
   const selected = options.find((option) => option.value === value);
   return (
     <Listbox value={value} onChange={onChange}>
@@ -74,6 +74,7 @@ export function Select({ label, size = "md", value, onChange, options, placehold
 
 export function ValidatedSelect({ onChange, ...props }: Props & { name: string }) {
   const [value, setValue] = useControlField<string>(props.name);
+  const { error } = useField(props.name);
 
   const handleChange = (value: string) => {
     setValue(value);
@@ -89,7 +90,7 @@ export function ValidatedSelect({ onChange, ...props }: Props & { name: string }
 
   return (
     <>
-      <Select {...props} value={value} onChange={handleChange} />
+      <Select {...props} value={value} onChange={handleChange} isError={Boolean(error)} />
       {value ? <input type="hidden" name={props.name} value={value} /> : null}
     </>
   );
