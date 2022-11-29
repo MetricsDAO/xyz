@@ -1,3 +1,4 @@
+import { Slot } from "@radix-ui/react-slot";
 import { Link } from "@remix-run/react";
 
 import type { RemixLinkProps } from "@remix-run/react/dist/components";
@@ -40,15 +41,24 @@ Header.Column = function HeaderColumn({ span = 1, ...props }: { span?: ColSpan }
   );
 };
 
-export function Row({ columns, ...props }: { columns: ColumnSize } & RemixLinkProps) {
+export function Row({
+  columns,
+  asChild,
+  className,
+  ...props
+}: {
+  columns: ColumnSize;
+  asChild?: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const Comp = asChild ? Slot : "div";
   return (
-    <Card asChild>
-      <Link
+    <Card asChild={true}>
+      <Comp
         {...props}
-        className={clsx("grid gap-y-3 gap-x-1 items-center px-4 py-5 mb-4", ColumnSizes[columns], props.className)}
-      >
-        {props.children}
-      </Link>
+        className={clsx("grid gap-y-3 gap-x-1 items-center px-4 py-5 mb-4", ColumnSizes[columns], className)}
+      />
     </Card>
   );
 }
