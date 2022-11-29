@@ -12,7 +12,7 @@ export const Index = () => {
         <Header.Column span={2}>24h Volume</Header.Column>
         <Header.Column span={1}>24h Change</Header.Column>
       </Header>
-      <Row columns={12} to="#">
+      <Row columns={12}>
         <Row.Column span={1}>1</Row.Column>
         <Row.Column span={2}>Bitcoin</Row.Column>
         <Row.Column span={2}>BTC</Row.Column>
@@ -21,7 +21,7 @@ export const Index = () => {
         <Row.Column span={2}>$100,000,000</Row.Column>
         <Row.Column span={1}>+5%</Row.Column>
       </Row>
-      <Row columns={12} to="#">
+      <Row columns={12}>
         <Row.Column span={1}>2</Row.Column>
         <Row.Column span={2}>Ethereum</Row.Column>
         <Row.Column span={2}>ETH</Row.Column>
