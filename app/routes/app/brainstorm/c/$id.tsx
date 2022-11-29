@@ -1,7 +1,6 @@
 import { Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { Author } from "~/components/Author";
-import { ProjectIcon } from "~/components/project-icon/project-icon";
+import { UserBadge } from "~/components/UserBadge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
@@ -12,6 +11,7 @@ import { Container } from "~/components/Container";
 import { Button } from "~/components/button";
 import { Badge } from "~/components/Badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { ProjectAvatar } from "~/components/avatar";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -38,13 +38,13 @@ export default function Challenge() {
       </header>
       <Detail className="mb-6">
         <DetailItem title="Sponsor">
-          <Author />
+          <UserBadge url="u/id" name="jo.Eth" balance={200} />
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
             {challenge.laborMarket.projects.map((p) => (
               <Badge key={p.slug} className="pl-2">
-                <ProjectIcon project={p} />
+                <ProjectAvatar project={p} />
                 <span className="mx-1">{p.name}</span>
               </Badge>
             ))}

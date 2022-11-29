@@ -1,3 +1,4 @@
+import { UserBadge } from "~/components/UserBadge";
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
@@ -17,8 +18,9 @@ import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/Input";
 import { Pagination } from "~/components/Pagination";
-import { ProjectIcon } from "~/components/project-icon";
+import { ProjectAvatar } from "~/components/avatar";
 import { Select } from "~/components/Select";
+import { Header, Row, Table } from "~/components/table";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
@@ -61,7 +63,7 @@ export default function MarketplaceChallenges() {
           {/* <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
-            <Author.Author />
+            <UserBadge />
           </Detail>
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
@@ -283,58 +285,45 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
     return <p>No results. Try changing search and filter options.</p>;
   }
   return (
-    <div>
-      {/* Header (hide on mobile) */}
-      <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
-        <div className="col-span-2">
+    <Table>
+      <Header columns={6}>
+        <Header.Column span={2}>
           <SortButton label="title" title="Challenge" />
-        </div>
-        <p>Chain/Project</p>
-        <p>Reward Pool</p>
-        <p>Submit Deadline</p>
-        <p>Review Deadline</p>
-      </div>
-      {/* Rows */}
-      <div className="space-y-4">
-        {challenges.map((c) => {
-          return (
-            <Card asChild key={c.id}>
-              <Link
-                to={`/app/brainstorm/c/${c.id}`}
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-4 py-5"
-              >
-                <div className="lg:hidden">Challenges</div>
-                <div className="lg:col-span-2 text-sm font-medium">{c.title}</div>
+        </Header.Column>
+        <Header.Column>Chain/Project</Header.Column>
+        <Header.Column>Reward Pool</Header.Column>
+        <Header.Column>Submit Deadline</Header.Column>
+        <Header.Column>Review Deadline</Header.Column>
+      </Header>
+      {challenges.map((c) => {
+        return (
+          <Row columns={6} to={`/app/brainstorm/c/${c.id}`} key={c.id}>
+            <Row.Column span={2}>{c.title}</Row.Column>
 
-                <div className="lg:hidden">Chain/Project</div>
-                <div className="flex">
-                  <div>
-                    {c.laborMarket.projects?.map((p) => (
-                      <Badge key={p.slug} className="pl-2">
-                        <ProjectIcon project={p} />
-                        <span className="mx-1">{p.name}</span>
-                      </Badge>
-                    ))}
-                  </div>
+            <Row.Column>
+              <div className="flex">
+                <div>
+                  {c.laborMarket.projects?.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
                 </div>
+              </div>
+            </Row.Column>
 
-                <div className="lg:hidden">Reward Pool</div>
-                <div> 5 Sol</div>
-                <div className="lg:hidden">Submit Deadline</div>
-                <div className="text-gray-500 text-sm">
-                  <Countdown date={"2023-01-25"} />
-                </div>
-                <div className="lg:hidden">Review Deadline</div>
-                <div className="text-gray-500 text-sm">
-                  <Countdown date={"2022-11-25"} />
-                </div>
-              </Link>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+            <Row.Column>5 Sol</Row.Column>
+            <Row.Column>
+              <Countdown date={"2023-01-25"} />
+            </Row.Column>
+            <Row.Column>
+              <Countdown date={"2022-11-25"} />
+            </Row.Column>
+          </Row>
+        );
+      })}
+    </Table>
   );
 }
 

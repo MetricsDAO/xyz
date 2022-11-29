@@ -1,7 +1,5 @@
 import { Slot } from "@radix-ui/react-slot";
-import { Link } from "@remix-run/react";
 
-import type { RemixLinkProps } from "@remix-run/react/dist/components";
 import clsx from "clsx";
 import { Card } from "~/components/Card";
 
