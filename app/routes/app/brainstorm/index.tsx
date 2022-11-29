@@ -20,10 +20,7 @@ import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { TokenIcon } from "~/components/token-icon/token-icon";
 import { Container } from "~/components/Container";
-import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
-import type { RemixLinkProps } from "@remix-run/react/dist/components";
-import clsx from "clsx";
 import { Header, Row, Table } from "~/components/table";
 
 export const loader = async (data: DataFunctionArgs) => {

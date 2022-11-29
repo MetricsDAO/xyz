@@ -51,19 +51,30 @@ Header.Column = function HeaderColumn({ span = 1, ...props }: { span?: ColSpan }
 
 export function Row({ columns, ...props }: { columns: ColumnSize } & RemixLinkProps) {
   return (
-    <Card asChild>
-      <Link
-        // On mobile, two column grid with labels.
-        className={clsx(
-          "grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5 mb-4",
-          `lg:${ColumnSizes[columns]}`,
-          props.className
-        )}
-        {...props}
-      >
-        {props.children}
-      </Link>
-    </Card>
+    <>
+      {/* Desktop */}
+      <Card asChild>
+        <Link
+          className={clsx(
+            "hidden lg:grid gap-y-3 gap-x-1 items-center px-4 py-5 mb-4",
+            `lg:${ColumnSizes[columns]}`,
+            props.className
+          )}
+          {...props}
+        >
+          {props.children}
+        </Link>
+      </Card>
+      {/* Mobile */}
+      <Card asChild>
+        <Link
+          className={clsx("lg:hidden grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5 mb-4", props.className)}
+          {...props}
+        >
+          {props.children}
+        </Link>
+      </Card>
+    </>
   );
 }
 
