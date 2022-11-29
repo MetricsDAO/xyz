@@ -168,39 +168,36 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       </Header>
       {marketplaces.map((m) => {
         return (
-          <Row
-            columns={6}
-            className="text-sm font-medium"
-            to={`/app/brainstorm/${m.address}/challenges`}
-            key={m.address}
-          >
-            <Row.Column span={2}>{m.title}</Row.Column>
-            <Row.Column>
-              <div className="flex items-center gap-2 flex-wrap">
-                {m.projects.map((p) => (
-                  <Badge key={p.slug} className="pl-2">
-                    <ProjectAvatar project={p} />
-                    <span className="mx-1">{p.name}</span>
-                  </Badge>
-                ))}
-              </div>
-            </Row.Column>
+          <Row asChild columns={6} key={m.address}>
+            <Link to={`/app/brainstorm/${m.address}/challenges`} className="text-sm font-medium">
+              <Row.Column span={2}>{m.title}</Row.Column>
+              <Row.Column>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {m.projects.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
+                </div>
+              </Row.Column>
 
-            <Row.Column>
-              <Badge>
-                <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                <span className="mx-1">1000 USDC</span>
-              </Badge>
-            </Row.Column>
+              <Row.Column>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+              </Row.Column>
 
-            <Row.Column>
-              <Badge>
-                <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                <span className="mx-1">1000 USDC</span>
-              </Badge>
-            </Row.Column>
+              <Row.Column>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+              </Row.Column>
 
-            <Row.Column>{m._count.serviceRequests.toLocaleString()}</Row.Column>
+              <Row.Column>{m._count.serviceRequests.toLocaleString()}</Row.Column>
+            </Link>
           </Row>
         );
       })}

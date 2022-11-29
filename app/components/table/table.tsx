@@ -1,6 +1,5 @@
-import { Link } from "@remix-run/react";
+import { Slot } from "@radix-ui/react-slot";
 
-import type { RemixLinkProps } from "@remix-run/react/dist/components";
 import clsx from "clsx";
 import { Card } from "~/components/Card";
 
@@ -40,32 +39,25 @@ Header.Column = function HeaderColumn({ span = 1, ...props }: { span?: ColSpan }
   );
 };
 
-export function Row({ columns, ...props }: { columns: ColumnSize } & RemixLinkProps) {
+export function Row({
+  columns,
+  asChild,
+  className,
+  ...props
+}: {
+  columns: ColumnSize;
+  asChild?: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const Comp = asChild ? Slot : "div";
   return (
-    <>
-      {/* Desktop */}
-      <Card asChild>
-        <Link
-          className={clsx(
-            "hidden lg:grid gap-y-3 gap-x-1 items-center px-4 py-5 mb-4",
-            `lg:${ColumnSizes[columns]}`,
-            props.className
-          )}
-          {...props}
-        >
-          {props.children}
-        </Link>
-      </Card>
-      {/* Mobile */}
-      <Card asChild>
-        <Link
-          className={clsx("lg:hidden grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5 mb-4", props.className)}
-          {...props}
-        >
-          {props.children}
-        </Link>
-      </Card>
-    </>
+    <Card asChild={true}>
+      <Comp
+        {...props}
+        className={clsx("grid gap-y-3 gap-x-1 items-center px-4 py-5 mb-4", ColumnSizes[columns], className)}
+      />
+    </Card>
   );
 }
 
