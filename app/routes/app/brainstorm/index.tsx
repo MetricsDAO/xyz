@@ -21,6 +21,7 @@ import { Container } from "~/components/Container";
 import { Badge } from "~/components/Badge";
 import { Header, Row, Table } from "~/components/table";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
+import { Card } from "~/components/Card";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -61,7 +62,7 @@ export default function Brainstorm() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesTable marketplaces={marketplaces} />
+            <MarketplacesListView marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
@@ -149,6 +150,21 @@ type MarketplaceTableProps = {
   marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
 };
 
+function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
+  return (
+    <>
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <MarketplacesTable marketplaces={marketplaces} />
+      </div>
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <MarketplacesCard marketplaces={marketplaces} />
+      </div>
+    </>
+  );
+}
+
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
@@ -205,6 +221,56 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   );
 }
 
+function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
+  if (marketplaces.length === 0) {
+    return <p>No results. Try changing search and filter options.</p>;
+  }
+  return (
+    <div>
+      <div className="space-y-4">
+        {marketplaces.map((m) => {
+          return (
+            <Card asChild key={m.address}>
+              <Link
+                to={`/app/brainstorm/${m.address}/challenges`}
+                className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
+              >
+                <div>Challenge Marketplaces</div>
+                <div className="text-sm font-medium">{m.title}</div>
+
+                <div>Chain/Project</div>
+                <div className="flex flex-wrap gap-2">
+                  {m.projects.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
+                </div>
+
+                <div>Challenge Pool Totals</div>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+
+                <div>Avg. Challenge Pool</div>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+
+                <div># Challenges</div>
+                <div>{m._count.serviceRequests.toLocaleString()}</div>
+              </Link>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SortButton({ label, title }: { label: string; title: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const onSort = (header: string) => {
@@ -222,12 +288,12 @@ function SortButton({ label, title }: { label: string; title: string }) {
       <p>{title}</p>
       {searchParams.get("sortBy") === label ? (
         searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
+          <ChevronSortUp16 />
         ) : (
           <ChevronSortDown16 />
         )
       ) : (
-        <ChevronSort16 className="mt-1" />
+        <ChevronSort16 />
       )}
     </button>
   );
