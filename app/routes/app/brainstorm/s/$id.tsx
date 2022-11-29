@@ -72,7 +72,7 @@ export default function ChallengeSubmission() {
                   <DetailItem title="Winner">
                     <Badge className="bg-yellow-600 pl-0">
                       <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
-                      <span className="text-white">50 rMetric</span>
+                      <span className="text-white">50 rMETRIC</span>
                     </Badge>
                   </DetailItem>
                 )}
@@ -105,7 +105,7 @@ export default function ChallengeSubmission() {
                             <Avatar />
                             <p className="font-medium">user.ETH</p>
                             <Badge>
-                              <p>400 rMetric</p>
+                              <p>400 rMETRIC</p>
                             </Badge>
                           </div>
                           <p>12 hours ago</p>

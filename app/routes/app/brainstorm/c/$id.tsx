@@ -52,7 +52,7 @@ export default function Challenge() {
         </DetailItem>
         <DetailItem title="Reward Pool">
           <Badge className="bg-gray-200">
-            <Badge className="bg-gray-100">100 SOL</Badge> 500rmetric
+            <Badge className="bg-gray-100">100 SOL</Badge> 500 rMETRIC
           </Badge>
         </DetailItem>
         <DetailItem title="Submissions">
