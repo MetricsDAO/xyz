@@ -7,7 +7,6 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectIcon } from "~/components/project-icon/project-icon";
 import { Button } from "~/components/button";
 import { Input } from "~/components/Input";
 import { Select } from "~/components/Select";
@@ -18,10 +17,10 @@ import { Pagination } from "~/components/Pagination";
 import { Combobox } from "~/components/Combobox";
 import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { TokenIcon } from "~/components/token-icon/token-icon";
 import { Container } from "~/components/Container";
 import { Badge } from "~/components/Badge";
 import { Header, Row, Table } from "~/components/table";
+import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -156,7 +155,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   }
   return (
     <Table>
-      <Header columns={6}>
+      <Header columns={6} className="text-xs text-gray-500 font-medium">
         <Header.Column span={2}>
           <SortButton label="title" title="Challenge Marketplaces" />
         </Header.Column>
@@ -169,36 +168,39 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       </Header>
       {marketplaces.map((m) => {
         return (
-          <Row columns={6} to={`/app/brainstorm/${m.address}/challenges`} key={m.address}>
-            <Row.Column label="Challenge Marketplaces" span={2}>
-              {m.title}
-            </Row.Column>
-            <Row.Column label="Chain/Project">
+          <Row
+            columns={6}
+            className="text-sm font-medium"
+            to={`/app/brainstorm/${m.address}/challenges`}
+            key={m.address}
+          >
+            <Row.Column span={2}>{m.title}</Row.Column>
+            <Row.Column>
               <div className="flex items-center gap-2 flex-wrap">
                 {m.projects.map((p) => (
                   <Badge key={p.slug} className="pl-2">
-                    <ProjectIcon project={p} />
+                    <ProjectAvatar project={p} />
                     <span className="mx-1">{p.name}</span>
                   </Badge>
                 ))}
               </div>
             </Row.Column>
 
-            <Row.Column label="Challenge Pool Totals">
+            <Row.Column>
               <Badge>
-                <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                 <span className="mx-1">1000 USDC</span>
               </Badge>
             </Row.Column>
 
-            <Row.Column label="Avg. Challenge Pool">
+            <Row.Column>
               <Badge>
-                <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                 <span className="mx-1">1000 USDC</span>
               </Badge>
             </Row.Column>
 
-            <Row.Column label="# Challenges">{m._count.serviceRequests.toLocaleString()}</Row.Column>
+            <Row.Column>{m._count.serviceRequests.toLocaleString()}</Row.Column>
           </Row>
         );
       })}

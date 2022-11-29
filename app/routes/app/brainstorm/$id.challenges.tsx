@@ -1,3 +1,4 @@
+import { UserBadge } from "~/components/UserBadge";
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
@@ -17,7 +18,7 @@ import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/Input";
 import { Pagination } from "~/components/Pagination";
-import { ProjectIcon } from "~/components/project-icon";
+import { ProjectAvatar } from "~/components/avatar";
 import { Select } from "~/components/Select";
 import { Header, Row, Table } from "~/components/table";
 import { Tabs } from "~/components/Tabs";
@@ -62,7 +63,7 @@ export default function MarketplaceChallenges() {
           {/* <div className="flex flex-wrap gap-x-8">
           <Detail>
             <Detail.Title>Sponsor</Detail.Title>
-            <Author.Author />
+            <UserBadge />
           </Detail>
           <Detail>
             <Detail.Title>Chain/Project</Detail.Title>
@@ -297,16 +298,14 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       {challenges.map((c) => {
         return (
           <Row columns={6} to={`/app/brainstorm/c/${c.id}`} key={c.id}>
-            <Row.Column label="Challenges" span={2}>
-              {c.title}
-            </Row.Column>
+            <Row.Column span={2}>{c.title}</Row.Column>
 
-            <Row.Column label="Chain/Project">
+            <Row.Column>
               <div className="flex">
                 <div>
                   {c.laborMarket.projects?.map((p) => (
                     <Badge key={p.slug} className="pl-2">
-                      <ProjectIcon project={p} />
+                      <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
                     </Badge>
                   ))}
@@ -314,11 +313,11 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
               </div>
             </Row.Column>
 
-            <Row.Column label="Reward Pool">5 Sol</Row.Column>
-            <Row.Column label="Submit Deadline">
+            <Row.Column>5 Sol</Row.Column>
+            <Row.Column>
               <Countdown date={"2023-01-25"} />
             </Row.Column>
-            <Row.Column label="Review Deadline">
+            <Row.Column>
               <Countdown date={"2022-11-25"} />
             </Row.Column>
           </Row>
