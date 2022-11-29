@@ -297,10 +297,52 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       </Header>
       {challenges.map((c) => {
         return (
-          <Row columns={6} to={`/app/brainstorm/c/${c.id}`} key={c.id}>
-            <Row.Column span={2}>{c.title}</Row.Column>
+          <Row asChild columns={6} key={c.id}>
+            <Link to={`/app/brainstorm/c/${c.id}`} className="text-sm font-medium">
+              <Row.Column span={2}>{c.title}</Row.Column>
 
-            <Row.Column>
+              <Row.Column>
+                <div className="flex">
+                  <div>
+                    {c.laborMarket.projects?.map((p) => (
+                      <Badge key={p.slug} className="pl-2">
+                        <ProjectAvatar project={p} />
+                        <span className="mx-1">{p.name}</span>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </Row.Column>
+
+              <Row.Column>5 Sol</Row.Column>
+              <Row.Column>
+                <Countdown date={"2023-01-25"} />
+              </Row.Column>
+              <Row.Column>
+                <Countdown date={"2022-11-25"} />
+              </Row.Column>
+            </Link>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTableProps) {
+  if (challenges.length === 0) {
+    return <p>No results. Try changing search and filter options.</p>;
+  }
+  return (
+    <div className="space-y-4">
+      {challenges.map((c) => {
+        return (
+          <Card asChild key={c.id}>
+            <Link to={`/app/brainstorm/c/${c.id}`} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5">
+              <div>Challenges</div>
+              <div className="text-sm font-medium">{c.title}</div>
+
+              <div>Chain/Project</div>
               <div className="flex">
                 <div>
                   {c.laborMarket.projects?.map((p) => (
@@ -311,19 +353,22 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                   ))}
                 </div>
               </div>
-            </Row.Column>
 
-            <Row.Column>5 Sol</Row.Column>
-            <Row.Column>
-              <Countdown date={"2023-01-25"} />
-            </Row.Column>
-            <Row.Column>
-              <Countdown date={"2022-11-25"} />
-            </Row.Column>
-          </Row>
+              <div>Reward Pool</div>
+              <div>5 Sol</div>
+              <div>Submit Deadline</div>
+              <div className="text-gray-500 text-sm">
+                <Countdown date={"2023-01-25"} />
+              </div>
+              <div>Review Deadline</div>
+              <div className="text-gray-500 text-sm">
+                <Countdown date={"2022-11-25"} />
+              </div>
+            </Link>
+          </Card>
         );
       })}
-    </Table>
+    </div>
   );
 }
 
@@ -334,7 +379,7 @@ function WrappedMarketplacesChallengesTable() {
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <MarketplacesChallengesTable challenges={challenges} />
+          <ChallengesListView challenges={challenges} />
           <div className="w-fit m-auto">
             <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
@@ -344,6 +389,21 @@ function WrappedMarketplacesChallengesTable() {
         <SearchAndFilter />
       </aside>
     </section>
+  );
+}
+
+function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
+  return (
+    <>
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <MarketplacesChallengesTable challenges={challenges} />
+      </div>
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <MarketplacesChallengesCard challenges={challenges} />
+      </div>
+    </>
   );
 }
 
