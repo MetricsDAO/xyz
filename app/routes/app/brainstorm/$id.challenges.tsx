@@ -193,13 +193,13 @@ function Prerequisites() {
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">15 rMetric</div>
+                      <div className="normal-case">15 rMETRIC</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
-                      <div className="normal-case">100 rMetric</div>
+                      <div className="normal-case">100 rMETRIC</div>
                     </Badge>
                   </div>
                 </div>
