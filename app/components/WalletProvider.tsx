@@ -9,6 +9,10 @@ import { publicProvider } from "wagmi/providers/public";
 
 const INFURA_ID = "54fcc811bac44f99b84a04a4a3e2f998";
 
+// TODO: env var
+const IS_DEV = true;
+const DEV_CHAINS = [chain.goerli];
+
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
     <img alt="ensImage" src={ensImage} width={size} height={size} style={{ borderRadius: 999 }} />
@@ -20,7 +24,7 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
 export default function WalletProvider({ children }: { children: ReactNode }) {
   const { client, chains } = useMemo(() => {
     const { chains, provider } = configureChains(
-      [chain.polygon, chain.mainnet],
+      [chain.polygon, ...(IS_DEV ? DEV_CHAINS : [])],
       [infuraProvider({ apiKey: INFURA_ID }), publicProvider()]
     );
 
