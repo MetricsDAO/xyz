@@ -1,12 +1,4 @@
-import {
-  CheckboxCheckedFilled16,
-  ChevronSort16,
-  ChevronSortDown16,
-  ChevronSortUp16,
-  Copy16,
-  WarningSquareFilled16,
-} from "@carbon/icons-react";
-import { useSearchParams } from "@remix-run/react";
+import { CheckboxCheckedFilled16, ChevronSortDown16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
@@ -87,15 +79,9 @@ function AddressTable({ wallets }: { wallets: any }) {
   return (
     <Table>
       <Header columns={12}>
-        <Header.Column span={2}>
-          <SortButton title="Chain/Project" label="todo" />
-        </Header.Column>
-        <Header.Column span={5}>
-          <SortButton title="Address" label="todo" />
-        </Header.Column>
-        <Header.Column span={2}>
-          <SortButton title="Last Updated" label="todo" />
-        </Header.Column>
+        <Header.Column span={2}>Chain/Project</Header.Column>
+        <Header.Column span={5}>Address</Header.Column>
+        <Header.Column span={2}>Last Updated</Header.Column>
       </Header>
       {wallets.map((w: { address: string; chain: string }) => {
         return (
@@ -262,33 +248,5 @@ function UpdateAddressButton() {
         </div>
       </Modal>
     </>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }

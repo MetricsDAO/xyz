@@ -1,7 +1,6 @@
 import { UserBadge } from "~/components/UserBadge";
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
@@ -127,17 +126,15 @@ function SearchAndFilter() {
         name="q"
         iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
       />
-      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
-      <div className="md:hidden">
-        <Select
-          placeholder="Select option"
-          name="sortBy"
-          options={[
-            { label: "None", value: "none" },
-            { label: "Chain/Project", value: "project" },
-          ]}
-        />
-      </div>
+      <h3 className="font-semibold text-lg">Sort:</h3>
+      <Select
+        placeholder="Select option"
+        name="sortBy"
+        options={[
+          { label: "None", value: "none" },
+          { label: "Chain/Project", value: "project" },
+        ]}
+      />
       <h3 className="font-semibold text-lg">Filter:</h3>
       <Combobox
         onChange={memoizedSubmit}
@@ -284,9 +281,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
   return (
     <Table>
       <Header columns={6} className="mb-2">
-        <Header.Column span={2}>
-          <SortButton label="title" title="Challenge" />
-        </Header.Column>
+        <Header.Column span={2}>Challenge</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Reward Pool</Header.Column>
         <Header.Column>Submit Deadline</Header.Column>
@@ -402,33 +397,5 @@ function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
         <MarketplacesChallengesCard challenges={challenges} />
       </div>
     </>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }

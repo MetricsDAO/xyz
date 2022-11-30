@@ -1,12 +1,4 @@
-import {
-  ChevronSort16,
-  ChevronSortDown16,
-  ChevronSortUp16,
-  Search16,
-  WarningAltFilled16,
-  WarningAltFilled32,
-} from "@carbon/icons-react";
-import { useSearchParams } from "@remix-run/react";
+import { Search16, WarningAltFilled16, WarningAltFilled32 } from "@carbon/icons-react";
 import { useRef, useState } from "react";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
@@ -19,6 +11,7 @@ import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/Combobox";
 import { Pagination } from "~/components/Pagination";
 import { Header, Row, Table } from "~/components/table";
+import { Select } from "~/components/Select";
 
 export default function IOUTab() {
   //to be replaced
@@ -52,6 +45,15 @@ function SearchAndFilter() {
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
       <Input placeholder="Search" name="q" iconLeft={<Search16 className="ml-2" />} />
+      <h3 className="font-semibold text-lg">Sort:</h3>
+      <Select
+        placeholder="Select option"
+        name="sortBy"
+        options={[
+          { label: "None", value: "none" },
+          { label: "Chain/Project", value: "project" },
+        ]}
+      />
       <p className="text-lg font-semibold">Filter</p>
       <Checkbox value="noBalance" label="No available balance" />
       <Combobox
@@ -95,15 +97,9 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
   return (
     <Table>
       <Header columns={6} className="mb-2">
-        <Header.Column>
-          <SortButton title="Name" label="todo" />
-        </Header.Column>
-        <Header.Column>
-          <SortButton title="Circulating" label="todo" />
-        </Header.Column>
-        <Header.Column>
-          <SortButton title="Burned" label="todo" />
-        </Header.Column>
+        <Header.Column>Name</Header.Column>
+        <Header.Column>Circulating</Header.Column>
+        <Header.Column>Burned</Header.Column>
       </Header>
       {iouTokens.map((t: { id: string; name: string }) => {
         return (
@@ -224,33 +220,5 @@ function IssueButton() {
         </div>
       </Modal>
     </>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }

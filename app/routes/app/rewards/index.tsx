@@ -1,11 +1,4 @@
-import {
-  CheckboxCheckedFilled16,
-  ChevronSort16,
-  ChevronSortDown16,
-  ChevronSortUp16,
-  Search16,
-} from "@carbon/icons-react";
-import { useSearchParams } from "@remix-run/react";
+import { CheckboxCheckedFilled16, Search16 } from "@carbon/icons-react";
 import { useRef } from "react";
 import { z } from "zod";
 import { Checkbox } from "~/components/Checkbox";
@@ -90,21 +83,11 @@ function RewardsTable({ rewards }: { rewards: any }) {
   return (
     <Table>
       <Header columns={6} className="mb-2">
-        <Header.Column span={2}>
-          <SortButton title="Challenge Title" label="todo" />
-        </Header.Column>
-        <Header.Column>
-          <SortButton title="Reward" label="todo" />
-        </Header.Column>
-        <Header.Column>
-          <SortButton title="Submitted" label="todo" />
-        </Header.Column>
-        <Header.Column>
-          <SortButton title="Rewarded" label="todo" />
-        </Header.Column>
-        <Header.Column>
-          <SortButton title="Status" label="todo" />
-        </Header.Column>
+        <Header.Column span={2}>Challenge Title</Header.Column>
+        <Header.Column>Reward</Header.Column>
+        <Header.Column>Submitted</Header.Column>
+        <Header.Column>Rewarded</Header.Column>
+        <Header.Column>Status</Header.Column>
       </Header>
       {rewards.map((r: { id: string; title: string }) => {
         return (
@@ -246,33 +229,5 @@ function SearchAndFilter() {
         ]}
       />
     </ValidatedForm>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }
