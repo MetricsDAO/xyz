@@ -12,7 +12,7 @@ import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Combobox, ValidatedCombobox } from "~/components/combobox";
+import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/Container";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
