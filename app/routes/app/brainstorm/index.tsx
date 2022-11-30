@@ -107,7 +107,7 @@ export default function Brainstorm() {
             />
 
             <Field>
-              <Label className="font-semibold">Sort by</Label>
+              <Label>Sort by</Label>
               <ValidatedSelect
                 placeholder="Select option"
                 name="sortBy"
@@ -127,16 +127,6 @@ export default function Brainstorm() {
             <Checkbox name="can" label="Submit" value="submit" />
             <Checkbox name="can" label="Review" value="review" /> */}
 
-            <Combobox
-              placeholder="Select option"
-              size="sm"
-              options={[
-                { value: "launch", label: "Launch" },
-                { value: "submit", label: "Submit" },
-                { value: "review", label: "Review" },
-              ]}
-            />
-
             <Field>
               <Label>Reward Token</Label>
               <ValidatedCombobox
@@ -152,6 +142,7 @@ export default function Brainstorm() {
               <Label>Chain/Project</Label>
               <ValidatedCombobox
                 name="project"
+                size="sm"
                 onChange={handleChange}
                 placeholder="Select option"
                 options={projects.map((p) => ({ value: p.slug, label: p.name }))}
