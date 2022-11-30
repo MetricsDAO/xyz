@@ -8,14 +8,14 @@ import {
 import { Link, useSearchParams } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
-import { Checkbox } from "~/components/Checkbox";
+import { Checkbox } from "~/components/checkbox";
 import { Pagination } from "~/components/Pagination";
 import { Modal } from "~/components/modal";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input";
 import { Button } from "~/components/button";
 import { Avatar } from "~/components/avatar";
 import { useState } from "react";
-import { Combobox } from "~/components/Combobox";
+import { Combobox } from "~/components/combobox";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/Container";
@@ -193,9 +193,7 @@ function SearchAndFilter() {
       <Checkbox value="unclaimed" label="Unclaimed" />
       <Checkbox value="claimed" label="Claimed" />
       <Combobox
-        label="Reward Token"
         placeholder="Select option"
-        name="rewardToken"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
@@ -203,9 +201,7 @@ function SearchAndFilter() {
         ]}
       />
       <Combobox
-        label="Challenge Marketplace"
         placeholder="Select option"
-        name="challengeMarketplace"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },

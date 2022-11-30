@@ -1,26 +1,29 @@
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-
-import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
-import { getParamsOrFail } from "remix-params-helper";
-import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { Button } from "~/components/button";
-import { Input } from "~/components/Input";
-import { Select } from "~/components/Select";
-import { ValidatedForm } from "remix-validated-form";
-import { z } from "zod";
-import { withZod } from "@remix-validated-form/with-zod";
-import { Pagination } from "~/components/Pagination";
-import { Combobox } from "~/components/Combobox";
-import { useCallback, useRef } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Container } from "~/components/Container";
-import { Card } from "~/components/Card";
-import { Badge } from "~/components/Badge";
+import { Link, useSearchParams, useSubmit } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useRef } from "react";
+import { getParamsOrFail } from "remix-params-helper";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { ValidatedForm } from "remix-validated-form";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
+import { Badge } from "~/components/Badge";
+import { Button } from "~/components/button";
+import { Card } from "~/components/Card";
+import { ValidatedCombobox } from "~/components/combobox";
+import { Container } from "~/components/Container";
+import { Field, Label } from "~/components/field";
+import { ValidatedInput } from "~/components/input";
+import { Pagination } from "~/components/Pagination";
+import { ValidatedSelect } from "~/components/select";
+import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
+import { listProjects } from "~/services/projects.server";
+import { listTokens } from "~/services/tokens.server";
+
+const validator = withZod(LaborMarketSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -28,11 +31,30 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(params);
   const totalResults = await countLaborMarkets(params);
-  return typedjson({ marketplaces, totalResults, params }, { status: 200 });
+  const tokens = await listTokens();
+  const projects = await listProjects();
+  return typedjson(
+    {
+      params,
+      marketplaces,
+      totalResults,
+      tokens,
+      projects,
+    },
+    { status: 200 }
+  );
 };
 
 export default function Brainstorm() {
-  const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
+  const { marketplaces, totalResults, params, projects, tokens } = useTypedLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
+  };
 
   return (
     <Container className="py-16">
@@ -54,7 +76,7 @@ export default function Brainstorm() {
         </aside>
       </header>
 
-      <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">
+      <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
         Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
       </h2>
 
@@ -67,81 +89,69 @@ export default function Brainstorm() {
             </div>
           </div>
         </main>
-        <aside className="md:w-1/4">
-          <SearchAndFilter />
+
+        <aside className="md:w-1/5">
+          <ValidatedForm
+            formRef={formRef}
+            method="get"
+            defaultValues={params}
+            validator={validator}
+            onChange={handleChange}
+            className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+          >
+            <ValidatedInput
+              placeholder="Search"
+              name="q"
+              size="sm"
+              iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+            />
+
+            <Field>
+              <Label>Sort by</Label>
+              <ValidatedSelect
+                placeholder="Select option"
+                name="sortBy"
+                size="sm"
+                onChange={handleChange}
+                options={[
+                  { label: "Trending", value: "trending" },
+                  { label: "# Challenges", value: "serviceRequests" },
+                  { label: "Chain/Project", value: "project" },
+                ]}
+              />
+            </Field>
+
+            {/* <h3 className="font-semibold">Filter:</h3>
+            <p className="text-gray-600">I'm able to:</p>
+            <Checkbox name="can" label="Launch" value="launch" />
+            <Checkbox name="can" label="Submit" value="submit" />
+            <Checkbox name="can" label="Review" value="review" /> */}
+
+            <Field>
+              <Label>Reward Token</Label>
+              <ValidatedCombobox
+                name="token"
+                onChange={handleChange}
+                placeholder="Select option"
+                size="sm"
+                options={tokens.map((token) => ({ label: token.name, value: token.symbol }))}
+              />
+            </Field>
+
+            <Field>
+              <Label>Chain/Project</Label>
+              <ValidatedCombobox
+                name="project"
+                size="sm"
+                onChange={handleChange}
+                placeholder="Select option"
+                options={projects.map((p) => ({ value: p.slug, label: p.name }))}
+              />
+            </Field>
+          </ValidatedForm>
         </aside>
       </section>
     </Container>
-  );
-}
-
-function SearchAndFilter() {
-  const submit = useSubmit();
-  const ref = useRef<HTMLFormElement>(null);
-
-  const memoizedSubmit = useCallback(() => {
-    submit(ref.current);
-  }, [submit]);
-
-  return (
-    <ValidatedForm
-      formRef={ref}
-      method="get"
-      noValidate
-      validator={withZod(z.any())}
-      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
-    >
-      <Input
-        onChange={(e) => submit(e.currentTarget.form)}
-        placeholder="Search"
-        name="q"
-        iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
-      />
-      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
-      <div className="md:hidden">
-        <Select
-          placeholder="Select option"
-          name="sortBy"
-          options={[
-            { label: "None", value: "none" },
-            { label: "Chain/Project", value: "project" },
-          ]}
-        />
-      </div>
-      <h3 className="font-semibold text-lg">Filter:</h3>
-      <Combobox
-        onChange={memoizedSubmit}
-        label="I am able to"
-        placeholder="Select option"
-        name="filter"
-        options={[
-          { value: "launch", label: "Launch" },
-          { value: "submit", label: "Submit" },
-          { value: "review", label: "Review" },
-        ]}
-      />
-      <Combobox
-        onChange={memoizedSubmit}
-        label="Reward Token"
-        placeholder="Select option"
-        name="rewardToken"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-          { label: "USD", value: "USD" },
-        ]}
-      />
-      <Combobox
-        onChange={memoizedSubmit}
-        label="Chain/Project"
-        placeholder="Select option"
-        name="chainProject"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />
-    </ValidatedForm>
   );
 }
 

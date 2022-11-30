@@ -4,11 +4,11 @@ import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { UserBadge } from "~/components/UserBadge";
 import { Card } from "~/components/Card";
-import { Checkbox } from "~/components/Checkbox";
+import { Checkbox } from "~/components/checkbox/checkbox";
 import { Countdown } from "~/components/countdown";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Score } from "~/components/Score";
-import { Select } from "~/components/Select";
+import { Select } from "~/components/select";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { searchSubmissions } from "~/services/submissions.server";
 import invariant from "tiny-invariant";
@@ -53,7 +53,7 @@ export default function ChallengeIdSubmissions() {
       <aside className="md:w-1/4 text-sm">
         <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4">
           <Input placeholder="Search" size="sm" name="search" />
-          <Select label="Sort" name="sortBy" size="sm" options={[{ label: "Chain/Project", value: "project" }]} />
+          <Select name="sortBy" size="sm" options={[{ label: "Chain/Project", value: "project" }]} />
           <Checkbox name="filters" value="winners" label="Winners Only" />
           <Checkbox name="filters" value="great" label="Great" />
           <Checkbox name="filters" value="good" label="Good" />

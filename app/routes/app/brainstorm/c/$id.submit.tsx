@@ -1,6 +1,6 @@
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Textarea } from "~/components/Textarea";
 
 export default function SubmitQuestion() {
@@ -19,7 +19,6 @@ export default function SubmitQuestion() {
           <div className="space-y-5">
             <Input label="Question Title" placeholder="Question title" className="mt-1 w-full" />
             <Textarea
-              label="What's your question?"
               placeholder="Don't assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
               className="p-black w-full md:col-span-2"
               rows={7}
