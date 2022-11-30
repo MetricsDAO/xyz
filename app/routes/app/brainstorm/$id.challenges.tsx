@@ -281,12 +281,9 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableProps) {
-  if (challenges.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
   return (
     <Table>
-      <Header columns={6}>
+      <Header columns={6} className="mb-2">
         <Header.Column span={2}>
           <SortButton label="title" title="Challenge" />
         </Header.Column>
@@ -330,9 +327,6 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
 }
 
 function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTableProps) {
-  if (challenges.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
   return (
     <div className="space-y-4">
       {challenges.map((c) => {
@@ -393,6 +387,10 @@ function WrappedMarketplacesChallengesTable() {
 }
 
 function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
+  if (challenges.length === 0) {
+    return <p>No results. Try changing search and filter options.</p>;
+  }
+
   return (
     <>
       {/* Desktop */}

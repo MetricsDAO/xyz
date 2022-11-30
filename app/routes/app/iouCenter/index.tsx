@@ -18,6 +18,7 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/Combobox";
 import { Pagination } from "~/components/Pagination";
+import { Header, Row, Table } from "~/components/table";
 
 export default function IOUTab() {
   //to be replaced
@@ -28,7 +29,7 @@ export default function IOUTab() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="flex-1 space-y-4">
-        <IOUTable iouTokens={rewards} />
+        <IOUListView iouTokens={rewards} />
         <div className="w-fit m-auto">
           <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
         </div>
@@ -67,8 +68,7 @@ function SearchAndFilter() {
   );
 }
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function IOUTable({ iouTokens }: { iouTokens: any }) {
+function IOUListView({ iouTokens }: { iouTokens: any }) {
   if (iouTokens.length === 0) {
     return (
       <div className="flex py-16">
@@ -79,38 +79,69 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
 
   return (
     <>
-      {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
-        <SortButton title="Name" label="todo" />
-        <SortButton title="Circulating" label="todo" />
-        <SortButton title="Burned" label="todo" />
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <IOUTable iouTokens={iouTokens} />
       </div>
-      {/* Rows */}
-      <div className="space-y-3">
-        {iouTokens.map((t: { id: string; name: string }) => {
-          return (
-            <Card asChild key={t.id}>
-              <div
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-3 py-5"
-                key={t.id}
-              >
-                <div className="lg:hidden">Name</div>
-                <p>{t.name}</p>
-                <div className="lg:hidden">Circulating</div>
-                <p>1000</p>
-                <div className="lg:hidden">Burned</div>
-                <p>1000</p>
-                <div className="flex flex-wrap gap-2 lg:col-span-3 justify-end">
-                  <BurnButton />
-                  <IssueButton />
-                </div>
-              </div>
-            </Card>
-          );
-        })}
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <IOUCards iouTokens={iouTokens} />
       </div>
     </>
+  );
+}
+
+function IOUTable({ iouTokens }: { iouTokens: any }) {
+  return (
+    <Table>
+      <Header columns={6} className="mb-2">
+        <Header.Column>
+          <SortButton title="Name" label="todo" />
+        </Header.Column>
+        <Header.Column>
+          <SortButton title="Circulating" label="todo" />
+        </Header.Column>
+        <Header.Column>
+          <SortButton title="Burned" label="todo" />
+        </Header.Column>
+      </Header>
+      {iouTokens.map((t: { id: string; name: string }) => {
+        return (
+          <Row key={t.id} columns={6}>
+            <Row.Column>{t.name}</Row.Column>
+            <Row.Column>1000</Row.Column>
+            <Row.Column>1000</Row.Column>
+            <Row.Column span={3} className="flex flex-wrap gap-2 justify-end">
+              <BurnButton />
+              <IssueButton />
+            </Row.Column>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function IOUCards({ iouTokens }: { iouTokens: any }) {
+  return (
+    <div className="space-y-3">
+      {iouTokens.map((t: { id: string; name: string }) => {
+        return (
+          <Card key={t.id} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-3 py-5">
+            <div>Name</div>
+            <p>{t.name}</p>
+            <div>Circulating</div>
+            <p>1000</p>
+            <div>Burned</div>
+            <p>1000</p>
+            <div className="flex flex-wrap col-span-2 gap-2 justify-center">
+              <BurnButton />
+              <IssueButton />
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
 

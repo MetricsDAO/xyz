@@ -151,6 +151,10 @@ type MarketplaceTableProps = {
 };
 
 function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
+  if (marketplaces.length === 0) {
+    return <p>No results. Try changing search and filter options.</p>;
+  }
+
   return (
     <>
       {/* Desktop */}
@@ -166,12 +170,9 @@ function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
 }
 
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
-  if (marketplaces.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
   return (
     <Table>
-      <Header columns={6} className="text-xs text-gray-500 font-medium">
+      <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={2}>
           <SortButton label="title" title="Challenge Marketplaces" />
         </Header.Column>
@@ -222,9 +223,6 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
 }
 
 function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
-  if (marketplaces.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
   return (
     <div>
       <div className="space-y-4">

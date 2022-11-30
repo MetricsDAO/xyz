@@ -13,10 +13,12 @@ const ColSpans = {
   2: "col-span-2",
   3: "col-span-3",
   4: "col-span-4",
+  5: "col-span-5",
+  6: "col-span-6",
 };
 
 type ColumnSize = 6 | 12;
-type ColSpan = 1 | 2 | 3 | 4;
+type ColSpan = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * "table" of cards with a header. Choose between 6 and 12 columns. Up to the user to ensure headers and columns line up.
