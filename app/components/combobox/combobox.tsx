@@ -100,7 +100,7 @@ export function Combobox({ size = "md", value, options, onChange, placeholder }:
 }
 
 export function ValidatedCombobox({ onChange, ...props }: Props & { name: string }) {
-  const { getInputProps, defaultValue } = useField(props.name);
+  const { getInputProps } = useField(props.name);
   const [value, setValue] = useControlField<string[]>(props.name);
 
   const handleChange = (value: string[]) => {
@@ -114,7 +114,7 @@ export function ValidatedCombobox({ onChange, ...props }: Props & { name: string
       onChange(value);
     }
   }, [value, prevValue, onChange]);
-  console.log(defaultValue);
+
   return (
     <>
       <Combobox {...getInputProps(props)} value={value} onChange={handleChange} />
