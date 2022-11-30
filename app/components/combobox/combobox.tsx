@@ -99,7 +99,12 @@ export function Combobox({ size = "md", value, options, onChange, placeholder }:
 }
 
 export function ValidatedCombobox(props: Props & { name: string }) {
-  const { error } = useField(props.name);
+  const { getInputProps } = useField(props.name);
   const [value, setValue] = useControlField<string[]>(props.name);
-  return <Combobox {...props} value={value} onChange={setValue} />;
+  return (
+    <>
+      <Combobox {...getInputProps(props)} value={value} onChange={setValue} />
+      {value ? value.map((v) => <input key={v} type="hidden" name={props.name} value={v} />) : null}
+    </>
+  );
 }
