@@ -3,17 +3,15 @@ import { useState } from "react";
 import { useControlField, useField } from "remix-validated-form";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import type { FieldProps } from "../Field";
 
 type Props = {
-  name?: string;
   multiple?: boolean;
   size?: "sm" | "md";
   options: Option[];
   placeholder?: string;
   value?: string[];
   onChange?: (values: string[]) => void;
-} & FieldProps;
+};
 
 type Option = { value: string; label: string; prefix?: React.ReactNode };
 
@@ -103,5 +101,5 @@ export function Combobox({ size = "md", value, options, onChange, placeholder }:
 export function ValidatedCombobox(props: Props & { name: string }) {
   const { error } = useField(props.name);
   const [value, setValue] = useControlField<string[]>(props.name);
-  return <Combobox {...props} value={value} onChange={setValue} error={error} />;
+  return <Combobox {...props} value={value} onChange={setValue} />;
 }

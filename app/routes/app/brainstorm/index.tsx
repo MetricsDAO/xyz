@@ -1,30 +1,29 @@
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-
-import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { Link, useSearchParams } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useCallback, useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectIcon } from "~/components/project-icon/project-icon";
-import { Button } from "~/components/button";
-import { Input } from "~/components/input";
-import { ValidatedSelect } from "~/components/select";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { withZod } from "@remix-validated-form/with-zod";
-import { Pagination } from "~/components/Pagination";
-import { Combobox } from "~/components/combobox";
-import { useCallback, useRef } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { TokenIcon } from "~/components/token-icon/token-icon";
-import { Container } from "~/components/Container";
-import { Card } from "~/components/Card";
 import { Badge } from "~/components/Badge";
+import { Button } from "~/components/button";
+import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/checkbox";
-import { useUpdateSearchParams } from "~/utils/use-update-search-params";
+import { Combobox } from "~/components/combobox";
+import { Container } from "~/components/Container";
 import { Field, Label } from "~/components/field";
+import { Input } from "~/components/input";
+import { Pagination } from "~/components/Pagination";
+import { ProjectIcon } from "~/components/project-icon/project-icon";
+import { ValidatedSelect } from "~/components/select";
+import { TokenIcon } from "~/components/token-icon/token-icon";
+import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
+import { useUpdateSearchParams } from "~/utils/use-update-search-params";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -104,19 +103,20 @@ function SearchAndFilter() {
         iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
 
-      <h3 className="font-semibold ">Sort:</h3>
-
-      <ValidatedSelect
-        placeholder="Select option"
-        name="sortBy"
-        size="sm"
-        onChange={handleChange}
-        options={[
-          { label: "Trending", value: "trending" },
-          { label: "# Challenges", value: "serviceRequests" },
-          { label: "Chain/Project", value: "project" },
-        ]}
-      />
+      <Field>
+        <Label className="font-semibold">Sort by</Label>
+        <ValidatedSelect
+          placeholder="Select option"
+          name="sortBy"
+          size="sm"
+          onChange={handleChange}
+          options={[
+            { label: "Trending", value: "trending" },
+            { label: "# Challenges", value: "serviceRequests" },
+            { label: "Chain/Project", value: "project" },
+          ]}
+        />
+      </Field>
 
       <h3 className="font-semibold">Filter:</h3>
       <p className="text-gray-600">I'm able to:</p>
@@ -125,9 +125,7 @@ function SearchAndFilter() {
       <Checkbox name="can" label="Review" value="review" />
 
       <Combobox
-        label="I am able to"
         placeholder="Select option"
-        name="filter"
         size="sm"
         options={[
           { value: "launch", label: "Launch" },
@@ -140,9 +138,7 @@ function SearchAndFilter() {
         <Label>Reward Token</Label>
         <Combobox
           onChange={handleChange}
-          label="Reward Token"
           placeholder="Select option"
-          name="rewardToken"
           size="sm"
           options={[
             { label: "Solana", value: "Solana" },
@@ -152,17 +148,17 @@ function SearchAndFilter() {
         />
       </Field>
 
-      <label>Chain/Project</label>
-      <Combobox
-        onChange={handleChange}
-        label="Chain/Project"
-        placeholder="Select option"
-        name="chainProject"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />
+      <Field>
+        <Label>Chain/Project</Label>
+        <Combobox
+          onChange={handleChange}
+          placeholder="Select option"
+          options={[
+            { label: "Solana", value: "Solana" },
+            { label: "Ethereum", value: "Ethereum" },
+          ]}
+        />
+      </Field>
     </ValidatedForm>
   );
 }
