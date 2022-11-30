@@ -1,8 +1,9 @@
 import { Combobox as HCombobox } from "@headlessui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useControlField, useField } from "remix-validated-form";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
+import { usePrevious } from "react-use";
 
 type Props = {
   multiple?: boolean;
@@ -98,12 +99,25 @@ export function Combobox({ size = "md", value, options, onChange, placeholder }:
   );
 }
 
-export function ValidatedCombobox(props: Props & { name: string }) {
-  const { getInputProps } = useField(props.name);
+export function ValidatedCombobox({ onChange, ...props }: Props & { name: string }) {
+  const { getInputProps, defaultValue } = useField(props.name);
   const [value, setValue] = useControlField<string[]>(props.name);
+
+  const handleChange = (value: string[]) => {
+    setValue(value);
+    onChange?.(value);
+  };
+
+  const prevValue = usePrevious(value);
+  useEffect(() => {
+    if (onChange && prevValue !== value) {
+      onChange(value);
+    }
+  }, [value, prevValue, onChange]);
+  console.log(defaultValue);
   return (
     <>
-      <Combobox {...getInputProps(props)} value={value} onChange={setValue} />
+      <Combobox {...getInputProps(props)} value={value} onChange={handleChange} />
       {value ? value.map((v) => <input key={v} type="hidden" name={props.name} value={v} />) : null}
     </>
   );

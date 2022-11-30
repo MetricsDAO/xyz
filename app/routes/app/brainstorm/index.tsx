@@ -1,28 +1,29 @@
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Link, useSearchParams } from "@remix-run/react";
+import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
-import { z } from "zod";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Checkbox } from "~/components/checkbox";
-import { Combobox } from "~/components/combobox";
+import { Combobox, ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/Container";
 import { Field, Label } from "~/components/field";
-import { Input } from "~/components/input";
+import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/Pagination";
 import { ValidatedSelect } from "~/components/select";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
-import { useUpdateSearchParams } from "~/utils/use-update-search-params";
+import { listProjects } from "~/services/projects.server";
+import { listTokens } from "~/services/tokens.server";
+
+const validator = withZod(LaborMarketSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -30,12 +31,31 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(params);
   const totalResults = await countLaborMarkets(params);
-  return typedjson({ marketplaces, totalResults, params }, { status: 200 });
+  const tokens = await listTokens();
+  const projects = await listProjects();
+  return typedjson(
+    {
+      params,
+      marketplaces,
+      totalResults,
+      tokens,
+      projects,
+    },
+    { status: 200 }
+  );
 };
 
 export default function Brainstorm() {
-  const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
+  const { marketplaces, totalResults, params, projects, tokens } = useTypedLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
 
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
+  };
+  console.log({ params });
   return (
     <Container className="py-16">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
@@ -69,96 +89,78 @@ export default function Brainstorm() {
             </div>
           </div>
         </main>
+
         <aside className="md:w-1/5">
-          <SearchAndFilter />
+          <ValidatedForm
+            formRef={formRef}
+            method="get"
+            defaultValues={params}
+            validator={validator}
+            onChange={handleChange}
+            className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+          >
+            <ValidatedInput
+              placeholder="Search"
+              name="q"
+              size="sm"
+              iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+            />
+
+            <Field>
+              <Label className="font-semibold">Sort by</Label>
+              <ValidatedSelect
+                placeholder="Select option"
+                name="sortBy"
+                size="sm"
+                onChange={handleChange}
+                options={[
+                  { label: "Trending", value: "trending" },
+                  { label: "# Challenges", value: "serviceRequests" },
+                  { label: "Chain/Project", value: "project" },
+                ]}
+              />
+            </Field>
+
+            {/* <h3 className="font-semibold">Filter:</h3>
+            <p className="text-gray-600">I'm able to:</p>
+            <Checkbox name="can" label="Launch" value="launch" />
+            <Checkbox name="can" label="Submit" value="submit" />
+            <Checkbox name="can" label="Review" value="review" /> */}
+
+            <Combobox
+              placeholder="Select option"
+              size="sm"
+              options={[
+                { value: "launch", label: "Launch" },
+                { value: "submit", label: "Submit" },
+                { value: "review", label: "Review" },
+              ]}
+            />
+
+            <Field>
+              <Label>Reward Token</Label>
+              <ValidatedCombobox
+                name="token"
+                onChange={handleChange}
+                placeholder="Select option"
+                size="sm"
+                options={tokens.map((token) => ({ label: token.name, value: token.symbol }))}
+              />
+            </Field>
+
+            <Field>
+              <Label>Chain/Project</Label>
+              <ValidatedCombobox
+                name="project"
+                onChange={handleChange}
+                placeholder="Select option"
+                options={projects.map((p) => ({ value: p.slug, label: p.name }))}
+              />
+            </Field>
+          </ValidatedForm>
         </aside>
       </section>
     </Container>
-  );
-}
-
-function SearchAndFilter() {
-  const ref = useRef<HTMLFormElement>(null);
-  const updateParams = useUpdateSearchParams();
-  const handleChange = useCallback(() => {
-    if (ref.current) {
-      updateParams(new FormData(ref.current));
-    }
-  }, [updateParams]);
-
-  return (
-    <ValidatedForm
-      formRef={ref}
-      method="get"
-      noValidate
-      validator={withZod(z.any())}
-      onChange={handleChange}
-      className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
-    >
-      <Input
-        placeholder="Search"
-        name="q"
-        size="sm"
-        iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-      />
-
-      <Field>
-        <Label className="font-semibold">Sort by</Label>
-        <ValidatedSelect
-          placeholder="Select option"
-          name="sortBy"
-          size="sm"
-          onChange={handleChange}
-          options={[
-            { label: "Trending", value: "trending" },
-            { label: "# Challenges", value: "serviceRequests" },
-            { label: "Chain/Project", value: "project" },
-          ]}
-        />
-      </Field>
-
-      <h3 className="font-semibold">Filter:</h3>
-      <p className="text-gray-600">I'm able to:</p>
-      <Checkbox name="can" label="Launch" value="launch" />
-      <Checkbox name="can" label="Submit" value="submit" />
-      <Checkbox name="can" label="Review" value="review" />
-
-      <Combobox
-        placeholder="Select option"
-        size="sm"
-        options={[
-          { value: "launch", label: "Launch" },
-          { value: "submit", label: "Submit" },
-          { value: "review", label: "Review" },
-        ]}
-      />
-
-      <Field>
-        <Label>Reward Token</Label>
-        <Combobox
-          onChange={handleChange}
-          placeholder="Select option"
-          size="sm"
-          options={[
-            { label: "Solana", value: "Solana" },
-            { label: "Ethereum", value: "Ethereum" },
-            { label: "USD", value: "USD" },
-          ]}
-        />
-      </Field>
-
-      <Field>
-        <Label>Chain/Project</Label>
-        <Combobox
-          onChange={handleChange}
-          placeholder="Select option"
-          options={[
-            { label: "Solana", value: "Solana" },
-            { label: "Ethereum", value: "Ethereum" },
-          ]}
-        />
-      </Field>
-    </ValidatedForm>
   );
 }
 
