@@ -3,7 +3,7 @@ import { Outlet } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 

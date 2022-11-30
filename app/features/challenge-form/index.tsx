@@ -4,7 +4,7 @@ import { useControlField } from "remix-validated-form";
 import { Button } from "~/components/button";
 import { ValidatedCombobox } from "~/components/combobox/combobox";
 import { ValidatedInput } from "~/components/input/input";
-import { ValidatedSelect } from "~/components/Select";
+import { ValidatedSelect } from "~/components/select";
 import { ValidatedTextarea } from "~/components/Textarea";
 
 export function ChallengeForm({ laborMarkets }: { laborMarkets: LaborMarket[] }) {
@@ -39,11 +39,11 @@ export function ChallengeForm({ laborMarkets }: { laborMarkets: LaborMarket[] })
         <Fragment>
           <ValidatedInput name="title" label="Challenge Title" />
 
-          <ValidatedTextarea name="description" label="What's the challenge?" />
+          <ValidatedTextarea name="description" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <ValidatedSelect name="language" label="Language" options={[]} />
-            <ValidatedSelect name="projectIds" label="Blockhain/Project(s)" options={[]} />
+            <ValidatedSelect name="language" options={[]} />
+            <ValidatedSelect name="projectIds" options={[]} />
           </div>
 
           <section>
@@ -63,7 +63,7 @@ export function ChallengeForm({ laborMarkets }: { laborMarkets: LaborMarket[] })
           <section className="space-y-3">
             <h4 className="font-semibold">Rewards</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ValidatedSelect name="tokenId" label="Reward Token" options={[]} />
+              <ValidatedSelect name="tokenId" options={[]} />
               <ValidatedInput name="rewardPool" label="Reward Pool" />
             </div>
             <p className="text-gray-400 italic font-light">

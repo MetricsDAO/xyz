@@ -1,4 +1,3 @@
-import { UserBadge } from "~/components/UserBadge";
 import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
@@ -13,18 +12,18 @@ import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Combobox } from "~/components/Combobox";
+import { Combobox } from "~/components/combobox";
 import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/input/input";
 import { Pagination } from "~/components/Pagination";
 import { ProjectAvatar } from "~/components/avatar";
-import { Select } from "~/components/Select";
+import { Select } from "~/components/select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { Checkbox } from "~/components/Checkbox";
+import { Checkbox } from "~/components/checkbox";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -144,9 +143,7 @@ function SearchAndFilter() {
       <Checkbox label="Review" />
       <Combobox
         onChange={memoizedSubmit}
-        label="Reward Token"
         placeholder="Select option"
-        name="rewardToken"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
@@ -155,9 +152,7 @@ function SearchAndFilter() {
       />
       <Combobox
         onChange={memoizedSubmit}
-        label="Chain/Project"
         placeholder="Select option"
-        name="chainProject"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
@@ -165,9 +160,7 @@ function SearchAndFilter() {
       />
       <Combobox
         onChange={memoizedSubmit}
-        label="Language"
         placeholder="Select option"
-        name="language"
         options={[{ label: "English", value: "English" }]}
       />
     </ValidatedForm>

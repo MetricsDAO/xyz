@@ -16,7 +16,7 @@ import { Container } from "~/components/Container";
 import { Detail, DetailItem } from "~/components/detail";
 import { Drawer } from "~/components/drawer/drawer";
 import { Input } from "~/components/input/input";
-import { Select } from "~/components/Select";
+import { Select } from "~/components/select";
 import { findSubmission } from "~/services/submissions.server";
 
 const paramsSchema = z.object({ id: z.string() });
@@ -118,7 +118,7 @@ export default function ChallengeSubmission() {
               <aside className="md:w-1/5">
                 <Form className="space-y-3 border bg-opacity-5 rounded-lg p-4">
                   <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} />
-                  <Select label="Sort" name="sortBy" options={[{ label: "Chain/Project", value: "project" }]} />
+                  <Select name="sortBy" options={[{ label: "Chain/Project", value: "project" }]} />
                   <Checkbox value="great" label="Great" />
                   <Checkbox value="good" label="Good" />
                   <Checkbox value="average" label="Average" />
