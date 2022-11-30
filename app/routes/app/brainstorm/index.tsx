@@ -55,7 +55,7 @@ export default function Brainstorm() {
       submit(formRef.current, { replace: true });
     }
   };
-  console.log({ params });
+
   return (
     <Container className="py-16">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
