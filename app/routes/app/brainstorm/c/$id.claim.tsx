@@ -53,12 +53,12 @@ export default function ClaimToSubmit() {
         </div>
       </div>
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">Lock rMetric</h2>
+        <h2 className="text-lg font-semibold">Lock rMETRIC</h2>
         <div className="flex flex-col md:flex-row gap-2 md:items-center">
           <p>
-            You must lock <Badge>50</Badge> rMetric to claim
+            You must lock <Badge>50</Badge> rMETRIC to claim
           </p>
-          <Button variant="outline">Lock rMetric</Button>
+          <Button variant="outline">Lock rMETRIC</Button>
         </div>
         <p className="mt-2 text-gray-500 italic">
           Important: If you don't submit before the deadline, all 50 of your locked rMETRIC will be slashed.

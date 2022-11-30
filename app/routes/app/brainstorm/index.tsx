@@ -9,6 +9,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
+import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
@@ -18,9 +19,7 @@ import { Container } from "~/components/Container";
 import { Field, Label } from "~/components/field";
 import { Input } from "~/components/input";
 import { Pagination } from "~/components/Pagination";
-import { ProjectIcon } from "~/components/project-icon/project-icon";
 import { ValidatedSelect } from "~/components/select";
-import { TokenIcon } from "~/components/token-icon/token-icon";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { useUpdateSearchParams } from "~/utils/use-update-search-params";
@@ -201,7 +200,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                 <div className="flex flex-wrap gap-2">
                   {m.projects.map((p) => (
                     <Badge key={p.slug} className="pl-2">
-                      <ProjectIcon project={p} />
+                      <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
                     </Badge>
                   ))}
@@ -209,13 +208,13 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
 
                 <div className="lg:hidden">Challenge Pool Totals</div>
                 <Badge>
-                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
                 <div className="lg:hidden">Avg. Challenge Pool</div>
                 <Badge>
-                  <TokenIcon token={{ symbol: "usdc", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 

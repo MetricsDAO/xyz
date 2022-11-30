@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react";
-import { Author } from "~/components/Author";
+import { UserBadge } from "~/components/UserBadge";
 import { Badge } from "~/components/Badge";
 import { Card } from "~/components/Card";
 
@@ -14,7 +14,7 @@ export default function ChallengeIdParticipants() {
         <main className="w-full border-spacing-4 border-separate space-y-4">
           <Card asChild className="px-6 py-4">
             <Link to="/u/0x123" className="flex justify-between items-center">
-              <Author />
+              <UserBadge url="u/id" name="jo.Eth" balance={200} />
               <p className="text-sm text-gray-500">12 hours ago</p>
             </Link>
           </Card>
@@ -30,7 +30,7 @@ export default function ChallengeIdParticipants() {
                   <Text weight={500}>user.ETH</Text>
                   <Badge color="gray" radius="sm">
                     <Text weight={400} className="normal-case">
-                      400 xMetric
+                      400 rMETRIC
                     </Text>
                   </Badge>
                 </div>

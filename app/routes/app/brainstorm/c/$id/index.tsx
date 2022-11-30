@@ -2,7 +2,7 @@ import { Form, Link } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { Author } from "~/components/Author";
+import { UserBadge } from "~/components/UserBadge";
 import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/checkbox/checkbox";
 import { Countdown } from "~/components/countdown";
@@ -37,7 +37,7 @@ export default function ChallengeIdSubmissions() {
                   <h4 className="font-medium text-gray-900">{s.title}</h4>
                   <section className="text-gray-900">{s.description}</section>
                   <div className="flex space-x-1 items-center text-xs">
-                    <Countdown date={s.createdAt} /> by <Author />
+                    <Countdown date={s.createdAt} /> by <UserBadge url="u/id" name="jo.Eth" balance={200} />
                   </div>
                 </main>
                 <div className="space-y-3">

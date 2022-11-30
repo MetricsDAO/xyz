@@ -6,7 +6,7 @@ import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { z } from "zod";
-import { Author } from "~/components/Author";
+import { UserBadge } from "~/components/UserBadge";
 import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
@@ -54,7 +54,7 @@ export default function ChallengeSubmission() {
             <div className="flex flex-wrap gap-x-8 gap-y-4">
               <Detail>
                 <DetailItem title="Author">
-                  <Author />
+                  <UserBadge url="u/id" name="jo.Eth" balance={200} />
                 </DetailItem>
                 <DetailItem title="Created">
                   <Badge>1 month 5 days ago</Badge>
@@ -72,7 +72,7 @@ export default function ChallengeSubmission() {
                   <DetailItem title="Winner">
                     <Badge className="bg-yellow-600 pl-0">
                       <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
-                      <span className="text-white">50 rMetric</span>
+                      <span className="text-white">50 rMETRIC</span>
                     </Badge>
                   </DetailItem>
                 )}
@@ -105,7 +105,7 @@ export default function ChallengeSubmission() {
                             <Avatar />
                             <p className="font-medium">user.ETH</p>
                             <Badge>
-                              <p>400 xMetric</p>
+                              <p>400 rMETRIC</p>
                             </Badge>
                           </div>
                           <p>12 hours ago</p>
