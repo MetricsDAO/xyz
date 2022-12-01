@@ -1,4 +1,5 @@
 import type { AvatarComponent } from "@rainbow-me/rainbowkit";
+import { RainbowKitAuthenticationProvider } from "@rainbow-me/rainbowkit";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
@@ -6,6 +7,7 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
+import { authenticationAdapter } from "~/components/AuthenticationAdapter";
 
 const INFURA_ID = "54fcc811bac44f99b84a04a4a3e2f998";
 
@@ -44,9 +46,11 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProvider avatar={CustomAvatar} chains={chains}>
-        {children}
-      </RainbowKitProvider>
+      <RainbowKitAuthenticationProvider adapter={authenticationAdapter} status={"unauthenticated"}>
+        <RainbowKitProvider avatar={CustomAvatar} chains={chains}>
+          {children}
+        </RainbowKitProvider>
+      </RainbowKitAuthenticationProvider>
     </WagmiConfig>
   );
 }
