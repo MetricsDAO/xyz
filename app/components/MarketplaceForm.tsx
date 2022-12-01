@@ -78,7 +78,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         {launchAccess === "delegates" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field>
-              <Label>Badger Contract Addressj</Label>
+              <Label>Badger Contract Address</Label>
               <ValidatedInput name="launchBadgerAddress" />
               <Error name="launchBadgerAddress" />
             </Field>

@@ -31,14 +31,22 @@ export const action = async ({ request }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  // if (true) {
-  //   // server side validation
-  //   return validationError({
-  //     fieldErrors: {
-  //       title: "title error",
-  //     },
-  //   });
-  // }
+  // Additional server side validation
+  if (result.data.launchAccess === "delegates") {
+    const badgerDataMissing = !result.data.launchBadgerAddress || !result.data.launchBadgerTokenId;
+    if (badgerDataMissing) {
+      return validationError({
+        fieldErrors: {
+          launchBadgerAddress: !result.data.launchBadgerAddress
+            ? "Required if delegates selected for launch access"
+            : "",
+          launchBadgerTokenId: !result.data.launchBadgerTokenId
+            ? "Required if delegates selected for launch access"
+            : "",
+        },
+      });
+    }
+  }
 
   const preparedLaborMarket = await prepareLaborMarket(result.data);
   return typedjson({ preparedLaborMarket });
