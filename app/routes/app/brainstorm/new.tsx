@@ -6,6 +6,7 @@ import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
 import { MarketplaceForm } from "~/components/MarketplaceForm";
@@ -38,35 +39,31 @@ export const action = async ({ request }: ActionArgs) => {
   //   });
   // }
 
-  const prepared = await prepareLaborMarket(result.data);
-  return typedjson(prepared);
+  const preparedLaborMarket = await prepareLaborMarket(result.data);
+  return typedjson(preparedLaborMarket);
 };
 
 export default function CreateMarketplace() {
   const transition = useTransition();
   const { projects, tokens } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<typeof action>();
+  const actionData = useTypedActionData<LaborMarketPrepared>();
 
-  const [laborMarketPrepared, setLaborMarketPrepared] = useState<LaborMarketPrepared>();
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    // Bloody type hack because validation errors from action screw everything up
-    if ((actionData as unknown as LaborMarketPrepared)?.ipfsHash) {
-      setLaborMarketPrepared(actionData as unknown as LaborMarketPrepared);
-    }
-  }, [actionData]);
-
-  useEffect(() => {
-    if (laborMarketPrepared) {
+    if (actionData) {
       setOpenModal(true);
     }
-  }, [laborMarketPrepared]);
+  }, [actionData]);
 
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketNew> validator={validator} method="post" defaultValues={{ launchAccess: "anyone" }}>
+        <ValidatedForm<LaborMarketNew>
+          validator={withZod(z.any())}
+          method="post"
+          defaultValues={{ launchAccess: "anyone" }}
+        >
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
@@ -77,13 +74,19 @@ export default function CreateMarketplace() {
         </ValidatedForm>
       </div>
       <Modal title="Create Marketplace?" isOpen={openModal} onClose={() => setOpenModal(false)}>
-        <ConfirmTransaction laborMarket={laborMarketPrepared} onCancel={() => setOpenModal(false)} />
+        <ConfirmTransaction laborMarket={actionData} onCancel={() => setOpenModal(false)} />
       </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
+function ConfirmTransaction({
+  laborMarket,
+  onCancel,
+}: {
+  laborMarket: LaborMarketPrepared | null;
+  onCancel: () => void;
+}) {
   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
 
   const navigate = useNavigate();
