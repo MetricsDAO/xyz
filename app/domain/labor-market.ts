@@ -20,8 +20,8 @@ export const LaborMarketSchema = z.object({
   reviewBadgerTokenId: z
     .string({ description: "Token ID of the badge needed to review a request." })
     .min(1, "Required"),
-  tokenSymbols: z.array(z.string(), { description: "List of reward tokens." }),
-  projectIds: z.array(z.string(), { description: "List of project IDs." }),
+  tokenSymbols: zfd.repeatable(z.array(z.string(), { description: "List of reward tokens." }).min(1, "Required")),
+  projectIds: zfd.repeatable(z.array(z.string(), { description: "List of project IDs." }).min(1, "Required")),
   sponsorAddress: z.string({ description: "ID of the user who sponsored it." }),
 });
 

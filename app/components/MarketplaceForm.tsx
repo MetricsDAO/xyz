@@ -22,6 +22,8 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         </p>
       </section>
 
+      <input type="hidden" name="type" value="brainstorm" />
+
       <Field>
         <Label size="lg">Challenge Marketplace Title</Label>
         <ValidatedInput type="text" name="title" placeholder="e.g Solana Breakpoint 2023" />
