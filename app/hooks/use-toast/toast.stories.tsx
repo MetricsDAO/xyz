@@ -19,10 +19,10 @@ const BasicToast = () => {
 
   return (
     <div className="space-x-2">
-      <Button size="sm" onClick={handleString}>
+      <Button size="sm" variant="cancel" onClick={handleString}>
         String
       </Button>
-      <Button size="sm" onClick={handleCustom}>
+      <Button size="sm" variant="cancel" onClick={handleCustom}>
         Custom
       </Button>
     </div>
