@@ -4,9 +4,9 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { z } from "zod";
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
 import { MarketplaceForm } from "~/components/MarketplaceForm";
@@ -26,6 +26,7 @@ export const loader = async () => {
 
 const validator = withZod(LaborMarketNewSchema);
 
+type ActionResponse = { preparedLaborMarket: LaborMarketPrepared } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
@@ -40,53 +41,47 @@ export const action = async ({ request }: ActionArgs) => {
   // }
 
   const preparedLaborMarket = await prepareLaborMarket(result.data);
-  return typedjson(preparedLaborMarket);
+  return typedjson({ preparedLaborMarket });
 };
 
 export default function CreateMarketplace() {
   const transition = useTransition();
   const { projects, tokens } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<LaborMarketPrepared>();
+  const actionData = useTypedActionData<ActionResponse>();
 
-  const [openModal, setOpenModal] = useState(false);
+  const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketPrepared; isOpen: boolean }>({ isOpen: false });
+
+  function closeModal() {
+    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
+  }
 
   useEffect(() => {
-    if (actionData) {
-      setOpenModal(true);
+    if (actionData && "preparedLaborMarket" in actionData) {
+      setModalData({ laborMarket: actionData.preparedLaborMarket, isOpen: true });
     }
   }, [actionData]);
 
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketNew>
-          validator={withZod(z.any())}
-          method="post"
-          defaultValues={{ launchAccess: "anyone" }}
-        >
+        <ValidatedForm<LaborMarketNew> validator={validator} method="post" defaultValues={{ launchAccess: "anyone" }}>
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
-            <Button size="lg" type="submit" loading={transition.state === "loading"}>
+            <Button size="lg" type="submit">
               {transition.state === "submitting" ? "Loading..." : "Next"}
             </Button>
           </div>
         </ValidatedForm>
       </div>
-      <Modal title="Create Marketplace?" isOpen={openModal} onClose={() => setOpenModal(false)}>
-        <ConfirmTransaction laborMarket={actionData} onCancel={() => setOpenModal(false)} />
+      <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
+        <ConfirmTransaction laborMarket={modalData.laborMarket} onCancel={closeModal} />
       </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({
-  laborMarket,
-  onCancel,
-}: {
-  laborMarket: LaborMarketPrepared | null;
-  onCancel: () => void;
-}) {
+function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
 
   const navigate = useNavigate();
