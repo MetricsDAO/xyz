@@ -6,7 +6,6 @@ import { UserBadge } from "~/components/UserBadge";
 import { Card } from "~/components/Card";
 import { ValidatedForm } from "remix-validated-form";
 import { Checkbox } from "~/components/checkbox";
-import { Countdown } from "~/components/countdown";
 import { ValidatedInput } from "~/components/input/input";
 import { Score } from "~/components/Score";
 import { ValidatedSelect } from "~/components/select";
@@ -59,7 +58,7 @@ export default function ChallengeIdSubmissions() {
                   </div>
                 </main>
                 <div className="space-y-3">
-                  <Score score={22} />
+                  <Score score={scoreMath(s.reviews)} />
                   <p className="text-xs text-gray-500 text-center">{s.reviews.length} reviews</p>
                 </div>
               </Link>
@@ -106,4 +105,24 @@ export default function ChallengeIdSubmissions() {
       </aside>
     </section>
   );
+}
+
+function scoreMath(reviews: Review[]) {
+  const score = reviews.reduce((sum, r) => sum + numScore(r.scoreStatus), 0);
+  return score / reviews.length;
+}
+
+function numScore(status: string) {
+  switch (status) {
+    case "Great":
+      return 100;
+    case "Good":
+      return 75;
+    case "Average":
+      return 50;
+    case "Bad":
+      return 25;
+    default:
+      return 0;
+  }
 }
