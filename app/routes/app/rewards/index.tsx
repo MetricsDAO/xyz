@@ -1,4 +1,3 @@
-
 import { Link } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
@@ -7,7 +6,6 @@ import { Pagination } from "~/components/Pagination";
 import { Modal } from "~/components/modal";
 import { Input } from "~/components/input";
 import { Button } from "~/components/button";
-import { Avatar } from "~/components/avatar";
 import { useState } from "react";
 import { Combobox } from "~/components/combobox";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -17,6 +15,7 @@ import RewardsTab from "~/components/RewardsTab";
 import { Card } from "~/components/Card";
 import { fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
+import { CheckboxCheckedFilled16, Search16 } from "@carbon/icons-react";
 
 export default function Rewards() {
   //to be replaced

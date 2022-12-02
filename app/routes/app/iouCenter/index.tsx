@@ -11,7 +11,7 @@ import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/combobox";
 import { Pagination } from "~/components/Pagination";
 import { Header, Row, Table } from "~/components/table";
-import { Select } from "~/components/Select";
+import { Select } from "~/components/select";
 
 export default function IOUTab() {
   //to be replaced
