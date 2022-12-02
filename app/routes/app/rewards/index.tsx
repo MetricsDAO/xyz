@@ -1,14 +1,15 @@
-import { CheckboxCheckedFilled16, Search16 } from "@carbon/icons-react";
+
+import { Link } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
-import { Checkbox } from "~/components/Checkbox";
+import { Checkbox } from "~/components/checkbox";
 import { Pagination } from "~/components/Pagination";
 import { Modal } from "~/components/modal";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input";
 import { Button } from "~/components/button";
 import { Avatar } from "~/components/avatar";
 import { useState } from "react";
-import { Combobox } from "~/components/Combobox";
+import { Combobox } from "~/components/combobox";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/Container";
@@ -150,7 +151,7 @@ function ClaimButton() {
         <div className="space-y-5 mt-5">
           <div className="space-y-2">
             <div className="flex items-center">
-              <Avatar src="/img/trophy.svg" />
+              <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
               <p className="text-yellow-700 text-2xl ml-2">10 SOL</p>
             </div>
             <div className="flex border-solid border rounded-md border-trueGray-200">
@@ -160,7 +161,12 @@ function ClaimButton() {
                 <p className="text-sm text-gray-600">0xs358437485395889094</p>
               </div>
             </div>
-            <p className="text-xs">To chage or update this address head to Payout Addresses</p>
+            <p className="text-xs">
+              To chage or update this address head to{" "}
+              <Link to="/app/rewards/addresses" className="text-blue-600">
+                Payout Addresses
+              </Link>
+            </p>
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpened(false)}>
@@ -193,7 +199,6 @@ function ClaimButton() {
     </>
   );
 }
-
 function SearchAndFilter() {
   const ref = useRef<HTMLFormElement>(null);
   return (
@@ -210,9 +215,7 @@ function SearchAndFilter() {
       <Checkbox value="unclaimed" label="Unclaimed" />
       <Checkbox value="claimed" label="Claimed" />
       <Combobox
-        label="Reward Token"
         placeholder="Select option"
-        name="rewardToken"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
@@ -220,9 +223,7 @@ function SearchAndFilter() {
         ]}
       />
       <Combobox
-        label="Challenge Marketplace"
         placeholder="Select option"
-        name="challengeMarketplace"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },

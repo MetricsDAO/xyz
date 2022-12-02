@@ -19,8 +19,8 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
       type: params.type,
       title: { search: params.q },
       description: { search: params.q },
-      tokens: params.token ? { some: { symbol: params.token } } : undefined,
-      projects: params.project ? { some: { id: params.project } } : undefined,
+      tokens: params.token ? { some: { OR: params.token.map((symbol) => ({ symbol })) } } : undefined,
+      projects: params.project ? { some: { OR: params.project.map((slug) => ({ slug })) } } : undefined,
     },
     orderBy: {
       [params.sortBy]:

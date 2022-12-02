@@ -12,18 +12,19 @@ import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Combobox } from "~/components/Combobox";
+import { Combobox } from "~/components/combobox";
 import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Pagination } from "~/components/Pagination";
 import { ProjectAvatar } from "~/components/avatar";
-import { Select } from "~/components/Select";
 import { Header, Row, Table } from "~/components/table";
+import { Select } from "~/components/select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
+import { Checkbox } from "~/components/checkbox";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -136,22 +137,12 @@ function SearchAndFilter() {
         ]}
       />
       <h3 className="font-semibold text-lg">Filter:</h3>
+      <p>I am able to:</p>
+      <Checkbox label="Submit" />
+      <Checkbox label="Review" />
       <Combobox
         onChange={memoizedSubmit}
-        label="I am able to"
         placeholder="Select option"
-        name="filter"
-        options={[
-          { value: "launch", label: "Launch" },
-          { value: "submit", label: "Submit" },
-          { value: "review", label: "Review" },
-        ]}
-      />
-      <Combobox
-        onChange={memoizedSubmit}
-        label="Reward Token"
-        placeholder="Select option"
-        name="rewardToken"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
@@ -160,13 +151,16 @@ function SearchAndFilter() {
       />
       <Combobox
         onChange={memoizedSubmit}
-        label="Chain/Project"
         placeholder="Select option"
-        name="chainProject"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
         ]}
+      />
+      <Combobox
+        onChange={memoizedSubmit}
+        placeholder="Select option"
+        options={[{ label: "English", value: "English" }]}
       />
     </ValidatedForm>
   );
@@ -180,30 +174,31 @@ function Prerequisites() {
           <div className="min-w-[350px] w-full border-spacing-4 border-separate">
             <div className="space-y-4 md:w-4/5">
               <p className="text-sm text-gray-500">
-                What you must hold in your connected wallet to perform various actions on this challenge
+                What you must hold in your connected wallet to perform various actions on challenges in this challenge
+                marketplace
               </p>
               <Card className="p-4 space-y-2">
                 <p className="font-weight-500 text-base text-[#252525]">
-                  You must hold this much xMETRIC to enter submissions for this challenge
+                  You must hold this much rMETRIC to enter submissions on challenges
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">15 xMetric</div>
+                      <div className="normal-case">15 rMETRIC</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
-                      <div className="normal-case">100 xMetric</div>
+                      <div className="normal-case">100 rMETRIC</div>
                     </Badge>
                   </div>
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
                 <p className="font-weight-500 text-base text-[#252525]">
-                  You must hold this badge to review and score submissions on this challenge
+                  You must hold this badge to review and score submissions on challenges
                 </p>
                 <div className="text-xs text-gray-500">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
@@ -242,14 +237,18 @@ function Rewards() {
             <Card className="p-4 space-around space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Challenge Pools Total</p>
               <p className="text-xs text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
-              <p>100 SOL</p>
+              <Badge className="bg-gray-200">
+                <Badge className="bg-gray-100">100 USD</Badge> 500 rMETRIC
+              </Badge>
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Avg. Challenge Pool</p>
               <p className="text-xs text-gray-500">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </p>
-              <p>100 SOL</p>
+              <Badge className="bg-gray-200">
+                <Badge className="bg-gray-100">100 USD</Badge> 500 rMETRIC
+              </Badge>
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Reward Curve</p>
@@ -257,7 +256,7 @@ function Rewards() {
               <div className="flex flex-row space-x-3 mt-1">
                 <Badge>Aggresive</Badge>
                 <p className="text-xs">
-                  Rewards the top 10% of submissions. Winners are determined through peer review
+                  Rewards the top 10% of submissions for each challenge. Winners are determined through peer review
                 </p>
               </div>
             </Card>

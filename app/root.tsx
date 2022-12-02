@@ -5,6 +5,7 @@ import WalletProvider from "./components/WalletProvider";
 
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import { Toaster } from "react-hot-toast";
 
 export const meta: MetaFunction = () => {
   return {
@@ -42,6 +43,7 @@ export const links: LinksFunction = () => {
     {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap",
+      as: "style",
     },
     {
       rel: "apple-touch-icon",
@@ -141,6 +143,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Toaster />
       </body>
     </html>
   );

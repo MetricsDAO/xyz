@@ -12,7 +12,16 @@ const primaryLinks = [
   { link: "/app/analyze", label: "Analyze" },
 ];
 
-const userLinks = [{ link: "/app/rewards", label: "Rewards" }];
+const userLinks = [
+  {
+    link: "/app/rewards",
+    label: (
+      <span>
+        Rewards <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>
+      </span>
+    ),
+  },
+];
 
 export function AppHeader() {
   const items = primaryLinks.map((link) => (

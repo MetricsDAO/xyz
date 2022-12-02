@@ -2,13 +2,13 @@ import { Search16, WarningAltFilled16, WarningAltFilled32 } from "@carbon/icons-
 import { useRef, useState } from "react";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Checkbox } from "~/components/Checkbox";
-import { Input } from "~/components/Input";
+import { Checkbox } from "~/components/checkbox";
+import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
-import { Combobox } from "~/components/Combobox";
+import { Combobox } from "~/components/combobox";
 import { Pagination } from "~/components/Pagination";
 import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/Select";
@@ -57,9 +57,7 @@ function SearchAndFilter() {
       <p className="text-lg font-semibold">Filter</p>
       <Checkbox value="noBalance" label="No available balance" />
       <Combobox
-        label="iouToken"
         placeholder="Select option"
-        name="iouToken"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },

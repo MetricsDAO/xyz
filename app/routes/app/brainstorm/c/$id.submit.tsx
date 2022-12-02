@@ -1,6 +1,6 @@
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
-import { Input } from "~/components/Input";
+import { Input } from "~/components/input/input";
 import { Textarea } from "~/components/Textarea";
 
 export default function SubmitQuestion() {
@@ -14,12 +14,11 @@ export default function SubmitQuestion() {
           </h2>
           <p className="text-gray-500">
             Submit your best question idea. Peers will review and score your question. If you're a winner, you'll earn
-            tokens and xMETRIC from the challenge reward pool!
+            tokens and rMETRIC from the challenge reward pool!
           </p>
           <div className="space-y-5">
             <Input label="Question Title" placeholder="Question title" className="mt-1 w-full" />
             <Textarea
-              label="What's your question?"
               placeholder="Don't assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
               className="p-black w-full md:col-span-2"
               rows={7}

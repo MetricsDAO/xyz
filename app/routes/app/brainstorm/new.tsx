@@ -10,7 +10,6 @@ import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { Button } from "~/components/button";
-import { useAccount } from "wagmi";
 import { useTransition } from "@remix-run/react";
 import { Container } from "~/components/Container";
 
@@ -32,9 +31,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
 export default function CreateMarketplace() {
   const transition = useTransition();
-  const { isConnected } = useAccount();
   const { projects, tokens } = useTypedLoaderData<typeof loader>();
-
   return (
     <Container className="py-16">
       <div className="max-w-2xl">
@@ -46,7 +43,7 @@ export default function CreateMarketplace() {
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
-            <Button size="lg" type="submit" disabled={!isConnected} loading={transition.state === "submitting"}>
+            <Button size="lg" type="submit" loading={transition.state === "submitting"}>
               Create Marketplace
             </Button>
             <Button size="lg" variant="cancel">

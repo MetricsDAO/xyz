@@ -11,12 +11,12 @@ import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Checkbox } from "~/components/Checkbox";
+import { Checkbox } from "~/components/checkbox/checkbox";
 import { Container } from "~/components/Container";
 import { Detail, DetailItem } from "~/components/detail";
 import { Drawer } from "~/components/drawer/drawer";
-import { Input } from "~/components/Input";
-import { Select } from "~/components/Select";
+import { Input } from "~/components/input/input";
+import { Select } from "~/components/select";
 import { findSubmission } from "~/services/submissions.server";
 
 const paramsSchema = z.object({ id: z.string() });
@@ -72,7 +72,7 @@ export default function ChallengeSubmission() {
                   <DetailItem title="Winner">
                     <Badge className="bg-yellow-600 pl-0">
                       <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
-                      <span className="text-white">50 rMetric</span>
+                      <span className="text-white">50 rMETRIC</span>
                     </Badge>
                   </DetailItem>
                 )}
@@ -105,7 +105,7 @@ export default function ChallengeSubmission() {
                             <Avatar />
                             <p className="font-medium">user.ETH</p>
                             <Badge>
-                              <p>400 xMetric</p>
+                              <p>400 rMETRIC</p>
                             </Badge>
                           </div>
                           <p>12 hours ago</p>
@@ -118,7 +118,7 @@ export default function ChallengeSubmission() {
               <aside className="md:w-1/5">
                 <Form className="space-y-3 border bg-opacity-5 rounded-lg p-4">
                   <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} />
-                  <Select label="Sort" name="sortBy" options={[{ label: "Chain/Project", value: "project" }]} />
+                  <Select name="sortBy" options={[{ label: "Chain/Project", value: "project" }]} />
                   <Checkbox value="great" label="Great" />
                   <Checkbox value="good" label="Good" />
                   <Checkbox value="average" label="Average" />
