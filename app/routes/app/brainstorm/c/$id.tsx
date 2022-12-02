@@ -1,4 +1,4 @@
-import { Outlet } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
 import { UserBadge } from "~/components/UserBadge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
@@ -29,11 +29,11 @@ export default function Challenge() {
     <Container className="py-16">
       <header className="flex space-x-4 mb-16">
         <h1 className="text-3xl font-semibold w-full">{challenge.title}</h1>
-        <Button variant="cancel" size="lg">
-          Claim to Review
+        <Button variant="cancel" size="lg" asChild>
+          <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
         </Button>
-        <Button variant="primary" size="lg">
-          Claim to Submit
+        <Button variant="primary" size="lg" asChild>
+          <Link to={`/app/brainstorm/c/${challenge.id}/submit`}>Claim to Submit</Link>
         </Button>
       </header>
       <Detail className="mb-6">
@@ -56,10 +56,10 @@ export default function Challenge() {
           </Badge>
         </DetailItem>
         <DetailItem title="Submissions">
-          <Badge className="px-4 min-w-full">99</Badge>
+          <Badge className="px-4 min-w-full">{challenge._count.submissions}</Badge>
         </DetailItem>
         <DetailItem title="Reviews">
-          <Badge className="px-4 min-w-full">99</Badge>
+          <Badge className="px-4 min-w-full">todo</Badge>
         </DetailItem>
         <DetailItem title="Winner">
           <Badge>Pending</Badge>
