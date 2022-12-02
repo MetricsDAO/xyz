@@ -1,12 +1,4 @@
-import {
-  CheckboxCheckedFilled16,
-  ChevronSort16,
-  ChevronSortDown16,
-  ChevronSortUp16,
-  Copy16,
-  WarningSquareFilled16,
-} from "@carbon/icons-react";
-import { useSearchParams } from "@remix-run/react";
+import { CheckboxCheckedFilled16, ChevronSortDown16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
@@ -14,23 +6,27 @@ import { Container } from "~/components/Container";
 import RewardsTab from "~/components/RewardsTab";
 import { Card } from "~/components/Card";
 import { fromNow } from "~/utils/date";
+import { Header, Row, Table } from "~/components/table";
 
 export default function PayoutAddresses() {
-  const validAddress = false;
   const wallets = [
-    { address: "0x75638840948190490890", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
-    { address: "0x32849854983758727987", chain: "Ethereum", user: "idk", userId: 22, isConnected: true },
+    {
+      address: "0xb794f5ea0ba39494ce839613fffba74279579268",
+      chain: "Ethereum",
+      user: "idk",
+      userId: 22,
+      isConnected: true,
+    },
+    {
+      address: "0xb794f5ea0ba39494ce839613cccba74279579268",
+      chain: "Ethereum",
+      user: "idk",
+      userId: 22,
+      isConnected: true,
+    },
     { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
     { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
   ];
-
-  if (wallets.length === 0) {
-    return (
-      <div className="flex">
-        <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
-      </div>
-    );
-  }
 
   return (
     <Container className="py-16 px-10">
@@ -49,48 +45,106 @@ export default function PayoutAddresses() {
         </section>
       </div>
       <RewardsTab rewardsNum={10} addressesNum={wallets.length} />
-      <div className="space-y-7 mb-12">
-        {/* Header (hide on mobile) */}
-        <div className="hidden lg:grid grid-cols-5 gap-x-1 items-end px-2">
-          <SortButton title="Chain/Project" label="todo" />
-          <div className="col-span-2">
-            <SortButton title="Address" label="todo" />
-          </div>
-          <SortButton title="Last Updated" label="todo" />
-        </div>
-        {/* Rows */}
-        <div className="space-y-3">
-          {wallets.map((w: { address: string; chain: string }) => {
-            return (
-              <Card
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
-                key={w.address}
-              >
-                <div className="lg:hidden">Chain/Project</div>
-                <p>project</p>
-                <div className="lg:hidden">Address</div>
-                <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
-                  {validAddress ? (
-                    <CheckboxCheckedFilled16 className="text-lime-500" />
-                  ) : (
-                    <WarningSquareFilled16 className="text-rose-500" />
-                  )}
-                  <p className="text-black">{w.address}</p>
-                  <Copy16 className="ml-0.5" />
-                </div>
-                <div className="lg:hidden">Last Updated</div>
-                <p className="text-black">{fromNow("1999-01-01")} </p>
-                <div className="flex flex-wrap gap-2">
-                  <RemoveAddressButton />
-                  <UpdateAddressButton />
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
+      <AddressListView wallets={wallets} />
     </Container>
+  );
+}
+
+function AddressListView({ wallets }: { wallets: any }) {
+  if (wallets.length === 0) {
+    return (
+      <div className="flex">
+        <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <AddressTable wallets={wallets} />
+      </div>
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <AddressCards wallets={wallets} />
+      </div>
+    </>
+  );
+}
+
+function AddressTable({ wallets }: { wallets: any }) {
+  const validAddress = false;
+
+  return (
+    <Table>
+      <Header columns={12}>
+        <Header.Column span={2}>Chain/Project</Header.Column>
+        <Header.Column span={5}>Address</Header.Column>
+        <Header.Column span={2}>Last Updated</Header.Column>
+      </Header>
+      {wallets.map((w: { address: string; chain: string }) => {
+        return (
+          <Row columns={12} key={w.address}>
+            <Row.Column span={2}>project</Row.Column>
+            <Row.Column span={5} className="flex flex-row items-center gap-x-2">
+              {validAddress ? (
+                <CheckboxCheckedFilled16 className="text-lime-500" />
+              ) : (
+                <WarningSquareFilled16 className="text-rose-500" />
+              )}
+              <p className="text-black">{w.address}</p>
+              <Copy16 className="ml-0.5" />
+            </Row.Column>
+            <Row.Column span={2} className="text-black">
+              {fromNow("1999-01-01")}{" "}
+            </Row.Column>
+            <Row.Column span={3} className="flex flex-wrap gap-2">
+              <RemoveAddressButton />
+              <UpdateAddressButton />
+            </Row.Column>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function AddressCards({ wallets }: { wallets: any }) {
+  const validAddress = false;
+  return (
+    <div className="space-y-3">
+      {wallets.map((w: { address: string; chain: string }) => {
+        return (
+          <Card
+            // On mobile, two column grid with "labels". On desktop hide the "labels".
+            className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
+            key={w.address}
+          >
+            <div className="lg:hidden">Chain/Project</div>
+            <p>project</p>
+            <div className="lg:hidden">Address</div>
+            <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
+              {validAddress ? (
+                <CheckboxCheckedFilled16 className="text-lime-500" />
+              ) : (
+                <WarningSquareFilled16 className="text-rose-500" />
+              )}
+              <p className="text-black">
+                {w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
+              </p>
+              <Copy16 className="ml-0.5" />
+            </div>
+            <div className="lg:hidden">Last Updated</div>
+            <p className="text-black">{fromNow("1999-01-01")} </p>
+            <div className="flex flex-wrap gap-2">
+              <RemoveAddressButton />
+              <UpdateAddressButton />
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
 
@@ -194,33 +248,5 @@ function UpdateAddressButton() {
         </div>
       </Modal>
     </>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }
