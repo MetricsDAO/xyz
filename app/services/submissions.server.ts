@@ -8,13 +8,19 @@ import { prisma } from "./prisma.server";
  */
 export const searchSubmissions = async (params: SubmissionSearch) => {
   return prisma.submission.findMany({
+    include: { reviews: true },
     where: {
       title: { search: params.q },
       description: { search: params.q },
       serviceRequestId: params.serviceRequestId,
     },
     orderBy: {
-      [params.sortBy]: params.order,
+      [params.sortBy]:
+        "reviews" !== params.sortBy
+          ? params.order
+          : {
+              _count: params.order,
+            },
     },
     take: params.first,
     skip: params.first * (params.page - 1),
