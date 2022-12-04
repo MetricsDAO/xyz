@@ -1,12 +1,4 @@
-import {
-  ChevronSort16,
-  ChevronSortDown16,
-  ChevronSortUp16,
-  Search16,
-  WarningAltFilled16,
-  WarningAltFilled32,
-} from "@carbon/icons-react";
-import { useSearchParams } from "@remix-run/react";
+import { Search16, WarningAltFilled16, WarningAltFilled32 } from "@carbon/icons-react";
 import { useRef, useState } from "react";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
@@ -18,6 +10,8 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/combobox";
 import { Pagination } from "~/components/Pagination";
+import { Header, Row, Table } from "~/components/table";
+import { Select } from "~/components/select";
 
 export default function IOUTab() {
   //to be replaced
@@ -28,7 +22,7 @@ export default function IOUTab() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="flex-1 space-y-4">
-        <IOUTable iouTokens={rewards} />
+        <IOUListView iouTokens={rewards} />
         <div className="w-fit m-auto">
           <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
         </div>
@@ -51,6 +45,15 @@ function SearchAndFilter() {
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
       <Input placeholder="Search" name="q" iconLeft={<Search16 className="ml-2" />} />
+      <h3 className="font-semibold text-lg">Sort:</h3>
+      <Select
+        placeholder="Select option"
+        name="sortBy"
+        options={[
+          { label: "None", value: "none" },
+          { label: "Chain/Project", value: "project" },
+        ]}
+      />
       <p className="text-lg font-semibold">Filter</p>
       <Checkbox value="noBalance" label="No available balance" />
       <Combobox
@@ -65,8 +68,7 @@ function SearchAndFilter() {
   );
 }
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function IOUTable({ iouTokens }: { iouTokens: any }) {
+function IOUListView({ iouTokens }: { iouTokens: any }) {
   if (iouTokens.length === 0) {
     return (
       <div className="flex py-16">
@@ -77,38 +79,63 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
 
   return (
     <>
-      {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
-        <SortButton title="Name" label="todo" />
-        <SortButton title="Circulating" label="todo" />
-        <SortButton title="Burned" label="todo" />
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <IOUTable iouTokens={iouTokens} />
       </div>
-      {/* Rows */}
-      <div className="space-y-3">
-        {iouTokens.map((t: { id: string; name: string }) => {
-          return (
-            <Card asChild key={t.id}>
-              <div
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-3 py-5"
-                key={t.id}
-              >
-                <div className="lg:hidden">Name</div>
-                <p>{t.name}</p>
-                <div className="lg:hidden">Circulating</div>
-                <p>1000</p>
-                <div className="lg:hidden">Burned</div>
-                <p>1000</p>
-                <div className="flex flex-wrap gap-2 lg:col-span-3 justify-end">
-                  <BurnButton />
-                  <IssueButton />
-                </div>
-              </div>
-            </Card>
-          );
-        })}
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <IOUCards iouTokens={iouTokens} />
       </div>
     </>
+  );
+}
+
+function IOUTable({ iouTokens }: { iouTokens: any }) {
+  return (
+    <Table>
+      <Header columns={6} className="mb-2">
+        <Header.Column>Name</Header.Column>
+        <Header.Column>Circulating</Header.Column>
+        <Header.Column>Burned</Header.Column>
+      </Header>
+      {iouTokens.map((t: { id: string; name: string }) => {
+        return (
+          <Row key={t.id} columns={6}>
+            <Row.Column>{t.name}</Row.Column>
+            <Row.Column>1000</Row.Column>
+            <Row.Column>1000</Row.Column>
+            <Row.Column span={3} className="flex flex-wrap gap-2 justify-end">
+              <BurnButton />
+              <IssueButton />
+            </Row.Column>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function IOUCards({ iouTokens }: { iouTokens: any }) {
+  return (
+    <div className="space-y-3">
+      {iouTokens.map((t: { id: string; name: string }) => {
+        return (
+          <Card key={t.id} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-3 py-5">
+            <div>Name</div>
+            <p>{t.name}</p>
+            <div>Circulating</div>
+            <p>1000</p>
+            <div>Burned</div>
+            <p>1000</p>
+            <div className="flex flex-wrap col-span-2 gap-2 justify-center">
+              <BurnButton />
+              <IssueButton />
+            </div>
+          </Card>
+        );
+      })}
+    </div>
   );
 }
 
@@ -191,33 +218,5 @@ function IssueButton() {
         </div>
       </Modal>
     </>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }

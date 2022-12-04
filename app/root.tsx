@@ -7,6 +7,7 @@ import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
 import { getUserId } from "./services/session.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { Toaster } from "react-hot-toast";
 
 export async function loader({ request }: DataFunctionArgs) {
   const userId = await getUserId(request);
@@ -154,6 +155,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Toaster />
       </body>
     </html>
   );
