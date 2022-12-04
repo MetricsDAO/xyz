@@ -28,7 +28,9 @@ export const authenticationAdapter = createAuthenticationAdapter({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, signature }),
     });
-    return Boolean(verifyRes.ok);
+    const verified = Boolean(verifyRes.ok);
+
+    return verified;
   },
   signOut: async () => {
     await fetch("/api/logout");

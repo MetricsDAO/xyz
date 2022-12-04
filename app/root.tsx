@@ -1,10 +1,18 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "./components/WalletProvider";
 
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import { getUserId } from "./services/session.server";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+
+export async function loader({ request }: DataFunctionArgs) {
+  const userId = await getUserId(request);
+  const sessionExists = userId ? true : false;
+  return sessionExists;
+}
 
 export const meta: MetaFunction = () => {
   return {
@@ -108,9 +116,13 @@ export function CatchBoundary() {
 }
 
 export default function App() {
+  const sessionExists = useLoaderData();
+  const authStatus = sessionExists ? "authenticated" : "unauthenticated";
+  console.log("authStatus", authStatus);
+
   return (
     <Document>
-      <WalletProvider>
+      <WalletProvider authStatus={authStatus}>
         <Outlet />
       </WalletProvider>
     </Document>

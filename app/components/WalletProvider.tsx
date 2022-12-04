@@ -10,6 +10,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { authenticationAdapter } from "~/components/AuthenticationAdapter";
 
 const INFURA_ID = "54fcc811bac44f99b84a04a4a3e2f998";
+export declare type AuthenticationStatus = "loading" | "unauthenticated" | "authenticated";
 
 // TODO: env var
 const IS_DEV = true;
@@ -23,7 +24,13 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   );
 };
 
-export default function WalletProvider({ children }: { children: ReactNode }) {
+export default function WalletProvider({
+  children,
+  authStatus,
+}: {
+  children: ReactNode;
+  authStatus: AuthenticationStatus;
+}) {
   const { client, chains } = useMemo(() => {
     const { chains, provider } = configureChains(
       [chain.polygon, ...(IS_DEV ? DEV_CHAINS : [])],
@@ -46,7 +53,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 
   return (
     <WagmiConfig client={client}>
-      <RainbowKitAuthenticationProvider adapter={authenticationAdapter} status={"unauthenticated"}>
+      <RainbowKitAuthenticationProvider adapter={authenticationAdapter} status={authStatus}>
         <RainbowKitProvider avatar={CustomAvatar} chains={chains}>
           {children}
         </RainbowKitProvider>
