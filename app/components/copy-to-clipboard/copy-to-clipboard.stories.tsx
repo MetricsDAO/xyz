@@ -1,4 +1,4 @@
-import { CopyToClipboard } from "./copy-to-clipboad";
+import { CopyToClipboard } from "./copy-to-clipboard";
 
 export const Basic = () => {
   return (
