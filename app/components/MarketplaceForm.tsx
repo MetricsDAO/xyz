@@ -8,7 +8,7 @@ import { Error, Field, Label } from "./field";
 import { Button } from "./button";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
-  const [launchAccess] = useControlField("launchAccess");
+  const [launchAccess] = useControlField("launch.access");
 
   return (
     <div className="space-y-10 py-5">
@@ -66,7 +66,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
             </p>
           </div>
           <ValidatedSelect
-            name="launchAccess"
+            name="launch.access"
             options={[
               { label: "Anyone", value: "anyone" },
               { label: "Delegates only", value: "delegates" },
@@ -79,13 +79,13 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field>
               <Label>Badger Contract Address</Label>
-              <ValidatedInput name="launchBadgerAddress" />
-              <Error name="launchBadgerAddress" />
+              <ValidatedInput name="launch.badgerAddress" />
+              <Error name="launch.badgerAddress" />
             </Field>
             <Field>
               <Label>Badger Token ID</Label>
-              <ValidatedInput name="launchBadgerTokenId" />
-              <Error name="launchBadgerTokenId" />
+              <ValidatedInput name="launch.badgerTokenId" />
+              <Error name="launch.badgerTokenId" />
             </Field>
           </div>
         ) : null}

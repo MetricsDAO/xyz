@@ -31,23 +31,6 @@ export const action = async ({ request }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  // Additional server side validation
-  if (result.data.launchAccess === "delegates") {
-    const badgerDataMissing = !result.data.launchBadgerAddress || !result.data.launchBadgerTokenId;
-    if (badgerDataMissing) {
-      return validationError({
-        fieldErrors: {
-          launchBadgerAddress: !result.data.launchBadgerAddress
-            ? "Required if delegates selected for launch access"
-            : "",
-          launchBadgerTokenId: !result.data.launchBadgerTokenId
-            ? "Required if delegates selected for launch access"
-            : "",
-        },
-      });
-    }
-  }
-
   const preparedLaborMarket = await prepareLaborMarket(result.data);
   return typedjson({ preparedLaborMarket });
 };
@@ -72,7 +55,11 @@ export default function CreateMarketplace() {
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketNew> validator={validator} method="post" defaultValues={{ launchAccess: "anyone" }}>
+        <ValidatedForm<LaborMarketNew>
+          validator={validator}
+          method="post"
+          defaultValues={{ launch: { access: "anyone" } }}
+        >
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
