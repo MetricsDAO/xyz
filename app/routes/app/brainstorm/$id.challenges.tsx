@@ -19,7 +19,7 @@ import { ValidatedInput } from "~/components/input/input";
 import { Pagination } from "~/components/Pagination";
 import { ProjectAvatar } from "~/components/avatar";
 import { Header, Row, Table } from "~/components/table";
-import { Select } from "~/components/select";
+import { ValidatedSelect } from "~/components/select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
@@ -27,7 +27,7 @@ import { findLaborMarket } from "~/services/labor-market.server";
 import { Checkbox } from "~/components/checkbox";
 import { Detail, DetailItem } from "~/components/detail";
 import { Field, Label } from "~/components/field";
-import type { LaborMarket } from "~/domain";
+import type { LaborMarket } from "@prisma/client";
 
 const validator = withZod(ChallengeSearchSchema);
 
@@ -125,16 +125,15 @@ function SearchAndFilter() {
     <ValidatedForm
       formRef={formRef}
       method="get"
-      noValidate
       validator={validator}
+      onChange={handleChange}
       className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
     >
       <ValidatedInput
-        onChange={handleChange}
         placeholder="Search"
         name="q"
         size="sm"
-        iconRight={<MagnifyingGlassIcon className="w-5 h-5" />}
+        iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
       <h3 className="font-semibold">Sort:</h3>
       <ValidatedSelect
@@ -142,8 +141,10 @@ function SearchAndFilter() {
         name="sortBy"
         size="sm"
         options={[
-          { label: "None", value: "none" },
-          { label: "Chain/Project", value: "project" },
+          { label: "Title", value: "title" },
+          { label: "Submit Deadline", value: "submit" },
+          { label: "Review Deadline", value: "review" },
+          { label: "Reward Pool", value: "reward" },
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
@@ -422,4 +423,3 @@ function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
     </>
   );
 }
-
