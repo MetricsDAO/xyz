@@ -1,6 +1,6 @@
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
+import { UserBadge } from "~/components/UserBadge";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
@@ -18,6 +18,7 @@ import { Countdown } from "~/components/countdown";
 import { Input } from "~/components/input/input";
 import { Pagination } from "~/components/Pagination";
 import { ProjectAvatar } from "~/components/avatar";
+import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
@@ -126,17 +127,15 @@ function SearchAndFilter() {
         name="q"
         iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
       />
-      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
-      <div className="md:hidden">
-        <Select
-          placeholder="Select option"
-          name="sortBy"
-          options={[
-            { label: "None", value: "none" },
-            { label: "Chain/Project", value: "project" },
-          ]}
-        />
-      </div>
+      <h3 className="font-semibold text-lg">Sort:</h3>
+      <Select
+        placeholder="Select option"
+        name="sortBy"
+        options={[
+          { label: "None", value: "none" },
+          { label: "Chain/Project", value: "project" },
+        ]}
+      />
       <h3 className="font-semibold text-lg">Filter:</h3>
       <p>I am able to:</p>
       <Checkbox label="Submit" />
@@ -278,35 +277,22 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableProps) {
-  if (challenges.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
   return (
-    <div>
-      {/* Header (hide on mobile) */}
-      <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
-        <div className="col-span-2">
-          <SortButton label="title" title="Challenge" />
-        </div>
-        <p>Chain/Project</p>
-        <p>Reward Pool</p>
-        <p>Submit Deadline</p>
-        <p>Review Deadline</p>
-      </div>
-      {/* Rows */}
-      <div className="space-y-4">
-        {challenges.map((c) => {
-          return (
-            <Card asChild key={c.id}>
-              <Link
-                to={`/app/brainstorm/c/${c.id}`}
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-4 py-5"
-              >
-                <div className="lg:hidden">Challenges</div>
-                <div className="lg:col-span-2 text-sm font-medium">{c.title}</div>
+    <Table>
+      <Header columns={6} className="mb-2">
+        <Header.Column span={2}>Challenge</Header.Column>
+        <Header.Column>Chain/Project</Header.Column>
+        <Header.Column>Reward Pool</Header.Column>
+        <Header.Column>Submit Deadline</Header.Column>
+        <Header.Column>Review Deadline</Header.Column>
+      </Header>
+      {challenges.map((c) => {
+        return (
+          <Row asChild columns={6} key={c.id}>
+            <Link to={`/app/brainstorm/c/${c.id}`} className="text-sm font-medium">
+              <Row.Column span={2}>{c.title}</Row.Column>
 
-                <div className="lg:hidden">Chain/Project</div>
+              <Row.Column>
                 <div className="flex">
                   <div>
                     {c.laborMarket.projects?.map((p) => (
@@ -317,22 +303,59 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
                     ))}
                   </div>
                 </div>
+              </Row.Column>
 
-                <div className="lg:hidden">Reward Pool</div>
-                <div> 5 Sol</div>
-                <div className="lg:hidden">Submit Deadline</div>
-                <div className="text-gray-500 text-sm">
-                  <Countdown date={"2023-01-25"} />
+              <Row.Column>5 Sol</Row.Column>
+              <Row.Column>
+                <Countdown date={"2023-01-25"} />
+              </Row.Column>
+              <Row.Column>
+                <Countdown date={"2022-11-25"} />
+              </Row.Column>
+            </Link>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTableProps) {
+  return (
+    <div className="space-y-4">
+      {challenges.map((c) => {
+        return (
+          <Card asChild key={c.id}>
+            <Link to={`/app/brainstorm/c/${c.id}`} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5">
+              <div>Challenges</div>
+              <div className="text-sm font-medium">{c.title}</div>
+
+              <div>Chain/Project</div>
+              <div className="flex">
+                <div>
+                  {c.laborMarket.projects?.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
                 </div>
-                <div className="lg:hidden">Review Deadline</div>
-                <div className="text-gray-500 text-sm">
-                  <Countdown date={"2022-11-25"} />
-                </div>
-              </Link>
-            </Card>
-          );
-        })}
-      </div>
+              </div>
+
+              <div>Reward Pool</div>
+              <div>5 Sol</div>
+              <div>Submit Deadline</div>
+              <div className="text-gray-500 text-sm">
+                <Countdown date={"2023-01-25"} />
+              </div>
+              <div>Review Deadline</div>
+              <div className="text-gray-500 text-sm">
+                <Countdown date={"2022-11-25"} />
+              </div>
+            </Link>
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -344,7 +367,7 @@ function WrappedMarketplacesChallengesTable() {
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <MarketplacesChallengesTable challenges={challenges} />
+          <ChallengesListView challenges={challenges} />
           <div className="w-fit m-auto">
             <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
@@ -357,30 +380,21 @@ function WrappedMarketplacesChallengesTable() {
   );
 }
 
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
+function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
+  if (challenges.length === 0) {
+    return <p>No results. Try changing search and filter options.</p>;
+  }
 
   return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
+    <>
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <MarketplacesChallengesTable challenges={challenges} />
+      </div>
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <MarketplacesChallengesCard challenges={challenges} />
+      </div>
+    </>
   );
 }

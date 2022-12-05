@@ -1,13 +1,14 @@
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { withZod } from "@remix-validated-form/with-zod";
-import { useRef } from "react";
-import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { Link, useSubmit } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { getParamsOrFail } from "remix-params-helper";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useRef } from "react";
+import { Header, Row, Table } from "~/components/table";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
@@ -19,7 +20,6 @@ import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/Pagination";
 import { ValidatedSelect } from "~/components/select";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
@@ -83,7 +83,7 @@ export default function Brainstorm() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesTable marketplaces={marketplaces} />
+            <MarketplacesListView marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
@@ -159,37 +159,89 @@ type MarketplaceTableProps = {
   marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
 };
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
+function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
   }
+
+  return (
+    <>
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <MarketplacesTable marketplaces={marketplaces} />
+      </div>
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <MarketplacesCard marketplaces={marketplaces} />
+      </div>
+    </>
+  );
+}
+
+function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
+  return (
+    <Table>
+      <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
+        <Header.Column span={2}>Challenge Marketplaces</Header.Column>
+        <Header.Column>Chain/Project</Header.Column>
+        <Header.Column>Challenge Pool Totals</Header.Column>
+        <Header.Column>Avg. Challenge Pool</Header.Column>
+        <Header.Column># Challenges</Header.Column>
+      </Header>
+      {marketplaces.map((m) => {
+        return (
+          <Row asChild columns={6} key={m.address}>
+            <Link to={`/app/brainstorm/${m.address}/challenges`} className="text-sm font-medium">
+              <Row.Column span={2}>{m.title}</Row.Column>
+              <Row.Column>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {m.projects.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
+                </div>
+              </Row.Column>
+
+              <Row.Column>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+              </Row.Column>
+
+              <Row.Column>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+              </Row.Column>
+
+              <Row.Column>{m._count.serviceRequests.toLocaleString()}</Row.Column>
+            </Link>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
   return (
     <div>
-      {/* Header (hide on mobile) */}
-      <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
-        <div className="col-span-2">
-          <SortButton label="title" title="Challenge Marketplace" />
-        </div>
-        <p>Chain/Project</p>
-        <p>Challenge Pool Totals</p>
-        <p>Avg. Challenge Pool</p>
-        <SortButton label="serviceRequests" title="# Challenges" />
-      </div>
-      {/* Rows */}
       <div className="space-y-4">
         {marketplaces.map((m) => {
           return (
             <Card asChild key={m.address}>
               <Link
                 to={`/app/brainstorm/${m.address}/challenges`}
-                // On mobile, two column grid with "labels". On desktop hide the "labels".
-                className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-4 py-5"
+                className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
-                <div className="lg:hidden">Challenge Marketplaces</div>
-                <div className="lg:col-span-2 text-sm font-medium">{m.title}</div>
+                <div>Challenge Marketplaces</div>
+                <div className="text-sm font-medium">{m.title}</div>
 
-                <div className="lg:hidden">Chain/Project</div>
+                <div>Chain/Project</div>
                 <div className="flex flex-wrap gap-2">
                   {m.projects.map((p) => (
                     <Badge key={p.slug} className="pl-2">
@@ -199,19 +251,19 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                   ))}
                 </div>
 
-                <div className="lg:hidden">Challenge Pool Totals</div>
+                <div>Challenge Pool Totals</div>
                 <Badge>
                   <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
-                <div className="lg:hidden">Avg. Challenge Pool</div>
+                <div>Avg. Challenge Pool</div>
                 <Badge>
                   <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
-                <div className="lg:hidden"># Challenges</div>
+                <div># Challenges</div>
                 <div>{m._count.serviceRequests.toLocaleString()}</div>
               </Link>
             </Card>
@@ -219,33 +271,5 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         })}
       </div>
     </div>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }
