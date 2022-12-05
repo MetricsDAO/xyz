@@ -6,7 +6,7 @@ invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
-    name: "__session",
+    name: "_session",
     httpOnly: true,
     path: "/",
     sameSite: "lax",
@@ -16,6 +16,7 @@ export const sessionStorage = createCookieSessionStorage({
 });
 
 const USER_SESSION_KEY = "userId";
+const NONCE = "nonce";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("cookie");
@@ -25,7 +26,14 @@ export async function getSession(request: Request) {
 export async function getUserId(request: Request): Promise<User | undefined> {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
+  console.log("SESSION", session, userId);
   return userId;
+}
+
+export async function getNonce(request: Request): Promise<string | undefined> {
+  const session = await getSession(request);
+  const nonce = session.get(NONCE);
+  return nonce;
 }
 
 export async function createUserSession({ request, userId }: { request: Request; userId: string }) {
@@ -33,7 +41,21 @@ export async function createUserSession({ request, userId }: { request: Request;
   session.set(USER_SESSION_KEY, userId);
 
   throw json(
-    { status: "success" },
+    { userId },
+    {
+      headers: {
+        "Set-Cookie": await sessionStorage.commitSession(session),
+      },
+    }
+  );
+}
+
+export async function createNonceSession({ request, nonce }: { request: Request; nonce: string }) {
+  const session = await getSession(request);
+  session.set(NONCE, nonce);
+
+  throw json(
+    { nonce },
     {
       headers: {
         "Set-Cookie": await sessionStorage.commitSession(session),

@@ -1,7 +1,7 @@
-import type { ActionArgs } from "@remix-run/node";
-
+import type { DataFunctionArgs } from "@remix-run/node";
 import { logout } from "~/services/session.server";
 
-export async function action({ request }: ActionArgs) {
-  return logout(request);
+export async function loader({ request }: DataFunctionArgs) {
+  console.log("log out");
+  return await logout(request);
 }

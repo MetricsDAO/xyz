@@ -5,7 +5,6 @@ export const authenticationAdapter = createAuthenticationAdapter({
   getNonce: async () => {
     const response = await fetch("/api/nonce");
     const json = await response.json();
-    console.log("nonce", json);
     return json;
   },
   createMessage: ({ nonce, address, chainId }) => {
@@ -28,11 +27,11 @@ export const authenticationAdapter = createAuthenticationAdapter({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, signature }),
     });
-    const verified = Boolean(verifyRes.ok);
-
-    return verified;
+    window.location.reload();
+    return Boolean(verifyRes.ok);
   },
   signOut: async () => {
+    alert("sign out");
     await fetch("/api/logout");
   },
 });
