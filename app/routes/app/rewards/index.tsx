@@ -1,11 +1,4 @@
-import {
-  CheckboxCheckedFilled16,
-  ChevronSort16,
-  ChevronSortDown16,
-  ChevronSortUp16,
-  Search16,
-} from "@carbon/icons-react";
-import { Link, useSearchParams } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
 import { Checkbox } from "~/components/checkbox";
@@ -13,7 +6,6 @@ import { Pagination } from "~/components/Pagination";
 import { Modal } from "~/components/modal";
 import { Input } from "~/components/input";
 import { Button } from "~/components/button";
-import { Avatar } from "~/components/avatar";
 import { useState } from "react";
 import { Combobox } from "~/components/combobox";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -22,10 +14,15 @@ import { Container } from "~/components/Container";
 import RewardsTab from "~/components/RewardsTab";
 import { Card } from "~/components/Card";
 import { fromNow } from "~/utils/date";
+import { Header, Table, Row } from "~/components/table";
+import { CheckboxCheckedFilled16, Search16 } from "@carbon/icons-react";
 
 export default function Rewards() {
   //to be replaced
-  const rewards = [{ id: 123, title: "silly string" }];
+  const rewards = [
+    { id: 123, title: "silly string" },
+    { id: 143, title: "trophy" },
+  ];
   const totalResults = rewards.length;
   const params = { first: 1, page: 1 };
 
@@ -44,7 +41,7 @@ export default function Rewards() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsTable rewards={rewards} />
+            <RewardsListView rewards={rewards} />
             <div className="w-fit m-auto">
               <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
@@ -58,10 +55,7 @@ export default function Rewards() {
   );
 }
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function RewardsTable({ rewards }: { rewards: any }) {
-  const unclaimed = true;
-
+function RewardsListView({ rewards }: { rewards: any }) {
   if (rewards.length === 0) {
     return (
       <div className="flex">
@@ -72,44 +66,72 @@ function RewardsTable({ rewards }: { rewards: any }) {
 
   return (
     <>
-      {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
-        <div className="col-span-2">
-          <SortButton title="Challenge Title" label="todo" />
-        </div>
-        <SortButton title="Reward" label="todo" />
-        <SortButton title="Submitted" label="todo" />
-        <SortButton title="Rewarded" label="todo" />
-        <SortButton title="Status" label="todo" />
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <RewardsTable rewards={rewards} />
       </div>
-      {/* Rows */}
-      <div className="space-y-3">
-        {rewards.map((r: { id: string; title: string }) => {
-          return (
-            <Card
-              // On mobile, two column grid with "labels". On desktop hide the "labels".
-              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center px-2 py-5"
-              key={r.id}
-            >
-              <div className="lg:hidden">Challenge Title</div>
-              <div className="lg:col-span-2">
-                <p>{r.title}</p>
-              </div>
-              <div className="lg:hidden">Reward</div>
-              <p>20 SOL</p>
-              <div className="lg:hidden">Submitted</div>
-              <p className="text-black">{fromNow("2022-01-01")} </p>
-              <div className="lg:hidden">Rewarded</div>
-              <p className="text-black" color="dark.3">
-                {fromNow("2022-11-01")}{" "}
-              </p>
-              <div className="lg:hidden">Status</div>
-              {unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}
-            </Card>
-          );
-        })}
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <RewardsCards rewards={rewards} />
       </div>
     </>
+  );
+}
+
+function RewardsTable({ rewards }: { rewards: any }) {
+  const unclaimed = true;
+  return (
+    <Table>
+      <Header columns={6} className="mb-2">
+        <Header.Column span={2}>Challenge Title</Header.Column>
+        <Header.Column>Reward</Header.Column>
+        <Header.Column>Submitted</Header.Column>
+        <Header.Column>Rewarded</Header.Column>
+        <Header.Column>Status</Header.Column>
+      </Header>
+      {rewards.map((r: { id: string; title: string }) => {
+        return (
+          <Row columns={6} key={r.id}>
+            <Row.Column span={2}>
+              <p>{r.title}</p>
+            </Row.Column>
+            <Row.Column>20 SOL</Row.Column>
+            <Row.Column className="text-black">{fromNow("2022-01-01")} </Row.Column>
+            <Row.Column className="text-black" color="dark.3">
+              {fromNow("2022-11-01")}
+            </Row.Column>
+            <Row.Column>{unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}</Row.Column>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function RewardsCards({ rewards }: { rewards: any }) {
+  const unclaimed = true;
+
+  return (
+    <div className="space-y-4">
+      {rewards.map((r: { id: string; title: string }) => {
+        return (
+          <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={r.id}>
+            <div>Challenge Title</div>
+            <p>{r.title}</p>
+            <div>Reward</div>
+            <p>20 SOL</p>
+            <div>Submitted</div>
+            <p className="text-black">{fromNow("2022-01-01")} </p>
+            <div>Rewarded</div>
+            <p className="text-black" color="dark.3">
+              {fromNow("2022-11-01")}{" "}
+            </p>
+            <div>Status</div>
+            {unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}
+          </Card>
+        );
+      })}
+    </div>
   );
 }
 
@@ -128,7 +150,7 @@ function ClaimButton() {
         <div className="space-y-5 mt-5">
           <div className="space-y-2">
             <div className="flex items-center">
-              <Avatar src="/img/trophy.svg" />
+              <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
               <p className="text-yellow-700 text-2xl ml-2">10 SOL</p>
             </div>
             <div className="flex border-solid border rounded-md border-trueGray-200">
@@ -176,7 +198,6 @@ function ClaimButton() {
     </>
   );
 }
-
 function SearchAndFilter() {
   const ref = useRef<HTMLFormElement>(null);
   return (
@@ -208,33 +229,5 @@ function SearchAndFilter() {
         ]}
       />
     </ValidatedForm>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }

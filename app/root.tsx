@@ -5,6 +5,7 @@ import WalletProvider from "./components/WalletProvider";
 
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import { Toaster } from "react-hot-toast";
 
 export const meta: MetaFunction = () => {
   return {
@@ -142,6 +143,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Toaster />
       </body>
     </html>
   );
