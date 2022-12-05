@@ -1,4 +1,3 @@
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16 } from "@carbon/icons-react";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -12,18 +11,23 @@ import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Combobox } from "~/components/combobox";
+import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/Container";
 import { Countdown } from "~/components/countdown";
-import { Input } from "~/components/input/input";
+import { ValidatedInput } from "~/components/input/input";
 import { Pagination } from "~/components/Pagination";
 import { ProjectAvatar } from "~/components/avatar";
-import { Select } from "~/components/select";
+import { ValidatedSelect } from "~/components/select";
 import { Tabs } from "~/components/Tabs";
 import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { Checkbox } from "~/components/checkbox";
+import { Detail, DetailItem } from "~/components/detail";
+import { Field, Label } from "~/components/field";
+import type { LaborMarket } from "~/domain";
+
+const validator = withZod(ChallengeSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -59,22 +63,23 @@ export default function MarketplaceChallenges() {
           </div>
         </section>
         <section className="flex flex-col space-y-7 pb-12">
-          {/* <div className="flex flex-wrap gap-x-8">
-          <Detail>
-            <Detail.Title>Sponsor</Detail.Title>
+          <div className="flex flex-wrap gap-x-8">
+            <Detail>
+              {/*<DetailItem title="Sponser">
             <UserBadge />
-          </Detail>
-          <Detail>
-            <Detail.Title>Chain/Project</Detail.Title>
-            <div className="flex space-x-2">
-              <ProjectBadge slug={"Solana"} />
-            </div>
-          </Detail>
-        </div> */}
-          <p className="max-w-2xl text-gray-500 text-sm">
-            Challenge marketplace details, we’ll give the DAO a template / Challenge marketplace details, we’ll give the
-            DAO a template / Challenge marketplace details, we’ll give the DAO a template Challenge
-          </p>
+            Sponsor</DetailItem>
+             */}
+              <DetailItem title="Chain/Project">
+                {laborMarket?.projects?.map((p) => (
+                  <Badge key={p.slug} className="pl-2">
+                    <ProjectAvatar project={p} />
+                    <span className="mx-1">{p.name}</span>
+                  </Badge>
+                ))}
+              </DetailItem>
+            </Detail>
+          </div>
+          <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.description}</p>
         </section>
 
         <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
@@ -90,7 +95,7 @@ export default function MarketplaceChallenges() {
                   <WrappedMarketplacesChallengesTable />
                 </Tabs.Panel>
                 <Tabs.Panel>
-                  <Prerequisites />
+                  <Prerequisites laborMarket={laborMarket} />
                 </Tabs.Panel>
                 <Tabs.Panel>
                   <Rewards />
@@ -106,68 +111,85 @@ export default function MarketplaceChallenges() {
 
 function SearchAndFilter() {
   const submit = useSubmit();
-  const ref = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const memoizedSubmit = useCallback(() => {
-    submit(ref.current);
-  }, [submit]);
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
+  };
 
   return (
     <ValidatedForm
-      formRef={ref}
+      formRef={formRef}
       method="get"
       noValidate
-      validator={withZod(z.any())}
+      validator={validator}
       className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
     >
-      <Input
-        onChange={(e) => submit(e.currentTarget.form)}
+      <ValidatedInput
+        onChange={handleChange}
         placeholder="Search"
         name="q"
-        iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />}
+        size="sm"
+        iconRight={<MagnifyingGlassIcon className="w-5 h-5" />}
       />
-      <h3 className="md:hidden font-semibold text-lg">Sort:</h3>
-      <div className="md:hidden">
-        <Select
+      <h3 className="font-semibold">Sort:</h3>
+      <ValidatedSelect
+        placeholder="Select option"
+        name="sortBy"
+        size="sm"
+        options={[
+          { label: "None", value: "none" },
+          { label: "Chain/Project", value: "project" },
+        ]}
+      />
+      <h3 className="font-semibold">Filter:</h3>
+      <p>I am able to:</p>
+      <Checkbox id="submit_checkbox" name="permission" value="submit" label="Submit" />
+      <Checkbox id="review_checkbox" name="permission" value="review" label="Review" />
+      <Field>
+        <Label>Reward Token</Label>
+        <ValidatedCombobox
+          onChange={handleChange}
           placeholder="Select option"
-          name="sortBy"
+          name="reward"
+          size="sm"
           options={[
-            { label: "None", value: "none" },
-            { label: "Chain/Project", value: "project" },
+            { label: "Solana", value: "Solana" },
+            { label: "Ethereum", value: "Ethereum" },
+            { label: "USD", value: "USD" },
           ]}
         />
-      </div>
-      <h3 className="font-semibold text-lg">Filter:</h3>
-      <p>I am able to:</p>
-      <Checkbox label="Submit" />
-      <Checkbox label="Review" />
-      <Combobox
-        onChange={memoizedSubmit}
-        placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-          { label: "USD", value: "USD" },
-        ]}
-      />
-      <Combobox
-        onChange={memoizedSubmit}
-        placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />
-      <Combobox
-        onChange={memoizedSubmit}
-        placeholder="Select option"
-        options={[{ label: "English", value: "English" }]}
-      />
+      </Field>
+      <Field>
+        <Label>Chain/Project</Label>
+        <ValidatedCombobox
+          onChange={handleChange}
+          placeholder="Select option"
+          name="project"
+          size="sm"
+          options={[
+            { label: "Solana", value: "Solana" },
+            { label: "Ethereum", value: "Ethereum" },
+          ]}
+        />
+      </Field>
+      <Field>
+        <Label>Language</Label>
+        <ValidatedCombobox
+          onChange={handleChange}
+          placeholder="Select option"
+          name="language"
+          size="sm"
+          options={[{ label: "English", value: "English" }]}
+        />
+      </Field>
     </ValidatedForm>
   );
 }
 
-function Prerequisites() {
+function Prerequisites({ laborMarket }: { laborMarket: LaborMarket }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
@@ -186,13 +208,13 @@ function Prerequisites() {
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">15 rMETRIC</div>
+                      <div className="normal-case">{laborMarket.submitRepMin} rMETRIC</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
-                      <div className="normal-case">100 rMETRIC</div>
+                      <div className="normal-case">{laborMarket.submitRepMax} rMETRIC</div>
                     </Badge>
                   </div>
                 </div>
@@ -204,7 +226,7 @@ function Prerequisites() {
                 <div className="text-xs text-gray-500">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
-                  <div className="text-base text-[#252525]">0x1234</div>
+                  <div className="text-base text-[#252525]">{laborMarket.reviewBadgerAddress}</div>
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
@@ -214,7 +236,7 @@ function Prerequisites() {
                 <div className="text-xs text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
-                  <div className="text-base text-[#252525]">0x1234</div>
+                  <div className="text-base text-[#252525]">{laborMarket.launchBadgerAddress}</div>
                 </div>
               </Card>
             </div>
@@ -285,9 +307,7 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
     <div>
       {/* Header (hide on mobile) */}
       <div className="hidden text-xs text-gray-500 font-medium lg:grid grid-cols-6 gap-x-1 items-end px-2 lg:mb-3">
-        <div className="col-span-2">
-          <SortButton label="title" title="Challenge" />
-        </div>
+        <div className="col-span-2">Challenge</div>
         <p>Chain/Project</p>
         <p>Reward Pool</p>
         <p>Submit Deadline</p>
@@ -354,33 +374,5 @@ function WrappedMarketplacesChallengesTable() {
         <SearchAndFilter />
       </aside>
     </section>
-  );
-}
-
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
-  return (
-    <button onClick={() => onSort(label)} className="flex">
-      <p>{title}</p>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </button>
   );
 }
