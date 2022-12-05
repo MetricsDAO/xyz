@@ -1,11 +1,11 @@
 import { useControlField } from "remix-validated-form";
-import { ValidatedInput } from "./input/input";
-import { ValidatedTextarea } from "./Textarea";
+import { ValidatedInput } from "../../components/input/input";
+import { ValidatedTextarea } from "../../components/Textarea";
 import { ValidatedSelect } from "~/components/select";
-import { ValidatedCombobox } from "./combobox/combobox";
+import { ValidatedCombobox } from "../../components/combobox/combobox";
 import type { Project, Token } from "@prisma/client";
-import { Error, Field, Label } from "./field";
-import { Button } from "./button";
+import { Error, Field, Label } from "../../components/field";
+import { Button } from "../../components/button";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
   const [launchAccess] = useControlField("launch.access");

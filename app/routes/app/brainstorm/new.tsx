@@ -9,7 +9,7 @@ import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/button";
 import { Container } from "~/components/Container";
-import { MarketplaceForm } from "~/components/MarketplaceForm";
+import { MarketplaceForm } from "~/features/marketplace-form";
 import { Modal } from "~/components/modal";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
