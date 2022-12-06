@@ -15,13 +15,7 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
   const siweMessage = new SiweMessage(message);
   const fields = await siweMessage.validate(signature);
 
-  //Chainalysis gating through web3.js to check if an address is sanctioned
-  const web3 = new Web3(RPC_URL);
-  const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";
-  const contract = new web3.eth.Contract(chainalysisAbi.abi as AbiItem[], contract_address);
-  const isSanctioned = await contract.methods.isSanctioned(message.address).call();
-
-  if (isSanctioned) {
+  if (await isAddressSanctioned(message.address)) {
     return unprocessableEntity({ message: "Sanctioned Address" });
   }
   const nonce = await getNonce(data.request);
@@ -42,3 +36,12 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
 
   return json({ ok: true });
 };
+
+//Chainalysis gating through web3.js to check if an address is sanctioned
+async function isAddressSanctioned(address: string): Promise<boolean> {
+  const web3 = new Web3(RPC_URL);
+  const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";
+  const contract = new web3.eth.Contract(chainalysisAbi.abi as AbiItem[], contract_address);
+  const isSanctioned = await contract.methods.isSanctioned(address).call();
+  return isSanctioned;
+}
