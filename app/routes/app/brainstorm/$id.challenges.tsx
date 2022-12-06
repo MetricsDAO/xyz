@@ -1,13 +1,11 @@
-import { UserBadge } from "~/components/UserBadge";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
-import { z } from "zod";
 import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
@@ -25,7 +23,7 @@ import { ChallengeSearchSchema } from "~/domain/challenge";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { Checkbox } from "~/components/checkbox";
-import { Detail, DetailItem } from "~/components/detail";
+import { Detail } from "~/components/detail";
 import { Field, Label } from "~/components/field";
 import type { LaborMarket } from "@prisma/client";
 
