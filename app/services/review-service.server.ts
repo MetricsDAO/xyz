@@ -18,7 +18,6 @@ export const upsertReview = async (review: Review) => {
   return newReview;
 };
 
-
 /**
  * Counts the number of Reviews that match the given Submissions.
  * @param {string[]} submissionIds - The submisions to search.
