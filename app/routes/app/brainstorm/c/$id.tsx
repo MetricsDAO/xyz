@@ -1,4 +1,4 @@
-import { Outlet } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
 import { UserBadge } from "~/components/UserBadge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
@@ -12,6 +12,7 @@ import { Button } from "~/components/button";
 import { Badge } from "~/components/Badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ProjectAvatar } from "~/components/avatar";
+import { countReviews } from "~/services/review-service.server";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -20,20 +21,23 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!challenge) {
     throw notFound({ id });
   }
-  return typedjson({ challenge }, { status: 200 });
+
+  const submissionIds = challenge.submissions.map((s) => s.id);
+  const numOfReviews = await countReviews(submissionIds);
+  return typedjson({ challenge, numOfReviews }, { status: 200 });
 };
 
 export default function Challenge() {
-  const { challenge } = useTypedLoaderData<typeof loader>();
+  const { challenge, numOfReviews } = useTypedLoaderData<typeof loader>();
   return (
     <Container className="py-16">
       <header className="flex space-x-4 mb-16">
         <h1 className="text-3xl font-semibold w-full">{challenge.title}</h1>
-        <Button variant="cancel" size="lg">
-          Claim to Review
+        <Button variant="cancel" size="lg" asChild>
+          <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
         </Button>
-        <Button variant="primary" size="lg">
-          Claim to Submit
+        <Button variant="primary" size="lg" asChild>
+          <Link to={`/app/brainstorm/c/${challenge.id}/submit`}>Claim to Submit</Link>
         </Button>
       </header>
       <Detail className="mb-6">
@@ -56,10 +60,10 @@ export default function Challenge() {
           </Badge>
         </DetailItem>
         <DetailItem title="Submissions">
-          <Badge className="px-4 min-w-full">99</Badge>
+          <Badge className="px-4 min-w-full">{challenge._count.submissions}</Badge>
         </DetailItem>
         <DetailItem title="Reviews">
-          <Badge className="px-4 min-w-full">99</Badge>
+          <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
         </DetailItem>
         <DetailItem title="Winner">
           <Badge>Pending</Badge>
