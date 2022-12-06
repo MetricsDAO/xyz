@@ -18,7 +18,6 @@ const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { id } = paramsSchema.parse(params);
   const challenge = await findChallenge(id);
-
   if (!challenge) {
     throw notFound({ id });
   }

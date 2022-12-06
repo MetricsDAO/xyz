@@ -24,6 +24,9 @@ export const upsertReview = async (review: Review) => {
  * @returns {number} - The number of reviews in the given submissions.
  */
 export const countReviews = async (submissionIds: string[]) => {
+  if (submissionIds.length === 0) {
+    return 0;
+  }
   return prisma.review.count({
     where: {
       submissionId: {
