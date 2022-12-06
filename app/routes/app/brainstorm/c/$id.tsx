@@ -18,8 +18,8 @@ const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { id } = paramsSchema.parse(params);
   const challenge = await findChallenge(id);
-  const submissionIds = challenge?.submissions.map((s) => s.id).filter((id) => id);
-  const numOfReviews = await countReviews(submissionIds as string[]);
+  const submissionIds = challenge?.submissions.map((s) => s.id) ?? [];
+  const numOfReviews = await countReviews(submissionIds);
   if (!challenge) {
     throw notFound({ id });
   }
