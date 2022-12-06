@@ -15,7 +15,7 @@ export declare type AuthenticationStatus = "loading" | "unauthenticated" | "auth
 
 // TODO: env var
 const IS_DEV = true;
-const DEV_CHAINS = [chain.goerli];
+const DEV_CHAINS = [chain.goerli, chain.mainnet];
 
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
