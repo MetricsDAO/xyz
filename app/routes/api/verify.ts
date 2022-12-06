@@ -1,5 +1,4 @@
 import type { ActionFunction, DataFunctionArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
 import { unprocessableEntity } from "remix-utils";
 import { SiweMessage } from "siwe";
 import { createUserSession, getNonce } from "~/services/session.server";
@@ -29,15 +28,18 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
     user = await createUser(userAddress);
   }
 
-  await createUserSession({
+  return createUserSession({
     request: data.request,
     userId: user.id,
   });
-
-  return json({ ok: true });
 };
 
-//Chainalysis gating through web3.js to check if an address is sanctioned
+/**
+ * Check if a wallet address is sanctioned.
+ *
+ * @param {string} address - The wallet address in question.
+ * @returns {Promise<boolean>} - True if the address is sanctioned, false otherwise.
+ */
 async function isAddressSanctioned(address: string): Promise<boolean> {
   const web3 = new Web3(RPC_URL);
   const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";

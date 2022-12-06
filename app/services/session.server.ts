@@ -20,7 +20,7 @@ const NONCE = "nonce";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("cookie");
-  return await sessionStorage.getSession(cookie);
+  return sessionStorage.getSession(cookie);
 }
 
 export async function getUserId(request: Request): Promise<User | undefined> {
@@ -45,14 +45,11 @@ export async function createUserSession({ request, userId }: { request: Request;
   const session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
 
-  throw json(
-    { userId },
-    {
-      headers: {
-        "Set-Cookie": await sessionStorage.commitSession(session),
-      },
-    }
-  );
+  return json(userId, {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session),
+    },
+  });
 }
 
 export async function createNonceSession({ request, nonce }: { request: Request; nonce: string }) {
