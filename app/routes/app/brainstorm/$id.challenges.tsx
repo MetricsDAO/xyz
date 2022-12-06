@@ -68,9 +68,8 @@ export default function MarketplaceChallenges() {
           <div className="flex flex-wrap gap-x-8">
             <Detail>
               {/*<DetailItem title="Sponser">
-            <UserBadge />
-            Sponsor</DetailItem>
-             */}
+               <UserBadge />
+              </DetailItem>
               <DetailItem title="Chain/Project">
                 {laborMarket?.projects?.map((p) => (
                   <Badge key={p.slug} className="pl-2">
@@ -78,7 +77,7 @@ export default function MarketplaceChallenges() {
                     <span className="mx-1">{p.name}</span>
                   </Badge>
                 ))}
-              </DetailItem>
+                </DetailItem>*/}
             </Detail>
           </div>
           <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.description}</p>
@@ -192,7 +191,7 @@ function SearchAndFilter() {
   );
 }
 
-function Prerequisites({ laborMarket }: { laborMarket: LaborMarket }) {
+function Prerequisites({ laborMarket }: { laborMarket: LaborMarket | null | undefined }) {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">
