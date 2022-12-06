@@ -7,6 +7,7 @@ import RewardsTab from "~/components/RewardsTab";
 import { Card } from "~/components/Card";
 import { fromNow } from "~/utils/date";
 import { Header, Row, Table } from "~/components/table";
+import { CopyToClipboard } from "~/components/copy-to-clipboard";
 
 export default function PayoutAddresses() {
   const wallets = [
@@ -93,8 +94,7 @@ function AddressTable({ wallets }: { wallets: any }) {
               ) : (
                 <WarningSquareFilled16 className="text-rose-500" />
               )}
-              <p className="text-black">{w.address}</p>
-              <Copy16 className="ml-0.5" />
+              <CopyToClipboard className="text-black" content={w.address} iconRight={<Copy16 className="ml-0.5" />} />
             </Row.Column>
             <Row.Column span={2} className="text-black">
               {fromNow("1999-01-01")}{" "}

@@ -1,8 +1,17 @@
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useCopyToClipboard } from "react-use";
 import { Tooltip } from "../tooltip";
 
-export function CopyToClipboard({ content, className }: { content: string; className?: string }) {
+export function CopyToClipboard({
+  content,
+  className,
+  iconRight,
+}: {
+  content: string;
+  className?: string;
+  iconRight?: React.ReactNode;
+}) {
   const [, copyToClipboard] = useCopyToClipboard();
   const [isCopiedTooltip, setIsCopiedTooltip] = useState(false);
 
@@ -21,9 +30,9 @@ export function CopyToClipboard({ content, className }: { content: string; class
           copyToClipboard(content);
           setIsCopiedTooltip(true);
         }}
-        className={className}
+        className={clsx("flex items-center", className)}
       >
-        {content}
+        {content} {iconRight}
       </span>
     </Tooltip>
   );
