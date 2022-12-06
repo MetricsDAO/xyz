@@ -15,8 +15,8 @@ export function useCreateMarketplace({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    addressOrName: DEV_TEST_CONTRACT_ADDRESS,
-    contractInterface: [
+    address: DEV_TEST_CONTRACT_ADDRESS,
+    abi: [
       {
         inputs: [{ internalType: "uint256", name: "_num", type: "uint256" }],
         name: "test",
