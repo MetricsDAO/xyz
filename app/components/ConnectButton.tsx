@@ -1,28 +1,9 @@
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { useAccount, useDisconnect } from "wagmi";
-import { useEffect } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useChainalysisContract } from "~/hooks/useChainalysisContract";
 import { Button } from "~/components/button";
-
-function useSanctionScreening() {
-  const { disconnect } = useDisconnect();
-  const account = useAccount();
-
-  const { data: isSanctionedAddress } = useChainalysisContract(account.address ?? "");
-
-  useEffect(() => {
-    if (isSanctionedAddress === true) {
-      disconnect();
-      alert("address " + account.address + " was sanctioned and therefore disconnected");
-    }
-  }, [disconnect, account.address, isSanctionedAddress]);
-}
 
 // https://www.rainbowkit.com/docs/custom-connect-button
 function CustomConnectButton() {
-  useSanctionScreening();
-
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
