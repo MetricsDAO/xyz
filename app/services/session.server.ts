@@ -25,11 +25,16 @@ export async function getSession(request: Request) {
 
 export async function getUserId(request: Request): Promise<User | undefined> {
   const session = await getSession(request);
+  console.log("SESSION", session.data);
   const userId = session.get(USER_SESSION_KEY);
-  console.log("SESSION", session, userId);
   return userId;
 }
 
+/**
+ * Returns the nonce from the session if it exists.
+ * @param request - Request object
+ * @returns - A nonce string
+ */
 export async function getNonce(request: Request): Promise<string | undefined> {
   const session = await getSession(request);
   const nonce = session.get(NONCE);
@@ -54,14 +59,11 @@ export async function createNonceSession({ request, nonce }: { request: Request;
   const session = await getSession(request);
   session.set(NONCE, nonce);
 
-  throw json(
-    { nonce },
-    {
-      headers: {
-        "Set-Cookie": await sessionStorage.commitSession(session),
-      },
-    }
-  );
+  return json(nonce, {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session),
+    },
+  });
 }
 
 export async function logout(request: Request) {
