@@ -17,7 +17,7 @@ import { Field, Label } from "~/components/field";
 import { withZod } from "@remix-validated-form/with-zod";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { fromNow } from "~/utils/date";
-import { Review } from "@prisma/client";
+import type { Review } from "@prisma/client";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -58,7 +58,7 @@ export default function ChallengeIdSubmissions() {
                   </div>
                 </main>
                 <div className="space-y-3">
-                  <Score score={scoreMath(s.reviews)} />
+                  <Score score={averageScore(s.reviews)} />
                   <p className="text-xs text-gray-500 text-center">{s.reviews.length} reviews</p>
                 </div>
               </Link>
@@ -109,7 +109,7 @@ export default function ChallengeIdSubmissions() {
   );
 }
 
-function scoreMath(reviews: Review[]) {
+function averageScore(reviews: Review[]) {
   const score = reviews.reduce((sum, r) => sum + numScore(r.scoreStatus), 0);
   return score / reviews.length;
 }

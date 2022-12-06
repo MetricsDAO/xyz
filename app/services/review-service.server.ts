@@ -17,3 +17,19 @@ export const upsertReview = async (review: Review) => {
   });
   return newReview;
 };
+
+
+/**
+ * Counts the number of Reviews that match the given Submissions.
+ * @param {string[]} submissionIds - The submisions to search.
+ * @returns {number} - The number of reviews in the given submissions.
+ */
+export const countReviews = async (submissionIds: string[]) => {
+  return prisma.review.count({
+    where: {
+      submissionId: {
+        in: submissionIds,
+      },
+    },
+  });
+};

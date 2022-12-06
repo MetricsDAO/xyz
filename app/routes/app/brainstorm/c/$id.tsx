@@ -12,19 +12,22 @@ import { Button } from "~/components/button";
 import { Badge } from "~/components/Badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ProjectAvatar } from "~/components/avatar";
+import { countReviews } from "~/services/review-service.server";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { id } = paramsSchema.parse(params);
   const challenge = await findChallenge(id);
+  const submissionIds = challenge?.submissions.map((s) => s.id).filter((id) => id);
+  const numOfReviews = await countReviews(submissionIds as string[]);
   if (!challenge) {
     throw notFound({ id });
   }
-  return typedjson({ challenge }, { status: 200 });
+  return typedjson({ challenge, numOfReviews }, { status: 200 });
 };
 
 export default function Challenge() {
-  const { challenge } = useTypedLoaderData<typeof loader>();
+  const { challenge, numOfReviews } = useTypedLoaderData<typeof loader>();
   return (
     <Container className="py-16">
       <header className="flex space-x-4 mb-16">
@@ -59,7 +62,7 @@ export default function Challenge() {
           <Badge className="px-4 min-w-full">{challenge._count.submissions}</Badge>
         </DetailItem>
         <DetailItem title="Reviews">
-          <Badge className="px-4 min-w-full">todo</Badge>
+          <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
         </DetailItem>
         <DetailItem title="Winner">
           <Badge>Pending</Badge>

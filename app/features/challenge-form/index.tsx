@@ -1,6 +1,6 @@
 import type { LaborMarket } from "@prisma/client";
 import { Fragment } from "react";
-import { useControlField } from "remix-validated-form";
+//import { useControlField } from "remix-validated-form";
 import { Button } from "~/components/button";
 import { ValidatedCombobox } from "~/components/combobox/combobox";
 import { ValidatedInput } from "~/components/input/input";
@@ -8,7 +8,7 @@ import { ValidatedSelect } from "~/components/select";
 import { ValidatedTextarea } from "~/components/Textarea";
 
 export function ChallengeForm({ laborMarkets }: { laborMarkets: LaborMarket[] }) {
-  const [laborMarketAddress] = useControlField("laborMarketAddress");
+  //const [laborMarketAddress] = useControlField("laborMarketAddress");
 
   return (
     <div className="space-y-10 py-5">

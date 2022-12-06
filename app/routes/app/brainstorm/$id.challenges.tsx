@@ -1,4 +1,3 @@
-import { UserBadge } from "~/components/UserBadge";
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
