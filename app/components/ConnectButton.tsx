@@ -1,22 +1,21 @@
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { useAccount, useDisconnect } from "wagmi";
-import { useEffect } from "react";
+import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useChainalysisContract } from "~/hooks/useChainalysisContract";
 import { Button } from "~/components/button";
 
 function useSanctionScreening() {
-  const { disconnect } = useDisconnect();
+  // const { disconnect } = useDisconnect();
   const account = useAccount();
 
   const { data: isSanctionedAddress } = useChainalysisContract(account.address ?? "");
-
-  useEffect(() => {
-    if (isSanctionedAddress === true) {
-      disconnect();
-      alert("address " + account.address + " was sanctioned and therefore disconnected");
-    }
-  }, [disconnect, account.address, isSanctionedAddress]);
+  // TODO: make this work with wagmi 0.6.8 https://github.com/rainbow-me/rainbowkit/issues/836#issuecomment-1288353268
+  // useEffect(() => {
+  //   if (isSanctionedAddress === true) {
+  //     disconnect();
+  //     alert("address " + account.address + " was sanctioned and therefore disconnected");
+  //   }
+  // }, [disconnect, account.address, isSanctionedAddress]);
 }
 
 // https://www.rainbowkit.com/docs/custom-connect-button

@@ -66,9 +66,9 @@ export async function createNonceSession({ request, nonce }: { request: Request;
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  return {
+  return json(null, {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
-  };
+  });
 }
