@@ -22,7 +22,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     throw notFound({ id });
   }
 
-  const submissionIds = challenge?.submissions.map((s) => s.id);
+  const submissionIds = challenge.submissions.map((s) => s.id);
   const numOfReviews = await countReviews(submissionIds);
   return typedjson({ challenge, numOfReviews }, { status: 200 });
 };

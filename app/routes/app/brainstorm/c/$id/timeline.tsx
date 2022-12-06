@@ -7,7 +7,7 @@ export default function ChallengeIdPrereqs() {
   if (!data) {
     throw new Error("ChallengeIdPrereqs must be rendered under a ChallengeId route");
   }
-  //const { challenge } = data;
+  const { challenge } = data;
 
   return (
     <section className="w-full border-spacing-4 border-separate space-y-4">
