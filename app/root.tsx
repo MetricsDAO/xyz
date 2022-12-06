@@ -1,7 +1,7 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
-import WalletProvider from "./components/WalletProvider";
+import WalletProvider from "~/contexts/wallet-provider";
 
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";

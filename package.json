@@ -41,7 +41,7 @@
     "@radix-ui/react-select": "^1.1.1",
     "@radix-ui/react-slot": "^1.0.0",
     "@radix-ui/react-tooltip": "^1.0.0",
-    "@rainbow-me/rainbowkit": "^0.7.1",
+    "@rainbow-me/rainbowkit": "^0.8.0",
     "@remix-run/express": "^1.7.0",
     "@remix-run/node": "^1.7.0",
     "@remix-run/react": "^1.7.0",
@@ -78,7 +78,7 @@
     "remix-validated-form": "^4.6.4",
     "siwe": "^1.1.6",
     "tiny-invariant": "^1.3.1",
-    "wagmi": "^0.7.7",
+    "wagmi": "^0.6.8",
     "zod": "^3.19.1",
     "zod-form-data": "^1.2.4"
   },
