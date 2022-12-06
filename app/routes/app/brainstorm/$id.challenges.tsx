@@ -59,9 +59,9 @@ export default function MarketplaceChallenges() {
         <section className="flex flex-wrap gap-5 justify-between pb-5">
           <h1 className="text-3xl font-semibold">{laborMarket?.title} </h1>
           <div className="flex flex-wrap gap-5">
-            <Link to="/app/brainstorm/[marketplaceId]/claim">
-              <Button className="mx-auto radius-md">Launch Challenge</Button>
-            </Link>
+            <Button asChild className="mx-auto radius-md">
+              <Link to={`/app/brainstorm/${laborMarket?.address}/c/new`}>Launch Challenge</Link>
+            </Button>
           </div>
         </section>
         <section className="flex flex-col space-y-7 pb-12">
