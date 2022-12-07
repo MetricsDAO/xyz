@@ -10,7 +10,11 @@ export const searchChallenges = async (params: ChallengeSearch) => {
   return prisma.serviceRequest.findMany({
     include: { submissions: true, laborMarket: { include: { projects: true } } },
     where: {
+      title: { search: params.q },
       laborMarketAddress: params.laborMarket,
+    },
+    orderBy: {
+      [params.sortBy]: params.order,
     },
     take: params.first,
     skip: params.first * (params.page - 1),

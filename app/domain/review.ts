@@ -4,7 +4,7 @@ export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["createdAt"]).default("createdAt").describe("Sort by column."),
   order: z.enum(["asc", "desc"]).default("desc"),
   score: z
-    .array(z.enum(["great", "good", "average", "bad", "spam"]))
+    .array(z.enum(["Great", "Good", "Average", "Bad", "Spam"]))
     .optional()
     .describe("Filter by Likert score."),
   first: z.number().default(10),

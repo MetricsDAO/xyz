@@ -136,6 +136,7 @@ function SearchAndFilter() {
       <ValidatedSelect
         placeholder="Select option"
         name="sortBy"
+        onChange={handleChange}
         size="sm"
         options={[
           { label: "Title", value: "title" },
