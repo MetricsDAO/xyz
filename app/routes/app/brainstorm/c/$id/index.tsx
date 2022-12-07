@@ -51,7 +51,7 @@ export default function ChallengeIdSubmissions() {
       </main>
 
       <aside className="md:w-1/4 text-sm">
-        <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4">
+        <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4">
           <Input placeholder="Search" size="sm" name="search" />
           <Select name="sortBy" size="sm" options={[{ label: "Chain/Project", value: "project" }]} />
           <Checkbox name="filters" value="winners" label="Winners Only" />
