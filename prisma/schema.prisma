@@ -12,8 +12,9 @@ datasource db {
 }
 
 model User {
-  id     String   @id @default(cuid())
-  wallet Wallet[]
+  id      String   @id @default(cuid())
+  address String   @default("")
+  wallet  Wallet[]
 }
 
 model Wallet {

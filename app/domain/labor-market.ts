@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EthAddressSchema } from "./address";
@@ -35,6 +36,25 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
 });
 
 export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
+
+// Generate a fake LaborMarketNew for testing using faker.
+export function fakeLaborMarketNew(): LaborMarketNew {
+  return {
+    title: faker.commerce.productName(),
+    description: faker.lorem.paragraphs(2),
+    type: "brainstorm",
+    launch: {
+      access: "anyone",
+    },
+    rewardCurveAddress: faker.finance.ethereumAddress(),
+    submitRepMin: faker.datatype.number(100),
+    submitRepMax: faker.datatype.number(100),
+    reviewBadgerAddress: faker.finance.ethereumAddress(),
+    reviewBadgerTokenId: faker.datatype.number(100).toString(),
+    tokenSymbols: ["ETH"],
+    projectIds: [],
+  };
+}
 
 // Schema for a labor market with an IPFS CID.
 export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({ ipfsHash: z.string() });

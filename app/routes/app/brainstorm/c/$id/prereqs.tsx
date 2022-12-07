@@ -39,7 +39,7 @@ export default function ChallengeIdPrereqs() {
             <DetailItem title="MDAO S4 Reviewer Badge">
               <Badge className="pl-2 flex space-x-1">
                 <Avatar />
-                <span>0x12345</span>
+                <span>{challenge?.laborMarket.reviewBadgerAddress}</span>
               </Badge>
             </DetailItem>
           </Detail>
