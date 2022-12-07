@@ -17,7 +17,7 @@ import { Container } from "~/components/Container";
 import { Detail, DetailItem } from "~/components/detail";
 import { Drawer } from "~/components/drawer/drawer";
 import { ValidatedSelect } from "~/components/select";
-import { UserBadge } from "~/components/UserBadge";
+import { UserBadge } from "~/features/user-badge";
 import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
@@ -69,7 +69,7 @@ export default function ChallengeSubmission() {
           <div className="flex flex-wrap gap-x-8 gap-y-4">
             <Detail>
               <DetailItem title="Author">
-                <UserBadge url="u/id" name="jo.Eth" balance={200} />
+                <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
               </DetailItem>
               <DetailItem title="Created">
                 <Badge>{fromNow(submission.createdAt.toString())}</Badge>
