@@ -1,136 +1,164 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Form, Link } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
+import { withZod } from "@remix-validated-form/with-zod";
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
+import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { UserBadge } from "~/components/UserBadge";
 import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/Badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
-import { Checkbox } from "~/components/checkbox/checkbox";
+import { Checkbox } from "~/components/checkbox";
 import { Container } from "~/components/Container";
 import { Detail, DetailItem } from "~/components/detail";
 import { Drawer } from "~/components/drawer/drawer";
-import { Input } from "~/components/input/input";
-import { Select } from "~/components/select";
+import { ValidatedSelect } from "~/components/select";
+import { UserBadge } from "~/components/UserBadge";
+import { ReviewSearchSchema } from "~/domain/review";
+import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
+import { fromNow } from "~/utils/date";
 
 const paramsSchema = z.object({ id: z.string() });
 
-export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
+const validator = withZod(ReviewSearchSchema);
+
+export const loader = async (data: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(data.params);
+  const url = new URL(data.request.url);
+  const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
+  params.submissionId = id;
+  const reviews = await searchReviews(params);
 
   const submission = await findSubmission(id);
   if (!submission) {
     throw notFound({ id });
   }
 
-  return typedjson({ submission }, { status: 200 });
+  return typedjson({ submission, reviews, params }, { status: 200 });
 };
 
 export default function ChallengeSubmission() {
-  const { submission } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
+  };
 
   const isWinner = true;
 
-  const reviews = submission.reviews;
-
   return (
-    <>
-      <Container className="py-16">
-        <div className="mx-auto container mb-12 px-10">
-          <section className="flex flex-wrap gap-5 justify-between pb-10">
-            <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-semibold">{submission.title}</h1>
-              {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
-            </div>
-            <ReviewQuestionDrawerButton />
-          </section>
-          <section className="flex flex-col space-y-7 pb-24">
-            <div className="flex flex-wrap gap-x-8 gap-y-4">
-              <Detail>
-                <DetailItem title="Author">
-                  <UserBadge url="u/id" name="jo.Eth" balance={200} />
-                </DetailItem>
-                <DetailItem title="Created">
-                  <Badge>1 month 5 days ago</Badge>
-                </DetailItem>
-                <DetailItem title="Overall Score">
-                  <Badge className="bg-blue-400 pl-0">
-                    <Badge className="bg-blue-200 mr-2">Good</Badge>
-                    <span>80</span>
+    <Container className="py-16">
+      <div className="mx-auto container mb-12 px-10">
+        <section className="flex flex-wrap gap-5 justify-between pb-10">
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-semibold">{submission.title}</h1>
+            {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
+          </div>
+          <ReviewQuestionDrawerButton />
+        </section>
+        <section className="flex flex-col space-y-7 pb-24">
+          <div className="flex flex-wrap gap-x-8 gap-y-4">
+            <Detail>
+              <DetailItem title="Author">
+                <UserBadge url="u/id" name="jo.Eth" balance={200} />
+              </DetailItem>
+              <DetailItem title="Created">
+                <Badge>{fromNow(submission.createdAt.toString())}</Badge>
+              </DetailItem>
+              <DetailItem title="Overall Score">
+                <Badge className="bg-blue-400 pl-0">
+                  <Badge className="bg-blue-200 mr-2">Good</Badge>
+                  <span>80</span>
+                </Badge>
+              </DetailItem>
+              <DetailItem title="Reviews">
+                <Badge>{reviews.length}</Badge>
+              </DetailItem>
+              {isWinner && (
+                <DetailItem title="Winner">
+                  <Badge className="bg-yellow-600 pl-0">
+                    <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
+                    <span className="text-white">50 rMETRIC</span>
                   </Badge>
                 </DetailItem>
-                <DetailItem title="Reviews">
-                  <Badge>99</Badge>
-                </DetailItem>
-                {isWinner && (
-                  <DetailItem title="Winner">
-                    <Badge className="bg-yellow-600 pl-0">
-                      <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
-                      <span className="text-white">50 rMETRIC</span>
-                    </Badge>
-                  </DetailItem>
-                )}
-              </Detail>
-            </div>
-            <p className="text-gray-500 max-w-2xl">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
-              pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit
-              fermentum, consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus,
-              ligula commodo aliquet velit massa. Lacinia lacus amet massa
-            </p>
-          </section>
-          <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
+              )}
+            </Detail>
+          </div>
+          <p className="text-gray-500 max-w-2xl">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
+            pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit
+            fermentum, consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus, ligula
+            commodo aliquet velit massa. Lacinia lacus amet massa
+          </p>
+        </section>
+        <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
-          <section className="mt-3">
-            <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
-              <main className="flex-1">
-                <div className="w-full border-spacing-4 border-separate space-y-5">
-                  {reviews.map((m) => {
-                    return (
-                      <Card asChild key={m.id}>
-                        <Link
-                          to="/u/[uId]"
-                          className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
-                        >
-                          <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
-                            <div className="flex bg-lime-200 w-24 h-12 justify-center items-center rounded-lg">
-                              <p>Great</p>
-                            </div>
-                            <Avatar />
-                            <p className="font-medium">user.ETH</p>
-                            <Badge>
-                              <p>400 rMETRIC</p>
-                            </Badge>
+        <section className="mt-3">
+          <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
+            <main className="flex-1">
+              <div className="w-full border-spacing-4 border-separate space-y-5">
+                {reviews.map((r) => {
+                  return (
+                    <Card asChild key={r.id}>
+                      <Link
+                        to="/u/[uId]"
+                        className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
+                      >
+                        <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                          <div className="flex bg-lime-200 w-24 h-12 justify-center items-center rounded-lg">
+                            {/* TODO: background should match the status */}
+                            <p>{r.scoreStatus}</p>
                           </div>
-                          <p>12 hours ago</p>
-                        </Link>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </main>
-              <aside className="md:w-1/5">
-                <Form className="space-y-3 border bg-opacity-5 rounded-lg p-4">
-                  <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} />
-                  <Select name="sortBy" options={[{ label: "Chain/Project", value: "project" }]} />
-                  <Checkbox value="great" label="Great" />
-                  <Checkbox value="good" label="Good" />
-                  <Checkbox value="average" label="Average" />
-                  <Checkbox value="bad" label="Bad" />
-                  <Checkbox value="spam" label="Spam" />
-                </Form>
-              </aside>
-            </div>
-          </section>
-        </div>
-      </Container>
-    </>
+                          <Avatar />
+                          <p className="font-medium">user.ETH</p>
+                          <Badge>
+                            <p>400 rMETRIC</p>
+                          </Badge>
+                        </div>
+                        <p>{fromNow(r.createdAt)}</p>
+                      </Link>
+                    </Card>
+                  );
+                })}
+              </div>
+            </main>
+            <aside className="md:w-1/5">
+              <ValidatedForm
+                formRef={formRef}
+                method="get"
+                defaultValues={params}
+                validator={validator}
+                onChange={handleChange}
+                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+              >
+                {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
+                <ValidatedSelect
+                  placeholder="Select option"
+                  name="sortBy"
+                  size="sm"
+                  onChange={handleChange}
+                  options={[{ label: "Created At", value: "createdAt" }]}
+                />
+                <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="great" label="Great" />
+                <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
+                <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
+                <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
+                <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
+              </ValidatedForm>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </Container>
   );
 }
 

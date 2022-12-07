@@ -119,7 +119,6 @@ export function CatchBoundary() {
 export default function App() {
   const sessionExists = useLoaderData<typeof loader>();
   const authStatus = sessionExists ? "authenticated" : "unauthenticated";
-  console.log("authStatus", authStatus);
 
   return (
     <Document>
