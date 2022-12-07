@@ -8,4 +8,5 @@ function requireEnv(key: string): string {
 
 export default {
   DATABASE_URL: requireEnv("DATABASE_URL"),
+  SESSION_SECRET: requireEnv("SESSION_SECRET"),
 };

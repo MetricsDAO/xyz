@@ -1,8 +1,6 @@
 import type { User } from "@prisma/client";
 import { createCookieSessionStorage, json } from "@remix-run/node";
-import invariant from "tiny-invariant";
-
-invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
+import env from "~/env";
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -10,7 +8,7 @@ export const sessionStorage = createCookieSessionStorage({
     httpOnly: true,
     path: "/",
     sameSite: "lax",
-    secrets: [process.env.SESSION_SECRET],
+    secrets: [env.SESSION_SECRET],
     secure: process.env.NODE_ENV === "production", // enable this in prod only
   },
 });
@@ -25,7 +23,6 @@ export async function getSession(request: Request) {
 
 export async function getUserId(request: Request): Promise<User | undefined> {
   const session = await getSession(request);
-  console.log("SESSION", session.data);
   const userId = session.get(USER_SESSION_KEY);
   return userId;
 }

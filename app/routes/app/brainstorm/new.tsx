@@ -1,4 +1,4 @@
-import type { ActionArgs } from "@remix-run/node";
+import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { useNavigate, useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
@@ -12,16 +12,21 @@ import { Container } from "~/components/Container";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { Modal } from "~/components/modal";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
+import { fakeLaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
 import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
-export const loader = async () => {
+export const loader = async ({ request }: DataFunctionArgs) => {
+  const url = new URL(request.url);
   const projects = await listProjects();
   const tokens = await listTokens();
-  return typedjson({ projects, tokens });
+  const defaultValues = url.searchParams.get("fake")
+    ? fakeLaborMarketNew()
+    : ({ launch: { access: "anyone" } } as const);
+  return typedjson({ projects, tokens, defaultValues });
 };
 
 const validator = withZod(LaborMarketNewSchema);
@@ -37,7 +42,7 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function CreateMarketplace() {
   const transition = useTransition();
-  const { projects, tokens } = useTypedLoaderData<typeof loader>();
+  const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
   const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketPrepared; isOpen: boolean }>({ isOpen: false });
@@ -55,11 +60,7 @@ export default function CreateMarketplace() {
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketNew>
-          validator={validator}
-          method="post"
-          defaultValues={{ launch: { access: "anyone" } }}
-        >
+        <ValidatedForm<LaborMarketNew> validator={validator} method="post" defaultValues={defaultValues}>
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
