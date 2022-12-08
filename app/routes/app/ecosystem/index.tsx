@@ -1,6 +1,5 @@
 import { ClipboardDocumentIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { ValidatedForm } from "remix-validated-form";
-import { Container } from "~/components/Container";
 import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
@@ -9,22 +8,18 @@ import { Link, useSubmit } from "@remix-run/react";
 import { Checkbox } from "~/components/checkbox";
 import { withZod } from "@remix-validated-form/with-zod";
 import { LaborMarketSearchSchema } from "~/domain";
-import { Button } from "~/components/button";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { fromNow } from "~/utils/date";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
-import { Submission } from "@prisma/client";
+import type { Submission } from "@prisma/client";
 import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { z } from "zod";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { notFound } from "remix-utils";
-import { countReviews } from "~/services/review-service.server";
-import { f } from "vitest/dist/index-9f5bc072";
-import { Card } from "~/components/Card";
+import { Card } from "~/components/card";
 
 //change
 const validator = withZod(LaborMarketSearchSchema);
@@ -44,61 +39,42 @@ export default function Ecosystem() {
   const { challenge } = useTypedLoaderData<typeof loader>();
 
   return (
-    <Container className="py-16 px-10">
-      <section className="space-y-2 max-w-3xl mb-16">
-        <h1 className="text-3xl font-semibold">Ecosystem</h1>
-        <div>
-          <p className="text-lg text-sky-500">
-            Discover top submissions, rMETRIC holders, participants, and ecosystem metrics
-          </p>
-          <p className="text-gray-500 text-md">Quickly surface relevant challenge activity and metrics over time</p>
+    <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+      <main className="flex-1 space-y-10">
+        <div className="space-y-3">
+          <p className="text-lg font-semibold">Top Submissions</p>
+          <hr className="bg-gray-200" />
+          <SubmissionsListView submissions={challenge.submissions} />
+          <p className="text-md text-stone-500">{"View {count} more"}</p>
         </div>
-        <div className="space-x-3 pt-5">
-          <Button size="sm" variant="cancel" disabled>
-            Showcase
-          </Button>
-          <Button size="sm">
-            <Link to="./metrics">Metrics</Link>
-          </Button>
-        </div>
-      </section>
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-        <main className="flex-1 space-y-10">
-          <div className="space-y-3">
-            <p className="text-lg font-semibold">Top Submissions</p>
-            <hr className="bg-gray-200" />
-            <SubmissionsListView submissions={challenge.submissions} />
-            <p className="text-md text-stone-500">{"View {count} more"}</p>
+        <div className="space-y-3">
+          <p className="text-lg font-semibold">Top rMETRIC holders</p>
+          <hr className="bg-gray-200" />
+          <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
+            <p className="py-20 mx-auto">Totally a chart</p>
           </div>
-          <div className="space-y-3">
-            <p className="text-lg font-semibold">Top rMETRIC holders</p>
-            <hr className="bg-gray-200" />
+          <RMETRICHoldersListView />
+          <p className="text-md text-stone-500">{"View {count} more"}</p>
+        </div>
+        <div className="space-y-3">
+          <p className="text-lg font-semibold">Top Particpants</p>
+          <hr className="bg-gray-200" />
+          <div className="flex flex-col md:flex-row gap-5">
             <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
               <p className="py-20 mx-auto">Totally a chart</p>
             </div>
-            <RMETRICHoldersListView />
-            <p className="text-md text-stone-500">{"View {count} more"}</p>
-          </div>
-          <div className="space-y-3">
-            <p className="text-lg font-semibold">Top Particpants</p>
-            <hr className="bg-gray-200" />
-            <div className="flex flex-col md:flex-row gap-5">
-              <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
-                <p className="py-20 mx-auto">Totally a chart</p>
-              </div>
-              <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
-                <p className="py-20 mx-auto">Totally a chart</p>
-              </div>
+            <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
+              <p className="py-20 mx-auto">Totally a chart</p>
             </div>
-            <ParticipantsListView />
-            <p className="text-md text-stone-500">{"View {count} more"}</p>
           </div>
-        </main>
-        <aside className="md:w-1/4 lg:w-1/5 pt-11">
-          <SearchAndFilter />
-        </aside>
-      </section>
-    </Container>
+          <ParticipantsListView />
+          <p className="text-md text-stone-500">{"View {count} more"}</p>
+        </div>
+      </main>
+      <aside className="md:w-1/4 lg:w-1/5 pt-11">
+        <SearchAndFilter />
+      </aside>
+    </section>
   );
 }
 function SearchAndFilter() {
