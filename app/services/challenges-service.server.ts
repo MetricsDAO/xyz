@@ -29,6 +29,7 @@ export const searchChallenges = async (params: ChallengeSearch) => {
 export const countChallenges = async (params: ChallengeSearch) => {
   return prisma.serviceRequest.count({
     where: {
+      title: { search: params.q },
       laborMarketAddress: params.laborMarket,
     },
   });
