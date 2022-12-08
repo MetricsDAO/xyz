@@ -1,8 +1,6 @@
 import { Link } from "@remix-run/react";
-import { UserBadge } from "~/components/user-badge";
-import { Badge } from "~/components/badge";
-import { Card } from "~/components/card";
 import { useRouteData } from "remix-utils";
+import { Badge, Card, UserBadge } from "~/components";
 import type { findChallenge } from "~/services/challenges-service.server";
 import { fromNow } from "~/utils/date";
 
@@ -25,7 +23,7 @@ export default function ChallengeIdParticipants() {
             return (
               <Card asChild className="px-6 py-4" key={s.id}>
                 <Link to="/u/0x123" className="flex justify-between items-center">
-                  <UserBadge url="u/id" name="jo.Eth" balance={200} />
+                  <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>
                 </Link>
               </Card>
