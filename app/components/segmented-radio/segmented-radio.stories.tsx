@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { ButtonSelect } from "./button-select";
+import { SegmentedRadio } from "./segmented-radio";
 
 export function Basic() {
   const [value, setValue] = useState("10");
   return (
-    <ButtonSelect
+    <SegmentedRadio
       value={value}
       setValue={setValue}
       name="example"

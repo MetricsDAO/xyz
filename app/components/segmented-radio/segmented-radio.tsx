@@ -9,7 +9,7 @@ type Props = {
 
 type Option = { value: string; label: React.ReactNode };
 
-export function ButtonSelect({
+export function SegmentedRadio({
   value,
   setValue,
   ...props
@@ -33,7 +33,7 @@ export function ButtonSelect({
   );
 }
 
-export function ValidatedButtonSelect(props: Props) {
+export function ValidatedSegmentedRadio(props: Props) {
   const [value, setValue] = useControlField<string>(props.name);
-  return <ButtonSelect value={value} setValue={setValue} {...props} />;
+  return <SegmentedRadio value={value} setValue={setValue} {...props} />;
 }
