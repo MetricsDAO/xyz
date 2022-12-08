@@ -18,7 +18,7 @@ type NativeProps = Omit<React.InputHTMLAttributes<any>, keyof OwnProps>;
 
 export type InputProps = OwnProps & NativeProps;
 
-const baseStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-hidden px-3";
+const baseStyles = "w-full border bg-white border-gray-300 rounded-lg flex items-center overflow-hidden px-3";
 
 const sizeStyles = {
   sm: "h-10",

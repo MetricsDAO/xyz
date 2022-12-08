@@ -3,8 +3,8 @@ import { Menu, Transition } from "@headlessui/react";
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import { Link, NavLink } from "@remix-run/react";
 import clsx from "clsx";
-import CustomConnectButton from "./ConnectButton";
-import { LogoMark, LogoType } from "./Logo";
+import CustomConnectButton from "~/components/ConnectButton";
+import { LogoMark, LogoType } from "~/components/Logo";
 
 const primaryLinks = [
   { link: "/app/ecosystem", label: "Ecosystem" },
@@ -52,7 +52,7 @@ export function AppHeader() {
   ));
 
   return (
-    <header className="h-16 border-b border-gray-100 flex items-center justify-between px-6">
+    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
       <div className="flex items-center space-x-4">
         <Menu as="div" className="relative">
           <Menu.Button className="md:hidden">
