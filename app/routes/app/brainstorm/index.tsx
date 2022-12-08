@@ -10,7 +10,7 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { Header, Row, Table } from "~/components/table";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
 import { ValidatedCombobox } from "~/components/combobox";

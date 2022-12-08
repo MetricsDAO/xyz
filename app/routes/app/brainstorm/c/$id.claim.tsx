@@ -6,7 +6,7 @@ import { findChallenge } from "~/services/challenges-service.server";
 import { Container } from "~/components/Container";
 import { CountdownCard } from "~/components/countdown-card";
 import { Button } from "~/components/button";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {

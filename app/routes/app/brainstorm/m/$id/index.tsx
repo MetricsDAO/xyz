@@ -7,7 +7,7 @@ import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/di
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { ProjectAvatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";

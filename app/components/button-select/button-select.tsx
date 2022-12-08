@@ -9,12 +9,15 @@ type Props = {
 
 type Option = { value: string; label: React.ReactNode };
 
-export function ButtonSelect({ options, ...props }: Props) {
-  const [value, setValue] = useControlField<string>(props.name);
+export function ButtonSelect({
+  value,
+  setValue,
+  ...props
+}: Props & { value: string; setValue: (value: string) => void }) {
   return (
     <RadioGroup value={value} onChange={setValue}>
       <div className="flex flex-wrap gap-x-8 gap-y-3">
-        {options?.map((option) => (
+        {props.options?.map((option) => (
           <RadioGroup.Option
             key={option.value}
             value={option.value}
@@ -28,4 +31,9 @@ export function ButtonSelect({ options, ...props }: Props) {
       </div>
     </RadioGroup>
   );
+}
+
+export function ValidatedButtonSelect(props: Props) {
+  const [value, setValue] = useControlField<string>(props.name);
+  return <ButtonSelect value={value} setValue={setValue} {...props} />;
 }

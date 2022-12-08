@@ -1,4 +1,4 @@
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Card } from "~/components/Card";
 import { Detail, DetailItem } from "~/components/detail";
 

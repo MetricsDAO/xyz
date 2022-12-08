@@ -4,9 +4,9 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
-import { ButtonSelect } from "~/components/ButtonSelect";
+import { ButtonSelect, ValidatedButtonSelect } from "~/components/button-select/button-select";
 import { Container } from "~/components/Container";
 import { CountdownCard } from "~/components/countdown-card";
 import { findChallenge } from "~/services/challenges-service.server";
@@ -60,7 +60,7 @@ export default function ClaimToReview() {
         </div>
         <div className="space-y-2">
           <h2 className="text-lg font-semibold">How many submissions do you commit to reviewing at a minimum?</h2>
-          <ButtonSelect
+          <ValidatedButtonSelect
             name="numOfSubmissions"
             options={[
               { label: "10", value: "10" },

@@ -9,7 +9,7 @@ import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Avatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/Card";
 import { Checkbox } from "~/components/checkbox";

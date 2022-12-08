@@ -1,4 +1,4 @@
-import { TabNav, TabNavLink } from "./tab-nav";
+import { TabNav, TabNavLink } from "../components/tab-nav";
 
 export default function RewardsTab({ rewardsNum, addressesNum }: { rewardsNum: number; addressesNum: number }) {
   return (

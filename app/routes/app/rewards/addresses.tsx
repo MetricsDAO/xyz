@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import { Container } from "~/components/Container";
-import RewardsTab from "~/components/RewardsTab";
+import RewardsTab from "~/features/rewards-tab";
 import { Card } from "~/components/Card";
 import { fromNow } from "~/utils/date";
 import { Header, Row, Table } from "~/components/table";

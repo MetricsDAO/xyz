@@ -1,6 +1,6 @@
 import { useRouteData } from "remix-utils";
 import { Avatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Card } from "~/components/Card";
 import { Detail, DetailItem } from "~/components/detail";
 import type { findChallenge } from "~/services/challenges-service.server";

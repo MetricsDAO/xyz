@@ -1,6 +1,6 @@
 import { useRouteData } from "remix-utils";
 import { Avatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { Card } from "~/components/Card";
 import type { findLaborMarket } from "~/services/labor-market.server";
 

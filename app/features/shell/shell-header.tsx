@@ -3,8 +3,8 @@ import { Menu, Transition } from "@headlessui/react";
 import { Bars3Icon } from "@heroicons/react/20/solid";
 import { Link, NavLink } from "@remix-run/react";
 import clsx from "clsx";
-import CustomConnectButton from "~/components/ConnectButton";
-import { LogoMark, LogoType } from "~/components/Logo";
+import CustomConnectButton from "~/features/connect-button";
+import { LogoMark, LogoType } from "./logo";
 
 const primaryLinks = [
   { link: "/app/ecosystem", label: "Ecosystem" },

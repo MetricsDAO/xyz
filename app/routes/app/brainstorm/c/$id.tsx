@@ -9,7 +9,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { Container } from "~/components/Container";
 import { Button } from "~/components/button";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";

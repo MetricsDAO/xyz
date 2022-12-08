@@ -11,7 +11,7 @@ import { Combobox } from "~/components/combobox";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/Container";
-import RewardsTab from "~/components/RewardsTab";
+import RewardsTab from "~/features/rewards-tab";
 import { Card } from "~/components/Card";
 import { fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
