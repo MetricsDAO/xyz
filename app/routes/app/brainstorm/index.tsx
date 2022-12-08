@@ -191,7 +191,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {marketplaces.map((m) => {
         return (
           <Row asChild columns={6} key={m.address}>
-            <Link to={`/app/brainstorm/${m.address}/challenges`} className="text-sm font-medium">
+            <Link to={`/app/brainstorm/m/${m.address}`} className="text-sm font-medium">
               <Row.Column span={2}>{m.title}</Row.Column>
               <Row.Column>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -235,7 +235,7 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
           return (
             <Card asChild key={m.address}>
               <Link
-                to={`/app/brainstorm/${m.address}/challenges`}
+                to={`/app/brainstorm/m/${m.address}`}
                 className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
                 <div>Challenge Marketplaces</div>

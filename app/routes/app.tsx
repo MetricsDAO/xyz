@@ -1,5 +1,5 @@
 import { Outlet } from "@remix-run/react";
-import { Shell } from "~/components/Shell";
+import { Shell } from "~/features/shell";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();

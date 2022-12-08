@@ -37,7 +37,7 @@ export default function Challenge() {
           <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
         </Button>
         <Button variant="primary" size="lg" asChild>
-          <Link to={`/app/brainstorm/c/${challenge.id}/submit`}>Claim to Submit</Link>
+          <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
         </Button>
       </header>
       <Detail className="mb-6">
