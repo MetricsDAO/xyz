@@ -39,7 +39,7 @@ export default function Ecosystem() {
         <main className="flex-1 space-y-10">
           <div className="space-y-5">
             <p className="font-semibold text-md">Activity</p>
-            <div className="flex gap-5 mx-auto items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mx-auto items-center">
               <StatsCard figure={87} title="Marketplaces" />
               <StatsCard figure={2000} title="Challenges" />
               <StatsCard figure={50000} title="Submissions" />
@@ -51,7 +51,7 @@ export default function Ecosystem() {
           </div>
           <div className="space-y-5">
             <p className="font-semibold text-md">Participants</p>
-            <div className="flex gap-5 mx-auto items-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mx-auto items-center">
               <StatsCard figure={64000} title="Total participants" />
               <StatsCard figure={23000} title="Analysts" />
               <StatsCard figure={52000} title="Reviewers" />
@@ -62,7 +62,7 @@ export default function Ecosystem() {
           </div>
           <div className="space-y-5">
             <p className="font-semibold text-md">Rewards</p>
-            <div className="flex gap-5 mx-auto items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mx-auto items-center">
               <StatsCard
                 figure={64000}
                 title="Total Tokens Funded"
@@ -82,7 +82,7 @@ export default function Ecosystem() {
           </div>
           <div className="space-y-5">
             <p className="font-semibold text-md">Reputation</p>
-            <div className="flex gap-5 mx-auto items-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mx-auto items-center">
               <StatsCard
                 figure={64000}
                 title="Total rMETRIC Issued"
@@ -127,9 +127,9 @@ function StatsCard({
     <div className="flex flex-col gap-1 items-center border bg-blue-300/[.05] rounded-lg w-full h-full py-16 px-3">
       <div className="flex">
         {icon}
-        <p className="text-sky-500 text-3xl">{figure}</p>
+        <p className="text-sky-500 text-3xl text-center">{figure}</p>
       </div>
-      <p className="text-stone-500 text-lg">{title}</p>
+      <p className="text-stone-500 text-lg text-center">{title}</p>
       <p className="text-neutral-400 text-md text-center">{description}</p>
     </div>
   );
