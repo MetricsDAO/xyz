@@ -9,7 +9,7 @@ export default function MarketplaceIdPrerequesites() {
     "routes/app/brainstorm/m/$id"
   );
   if (!data) {
-    throw new Error("ChallengeIdPrereqs must be rendered under a ChallengeId route");
+    throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");
   }
   const { laborMarket } = data;
   return (
