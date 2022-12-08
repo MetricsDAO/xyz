@@ -15,6 +15,7 @@ import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import { ValidatedForm } from "remix-validated-form";
 import { withZod } from "@remix-validated-form/with-zod";
 import { z } from "zod";
+import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
 
 export const loader = async (data: DataFunctionArgs) => {
   const tokens = await listTokens();
@@ -165,10 +166,17 @@ function AddressCards({ wallets }: { wallets: any }) {
   );
 }
 
+const schema = z.object({
+  payment: z.discriminatedUnion("tokenSymbol", [
+    z.object({ tokenSymbol: z.literal("ETH"), address: EthAddressSchema }),
+    z.object({ tokenSymbol: z.literal("SOL"), address: SolAddressSchema }),
+  ]),
+});
+
+const validator = withZod(schema);
 function AddAddressButton() {
   const { tokens } = useTypedLoaderData<typeof loader>();
   const [openedAdd, setOpenedAdd] = useState(false);
-  const validAddress = false;
 
   return (
     <>
@@ -176,19 +184,17 @@ function AddAddressButton() {
         Add Address
       </Button>
       <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
-        <div className="space-y-5 mt-5">
+        <ValidatedForm validator={validator} className="space-y-5 mt-5">
           <div className="pb-44 pt-8">
-            <ValidatedForm noValidate validator={withZod(z.any())}>
-              <AddPaymentAddressForm tokens={tokens} />
-            </ValidatedForm>
+            <AddPaymentAddressForm tokens={tokens} />
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
               Cancel
             </Button>
-            <Button disabled={!validAddress}>Save</Button>
+            <Button type="submit">Save</Button>
           </div>
-        </div>
+        </ValidatedForm>
       </Modal>
     </>
   );

@@ -1,7 +1,5 @@
 import type { Token } from "@prisma/client";
-import { TokenAvatar } from "~/components/avatar";
-import { ValidatedInput } from "~/components/input";
-import { ValidatedSelect } from "~/components/select";
+import { Error, Field, TokenAvatar, ValidatedInput, ValidatedSelect } from "~/components";
 
 function SelectLabel({ token }: { token: Token }) {
   return (
@@ -17,16 +15,19 @@ function SelectLabel({ token }: { token: Token }) {
 
 export function AddPaymentAddressForm({ tokens }: { tokens: Token[] }) {
   return (
-    <div className="flex items-center">
-      <ValidatedSelect
-        name="tokenSymbol"
-        options={tokens.map((t) => ({
-          value: t.symbol,
-          label: <SelectLabel token={t} />,
-          selectedLabel: t.symbol,
-        }))}
-      />
-      <ValidatedInput name="address" placeholder="Select a chain and enter an address" />
-    </div>
+    <>
+      <div className="flex items-center">
+        <ValidatedSelect
+          name="payment.tokenSymbol"
+          options={tokens.map((t) => ({
+            value: t.symbol,
+            label: <SelectLabel token={t} />,
+            selectedLabel: t.symbol,
+          }))}
+        />
+        <ValidatedInput name="payment.address" placeholder="Select a chain and enter an address" />
+      </div>
+      <Error name="payment.address" />
+    </>
   );
 }
