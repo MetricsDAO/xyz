@@ -28,6 +28,7 @@ export function AddPaymentAddressForm({ tokens }: { tokens: Token[] }) {
         <ValidatedInput name="payment.address" placeholder="Select a chain and enter an address" />
       </div>
       <Error name="payment.address" />
+      <Error name="payment.tokenSymbol" />
     </>
   );
 }

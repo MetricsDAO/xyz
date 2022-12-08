@@ -170,6 +170,7 @@ const schema = z.object({
   payment: z.discriminatedUnion("tokenSymbol", [
     z.object({ tokenSymbol: z.literal("ETH"), address: EthAddressSchema }),
     z.object({ tokenSymbol: z.literal("SOL"), address: SolAddressSchema }),
+    z.object({ tokenSymbol: z.literal("MATIC"), address: EthAddressSchema }),
   ]),
 });
 
