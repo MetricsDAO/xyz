@@ -1,8 +1,8 @@
 import { UserAvatarFilledAlt32 } from "@carbon/icons-react";
 import { Link } from "@remix-run/react";
 import { useEnsAvatar, useEnsName } from "wagmi";
+import { Avatar } from "../avatar";
 import { truncateAddress } from "~/utils/helpers";
-import { Avatar } from "../../components/avatar";
 
 /** Renders a wallet's avatar and address or ENS name, along with their rMETRIC balance, and UserCard on hover. */
 export function UserBadge({ url, address, balance }: { url: string; address: `0x${string}`; balance: number }) {

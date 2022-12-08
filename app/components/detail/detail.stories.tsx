@@ -1,4 +1,4 @@
-import { Badge } from "../Badge";
+import { Badge } from "../badge/badge";
 import { Detail, DetailItem } from "./detail";
 
 export const Index = () => {

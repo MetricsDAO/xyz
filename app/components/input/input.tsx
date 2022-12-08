@@ -1,10 +1,8 @@
 import { useField } from "remix-validated-form";
-import type { InputBaseSize } from "../InputBase";
 import React from "react";
 import clsx from "clsx";
 
-// type InputProps = { prefix?: React.ReactNode; suffix?: React.ReactNode } & FieldProps &
-//   Omit<JSX.IntrinsicElements["input"], "size"> & { size?: InputBaseSize };
+type InputBaseSize = "sm" | "md";
 
 type OwnProps = {
   label?: React.ReactNode;
@@ -18,7 +16,7 @@ type NativeProps = Omit<React.InputHTMLAttributes<any>, keyof OwnProps>;
 
 export type InputProps = OwnProps & NativeProps;
 
-const baseStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-hidden px-3";
+const baseStyles = "w-full border bg-white border-gray-300 rounded-lg flex items-center overflow-hidden px-3";
 
 const sizeStyles = {
   sm: "h-10",

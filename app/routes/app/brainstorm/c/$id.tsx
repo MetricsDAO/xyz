@@ -1,15 +1,15 @@
 import { Link, Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { UserBadge } from "~/features/user-badge";
+import { UserBadge } from "~/components/user-badge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
-import { Container } from "~/components/Container";
+import { Container } from "~/components/container";
 import { Button } from "~/components/button";
-import { Badge } from "~/components/Badge";
+import { Badge } from "~/components/badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
@@ -37,7 +37,7 @@ export default function Challenge() {
           <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
         </Button>
         <Button variant="primary" size="lg" asChild>
-          <Link to={`/app/brainstorm/c/${challenge.id}/submit`}>Claim to Submit</Link>
+          <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
         </Button>
       </header>
       <Detail className="mb-6">

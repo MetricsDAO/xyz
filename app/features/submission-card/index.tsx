@@ -1,8 +1,6 @@
 import type { Submission } from "@prisma/client";
 import { Link } from "@remix-run/react";
-import { Card } from "~/components/Card";
-import { Score } from "~/components/Score";
-import { UserBadge } from "~/features/user-badge";
+import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 
 type Props = {
