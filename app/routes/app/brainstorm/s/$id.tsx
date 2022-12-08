@@ -148,11 +148,11 @@ export default function ChallengeSubmission() {
                   onChange={handleChange}
                   options={[{ label: "Created At", value: "createdAt" }]}
                 />
-                <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="great" label="Great" />
-                <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
-                <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
-                <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
-                <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
+                <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
+                <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
+                <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
+                <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
+                <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
               </ValidatedForm>
             </aside>
           </div>
