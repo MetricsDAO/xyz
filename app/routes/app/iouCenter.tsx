@@ -2,7 +2,7 @@ import { WarningAltFilled16 } from "@carbon/icons-react";
 import { Outlet } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "~/components/button";
-import { Container } from "~/components/container/container";
+import { Container } from "~/components/container";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";

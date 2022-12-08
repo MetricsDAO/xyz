@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react";
-import { UserBadge } from "~/components/user-badge/user-badge";
+import { UserBadge } from "~/components/user-badge";
 import { Badge } from "~/components/badge";
-import { Card } from "~/components/card/card";
+import { Card } from "~/components/card";
 import { useRouteData } from "remix-utils";
 import type { findChallenge } from "~/services/challenges-service.server";
 import { fromNow } from "~/utils/date";

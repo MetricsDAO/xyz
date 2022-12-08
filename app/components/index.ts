@@ -2,7 +2,7 @@ export * from "./avatar";
 export * from "./badge";
 export * from "./button";
 export * from "./button-select";
-export * from "./card/card";
+export * from "./card";
 export * from "./checkbox";
 export * from "./combobox";
 export * from "./container";

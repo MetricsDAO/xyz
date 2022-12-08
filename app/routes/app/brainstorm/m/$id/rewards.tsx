@@ -1,5 +1,5 @@
 import { Badge } from "~/components/badge";
-import { Card } from "~/components/card/card";
+import { Card } from "~/components/card";
 
 export default function MarketplaceIdRewards() {
   return (

@@ -1,6 +1,6 @@
 import { Link, Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { UserBadge } from "~/components/user-badge/user-badge";
+import { UserBadge } from "~/components/user-badge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";

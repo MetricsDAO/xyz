@@ -8,7 +8,7 @@ import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/button";
-import { Container } from "~/components/container/container";
+import { Container } from "~/components/container";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { Modal } from "~/components/modal";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";

@@ -1,7 +1,7 @@
 import { Slot } from "@radix-ui/react-slot";
 
 import clsx from "clsx";
-import { Card } from "~/components/card/card";
+import { Card } from "~/components/card";
 
 const ColumnSizes = {
   6: "grid-cols-6",
