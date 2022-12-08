@@ -1,23 +1,23 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import type { Review } from "@prisma/client";
 import { Link, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { UserBadge } from "~/components/UserBadge";
-import { Card } from "~/components/Card";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
+import { Card } from "~/components/card/card";
 import { Checkbox } from "~/components/checkbox";
+import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
-import { Score } from "~/components/Score";
+import { Score } from "~/components/score/score";
 import { ValidatedSelect } from "~/components/select";
+import { UserBadge } from "~/components/user-badge/user-badge";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { searchSubmissions } from "~/services/submissions.server";
-import invariant from "tiny-invariant";
-import { useRef } from "react";
-import { Field, Label } from "~/components/field";
-import { withZod } from "@remix-validated-form/with-zod";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { fromNow } from "~/utils/date";
-import type { Review } from "@prisma/client";
 
 const validator = withZod(SubmissionSearchSchema);
 

@@ -1,4 +1,4 @@
-import { Progress } from "~/components/Progress";
+import { Progress } from "~/components/progress/progress";
 import { useCountdown } from "~/hooks/use-countdown";
 
 type CountdownCardProps = {

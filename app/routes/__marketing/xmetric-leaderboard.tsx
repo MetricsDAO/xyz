@@ -1,5 +1,5 @@
-import AppFooter from "~/components/marketing/Footer";
-import Header from "~/components/marketing/Header";
+import AppFooter from "~/features/marketing-shell/Footer";
+import Header from "~/features/marketing-shell/Header";
 
 export default function xMetric() {
   return (

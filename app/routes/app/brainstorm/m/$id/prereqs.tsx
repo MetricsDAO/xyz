@@ -1,7 +1,7 @@
 import { useRouteData } from "remix-utils";
 import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
-import { Card } from "~/components/Card";
+import { Card } from "~/components/card/card";
 import type { findLaborMarket } from "~/services/labor-market.server";
 
 export default function MarketplaceIdPrerequesites() {

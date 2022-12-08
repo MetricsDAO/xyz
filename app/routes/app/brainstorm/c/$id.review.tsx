@@ -6,8 +6,8 @@ import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
-import { ButtonSelect, ValidatedButtonSelect } from "~/components/button-select/button-select";
-import { Container } from "~/components/Container";
+import { ValidatedButtonSelect } from "~/components/button-select/button-select";
+import { Container } from "~/components/container/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { findChallenge } from "~/services/challenges-service.server";
 

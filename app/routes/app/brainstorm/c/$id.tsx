@@ -1,13 +1,13 @@
 import { Link, Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { UserBadge } from "~/components/UserBadge";
+import { UserBadge } from "~/components/user-badge/user-badge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
-import { Container } from "~/components/Container";
+import { Container } from "~/components/container/container";
 import { Button } from "~/components/button";
 import { Badge } from "~/components/badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";

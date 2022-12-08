@@ -3,7 +3,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { findChallenge } from "~/services/challenges-service.server";
-import { Container } from "~/components/Container";
+import { Container } from "~/components/container/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { Button } from "~/components/button";
 import { Badge } from "~/components/badge";
