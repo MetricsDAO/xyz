@@ -3,7 +3,7 @@ import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { Button } from "~/components/button";
-import { Container } from "~/components/Container";
+import { Container } from "~/components/container";
 import { Detail } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ChallengeSearchSchema } from "~/domain/challenge";
