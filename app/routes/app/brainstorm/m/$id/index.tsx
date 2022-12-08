@@ -14,7 +14,7 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Countdown } from "~/components/countdown";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
-import { Pagination } from "~/features/pagination";
+import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ChallengeSearchSchema } from "~/domain/challenge";

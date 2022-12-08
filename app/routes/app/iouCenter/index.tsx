@@ -9,7 +9,7 @@ import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/combobox";
-import { Pagination } from "~/features/pagination";
+import { Pagination } from "~/components/pagination/pagination";
 import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
 

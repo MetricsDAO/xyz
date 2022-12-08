@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
 import { Checkbox } from "~/components/checkbox";
-import { Pagination } from "~/features/pagination";
+import { Pagination } from "~/components/pagination/pagination";
 import { Modal } from "~/components/modal";
 import { Input } from "~/components/input";
 import { Button } from "~/components/button";

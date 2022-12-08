@@ -17,7 +17,7 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
-import { Pagination } from "~/features/pagination";
+import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { listProjects } from "~/services/projects.server";
