@@ -102,5 +102,6 @@ export const findLaborMarket = async (address: string) => {
     where: {
       address: address,
     },
+    include: { _count: { select: { serviceRequests: true } } },
   });
 };
