@@ -66,22 +66,22 @@ export default function Ecosystem() {
         <main className="flex-1 space-y-10">
           <div className="space-y-3">
             <p className="text-lg font-semibold">Top Submissions</p>
-            <hr className="h-1 bg-gray-200" />
+            <hr className="bg-gray-200" />
             <SubmissionsListView submissions={challenge.submissions} />
-            <p>{"View {count} more"}</p>
+            <p className="text-md text-stone-500">{"View {count} more"}</p>
           </div>
           <div className="space-y-3">
             <p className="text-lg font-semibold">Top rMETRIC holders</p>
-            <hr className="h-1 bg-gray-200" />
+            <hr className="bg-gray-200" />
             <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
               <p className="py-20 mx-auto">Totally a chart</p>
             </div>
             <RMETRICHoldersListView />
-            <p>{"View {count} more"}</p>
+            <p className="text-md text-stone-500">{"View {count} more"}</p>
           </div>
           <div className="space-y-3">
             <p className="text-lg font-semibold">Top Particpants</p>
-            <hr className="h-1 bg-gray-200" />
+            <hr className="bg-gray-200" />
             <div className="flex flex-col md:flex-row gap-5">
               <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
                 <p className="py-20 mx-auto">Totally a chart</p>
@@ -91,7 +91,7 @@ export default function Ecosystem() {
               </div>
             </div>
             <ParticipantsListView />
-            <p>{"View {count} more"}</p>
+            <p className="text-md text-stone-500">{"View {count} more"}</p>
           </div>
         </main>
         <aside className="md:w-1/4 lg:w-1/5 pt-11">
@@ -210,7 +210,7 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
 
   return (
     <Table>
-      <Header columns={12} className="mb-2 pt-2">
+      <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
         <Header.Column span={3}>Title</Header.Column>
         <Header.Column span={2}>User rMETRIC</Header.Column>
         <Header.Column span={3}>Challenge</Header.Column>
@@ -313,7 +313,7 @@ function SubmissionsCard({ submissions }: { submissions: Submission[] }) {
 function RMETRICHoldersTable() {
   return (
     <Table>
-      <Header columns={6} className="mb-2 pt-2">
+      <Header columns={6} className="mb-2 pt-2 text-sm text-stone-500">
         <Header.Column span={4}>Address</Header.Column>
         <Header.Column>% of Supply</Header.Column>
         <Header.Column>Balance</Header.Column>
@@ -379,19 +379,19 @@ function ParticpantsTable() {
 
   return (
     <Table>
-      <Header columns={12} className="mb-2 pt-2">
-        <Header.Column span={4}>Address</Header.Column>
+      <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
+        <Header.Column span={3}>Address</Header.Column>
         <Header.Column span={2}>rMETRIC</Header.Column>
         <Header.Column span={2}>Challenges Launched</Header.Column>
-        <Header.Column span={2}>Challenges Won</Header.Column>
-        <Header.Column>Tokens Funded</Header.Column>
-        <Header.Column>Tokens Claimed</Header.Column>
+        <Header.Column span={1}>Challenges Won</Header.Column>
+        <Header.Column span={2}>Tokens Funded</Header.Column>
+        <Header.Column span={2}>Tokens Claimed</Header.Column>
       </Header>
       {[1, 2].map((p) => {
         return (
           <Row asChild columns={12} key={p}>
             <Link to={`/app/brainstorm/c/${p}`} className="text-sm font-medium text-stone-500">
-              <Row.Column span={4} className="flex flex-row items-center gap-x-2">
+              <Row.Column span={3} className="flex flex-row items-center gap-x-2">
                 <img alt="" src="/img/icons/poly.svg" />
                 <CopyToClipboard
                   className="text-stone-500"
@@ -405,7 +405,7 @@ function ParticpantsTable() {
               <Row.Column span={2} className="text-center">
                 70
               </Row.Column>
-              <Row.Column span={2} className="text-center">
+              <Row.Column span={1} className="text-center">
                 22
               </Row.Column>
               <Row.Column span={2} className="flex gap-1 items-center">
