@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { useRef } from "react";
-import SocialIcons from "~/components/marketing/SocialIcons";
+import SocialIcons from "~/features/marketing-shell/SocialIcons";
 
 const Header = () => {
   const navRef = useRef<any>(null);

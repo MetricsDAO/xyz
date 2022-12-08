@@ -1,7 +1,7 @@
 import { Search16, WarningAltFilled16, WarningAltFilled32 } from "@carbon/icons-react";
 import { useRef, useState } from "react";
 import { Button } from "~/components/button";
-import { Card } from "~/components/Card";
+import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
@@ -9,7 +9,7 @@ import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/combobox";
-import { Pagination } from "~/components/Pagination";
+import { Pagination } from "~/components/pagination/pagination";
 import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
 

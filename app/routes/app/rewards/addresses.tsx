@@ -2,9 +2,9 @@ import { CheckboxCheckedFilled16, ChevronSortDown16, Copy16, WarningSquareFilled
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
-import { Container } from "~/components/Container";
-import RewardsTab from "~/components/RewardsTab";
-import { Card } from "~/components/Card";
+import { Container } from "~/components/container";
+import RewardsTab from "~/features/rewards-tab";
+import { Card } from "~/components/card";
 import { fromNow } from "~/utils/date";
 import { Header, Row, Table } from "~/components/table";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";

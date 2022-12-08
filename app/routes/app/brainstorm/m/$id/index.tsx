@@ -7,14 +7,14 @@ import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/di
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { ProjectAvatar } from "~/components/avatar";
-import { Badge } from "~/components/Badge";
-import { Card } from "~/components/Card";
+import { Badge } from "~/components/badge";
+import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Countdown } from "~/components/countdown";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
-import { Pagination } from "~/components/Pagination";
+import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ChallengeSearchSchema } from "~/domain/challenge";

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { Button } from "~/components/button";
 import { Input } from "~/components/input/input";
 import { Select } from "~/components/select";
-import { Textarea } from "~/components/Textarea";
+import { Textarea } from "~/components/textarea/textarea";
 
 export default function CreateChallenge() {
   const marketplace = true;

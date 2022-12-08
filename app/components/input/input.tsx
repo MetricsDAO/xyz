@@ -1,10 +1,8 @@
 import { useField } from "remix-validated-form";
-import type { InputBaseSize } from "../InputBase";
 import React from "react";
 import clsx from "clsx";
 
-// type InputProps = { prefix?: React.ReactNode; suffix?: React.ReactNode } & FieldProps &
-//   Omit<JSX.IntrinsicElements["input"], "size"> & { size?: InputBaseSize };
+type InputBaseSize = "sm" | "md";
 
 type OwnProps = {
   label?: React.ReactNode;
