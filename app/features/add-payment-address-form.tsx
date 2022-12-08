@@ -1,5 +1,5 @@
 import type { Token } from "@prisma/client";
-import { Error, Field, TokenAvatar, ValidatedInput, ValidatedSelect } from "~/components";
+import { Error, TokenAvatar, ValidatedInput, ValidatedSelect } from "~/components";
 
 function SelectLabel({ token }: { token: Token }) {
   return (
