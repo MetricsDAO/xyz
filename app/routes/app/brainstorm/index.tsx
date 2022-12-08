@@ -14,7 +14,7 @@ import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card/card";
 import { ValidatedCombobox } from "~/components/combobox";
-import { Container } from "~/components/container/container";
+import { Container } from "~/components/container";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/features/pagination";

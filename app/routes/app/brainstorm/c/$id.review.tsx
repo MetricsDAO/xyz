@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { ValidatedButtonSelect } from "~/components/button-select/button-select";
-import { Container } from "~/components/container/container";
+import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { findChallenge } from "~/services/challenges-service.server";
 

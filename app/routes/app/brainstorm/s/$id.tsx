@@ -8,16 +8,19 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { Avatar } from "~/components/avatar";
-import { Badge } from "~/components/badge";
-import { Button } from "~/components/button";
-import { Card } from "~/components/card/card";
-import { Checkbox } from "~/components/checkbox";
-import { Container } from "~/components/container/container";
-import { Detail, DetailItem } from "~/components/detail";
-import { Drawer } from "~/components/drawer/drawer";
-import { ValidatedSelect } from "~/components/select";
-import { UserBadge } from "~/components/user-badge/user-badge";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Container,
+  Detail,
+  DetailItem,
+  Drawer,
+  UserBadge,
+  ValidatedSelect,
+} from "~/components";
 import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";

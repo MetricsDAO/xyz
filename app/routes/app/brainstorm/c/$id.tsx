@@ -7,7 +7,7 @@ import { findChallenge } from "~/services/challenges-service.server";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
-import { Container } from "~/components/container/container";
+import { Container } from "~/components/container";
 import { Button } from "~/components/button";
 import { Badge } from "~/components/badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
