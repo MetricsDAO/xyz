@@ -20,6 +20,7 @@ import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { notFound } from "remix-utils";
 import { Card } from "~/components/card";
+import { truncateAddress } from "~/utils/helpers";
 
 //change
 const validator = withZod(LaborMarketSearchSchema);
@@ -207,7 +208,7 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
                   <img alt="" src="/img/icons/poly.svg" width={15} />
                   <CopyToClipboard
                     className="text-stone-500"
-                    content={w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
+                    content={truncateAddress(w.address)}
                     iconRight={<ClipboardDocumentIcon />}
                   />
                 </div>
@@ -257,7 +258,7 @@ function SubmissionsCard({ submissions }: { submissions: Submission[] }) {
                   <img alt="" src="/img/icons/poly.svg" width={15} />
                   <CopyToClipboard
                     className="text-stone-500"
-                    content={w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
+                    content={truncateAddress(w.address)}
                     iconRight={<ClipboardDocumentIcon />}
                   />
                 </div>
@@ -331,7 +332,7 @@ function RMETRICHoldersCard() {
                 <img alt="" src="/img/icons/poly.svg" />
                 <CopyToClipboard
                   className="text-stone-500"
-                  content={w.address.length > 10 ? w.address?.slice(0, 7) + "..." + w.address?.slice(-5) : w.address}
+                  content={truncateAddress(w.address)}
                   iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
                 />
               </div>
@@ -371,7 +372,7 @@ function ParticpantsTable() {
                 <img alt="" src="/img/icons/poly.svg" />
                 <CopyToClipboard
                   className="text-stone-500"
-                  content={w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
+                  content={truncateAddress(w.address)}
                   iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
                 />
               </Row.Column>
@@ -416,7 +417,7 @@ function ParticipantsCard() {
                 <img alt="" src="/img/icons/poly.svg" />
                 <CopyToClipboard
                   className="text-stone-500"
-                  content={w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
+                  content={truncateAddress(w.address)}
                   iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
                 />
               </div>
