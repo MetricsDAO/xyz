@@ -4,11 +4,11 @@ import { Button } from "~/components/button";
 import { ValidatedCombobox } from "~/components/combobox/combobox";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
-import { ValidatedTextarea } from "~/components/textarea/textarea";
-import { useControlField } from "remix-validated-form";
+import { ValidatedTextarea } from "~/components/textarea";
+// import { useControlField } from "remix-validated-form";
 
 export function ChallengeForm({ laborMarkets }: { laborMarkets: LaborMarket[] }) {
-  const [laborMarketAddress] = useControlField("laborMarketAddress");
+  // const [laborMarketAddress] = useControlField("laborMarketAddress");
 
   return (
     <div className="space-y-10 py-5">
