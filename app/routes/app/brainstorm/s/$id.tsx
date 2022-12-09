@@ -25,6 +25,7 @@ import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
+import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/helpers";
 
 const paramsSchema = z.object({ id: z.string() });
 
@@ -78,8 +79,20 @@ export default function ChallengeSubmission() {
                 <Badge>{fromNow(submission.createdAt.toString())}</Badge>
               </DetailItem>
               <DetailItem title="Overall Score">
-                <Badge className="bg-blue-400 pl-0">
-                  <Badge className="bg-blue-200 mr-2">Good</Badge>
+                <Badge
+                  className={clsx(
+                    SCORE_COLOR_SECONDARY[submission.scoreStatus] ? SCORE_COLOR_SECONDARY[submission.scoreStatus] : "",
+                    "pl-0"
+                  )}
+                >
+                  <Badge
+                    className={clsx(
+                      SCORE_COLOR[submission.scoreStatus] ? SCORE_COLOR[submission.scoreStatus] : "",
+                      "mr-2"
+                    )}
+                  >
+                    {submission.scoreStatus}
+                  </Badge>
                   <span>80</span>
                 </Badge>
               </DetailItem>
@@ -117,8 +130,12 @@ export default function ChallengeSubmission() {
                         className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
                       >
                         <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
-                          <div className="flex bg-lime-200 w-24 h-12 justify-center items-center rounded-lg">
-                            {/* TODO: background should match the status */}
+                          <div
+                            className={clsx(
+                              SCORE_COLOR[r.scoreStatus] ? SCORE_COLOR[r.scoreStatus] : "",
+                              "flex w-24 h-12 justify-center items-center rounded-lg"
+                            )}
+                          >
                             <p>{r.scoreStatus}</p>
                           </div>
                           <Avatar />

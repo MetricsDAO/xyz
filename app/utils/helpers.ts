@@ -20,3 +20,19 @@ export const truncateAddress = (address: string) => {
   }
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+
+export const SCORE_COLOR: Record<string, string | undefined> = {
+  Great: "bg-lime-100",
+  Good: "bg-violet-200",
+  Average: "bg-neutral-200",
+  Bad: "bg-amber-100",
+  Spam: "bg-rose-200",
+};
+
+export const SCORE_COLOR_SECONDARY: Record<string, string | undefined> = {
+  Great: "bg-lime-400",
+  Good: "bg-blue-400",
+  Average: "bg-zinc-500",
+  Bad: "bg-orange-300",
+  Spam: "bg-rose-400",
+};
