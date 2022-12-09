@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import type { Review } from "@prisma/client";
-import { Link, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
@@ -8,16 +8,13 @@ import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
-import { Score } from "~/components/score";
 import { ValidatedSelect } from "~/components/select";
-import { UserBadge } from "~/components/user-badge";
 import { SubmissionSearchSchema } from "~/domain/submission";
+import { SubmissionCard } from "~/features/submission-card";
 import { searchSubmissions } from "~/services/submissions.server";
-import { fromNow } from "~/utils/date";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -45,24 +42,7 @@ export default function ChallengeIdSubmissions() {
       <main className="min-w-[300px] w-full space-y-4">
         {submissions.map((s) => {
           return (
-            <Card asChild key={s.id}>
-              <Link
-                to={`/app/brainstorm/s/${s.id}`}
-                className="flex flex-col md:flex-row text-sm p-6 items-center space-x-4"
-              >
-                <main className="space-y-2 flex-1">
-                  <h4 className="font-medium text-gray-900">{s.title}</h4>
-                  <section className="text-gray-900">{s.description}</section>
-                  <div className="flex space-x-1 items-center text-xs">
-                    {fromNow(s.createdAt)} by <UserBadge url="u/id" name={"jo.Eth"} balance={200} />
-                  </div>
-                </main>
-                <div className="space-y-3">
-                  <Score score={averageScore(s.reviews)} />
-                  <p className="text-xs text-gray-500 text-center">{s.reviews.length} reviews</p>
-                </div>
-              </Link>
-            </Card>
+            <SubmissionCard key={s.id} submission={s} score={averageScore(s.reviews)} totalReviews={s.reviews.length} />
           );
         })}
       </main>

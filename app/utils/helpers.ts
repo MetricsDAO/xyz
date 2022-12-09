@@ -13,3 +13,10 @@ export const TOKEN_ICONS: Record<string, string | undefined> = {
   Solana: "/img/icons/token-icons/sol.svg",
   USDC: "/img/icons/token-icons/usdc.svg",
 };
+
+export const truncateAddress = (address: string) => {
+  if (address.length < 10) {
+    return address;
+  }
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
