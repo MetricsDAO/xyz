@@ -22,10 +22,10 @@ export default function ChallengeIdParticipants() {
           {challenge?.submissions.map((s) => {
             return (
               <Card asChild className="px-6 py-4" key={s.id}>
-                <Link to="/u/0x123" className="flex justify-between items-center">
+                <div className="flex justify-between items-center">
                   <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>
-                </Link>
+                </div>
               </Card>
             );
           })}
