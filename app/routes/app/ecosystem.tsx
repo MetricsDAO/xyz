@@ -1,5 +1,6 @@
 import { Container } from "~/components/container";
 import { NavLink, Outlet } from "@remix-run/react";
+import clsx from "clsx";
 
 export default function Ecosystem() {
   return (
@@ -16,9 +17,10 @@ export default function Ecosystem() {
           <NavLink
             to="./"
             className={({ isActive }) =>
-              isActive
-                ? "py-1.5 px-3 bg-sky-500 text-white rounded-md"
-                : "py-1.5 px-3 border rounded-md text-neutral-400 border-stone-500"
+              clsx(
+                isActive ? "bg-sky-500 text-white" : "border text-neutral-400 border-stone-500",
+                "py-1.5 px-3 rounded-md"
+              )
             }
           >
             Showcase
