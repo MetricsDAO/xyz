@@ -16,6 +16,7 @@ export default function Ecosystem() {
         <div className="space-x-3 pt-5">
           <NavLink
             to="./"
+            end
             className={({ isActive }) =>
               clsx(
                 isActive ? "bg-sky-500 text-white" : "border text-neutral-400 border-stone-500",
