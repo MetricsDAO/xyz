@@ -21,7 +21,9 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-export const SCORE_COLOR: Record<string, string | undefined> = {
+type Grade = "Great" | "Good" | "Average" | "Bad" | "Spam";
+
+export const SCORE_COLOR: Record<Grade, string | undefined> = {
   Great: "bg-lime-100",
   Good: "bg-violet-200",
   Average: "bg-neutral-200",
@@ -29,7 +31,7 @@ export const SCORE_COLOR: Record<string, string | undefined> = {
   Spam: "bg-rose-200",
 };
 
-export const SCORE_COLOR_SECONDARY: Record<string, string | undefined> = {
+export const SCORE_COLOR_SECONDARY: Record<Grade, string | undefined> = {
   Great: "bg-lime-400",
   Good: "bg-blue-400",
   Average: "bg-zinc-500",
