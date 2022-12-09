@@ -17,7 +17,8 @@ type Props = {
 
 type Option = {
   value: string;
-  label: string;
+  label: React.ReactNode;
+  selectedLabel?: React.ReactNode;
 };
 
 const buttonStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-hidden";
@@ -36,7 +37,11 @@ export function Select({ isError, size = "md", value, onChange, options, placeho
         <div className="relative">
           <Listbox.Button className={clsx(buttonStyles, sizeStyles[size])}>
             <span className="flex-1 outline-none px-3 text-left text-sm block truncate">
-              {selected ? selected.label : <span className="text-gray-400">{placeholder}</span>}
+              {selected ? (
+                selected.selectedLabel ?? selected.label
+              ) : (
+                <span className="text-gray-400">{placeholder}</span>
+              )}
             </span>
             <span className="pointer-events-none px-2">
               <ChevronDownIcon className="h-3 w-3 text-gray-600" />
@@ -52,7 +57,7 @@ export function Select({ isError, size = "md", value, onChange, options, placeho
             leaveFrom="translate-y-0 opaciry-100"
             leaveTo="-translate-y-2 opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white border border-gray-200 focus:outline-none">
+            <Listbox.Options className="absolute z-10 mt-1 max-h-60 min-w-full overflow-auto rounded-lg bg-white border border-gray-200 focus:outline-none">
               {options.map((option) => (
                 <Listbox.Option
                   className={({ active }) =>

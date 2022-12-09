@@ -1,4 +1,4 @@
-import { CheckboxCheckedFilled16, ChevronSortDown16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
+import { CheckboxCheckedFilled16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
@@ -8,6 +8,24 @@ import { Card } from "~/components/card";
 import { fromNow } from "~/utils/date";
 import { Header, Row, Table } from "~/components/table";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { listTokens } from "~/services/tokens.server";
+import type { DataFunctionArgs } from "@remix-run/node";
+import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
+import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@remix-validated-form/with-zod";
+import { z } from "zod";
+import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
+
+export const loader = async (data: DataFunctionArgs) => {
+  const tokens = await listTokens();
+  return typedjson(
+    {
+      tokens,
+    },
+    { status: 200 }
+  );
+};
 
 export default function PayoutAddresses() {
   const wallets = [
@@ -148,9 +166,18 @@ function AddressCards({ wallets }: { wallets: any }) {
   );
 }
 
+const schema = z.object({
+  payment: z.discriminatedUnion("tokenSymbol", [
+    z.object({ tokenSymbol: z.literal("ETH"), address: EthAddressSchema }),
+    z.object({ tokenSymbol: z.literal("SOL"), address: SolAddressSchema }),
+    z.object({ tokenSymbol: z.literal("MATIC"), address: EthAddressSchema }),
+  ]),
+});
+
+const validator = withZod(schema);
 function AddAddressButton() {
+  const { tokens } = useTypedLoaderData<typeof loader>();
   const [openedAdd, setOpenedAdd] = useState(false);
-  const validAddress = false;
 
   return (
     <>
@@ -158,26 +185,17 @@ function AddAddressButton() {
         Add Address
       </Button>
       <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
-        <div className="space-y-5 mt-5">
-          <div className="flex border-solid border rounded-md border-trueGray-200">
-            <ChevronSortDown16 className="m-3" />
-
-            <div className="flex items-center pl-2 border-solid border-0 border-l border-trueGray-200">
-              {validAddress ? (
-                <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
-              ) : (
-                <WarningSquareFilled16 className="mr-1 text-rose-500" />
-              )}
-              <input id="address" placeholder="Select a chain and enter an address" className="text-sm" />
-            </div>
+        <ValidatedForm validator={validator} className="space-y-5 mt-5">
+          <div className="pb-44 pt-8">
+            <AddPaymentAddressForm tokens={tokens} />
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
               Cancel
             </Button>
-            <Button disabled={!validAddress}>Save</Button>
+            <Button type="submit">Save</Button>
           </div>
-        </div>
+        </ValidatedForm>
       </Modal>
     </>
   );

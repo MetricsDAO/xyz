@@ -1,7 +1,7 @@
 import * as RadixAvatar from "@radix-ui/react-avatar";
 import clsx from "clsx";
 
-type Props = {
+export type Props = {
   src?: string;
   size?: "sm" | "md" | "lg";
   alt?: string;

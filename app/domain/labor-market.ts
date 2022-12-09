@@ -13,7 +13,7 @@ export const LaborMarketSchema = z.object({
     z.object({
       access: z.literal("delegates"),
       badgerAddress: EthAddressSchema,
-      badgerTokenId: z.string(),
+      badgerTokenId: z.string().min(1, "Required"),
     }),
   ]),
   rewardCurveAddress: EthAddressSchema,
