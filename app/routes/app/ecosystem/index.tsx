@@ -13,39 +13,20 @@ import { Header, Row, Table } from "~/components/table";
 import { Badge } from "~/components/badge";
 import { fromNow } from "~/utils/date";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
-import type { Submission } from "@prisma/client";
-import { findChallenge } from "~/services/challenges-service.server";
-import { typedjson } from "remix-typedjson";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { notFound } from "remix-utils";
 import { Card } from "~/components/card";
 import { truncateAddress } from "~/utils/helpers";
 
 //change
 const validator = withZod(LaborMarketSearchSchema);
 
-export const loader = async ({ params }: DataFunctionArgs) => {
-  //change
-  const id = "3c1985de-4999-499b-82c5-63f5b070c551";
-  const challenge = await findChallenge(id);
-  if (!challenge) {
-    throw notFound({ id });
-  }
-
-  return typedjson({ challenge }, { status: 200 });
-};
-
 export default function Ecosystem() {
-  const { challenge } = useTypedLoaderData<typeof loader>();
-
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1 space-y-10">
         <div className="space-y-3">
           <p className="text-lg font-semibold">Top Submissions</p>
           <hr className="bg-gray-200" />
-          <SubmissionsListView submissions={challenge.submissions} />
+          <SubmissionsListView />
           <p className="text-md text-stone-500">{"View {count} more"}</p>
         </div>
         <div className="space-y-3">
@@ -137,16 +118,16 @@ function SearchAndFilter() {
   );
 }
 
-function SubmissionsListView({ submissions }: { submissions: Submission[] }) {
+function SubmissionsListView() {
   return (
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <SubmissionsTable submissions={submissions} />
+        <SubmissionsTable />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <SubmissionsCard submissions={submissions} />
+        <SubmissionsCard />
       </div>
     </>
   );
@@ -182,7 +163,7 @@ function ParticipantsListView() {
   );
 }
 
-function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
+function SubmissionsTable() {
   const w = { address: "0x364875845389cl1hny43i8" };
 
   return (
@@ -194,15 +175,15 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
         <Header.Column span={2}>Chain/Project</Header.Column>
         <Header.Column>Submitted</Header.Column>
       </Header>
-      {submissions.map((s) => {
+      {[1, 2, 3, 4].map((s) => {
         return (
-          <Row asChild columns={12} key={s.id}>
-            <Link to={`/app/brainstorm/c/${s.id}`} className="text-sm text-stone-500">
+          <Row asChild columns={12} key={"s.id"}>
+            <Link to={`/app/brainstorm/c/s.id`} className="text-sm text-stone-500">
               <Row.Column span={3}>
                 <div className="flex flex-wrap gap-1">
-                  {s.title}
+                  {"s.title"}
                   <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({s.scoreStatus})</p>
+                  <p className="text-neutral-400 font-thin">({"s.scoreStatus"})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
@@ -227,7 +208,7 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
       ))}
       </div>*/}
               </Row.Column>
-              <Row.Column span={2}>{fromNow(s.createdAt)}</Row.Column>
+              <Row.Column span={2}>{fromNow("11-22-21")}</Row.Column>
             </Link>
           </Row>
         );
@@ -236,23 +217,23 @@ function SubmissionsTable({ submissions }: { submissions: Submission[] }) {
   );
 }
 
-function SubmissionsCard({ submissions }: { submissions: Submission[] }) {
+function SubmissionsCard() {
   const w = { address: "0x364875845389cl1hny43i8" };
 
   return (
     <div className="space-y-4">
-      {submissions.map((s) => {
+      {[1, 2, 3, 4].map((s) => {
         return (
-          <Card asChild key={s.id}>
+          <Card asChild key={"s.id"}>
             <Link
-              to={`/app/brainstorm/c/${s.id}`}
+              to={`/app/brainstorm/c/s.id`}
               className="text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div className="col-span-2">
                 <div className="flex gap-1">
-                  {s.title}
+                  {"s.title"}
                   <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({s.scoreStatus})</p>
+                  <p className="text-neutral-400 font-thin">({"s.scoreStatus"})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
@@ -278,7 +259,7 @@ function SubmissionsCard({ submissions }: { submissions: Submission[] }) {
                 todo
               </div>
               <p>Submitted</p>
-              {fromNow(s.createdAt)}
+              {fromNow("11-21-22")}
             </Link>
           </Card>
         );
