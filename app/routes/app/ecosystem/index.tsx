@@ -19,7 +19,7 @@ import { truncateAddress } from "~/utils/helpers";
 //change
 const validator = withZod(LaborMarketSearchSchema);
 
-export default function Ecosystem() {
+export default function Showcase() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1 space-y-10">
