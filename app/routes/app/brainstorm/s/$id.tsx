@@ -31,6 +31,8 @@ const paramsSchema = z.object({ id: z.string() });
 
 const validator = withZod(ReviewSearchSchema);
 
+// Shouldn't need this in the future
+type Grade = "Great" | "Good" | "Average" | "Bad" | "Spam";
 export const loader = async (data: DataFunctionArgs) => {
   const { id } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
@@ -79,18 +81,8 @@ export default function ChallengeSubmission() {
                 <Badge>{fromNow(submission.createdAt.toString())}</Badge>
               </DetailItem>
               <DetailItem title="Overall Score">
-                <Badge
-                  className={clsx(
-                    SCORE_COLOR_SECONDARY[submission.scoreStatus] ? SCORE_COLOR_SECONDARY[submission.scoreStatus] : "",
-                    "pl-0"
-                  )}
-                >
-                  <Badge
-                    className={clsx(
-                      SCORE_COLOR[submission.scoreStatus] ? SCORE_COLOR[submission.scoreStatus] : "",
-                      "mr-2"
-                    )}
-                  >
+                <Badge className={clsx(SCORE_COLOR_SECONDARY[submission.scoreStatus as Grade], "pl-0")}>
+                  <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
                     {submission.scoreStatus}
                   </Badge>
                   <span>80</span>
@@ -132,7 +124,7 @@ export default function ChallengeSubmission() {
                         <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                           <div
                             className={clsx(
-                              SCORE_COLOR[r.scoreStatus] ? SCORE_COLOR[r.scoreStatus] : "",
+                              SCORE_COLOR[r.scoreStatus as Grade],
                               "flex w-24 h-12 justify-center items-center rounded-lg"
                             )}
                           >
