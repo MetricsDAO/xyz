@@ -64,4 +64,4 @@ Connect to database
 
 ## Issues
 
-- There is a known issue with MetaMask where triggering a disconnect using Rainbowkit/Wagmi does not fully disconnect the wallet, and after a page refresh it will still be connected in the browser. The user can disconnect directly through their MetaMask wallet and it will fully disconnect. 
+- There is a known issue with MetaMask where triggering a disconnect using Rainbowkit/Wagmi does not fully disconnect the wallet, and after a page refresh it will still be connected in the browser. The user can disconnect directly through their MetaMask wallet and it will fully disconnect. [https://github.com/rainbow-me/rainbowkit/issues/807](Link to report of issue here)
