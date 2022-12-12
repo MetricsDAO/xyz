@@ -18,10 +18,10 @@ export default function Ecosystem() {
             to=""
             end
             className={({ isActive }) =>
-              clsx(
-                isActive ? "bg-sky-500 text-white" : "border text-neutral-400 border-stone-500",
-                "py-1.5 px-3 rounded-md"
-              )
+              clsx("py-1.5 px-3 rounded-md", {
+                "bg-sky-500 text-white": isActive,
+                "border text-neutral-400 border-stone-500": !isActive,
+              })
             }
           >
             Showcase
@@ -29,10 +29,10 @@ export default function Ecosystem() {
           <NavLink
             to="./metrics"
             className={({ isActive }) =>
-              clsx(
-                isActive ? "bg-sky-500 text-white" : "border text-neutral-400 border-stone-500",
-                "py-1.5 px-3 rounded-md"
-              )
+              clsx("py-1.5 px-3 rounded-md", {
+                "bg-sky-500 text-white": isActive,
+                "border text-neutral-400 border-stone-500": !isActive,
+              })
             }
           >
             Metrics
