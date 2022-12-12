@@ -54,7 +54,7 @@ function App() {
 }
 function Filters() {
   return (
-    <aside className="sidebar lg:w-80  md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
+    <aside className="sidebar lg:w-80  md:shadow transform hidden md:block transition-transform duration-150 ease-in">
       <div className="sidebar-content px-2 py-6 ml-2 mr-4 mt-14 ">
         <ul className="flex flex-col w-full ">
           <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
@@ -76,8 +76,8 @@ function Filters() {
 }
 function Content() {
   return (
-    <main className="main flex flex-col flex-grow -ml-56 md:ml-0 transition-all duration-150 ease-in">
-      <div className="main-content flex flex-col flex-grow p-4">
+    <main className="main flex flex-col w-full transition-all duration-150 ease-in">
+      <div className="main-content flex flex-col flex-1 p-4">
         <h1 className="font-bold text-2xl text-gray-700 mb-4">Submissions</h1>
         <div className="max-w-full mb-4">
           <SearchBox
@@ -112,7 +112,7 @@ const Comments = ({ comments }) => {
         }
       >
         <FontAwesomeIcon className="mr-2" icon={faComments} />
-        <div className="text-sm">
+        <div className="text-sm w-full overflow-hidden">
           <p className="max-w-xs sm:max-w-xs md:max-w-screen-md lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl truncate">
             {active ? "Comments" : comments.join(", ")}
           </p>
@@ -147,7 +147,7 @@ function Hit(props) {
       <div className="p-4 mb-4 max-w-full mx-auto bg-white rounded-md shadow-md flex space-x-4 hover:shadow-xl hover:rounded-xl">
         <div className="w-full">
           <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
-            <div className="text-xl font-medium text-black mb-3 flex items-center justify-between">
+            <div className="text-xl font-medium text-black mb-3 flex flex-wrap items-center justify-between">
               <div className="flex items-center">
                 <div className="program-icon mr-2">
                   {icons[hit["program_name"]] ? (
@@ -199,7 +199,7 @@ function Hit(props) {
               )}
             </div>
 
-            <div className="flex flex-row space-x-8 text-sm justify-around md:justify-start">
+            <div className="flex flex-row flex-wrap gap-2 text-sm md:justify-start">
               <div className="flex flex-row space-x-2">
                 <div>
                   <FontAwesomeIcon className="text-slate-500" icon={faSignal} />

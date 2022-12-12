@@ -100,7 +100,7 @@ export default function Brainstorm() {
             defaultValues={searchParams}
             validator={validator}
             onChange={handleChange}
-            className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+            className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
           >
             <ValidatedInput
               placeholder="Search"
