@@ -54,7 +54,7 @@ function App() {
 }
 function Filters() {
   return (
-    <aside className="sidebar lg:w-80  md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
+    <aside className="sidebar lg:w-80  md:shadow transform hidden md:block transition-transform duration-150 ease-in">
       <div className="sidebar-content px-2 py-6 ml-2 mr-4 mt-14 ">
         <ul className="flex flex-col w-full ">
           <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
@@ -76,8 +76,8 @@ function Filters() {
 }
 function Content() {
   return (
-    <main className="main flex flex-col flex-grow -ml-56 md:ml-0 transition-all duration-150 ease-in">
-      <div className="main-content flex flex-col flex-grow p-4">
+    <main className="main flex flex-col flex-1 transition-all duration-150 ease-in">
+      <div className="main-content flex flex-col w-full p-4">
         <h1 className="font-bold text-2xl text-gray-700 mb-4">Submissions</h1>
         <div className="max-w-full mb-4">
           <SearchBox
