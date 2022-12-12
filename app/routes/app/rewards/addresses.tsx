@@ -16,36 +16,44 @@ import { ValidatedForm } from "remix-validated-form";
 import { withZod } from "@remix-validated-form/with-zod";
 import { z } from "zod";
 import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
+import { getUserId } from "~/services/session.server";
+import { findUserById } from "~/services/user.server";
+import { findAllWalletsForUser } from "~/services/wallet.server";
 
 export const loader = async (data: DataFunctionArgs) => {
+  const user = await getUserId(data.request);
+  const wallets = user ? await findAllWalletsForUser(user) : [];
   const tokens = await listTokens();
   return typedjson(
     {
       tokens,
+      wallets,
     },
     { status: 200 }
   );
 };
 
 export default function PayoutAddresses() {
-  const wallets = [
-    {
-      address: "0xb794f5ea0ba39494ce839613fffba74279579268",
-      chain: "Ethereum",
-      user: "idk",
-      userId: 22,
-      isConnected: true,
-    },
-    {
-      address: "0xb794f5ea0ba39494ce839613cccba74279579268",
-      chain: "Ethereum",
-      user: "idk",
-      userId: 22,
-      isConnected: true,
-    },
-    { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
-    { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
-  ];
+  // const wallets = [
+  //   {
+  //     address: "0xb794f5ea0ba39494ce839613fffba74279579268",
+  //     chain: "Ethereum",
+  //     user: "idk",
+  //     userId: 22,
+  //     isConnected: true,
+  //   },
+  //   {
+  //     address: "0xb794f5ea0ba39494ce839613cccba74279579268",
+  //     chain: "Ethereum",
+  //     user: "idk",
+  //     userId: 22,
+  //     isConnected: true,
+  //   },
+  //   { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
+  //   { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
+  // ];
+
+  const { wallets } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -63,14 +71,14 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={10} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={10} addressesNum={wallets ? wallets?.length : 0} />
       <AddressListView wallets={wallets} />
     </Container>
   );
 }
 
 function AddressListView({ wallets }: { wallets: any }) {
-  if (wallets.length === 0) {
+  if (wallets?.length === 0) {
     return (
       <div className="flex">
         <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
@@ -178,6 +186,10 @@ const validator = withZod(schema);
 function AddAddressButton() {
   const { tokens } = useTypedLoaderData<typeof loader>();
   const [openedAdd, setOpenedAdd] = useState(false);
+
+  function addAddress() {
+    console.log("add address");
+  }
 
   return (
     <>
