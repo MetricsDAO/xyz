@@ -15,7 +15,7 @@ export default function Ecosystem() {
         </div>
         <div className="space-x-3 pt-5">
           <NavLink
-            to="./"
+            to=""
             end
             className={({ isActive }) =>
               clsx(
