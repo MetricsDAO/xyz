@@ -1,20 +1,3 @@
-# Welcome to Remix!
-
-- [Remix Docs](https://remix.run/docs)
-
-## Deployment
-
-After having run the `create-remix` command and selected "Vercel" as a deployment target, you only need to [import your Git repository](https://vercel.com/new) into Vercel, and it will be deployed.
-
-If you'd like to avoid using a Git repository, you can also deploy the directory by running [Vercel CLI](https://vercel.com/cli):
-
-```sh
-npm i -g vercel
-vercel
-```
-
-It is generally recommended to use a Git repository, because future commits will then automatically be deployed by Vercel, through its [Git Integration](https://vercel.com/docs/concepts/git).
-
 ## Development
 
 To run your Remix app locally, make sure your project's local dependencies are installed:
@@ -29,6 +12,8 @@ Afterwards, start the Remix development server like so:
 yarn dev
 ```
 
+If setting up for the first time you may need to run `yarn run dev:css` before running `yarn dev`
+
 Generate the prisma client, run migrations and seed the database:
 
 ```sh
@@ -41,6 +26,12 @@ If you pull down commits with updates to the schema make sure you run migrations
 yarn prisma migrate dev
 ```
 
+Sometimes you might also want to generate Typescript types, perhaps after a schema.prisma change
+
+```sh
+yarn prisma generate
+```
+
 To reset the database and start fresh you can run the following command to delete database data, run migrations and seed the database:
 
 ```sh
@@ -49,12 +40,24 @@ yarn reset
 
 Open up [http://localhost:3000](http://localhost:3000) and you should be ready to go!
 
-If you're used to using the `vercel dev` command provided by [Vercel CLI](https://vercel.com/cli) instead, you can also use that, but it's not needed.
+## Connecting to dev database
 
-## TroubleShooting
+Log in to Fly
 
-When setting up first time you may need to run `npm run dev:css` before running npm run dev
+```sh
+flyctl auth login
+```
 
-## Ladle
+Create tunnel
 
-Components can be developed in isolation using [Ladle](https://ladle.dev/) by running `npm run ladle:dev`
+```sh
+fly proxy 5436:5432 -a mdao-db-staging
+```
+
+Connect to database
+
+- Host: localhost
+- Port: 5436
+- User: postgres
+- Password: get from a developer
+- Database: postgres
