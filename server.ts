@@ -70,7 +70,7 @@ app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y"
 app.use(express.static("public", { maxAge: "1h" }));
 
 app.use(
-  morgan("tiny", {
+  morgan("short", {
     stream: {
       write: (message) => logger.http(message),
     },
