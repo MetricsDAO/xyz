@@ -4,6 +4,7 @@ import compression from "compression";
 import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
 import prom from "express-prometheus-middleware";
+import { logger } from "~/services/logger.server";
 
 const app = express();
 const metricsApp = express();
@@ -68,7 +69,13 @@ app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y"
 // more aggressive with this caching.
 app.use(express.static("public", { maxAge: "1h" }));
 
-app.use(morgan("tiny"));
+app.use(
+  morgan("tiny", {
+    stream: {
+      write: (message) => logger.http(message),
+    },
+  })
+);
 
 const MODE = process.env.NODE_ENV;
 const BUILD_DIR = path.join(process.cwd(), "build");
