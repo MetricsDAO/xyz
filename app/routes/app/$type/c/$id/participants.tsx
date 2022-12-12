@@ -5,7 +5,7 @@ import type { findChallenge } from "~/services/challenges-service.server";
 import { fromNow } from "~/utils/date";
 
 export default function ChallengeIdParticipants() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/brainstorm/c/$id");
+  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/c/$id");
   if (!data) {
     throw new Error("ChallengeIdParticpants must be rendered under a ChallengeId route");
   }

@@ -54,6 +54,9 @@ jobs:
         with:
           useLockFile: false
 
+      - name: 🚦 Build routes
+        run: yarn build:routes
+
       - name: 🔎 Type check
         run: yarn typecheck
 
