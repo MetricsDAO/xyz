@@ -112,7 +112,7 @@ const Comments = ({ comments }) => {
         }
       >
         <FontAwesomeIcon className="mr-2" icon={faComments} />
-        <div className="text-sm w-full">
+        <div className="text-sm w-full overflow-hidden">
           <p className="max-w-xs sm:max-w-xs md:max-w-screen-md lg:max-w-screen-md xl:max-w-screen-lg 2xl:max-w-screen-xl truncate">
             {active ? "Comments" : comments.join(", ")}
           </p>
@@ -199,7 +199,7 @@ function Hit(props) {
               )}
             </div>
 
-            <div className="flex flex-row space-x-3 md:space-x-8 text-sm md:justify-start">
+            <div className="flex flex-row flex-wrap gap-2 text-sm md:justify-start">
               <div className="flex flex-row space-x-2">
                 <div>
                   <FontAwesomeIcon className="text-slate-500" icon={faSignal} />
