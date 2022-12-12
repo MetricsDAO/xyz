@@ -40,6 +40,14 @@ yarn reset
 
 Open up [http://localhost:3000](http://localhost:3000) and you should be ready to go!
 
+## Tips
+
+Sometimes you might also want to generate Typescript types, perhaps after a schema.prisma change
+
+```sh
+yarn prisma generate
+```
+
 ## Connecting to dev database
 
 Log in to Fly
