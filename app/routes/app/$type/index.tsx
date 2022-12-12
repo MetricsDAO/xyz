@@ -22,20 +22,23 @@ import { ValidatedSelect } from "~/components/select";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
+import { $path, $params } from "remix-routes";
 
 const validator = withZod(LaborMarketSearchSchema);
 
-export const loader = async (data: DataFunctionArgs) => {
-  const url = new URL(data.request.url);
-  url.searchParams.set("type", "brainstorm");
-  const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-  const marketplaces = await searchLaborMarkets(params);
-  const totalResults = await countLaborMarkets(params);
+export const loader = async ({ request, params }: DataFunctionArgs) => {
+  const url = new URL(request.url);
+
+  url.searchParams.set("type", $params("/app/:type", params).type);
+
+  const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
+  const marketplaces = await searchLaborMarkets(searchParams);
+  const totalResults = await countLaborMarkets(searchParams);
   const tokens = await listTokens();
   const projects = await listProjects();
   return typedjson(
     {
-      params,
+      searchParams,
       marketplaces,
       totalResults,
       tokens,
@@ -46,7 +49,7 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 export default function Brainstorm() {
-  const { marketplaces, totalResults, params, projects, tokens } = useTypedLoaderData<typeof loader>();
+  const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -85,7 +88,7 @@ export default function Brainstorm() {
           <div className="space-y-5">
             <MarketplacesListView marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
+              <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
             </div>
           </div>
         </main>
@@ -94,7 +97,7 @@ export default function Brainstorm() {
           <ValidatedForm
             formRef={formRef}
             method="get"
-            defaultValues={params}
+            defaultValues={searchParams}
             validator={validator}
             onChange={handleChange}
             className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
@@ -191,7 +194,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {marketplaces.map((m) => {
         return (
           <Row asChild columns={6} key={m.address}>
-            <Link to={`/app/brainstorm/m/${m.address}`} className="text-sm font-medium">
+            <Link to={$path("/app/:type/m/:id", { type: m.type, id: m.address })} className="text-sm font-medium">
               <Row.Column span={2}>{m.title}</Row.Column>
               <Row.Column>
                 <div className="flex items-center gap-2 flex-wrap">

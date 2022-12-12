@@ -5,16 +5,17 @@ import { Link, NavLink } from "@remix-run/react";
 import clsx from "clsx";
 import CustomConnectButton from "~/features/connect-button";
 import { LogoMark, LogoType } from "./logo";
+import { $path } from "remix-routes";
 
 const primaryLinks = [
-  { link: "/app/ecosystem", label: "Ecosystem" },
-  { link: "/app/brainstorm", label: "Brainstorm" },
-  { link: "/app/analyze", label: "Analyze" },
+  { link: $path("/app/ecosystem"), label: "Ecosystem" },
+  { link: $path("/app/:type", { type: "brainstorm" }), label: "Brainstorm" },
+  { link: $path("/app/:type", { type: "analyze" }), label: "Analyze" },
 ];
 
 const userLinks = [
   {
-    link: "/app/rewards",
+    link: $path("/app/rewards"),
     label: (
       <span>
         Rewards <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>

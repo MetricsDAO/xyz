@@ -38,7 +38,7 @@ export const countChallenges = async (params: ChallengeSearch) => {
 /**
  * Finds a Challenge by its ID.
  * @param {string} id - The ID of the Challenge.
- * @returns {Promise<Challenge | null>} - The Challenge or null if not found.
+ * @returns - The Challenge or null if not found.
  */
 export const findChallenge = async (id: string) => {
   return prisma.serviceRequest.findUnique({
