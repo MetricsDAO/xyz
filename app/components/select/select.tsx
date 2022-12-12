@@ -21,7 +21,7 @@ type Option = {
   selectedLabel?: React.ReactNode;
 };
 
-const buttonStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-hidden";
+const buttonStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-hidden bg-white";
 
 const sizeStyles = {
   sm: "h-10",
