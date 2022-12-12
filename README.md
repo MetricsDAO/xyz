@@ -61,3 +61,7 @@ Connect to database
 - User: postgres
 - Password: get from a developer
 - Database: postgres
+
+## Issues
+
+- [ ] Disconnecting with Metmask auth bug?
