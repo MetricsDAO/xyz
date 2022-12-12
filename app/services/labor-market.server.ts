@@ -19,8 +19,8 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
       type: params.type,
       title: { search: params.q },
       description: { search: params.q },
-      tokens: params.token ? { some: { symbol: params.token } } : undefined,
-      projects: params.project ? { some: { id: params.project } } : undefined,
+      tokens: params.token ? { some: { OR: params.token.map((symbol) => ({ symbol })) } } : undefined,
+      projects: params.project ? { some: { OR: params.project.map((slug) => ({ slug })) } } : undefined,
     },
     orderBy: {
       [params.sortBy]:
@@ -73,7 +73,18 @@ export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
     update: data,
     create: {
       address,
-      ...data,
+      title: data.title,
+      description: data.description,
+      type: data.type,
+      submitRepMin: data.submitRepMin,
+      submitRepMax: data.submitRepMax,
+      rewardCurveAddress: data.rewardCurveAddress,
+      reviewBadgerAddress: data.reviewBadgerAddress,
+      reviewBadgerTokenId: data.reviewBadgerTokenId,
+      launchAccess: data.launch.access,
+      launchBadgerAddress: data.launch.access === "delegates" ? data.launch.badgerAddress : undefined,
+      launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
+      sponsorAddress: data.sponsorAddress,
       projects: { connect: projectIds.map((id) => ({ id })) },
       tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
     },
@@ -91,5 +102,6 @@ export const findLaborMarket = async (address: string) => {
     where: {
       address: address,
     },
+    include: { _count: { select: { serviceRequests: true } } },
   });
 };

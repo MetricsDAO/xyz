@@ -12,8 +12,9 @@ datasource db {
 }
 
 model User {
-  id     String   @id @default(cuid())
-  wallet Wallet[]
+  id      String   @id @default(cuid())
+  address String   @default("")
+  wallet  Wallet[]
 }
 
 model Wallet {
@@ -90,10 +91,10 @@ model Submission {
   id               String         @id @unique
   serviceRequestId String
   createdAt        DateTime       @default(now())
-  creatorId        String         @default("")
-  title            String         @default("")
-  description      String         @default("")
-  scoreStatus      String         @default("")
+  creatorId        String
+  title            String
+  description      String
+  scoreStatus      String
   serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
   reviews          Review[]
 }

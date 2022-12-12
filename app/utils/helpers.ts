@@ -13,3 +13,26 @@ export const TOKEN_ICONS: Record<string, string | undefined> = {
   Solana: "/img/icons/token-icons/sol.svg",
   USDC: "/img/icons/token-icons/usdc.svg",
 };
+
+export const truncateAddress = (address: string) => {
+  if (address.length < 10) {
+    return address;
+  }
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
+export const SCORE_COLOR = {
+  Great: "bg-lime-100",
+  Good: "bg-violet-200",
+  Average: "bg-neutral-200",
+  Bad: "bg-amber-100",
+  Spam: "bg-rose-200",
+};
+
+export const SCORE_COLOR_SECONDARY = {
+  Great: "bg-lime-400",
+  Good: "bg-blue-400",
+  Average: "bg-zinc-500",
+  Bad: "bg-orange-300",
+  Spam: "bg-rose-400",
+};

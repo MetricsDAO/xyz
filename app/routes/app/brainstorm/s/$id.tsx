@@ -1,244 +1,249 @@
-import { Search16 } from "@carbon/icons-react";
-import { Detail } from "~/components/Detail";
-import * as Author from "~/components/Author";
+import { Link, useSubmit } from "@remix-run/react";
+import { withZod } from "@remix-validated-form/with-zod";
+import clsx from "clsx";
+import { useRef, useState } from "react";
+import { getParamsOrFail } from "remix-params-helper";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
+import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
 import {
+  Avatar,
   Badge,
   Button,
-  Center,
-  Divider,
-  Title,
-  Text,
-  Avatar,
-  Input,
-  Select,
+  Card,
   Checkbox,
-  Paper,
+  Container,
+  Detail,
+  DetailItem,
   Drawer,
-} from "@mantine/core";
-import { Form, Link } from "@remix-run/react";
-import { useState } from "react";
-import { z } from "zod";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
-import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { typedjson } from "remix-typedjson/dist/remix";
-import { notFound } from "remix-utils";
-import { findSubmission } from "~/services/submission-service.server";
+  UserBadge,
+  ValidatedSelect,
+} from "~/components";
+import { ReviewSearchSchema } from "~/domain/review";
+import { searchReviews } from "~/services/review-service.server";
+import { findSubmission } from "~/services/submissions.server";
+import { fromNow } from "~/utils/date";
+import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/helpers";
 
 const paramsSchema = z.object({ id: z.string() });
 
-export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
+const validator = withZod(ReviewSearchSchema);
+
+// Shouldn't need this in the future
+type Grade = "Great" | "Good" | "Average" | "Bad" | "Spam";
+export const loader = async (data: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(data.params);
+  const url = new URL(data.request.url);
+  const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
+  params.submissionId = id;
+  const reviews = await searchReviews(params);
 
   const submission = await findSubmission(id);
   if (!submission) {
     throw notFound({ id });
   }
 
-  return typedjson({ submission }, { status: 200 });
+  return typedjson({ submission, reviews, params }, { status: 200 });
 };
 
 export default function ChallengeSubmission() {
-  const [opened, setOpened] = useState(false);
-  const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
-  const { submission } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
+  };
 
   const isWinner = true;
 
-  const reviews = submission.reviews;
-
   return (
-    <>
-      <Drawer opened={opened} onClose={() => setOpened(false)} padding="xl" size="lg" position="right">
-        <div className="flex flex-col mx-auto space-y-10 px-2">
-          <div className="space-y-3">
-            <Title order={2} weight={600} className="mb-1">
-              {"Review Question"}
-            </Title>
-            <Text italic color="dimmed">
-              Important: You can’t edit this score after submitting. Double check your score and ensure it’s good to go
-            </Text>
-          </div>
-          <div className="flex flex-col space-y-3">
-            <Button
-              onClick={() => setSelected("great")}
-              variant="default"
-              disabled={selected === "great"}
-              sx={{
-                "&[data-disabled]": { backgroundColor: "#D9F0CA", color: "black" },
-              }}
-            >
-              Great
-            </Button>
-            <Button
-              onClick={() => setSelected("good")}
-              variant="default"
-              disabled={selected === "good"}
-              sx={{
-                "&[data-disabled]": { backgroundColor: "#D1DEFF", color: "black" },
-              }}
-            >
-              Good
-            </Button>
-            <Button
-              onClick={() => setSelected("average")}
-              variant="default"
-              disabled={selected === "average"}
-              sx={{
-                "&[data-disabled]": { backgroundColor: "#EDEDED", color: "black" },
-              }}
-            >
-              Average
-            </Button>
-            <Button
-              onClick={() => setSelected("bad")}
-              variant="default"
-              disabled={selected === "bad"}
-              sx={{
-                "&[data-disabled]": { backgroundColor: "#FFE2C2", color: "black" },
-              }}
-            >
-              Bad
-            </Button>
-            <Button
-              onClick={() => setSelected("spam")}
-              variant="default"
-              disabled={selected === "spam"}
-              sx={{
-                "&[data-disabled]": { backgroundColor: "#F8D4D7", color: "black" },
-              }}
-            >
-              Spam
-            </Button>
-          </div>
-          <div className="flex gap-2 w-full">
-            <Button fullWidth variant="default">
-              Cancel
-            </Button>
-            <Button fullWidth>Submit Score</Button>
-          </div>
-        </div>
-      </Drawer>
+    <Container className="py-16">
       <div className="mx-auto container mb-12 px-10">
-        <section className="flex flex-wrap gap-5 justify-between pt-12 pb-10">
+        <section className="flex flex-wrap gap-5 justify-between pb-10">
           <div className="flex items-center gap-2">
-            <Title order={2}>{submission.title}</Title>
-            {isWinner ? <Avatar size="sm" src="/img/trophy.svg" /> : <></>}
+            <h1 className="text-3xl font-semibold">{submission.title}</h1>
+            {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
           </div>
-          <Center className="flex flex-wrap gap-5">
-            <Button radius="md" className="mx-auto" onClick={() => setOpened(true)}>
-              Review Question
-            </Button>
-          </Center>
+          <ReviewQuestionDrawerButton />
         </section>
         <section className="flex flex-col space-y-7 pb-24">
           <div className="flex flex-wrap gap-x-8 gap-y-4">
             <Detail>
-              <Detail.Title>Author</Detail.Title>
-              <Author.Author />
-            </Detail>
-            <Detail>
-              <Detail.Title>Created At</Detail.Title>
-              <Badge color="gray" size="lg">
-                <Text size="sm" className="normal-case font-normal">
-                  1 month 5 days ago
-                </Text>
-              </Badge>
-            </Detail>
-            <Detail>
-              <Detail.Title>Overall Score</Detail.Title>
-              <div className="flex rounded-full bg-[#6993FF] items-center w-28">
-                <div className="rounded-full bg-[#D1DEFF] w-3/4">
-                  <Text align="center" className="normal-case font-normal">
-                    Good
-                  </Text>
-                </div>
-                <Text color="white" className="mx-auto pl-1 pr-2">
-                  80
-                </Text>
-              </div>
-            </Detail>
-            <Detail>
-              <Detail.Title>Reviews</Detail.Title>
-              <Badge color="gray" size="lg">
-                99
-              </Badge>
-            </Detail>
-            {isWinner ? (
-              <Detail>
-                <Detail.Title>Winner</Detail.Title>
-                <Badge color="yellow" size="lg" leftSection={<Avatar size={20} src="/img/trophy.svg" />}>
-                  <Text color="dark" size="sm" className="normal-case font-normal">
-                    100 SOL
-                  </Text>
+              <DetailItem title="Author">
+                <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+              </DetailItem>
+              <DetailItem title="Created">
+                <Badge>{fromNow(submission.createdAt.toString())}</Badge>
+              </DetailItem>
+              <DetailItem title="Overall Score">
+                <Badge className={clsx(SCORE_COLOR_SECONDARY[submission.scoreStatus as Grade], "pl-0")}>
+                  <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
+                    {submission.scoreStatus}
+                  </Badge>
+                  <span>80</span>
                 </Badge>
-              </Detail>
-            ) : (
-              <></>
-            )}
+              </DetailItem>
+              <DetailItem title="Reviews">
+                <Badge>{reviews.length}</Badge>
+              </DetailItem>
+              {isWinner && (
+                <DetailItem title="Winner">
+                  <Badge className="bg-yellow-600 pl-0">
+                    <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
+                    <span className="text-white">50 rMETRIC</span>
+                  </Badge>
+                </DetailItem>
+              )}
+            </Detail>
           </div>
-          <Text color="dimmed" className="max-w-2xl">
+          <p className="text-gray-500 max-w-2xl">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
             pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit
             fermentum, consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus, ligula
             commodo aliquet velit massa. Lacinia lacus amet massa
-          </Text>
+          </p>
         </section>
-        <section>
-          <Title order={3}>Reviews ({reviews.length})</Title>
-          <Divider />
-        </section>
+        <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
         <section className="mt-3">
           <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
             <main className="flex-1">
               <div className="w-full border-spacing-4 border-separate space-y-5">
-                {reviews.map((m) => {
+                {reviews.map((r) => {
                   return (
-                    <Link
-                      to="/u/[uId]"
-                      className="flex flex-col md:flex-row gap-3 border-solid border-2 border-[#EDEDED] py-3 px-4 rounded-lg hover:bg-stone-100 items-center space-between"
-                      key={m.id}
-                    >
-                      <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
-                        <Paper p="xs" sx={{ backgroundColor: "#D9F0CA", width: 100 }}>
-                          <Text align="center">Great</Text>
-                        </Paper>
-                        <Avatar alt="" className="md:ml-2" radius="xl" />
-                        <Text weight={500}>user.ETH</Text>
-                        <Badge color="gray" radius="sm">
-                          <Text weight={400} className="normal-case">
-                            400 xMetric
-                          </Text>
-                        </Badge>
-                      </div>
-                      <Text>12 hours ago</Text>
-                    </Link>
+                    <Card asChild key={r.id}>
+                      <Link
+                        to="/u/[uId]"
+                        className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
+                      >
+                        <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                          <div
+                            className={clsx(
+                              SCORE_COLOR[r.scoreStatus as Grade],
+                              "flex w-24 h-12 justify-center items-center rounded-lg"
+                            )}
+                          >
+                            <p>{r.scoreStatus}</p>
+                          </div>
+                          <Avatar />
+                          <p className="font-medium">user.ETH</p>
+                          <Badge>
+                            <p>400 rMETRIC</p>
+                          </Badge>
+                        </div>
+                        <p>{fromNow(r.createdAt)}</p>
+                      </Link>
+                    </Card>
                   );
                 })}
               </div>
             </main>
             <aside className="md:w-1/5">
-              <Form className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4">
-                <Input placeholder="Search" name="search" icon={<Search16 />} radius="md" />
-                <Select
-                  radius="md"
-                  label="Sort"
+              <ValidatedForm
+                formRef={formRef}
+                method="get"
+                defaultValues={params}
+                validator={validator}
+                onChange={handleChange}
+                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+              >
+                {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
+                <ValidatedSelect
+                  placeholder="Select option"
                   name="sortBy"
-                  clearable
-                  data={[{ label: "Chain/Project", value: "project" }]}
+                  size="sm"
+                  onChange={handleChange}
+                  options={[{ label: "Created At", value: "createdAt" }]}
                 />
-                <Checkbox.Group label="Filter:" description="Overall score" spacing="xs" orientation="vertical">
-                  <Checkbox value="great" label="Great" />
-                  <Checkbox value="good" label="Good" />
-                  <Checkbox value="average" label="Average" />
-                  <Checkbox value="bad" label="Bad" />
-                  <Checkbox value="spam" label="Spam" />
-                </Checkbox.Group>
-              </Form>
+                <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
+                <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
+                <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
+                <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
+                <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
+              </ValidatedForm>
             </aside>
           </div>
         </section>
       </div>
+    </Container>
+  );
+}
+
+function ReviewQuestionDrawerButton() {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Review Question</Button>
+      <Drawer open={open} onClose={() => setOpen(false)}>
+        <div className="flex flex-col mx-auto space-y-10 px-2">
+          <div className="space-y-3">
+            <p className="text-3xl font-semibold">{"Review Question"}</p>
+            <p className="italic text-gray-500">
+              Important: You can't edit this score after submitting. Double check your score and ensure it's good to go
+            </p>
+          </div>
+          <div className="flex flex-col space-y-3">
+            <Button
+              variant="outline"
+              onClick={() => setSelected("great")}
+              className={clsx("hover:bg-green-200", {
+                "bg-green-200": selected === "great",
+              })}
+            >
+              Great
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelected("good")}
+              className={clsx("hover:bg-blue-200", {
+                "bg-blue-200": selected === "good",
+              })}
+            >
+              Good
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelected("average")}
+              className={clsx("hover:bg-gray-200", {
+                "bg-gray-200": selected === "average",
+              })}
+            >
+              Average
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelected("bad")}
+              className={clsx("hover:bg-orange-200", {
+                "bg-orange-200": selected === "bad",
+              })}
+            >
+              Bad
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setSelected("spam")}
+              className={clsx("hover:bg-red-200", {
+                "bg-red-200": selected === "spam",
+              })}
+            >
+              Spam
+            </Button>
+          </div>
+          <div className="flex gap-2 w-full">
+            <Button variant="cancel" className="w-full" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button className="w-full">Submit Score</Button>
+          </div>
+        </div>
+      </Drawer>
     </>
   );
 }

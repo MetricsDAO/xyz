@@ -1,10 +1,19 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
-import WalletProvider from "./components/WalletProvider";
+import WalletProvider from "~/contexts/wallet-provider";
 
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import { getUserId } from "./services/session.server";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { Toaster } from "react-hot-toast";
+
+export async function loader({ request }: DataFunctionArgs) {
+  const userId = await getUserId(request);
+  const sessionExists = userId ? true : false;
+  return sessionExists;
+}
 
 export const meta: MetaFunction = () => {
   return {
@@ -41,7 +50,8 @@ export const links: LinksFunction = () => {
     },
     {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+      href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap",
+      as: "style",
     },
     {
       rel: "apple-touch-icon",
@@ -107,9 +117,12 @@ export function CatchBoundary() {
 }
 
 export default function App() {
+  const sessionExists = useLoaderData<typeof loader>();
+  const authStatus = sessionExists ? "authenticated" : "unauthenticated";
+
   return (
     <Document>
-      <WalletProvider>
+      <WalletProvider authStatus={authStatus}>
         <Outlet />
       </WalletProvider>
     </Document>
@@ -141,6 +154,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Toaster />
       </body>
     </html>
   );

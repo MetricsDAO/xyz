@@ -1,25 +1,29 @@
-import { ChevronSort16, ChevronSortDown16, ChevronSortUp16, Search16 } from "@carbon/icons-react";
-import {
-  Input,
-  Pagination,
-  Select,
-  Title,
-  Text,
-  Button,
-  Center,
-  Divider,
-  MultiSelect,
-  UnstyledButton,
-} from "@mantine/core";
-import { Form, Link, useSearchParams } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { Link, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { getParamsOrFail } from "remix-params-helper";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { ValidatedForm } from "remix-validated-form";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useRef } from "react";
+import { Header, Row, Table } from "~/components/table";
+import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
+import { Badge } from "~/components/badge";
+import { Button } from "~/components/button";
+import { Card } from "~/components/card";
+import { ValidatedCombobox } from "~/components/combobox";
+import { Container } from "~/components/container";
+import { Field, Label } from "~/components/field";
+import { ValidatedInput } from "~/components/input";
+import { Pagination } from "~/components/pagination/pagination";
+import { ValidatedSelect } from "~/components/select";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
-import { ProjectBadge, TextWithIcon } from "~/components/ProjectBadge";
+import { listProjects } from "~/services/projects.server";
+import { listTokens } from "~/services/tokens.server";
+
+const validator = withZod(LaborMarketSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
@@ -27,135 +31,127 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(params);
   const totalResults = await countLaborMarkets(params);
-  return typedjson({ marketplaces, totalResults, params }, { status: 200 });
+  const tokens = await listTokens();
+  const projects = await listProjects();
+  return typedjson(
+    {
+      params,
+      marketplaces,
+      totalResults,
+      tokens,
+      projects,
+    },
+    { status: 200 }
+  );
 };
 
 export default function Brainstorm() {
-  const { marketplaces, totalResults, params } = useTypedLoaderData<typeof loader>();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { marketplaces, totalResults, params, projects, tokens } = useTypedLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const onPaginationChange = (page: number) => {
-    searchParams.set("page", page.toString());
-    setSearchParams(searchParams);
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
   };
 
   return (
-    <div className="mx-auto container space-y-7 px-3 mb-10">
-      <section className="flex flex-col md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-        <main className="flex-1">
-          <div className="space-y-5 max-w-3xl">
-            <Title order={1}>Challenge Marketplaces</Title>
-            <div className="space-y-2">
-              <Text size="lg" color="brand.4">
-                Crowdsource the best questions for crypto analysts to answer about any web3 topic
-              </Text>
-              <Text color="dimmed">
-                Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
-                your best question ideas or review peers' submissions to surface and reward winners
-              </Text>
-            </div>
-          </div>
+    <Container className="py-16">
+      <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
+        <main className="flex-1 space-y-3 max-w-2xl">
+          <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
+          <p className="text-lg text-cyan-500">
+            Crowdsource the best questions for crypto analysts to answer about any web3 topic
+          </p>
+          <p className="text-gray-500 text-sm">
+            Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit your
+            best question ideas or review peers' submissions to surface and reward winners
+          </p>
         </main>
-        <aside className="md:w-1/5">
-          <Center>
-            <Link to="/app/brainstorm/new">
-              <Button radius="md" className="mx-auto">
-                Create Marketplace
-              </Button>
-            </Link>
-          </Center>
+        <aside>
+          <Button size="lg" asChild>
+            <Link to="/app/brainstorm/new">Create Marketplace</Link>
+          </Button>
         </aside>
-      </section>
+      </header>
 
-      <section>
-        <Title order={3}>
-          Challenge Marketplaces
-          <Text span color="dimmed">
-            ({totalResults})
-          </Text>
-        </Title>
-        <Divider />
-      </section>
+      <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
+        Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
+      </h2>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesTable marketplaces={marketplaces} />
+            <MarketplacesListView marketplaces={marketplaces} />
             <div className="w-fit m-auto">
-              <Pagination
-                page={params.page}
-                hidden={totalResults === 0}
-                total={Math.ceil(totalResults / params.first)}
-                onChange={onPaginationChange}
-              />
+              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
             </div>
           </div>
         </main>
+
         <aside className="md:w-1/5">
-          <SearchAndFilter />
+          <ValidatedForm
+            formRef={formRef}
+            method="get"
+            defaultValues={params}
+            validator={validator}
+            onChange={handleChange}
+            className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
+          >
+            <ValidatedInput
+              placeholder="Search"
+              name="q"
+              size="sm"
+              iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+            />
+
+            <Field>
+              <Label>Sort by</Label>
+              <ValidatedSelect
+                placeholder="Select option"
+                name="sortBy"
+                size="sm"
+                onChange={handleChange}
+                options={[
+                  { label: "Trending", value: "trending" },
+                  { label: "# Challenges", value: "serviceRequests" },
+                  { label: "Chain/Project", value: "project" },
+                ]}
+              />
+            </Field>
+
+            {/* <h3 className="font-semibold">Filter:</h3>
+            <p className="text-gray-600">I'm able to:</p>
+            <Checkbox name="can" label="Launch" value="launch" />
+            <Checkbox name="can" label="Submit" value="submit" />
+            <Checkbox name="can" label="Review" value="review" /> */}
+
+            <Field>
+              <Label>Reward Token</Label>
+              <ValidatedCombobox
+                name="token"
+                onChange={handleChange}
+                placeholder="Select option"
+                size="sm"
+                options={tokens.map((token) => ({ label: token.name, value: token.symbol }))}
+              />
+            </Field>
+
+            <Field>
+              <Label>Chain/Project</Label>
+              <ValidatedCombobox
+                name="project"
+                size="sm"
+                onChange={handleChange}
+                placeholder="Select option"
+                options={projects.map((p) => ({ value: p.slug, label: p.name }))}
+              />
+            </Field>
+          </ValidatedForm>
         </aside>
       </section>
-    </div>
-  );
-}
-
-function SearchAndFilter() {
-  return (
-    <Form className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5">
-      <Input radius="md" placeholder="Search" name="q" rightSection={<Search16 />} />
-      <Text size="lg" weight={600} className="md:hidden">
-        Sort:
-      </Text>
-      <Select
-        radius="md"
-        placeholder="Select option"
-        name="sortBy"
-        className="md:hidden"
-        clearable
-        data={[{ label: "Chain/Project", value: "project" }]}
-      />
-      <Text size="lg" weight={600}>
-        Filter:
-      </Text>
-      <MultiSelect
-        radius="md"
-        label="I am able to"
-        placeholder="Select option"
-        name="filter"
-        clearable
-        data={[
-          { value: "launch", label: "Launch" },
-          { value: "submit", label: "Submit" },
-          { value: "review", label: "Review" },
-        ]}
-      />
-      <MultiSelect
-        radius="md"
-        label="Reward Token"
-        placeholder="Select option"
-        name="rewardToken"
-        clearable
-        data={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-          { label: "USD", value: "USD" },
-        ]}
-      />
-      <MultiSelect
-        radius="md"
-        label="Chain/Project"
-        placeholder="Select option"
-        name="chainProject"
-        clearable
-        data={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />
-      <Button radius="md" variant="light" size="xs" type="submit">
-        Apply Filters
-      </Button>
-    </Form>
+    </Container>
   );
 }
 
@@ -163,87 +159,117 @@ type MarketplaceTableProps = {
   marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
 };
 
-// Responsive layout for displaying marketplaces. On desktop, takes on a pseudo-table layout. On mobile, hide the header and become a list of self-contained cards.
-function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
+function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
-    return <Text>No results. Try changing search and filter options.</Text>;
+    return <p>No results. Try changing search and filter options.</p>;
   }
+
   return (
     <>
-      {/* Header (hide on mobile) */}
-      <div className="hidden lg:grid grid-cols-6 gap-x-1 items-end px-2">
-        <div className="col-span-2">
-          <SortButton label="title" title="Challenge Marketplace" />
-        </div>
-        <UnstyledButton>
-          <Text color="dark.3">Chain/Project</Text>
-        </UnstyledButton>
-        <UnstyledButton>
-          <Text color="dark.3">Challenge Pool Totals</Text>
-        </UnstyledButton>
-        <UnstyledButton>
-          <Text color="dark.3">Avg. Challenge Pool</Text>
-        </UnstyledButton>
-        <SortButton label="serviceRequests" title="# Challenges" />
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        <MarketplacesTable marketplaces={marketplaces} />
       </div>
-      {/* Rows */}
-      <div className="space-y-3">
-        {marketplaces.map((m) => {
-          return (
-            <Link
-              to={`/app/brainstorm/${m.address}/challenges`}
-              // On mobile, two column grid with "labels". On desktop hide the "labels".
-              className="grid grid-cols-2 lg:grid-cols-6 gap-y-3 gap-x-1 items-center border-solid border-2 border-[#EDEDED] px-2 py-5 rounded-lg hover:border-brand-400 hover:shadow-md shadow-sm"
-              key={m.address}
-            >
-              <div className="lg:hidden">Challenge Marketplaces</div>
-              <div className="lg:col-span-2">
-                <Text>{m.title}</Text>
-              </div>
-              <div className="lg:hidden">Chain/Project</div>
-              <div>
-                {m.projects.map((p) => (
-                  <ProjectBadge key={p.slug} slug={p.slug} />
-                ))}
-              </div>
-              <div className="lg:hidden">Challenge Pool Totals</div>
-              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
-              <div className="lg:hidden">Avg. Challenge Pool</div>
-              <TextWithIcon text={`42000 USD`} iconUrl="/img/icons/dollar.svg" />
-              <div className="lg:hidden"># Challenges</div>
-              <Text color="dark.3">{m._count.serviceRequests.toLocaleString()}</Text>
-            </Link>
-          );
-        })}
+      {/* Mobile */}
+      <div className="block lg:hidden">
+        <MarketplacesCard marketplaces={marketplaces} />
       </div>
     </>
   );
 }
 
-function SortButton({ label, title }: { label: string; title: string }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const onSort = (header: string) => {
-    searchParams.set("sortBy", header);
-    if (searchParams.get("order") === "asc") {
-      searchParams.set("order", "desc");
-    } else {
-      searchParams.set("order", "asc");
-    }
-    setSearchParams(searchParams);
-  };
-
+function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   return (
-    <UnstyledButton onClick={() => onSort(label)} className="flex">
-      <Text color="dark.3">{title}</Text>
-      {searchParams.get("sortBy") === label ? (
-        searchParams.get("order") === "asc" ? (
-          <ChevronSortUp16 className="mt-2" />
-        ) : (
-          <ChevronSortDown16 />
-        )
-      ) : (
-        <ChevronSort16 className="mt-1" />
-      )}
-    </UnstyledButton>
+    <Table>
+      <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
+        <Header.Column span={2}>Challenge Marketplaces</Header.Column>
+        <Header.Column>Chain/Project</Header.Column>
+        <Header.Column>Challenge Pool Totals</Header.Column>
+        <Header.Column>Avg. Challenge Pool</Header.Column>
+        <Header.Column># Challenges</Header.Column>
+      </Header>
+      {marketplaces.map((m) => {
+        return (
+          <Row asChild columns={6} key={m.address}>
+            <Link to={`/app/brainstorm/m/${m.address}`} className="text-sm font-medium">
+              <Row.Column span={2}>{m.title}</Row.Column>
+              <Row.Column>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {m.projects.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
+                </div>
+              </Row.Column>
+
+              <Row.Column>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+              </Row.Column>
+
+              <Row.Column>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+              </Row.Column>
+
+              <Row.Column>{m._count.serviceRequests.toLocaleString()}</Row.Column>
+            </Link>
+          </Row>
+        );
+      })}
+    </Table>
+  );
+}
+
+function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
+  return (
+    <div>
+      <div className="space-y-4">
+        {marketplaces.map((m) => {
+          return (
+            <Card asChild key={m.address}>
+              <Link
+                to={`/app/brainstorm/m/${m.address}`}
+                className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
+              >
+                <div>Challenge Marketplaces</div>
+                <div className="text-sm font-medium">{m.title}</div>
+
+                <div>Chain/Project</div>
+                <div className="flex flex-wrap gap-2">
+                  {m.projects.map((p) => (
+                    <Badge key={p.slug} className="pl-2">
+                      <ProjectAvatar project={p} />
+                      <span className="mx-1">{p.name}</span>
+                    </Badge>
+                  ))}
+                </div>
+
+                <div>Challenge Pool Totals</div>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+
+                <div>Avg. Challenge Pool</div>
+                <Badge>
+                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
+                  <span className="mx-1">1000 USDC</span>
+                </Badge>
+
+                <div># Challenges</div>
+                <div>{m._count.serviceRequests.toLocaleString()}</div>
+              </Link>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
   );
 }

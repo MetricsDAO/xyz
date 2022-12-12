@@ -10,7 +10,11 @@ export const searchChallenges = async (params: ChallengeSearch) => {
   return prisma.serviceRequest.findMany({
     include: { submissions: true, laborMarket: { include: { projects: true } } },
     where: {
+      title: { search: params.q },
       laborMarketAddress: params.laborMarket,
+    },
+    orderBy: {
+      [params.sortBy]: params.order,
     },
     take: params.first,
     skip: params.first * (params.page - 1),
@@ -25,6 +29,7 @@ export const searchChallenges = async (params: ChallengeSearch) => {
 export const countChallenges = async (params: ChallengeSearch) => {
   return prisma.serviceRequest.count({
     where: {
+      title: { search: params.q },
       laborMarketAddress: params.laborMarket,
     },
   });
@@ -38,7 +43,11 @@ export const countChallenges = async (params: ChallengeSearch) => {
 export const findChallenge = async (id: string) => {
   return prisma.serviceRequest.findUnique({
     where: { id },
-    include: { submissions: true, laborMarket: { include: { projects: true } } },
+    include: {
+      submissions: true,
+      laborMarket: { include: { projects: true } },
+      _count: { select: { submissions: true } },
+    },
   });
 };
 

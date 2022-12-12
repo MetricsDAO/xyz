@@ -1,7 +1,7 @@
-import Header from "~/components/marketing/Header";
+import Header from "~/features/marketing-shell/Header";
 import { Disclosure } from "@headlessui/react";
 import { ChevronRight24, ChevronDown24 } from "@carbon/icons-react";
-import AppFooter from "~/components/marketing/Footer";
+import AppFooter from "~/features/marketing-shell/Footer";
 import Aos from "aos";
 import { useEffect } from "react";
 
