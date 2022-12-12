@@ -6,7 +6,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import type { findChallenge } from "~/services/challenges-service.server";
 
 export default function ChallengeIdPrereqs() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/brainstorm/c/$id");
+  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/c/$id");
   if (!data) {
     throw new Error("ChallengeIdPrereqs must be rendered under a ChallengeId route");
   }

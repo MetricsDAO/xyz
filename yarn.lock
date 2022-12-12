@@ -5016,7 +5016,7 @@ check-error@^1.0.2:
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
   integrity sha512-BrgHpW9NURQgzoNyjfq0Wu6VFO6D7IZEmJNdtgNqpzGG8RuNFHt2jQxWlAs4HMe119chBnv+34syEZtc6IhLtA==
 
-chokidar@^3.5.1, chokidar@^3.5.3:
+chokidar@^3.5.1, chokidar@^3.5.2, chokidar@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.3.tgz#1cf37c8707b932bd1af1ae22c0432e2acd1903bd"
   integrity sha512-Dr3sfKRP6oTcjf2JmUmFJfeVMvXBdegxB0iVQ5eb2V10uFJUCAS8OByZdVAyVb8xXNz3GjjTgj9kLWsZTqE6kw==
@@ -9859,7 +9859,7 @@ memorystream@^0.3.1:
   resolved "https://registry.yarnpkg.com/memorystream/-/memorystream-0.3.1.tgz#86d7090b30ce455d63fbae12dda51a47ddcaf9b2"
   integrity sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==
 
-meow@^9.0.0:
+meow@9.0.0, meow@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/meow/-/meow-9.0.0.tgz#cd9510bc5cac9dee7d03c73ee1f9ad959f4ea364"
   integrity sha512-+obSblOQmRhcyBt62furQqRAQpNyWXo8BuQ5bN7dG8wmwQ+vwHKp/rCFD4CrTP8CsDQD1sjoZ94K417XEUk8IQ==
@@ -12229,6 +12229,15 @@ remix-params-helper@^0.4.10:
   resolved "https://registry.yarnpkg.com/remix-params-helper/-/remix-params-helper-0.4.10.tgz#91663100282e720687edad3de57f3c88cf502715"
   integrity sha512-1LZ1FjxCtPekg4a1R50aKA0uB2+668Wd2a0ld7LDrQ0bJ2TzijnCVr822cs8epziS6MG2bG8ZHMPDAR2t4PK+Q==
 
+remix-routes@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/remix-routes/-/remix-routes-1.0.0.tgz#4fb186d7e003740b79a19bc66cb9a0ad7c665635"
+  integrity sha512-dIT5chTgc9dIkfDOE/psrbr0YjVoe5lirT6MQjNZ55eiYX63NGKB6N1zrKNtykXcqdkLz+/LJliqMIuINwKh5A==
+  dependencies:
+    chokidar "^3.5.2"
+    meow "9.0.0"
+    mkdirp "^1.0.4"
+
 remix-typedjson@^0.1.3:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/remix-typedjson/-/remix-typedjson-0.1.6.tgz#ff8c83538cc51f9b4686fac3be2b93087449d2ad"
@@ -13862,6 +13871,19 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
+
+typescript-remix-routes-plugin@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/typescript-remix-routes-plugin/-/typescript-remix-routes-plugin-1.0.0.tgz#aa56d1cbbf350e7eb19d057ba0006ff4306fa66e"
+  integrity sha512-DHK3DehGxy6JA1F1x9TBgq30hllve/j6YRTRdZEsIu6QCMLbau/Z8CvDCn1FiwC2VLFTmffRN8GbTyhsx7no7Q==
+  dependencies:
+    resolve "^1.22.0"
+    typescript "^4.4.3"
+
+typescript@^4.4.3:
+  version "4.9.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.4.tgz#a2a3d2756c079abda241d75f149df9d561091e78"
+  integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
 
 typescript@^4.7.4:
   version "4.9.3"
