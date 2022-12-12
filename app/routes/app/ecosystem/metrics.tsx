@@ -21,9 +21,9 @@ export default function Metrics() {
           <p className="font-semibold text-md">Activity</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mx-auto items-center">
             <StatsCard figure={87} title="Marketplaces" />
-            <StatsCard figure={2000} title="Challenges" />
-            <StatsCard figure={50000} title="Submissions" />
-            <StatsCard figure={175000} title="Reviews" />
+            <StatsCard figure={"2,000"} title="Challenges" />
+            <StatsCard figure={"50,000"} title="Submissions" />
+            <StatsCard figure={"175,000"} title="Reviews" />
           </div>
           <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
             <p className="py-20 mx-auto">Totally a chart</p>
@@ -32,9 +32,9 @@ export default function Metrics() {
         <div className="space-y-5">
           <p className="font-semibold text-md">Participants</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mx-auto items-center">
-            <StatsCard figure={64000} title="Total participants" />
-            <StatsCard figure={23000} title="Analysts" />
-            <StatsCard figure={52000} title="Reviewers" />
+            <StatsCard figure={"64,000"} title="Total participants" />
+            <StatsCard figure={"23,000"} title="Analysts" />
+            <StatsCard figure={"52,000"} title="Reviewers" />
           </div>
           <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
             <p className="py-20 mx-auto">Totally a chart</p>
@@ -44,13 +44,13 @@ export default function Metrics() {
           <p className="font-semibold text-md">Rewards</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mx-auto items-center">
             <StatsCard
-              figure={64000}
+              figure={"64,000"}
               title="Total Tokens Funded"
               description="USD value of tokens funded across all challenges"
               icon={<img alt="" src="/img/icons/dollar.svg" className="mr-2" />}
             />
             <StatsCard
-              figure={23000}
+              figure={"23,000"}
               title="Total Tokens Claimed"
               description="USD value of tokens claimed across all challenges"
               icon={<img alt="" src="/img/icons/dollar.svg" className="mr-2" />}
@@ -64,12 +64,12 @@ export default function Metrics() {
           <p className="font-semibold text-md">Reputation</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mx-auto items-center">
             <StatsCard
-              figure={64000}
+              figure={"64,000"}
               title="Total rMETRIC Issued"
               description="Challenge winners and positive contributors earn rMETRIC"
             />
             <StatsCard
-              figure={23000}
+              figure={"23,000"}
               title="Total rMETRIC Slashed"
               description="Participants who don’t honor commitments on claimed challenges lose rMETRIC"
             />
