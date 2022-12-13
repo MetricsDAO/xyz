@@ -1,52 +1,33 @@
+import SocialIcons from "./SocialIcons";
 import { Link } from "@remix-run/react";
 
-export default function AppFooter() {
+const links = [
+  { link: "/protocol", label: "Protocol" },
+  { link: "https://docs.metricsdao.xyz/", label: "Docs" },
+  { link: "/gov", label: "Governance" },
+  { link: "https://blog.metricsdao.xyz/", label: "Blog" },
+  { link: "/partner", label: "Partner with Us" },
+  { link: "https://blog.metricsdao.xyz/all-courses/", label: "Education" },
+  { link: "/terms", label: "Terms & Privacy" },
+];
+
+export default function Footer() {
+  const items = links.map((link) => (
+    <a key={link.link} href={link.link} className="block px-2 py-1.5 text-black">
+      {link.label}
+    </a>
+  ));
+
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="site-footer">
-      <div className="container">
-        <div className="row d-flex flex-wrap justify-content-between align-items-center py-3 my-4">
-          <div className="col-4 d-flex align-items-center">
-            <Link to="/" className="footer-brand">
-              <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="96" />
-            </Link>
-          </div>
-          <ul className="nav col-auto justify-content-end list-unstyled d-flex flex-row flex-lg-column social-network">
-            <li className="mb-lg-3">
-              <a
-                href="https://twitter.com/MetricsDAO"
-                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
-              >
-                <span className="btn btn-outline-dark">
-                  <i className="bi bi-twitter"></i>
-                </span>
-                <span className="ms-md-2 text-uppercase">twitter</span>
-              </a>
-            </li>
-            <li className="mb-lg-3">
-              <a
-                href="https://docs.metricsdao.xyz/"
-                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
-              >
-                <span className="btn btn-outline-dark">
-                  <i className="bi bi-file-earmark-text-fill"></i>
-                </span>
-                <span className="ms-md-2 text-uppercase">docs</span>
-              </a>
-            </li>
-            <li className="mb-lg-3">
-              <a
-                href="https://discord.gg/p3GMjK2zAr"
-                className="d-flex flex-column flex-lg-row justify-content-start align-items-center text-black text-decoration-none"
-              >
-                <span className="btn btn-outline-dark">
-                  <i className="bi bi-discord"></i>
-                </span>
-                <span className="ms-md-2 text-uppercase">discord</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <footer className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-3 my-4">
+      <Link to="/" className="flex items-center gap-x-3">
+        <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="38" />
+        <span>© {currentYear} MetricsDAO</span>
+      </Link>
+      <menu className="flex flex-col md:flex-row items-center gap-4 ml-4">{items}</menu>
+      <SocialIcons />
     </footer>
   );
 }
