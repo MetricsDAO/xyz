@@ -53,7 +53,7 @@ export function AppHeader() {
   ));
 
   return (
-    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
+    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-20">
       <div className="flex items-center space-x-4">
         <Menu as="div" className="relative">
           <Menu.Button className="md:hidden">
