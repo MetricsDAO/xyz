@@ -72,35 +72,33 @@ export default function ChallengeSubmission() {
           <ReviewQuestionDrawerButton />
         </section>
         <section className="flex flex-col space-y-7 pb-24">
-          <div className="flex flex-wrap gap-x-8 gap-y-4">
-            <Detail>
-              <DetailItem title="Author">
-                <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
-              </DetailItem>
-              <DetailItem title="Created">
-                <Badge>{fromNow(submission.createdAt.toString())}</Badge>
-              </DetailItem>
-              <DetailItem title="Overall Score">
-                <Badge className={clsx(SCORE_COLOR_SECONDARY[submission.scoreStatus as Grade], "pl-0")}>
-                  <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
-                    {submission.scoreStatus}
-                  </Badge>
-                  <span>80</span>
+          <Detail className="flex flex-wrap gap-x-8 gap-y-4">
+            <DetailItem title="Author">
+              <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+            </DetailItem>
+            <DetailItem title="Created">
+              <Badge>{fromNow(submission.createdAt.toString())}</Badge>
+            </DetailItem>
+            <DetailItem title="Overall Score">
+              <Badge className={clsx(SCORE_COLOR_SECONDARY[submission.scoreStatus as Grade], "pl-0")}>
+                <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
+                  {submission.scoreStatus}
+                </Badge>
+                <span>80</span>
+              </Badge>
+            </DetailItem>
+            <DetailItem title="Reviews">
+              <Badge>{reviews.length}</Badge>
+            </DetailItem>
+            {isWinner && (
+              <DetailItem title="Winner">
+                <Badge className="bg-yellow-600 pl-0">
+                  <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
+                  <span className="text-white">50 rMETRIC</span>
                 </Badge>
               </DetailItem>
-              <DetailItem title="Reviews">
-                <Badge>{reviews.length}</Badge>
-              </DetailItem>
-              {isWinner && (
-                <DetailItem title="Winner">
-                  <Badge className="bg-yellow-600 pl-0">
-                    <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
-                    <span className="text-white">50 rMETRIC</span>
-                  </Badge>
-                </DetailItem>
-              )}
-            </Detail>
-          </div>
+            )}
+          </Detail>
           <p className="text-gray-500 max-w-2xl">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
             pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit

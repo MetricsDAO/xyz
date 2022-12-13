@@ -1,6 +1,7 @@
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
+import { RewardBadge } from "~/components/reward-badge";
 
 export default function ChallengeIdRewards() {
   return (
@@ -9,9 +10,7 @@ export default function ChallengeIdRewards() {
         <h3 className="font-medium mb-4">Reward Pool</h3>
         <Detail>
           <DetailItem title="Total rewards to be distributed across winners">
-            <Badge className="bg-gray-300 pl-0">
-              <Badge className="mr-2">20 SOL</Badge> 100 rMETRIC
-            </Badge>
+            <RewardBadge amount={20} token="SOL" rMETRIC={100} />
           </DetailItem>
         </Detail>
       </Card>
@@ -20,9 +19,7 @@ export default function ChallengeIdRewards() {
         <h3 className="font-medium mb-4">Your Projected Rewards</h3>
         <Detail>
           <DetailItem title="Estimated avg. rewards based on current claims to submit (may fluctuate)">
-            <Badge className="bg-gray-300 pl-0">
-              <Badge className="mr-2">20 SOL</Badge> 100 rMETRIC
-            </Badge>
+            <RewardBadge amount={20} token="SOL" rMETRIC={100} />
           </DetailItem>
         </Detail>
       </Card>
