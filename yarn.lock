@@ -1860,6 +1860,11 @@
   resolved "https://registry.yarnpkg.com/@heroicons/react/-/react-2.0.13.tgz#9b1cc54ff77d6625c9565efdce0054a4bcd9074c"
   integrity sha512-iSN5XwmagrnirWlYEWNPdCDj9aRYVD/lnK3JlsC9/+fqGF80k8C7rl+1HCvBX0dBoagKqOFBs6fMhJJ1hOg1EQ==
 
+"@highlight-run/react@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@highlight-run/react/-/react-1.2.1.tgz#39131015cff3085c9143af2c70b2101f81d86aae"
+  integrity sha512-1jNQSvxXdE8gplA59xFiefX4M4lzqlpX1Y9StsuE6kcZ+5Um/EDAzv5HxPUd83VGx3CIy94T5ABD9BSi0M+7hg==
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.7.tgz#38aec044c6c828f6ed51d5d7ae3d9b9faf6dbb0f"
@@ -8138,6 +8143,11 @@ he@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
+highlight.run@^5.1.7:
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/highlight.run/-/highlight.run-5.1.7.tgz#96e22d728c20b6acff103db502eb02ef0c2e3411"
+  integrity sha512-Fm3ZTBLP8mYRklX2dl64UpohqFKd07Ct1x0RirJiW225LmUjvm3WFRNT/ekcxBU8sBJicXosra7t5d8/IA2doQ==
 
 history@^5.2.0, history@^5.3.0:
   version "5.3.0"

@@ -1,18 +1,21 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "~/contexts/wallet-provider";
-
+import { H } from "highlight.run";
+import { ErrorBoundary as HighlightErrorBoundary } from "@highlight-run/react";
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-import { getUserId } from "./services/session.server";
+import { getUser } from "./services/session.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { Toaster } from "react-hot-toast";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import env from "./env";
+
+// H.init("memo69d2", { environment: process.env.ENVIRONMENT });
 
 export async function loader({ request }: DataFunctionArgs) {
-  const userId = await getUserId(request);
-  const sessionExists = userId ? true : false;
-  return sessionExists;
+  const user = await getUser(request);
+  return typedjson({ user, ENV: { ENVIRONMNET: env.ENVIRONMENT } });
 }
 
 export const meta: MetaFunction = () => {
@@ -79,61 +82,15 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  useEffect(() => console.error(error), [error]);
-  return (
-    <Document title="Error!">
-      <div className="container mx-auto space-y-3 my-6 bg-[#E6E6E6] rounded-lg p-10 shadow-xl">
-        <h1 className="text-5xl">Uh oh, something broke.</h1>
-        {error.message ? <p className="hidden">{error.message}</p> : <></>}
-      </div>
-    </Document>
-  );
-}
-
-export function CatchBoundary() {
-  let caught = useCatch();
-
-  let message;
-  switch (caught.status) {
-    case 404:
-      message = "Oops! Looks like you tried to visit a page that does not exist.";
-      break;
-
-    default:
-      throw new Error(caught.data || caught.statusText);
-  }
-
-  return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <div className="container mx-auto space-y-3 my-6 bg-[#E6E6E6] rounded-lg p-10 shadow-xl">
-        <h1 className="text-5xl">
-          {caught.status} {caught.statusText}
-        </h1>
-        <p className="text-lg text-zinc-500">{message}</p>
-      </div>
-    </Document>
-  );
-}
+export const ErrorBoundary = HighlightErrorBoundary;
 
 export default function App() {
-  const sessionExists = useLoaderData<typeof loader>();
-  const authStatus = sessionExists ? "authenticated" : "unauthenticated";
+  const { user, ENV } = useTypedLoaderData<typeof loader>();
+  const authStatus = user ? "authenticated" : "unauthenticated";
 
-  return (
-    <Document>
-      <WalletProvider authStatus={authStatus}>
-        <Outlet />
-      </WalletProvider>
-    </Document>
-  );
-}
-
-function Document({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
     <html lang="en">
       <head>
-        {title ? <title>{title}</title> : null}
         <Links />
         <Meta />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
@@ -150,7 +107,14 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         ></script>
       </head>
       <body>
-        {children}
+        <WalletProvider authStatus={authStatus}>
+          <Outlet />
+        </WalletProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
