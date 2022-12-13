@@ -70,27 +70,33 @@ export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
   const { address, projectIds, tokenSymbols, ...data } = laborMarket;
   const newLaborMarket = await prisma.laborMarket.upsert({
     where: { address },
-    update: data,
-    create: {
-      address,
-      title: data.title,
-      description: data.description,
-      type: data.type,
-      submitRepMin: data.submitRepMin,
-      submitRepMax: data.submitRepMax,
-      rewardCurveAddress: data.rewardCurveAddress,
-      reviewBadgerAddress: data.reviewBadgerAddress,
-      reviewBadgerTokenId: data.reviewBadgerTokenId,
-      launchAccess: data.launch.access,
-      launchBadgerAddress: data.launch.access === "delegates" ? data.launch.badgerAddress : undefined,
-      launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
-      sponsorAddress: data.sponsorAddress,
-      projects: { connect: projectIds.map((id) => ({ id })) },
-      tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
-    },
+    update: mapToLaborMarketTableFormat(laborMarket),
+    create: mapToLaborMarketTableFormat(laborMarket),
   });
   return newLaborMarket;
 };
+
+const mapToLaborMarketTableFormat = (laborMarket: LaborMarket) => {
+  const { address, projectIds, tokenSymbols, ...data } = laborMarket;
+
+  return {
+    address,
+    title: data.title,
+    description: data.description,
+    type: data.type,
+    submitRepMin: data.submitRepMin,
+    submitRepMax: data.submitRepMax,
+    rewardCurveAddress: data.rewardCurveAddress,
+    reviewBadgerAddress: data.reviewBadgerAddress,
+    reviewBadgerTokenId: data.reviewBadgerTokenId,
+    launchAccess: data.launch.access,
+    launchBadgerAddress: data.launch.access === "delegates" ? data.launch.badgerAddress : undefined,
+    launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
+    sponsorAddress: data.sponsorAddress,
+    projects: { connect: projectIds.map((id) => ({ id })) },
+    tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
+  };
+}
 
 /**
  * Counts the number of LaborMarkets that match a given LaborMarketSearch.
