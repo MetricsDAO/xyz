@@ -4,7 +4,7 @@ import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
 import { upsertServiceRequest } from "~/services/challenges-service.server";
 import { upsertSubmission } from "~/services/submissions.server";
-import type { LaborMarket, ServiceRequest, Submission } from "@prisma/client";
+import type { LaborMarket, PayableBlockchain, ServiceRequest, Submission, Token } from "@prisma/client";
 import { upsertReview } from "~/services/review-service.server";
 
 async function main() {
@@ -22,18 +22,30 @@ async function main() {
     ],
   });
 
-  await prisma.token.createMany({
+  await prisma.payableBlockchain.createMany({
     data: [
-      { symbol: "ETH", name: "Ethereum" },
-      { symbol: "SOL", name: "Solana" },
-      { symbol: "USDC", name: "USD Coin" },
-      { symbol: "MATIC", name: "Polygon" },
-      { symbol: "AXL", name: "Axelar" },
-      { symbol: "NEAR", name: "Near" },
-      { symbol: "FLOW", name: "Flow" },
-      { symbol: "AVAX", name: "Avalanche" },
+      { id: "1", tokenSymbol: "ETH", name: "Ethereum" },
+      { id: "2", tokenSymbol: "SOL", name: "Solana" },
+      { id: "3", tokenSymbol: "USDC", name: "USD Coin" },
+      { id: "4", tokenSymbol: "MATIC", name: "Polygon" },
+      { id: "5", tokenSymbol: "AXL", name: "Axelar" },
+      { id: "6", tokenSymbol: "NEAR", name: "Near" },
+      { id: "7", tokenSymbol: "FLOW", name: "Flow" },
+      { id: "8", tokenSymbol: "AVAX", name: "Avalanche" },
     ],
   });
+
+  async function seedTokens(payableBlockchain: PayableBlockchain[]) {
+    for (const blockchain of payableBlockchain) {
+      await prisma.token.create({
+        data: {
+          symbol: blockchain.tokenSymbol,
+          name: blockchain.name,
+          payableBlockchainId: blockchain.id,
+        },
+      });
+    }
+  }
 
   async function seedLaborMarkets() {
     const projectIds = (await prisma.project.findMany()).map((p) => p.id);
@@ -74,6 +86,7 @@ async function main() {
     }
   }
 
+  await seedTokens(await prisma.payableBlockchain.findMany());
   await seedLaborMarkets();
   await seedServiceRequests(await prisma.laborMarket.findMany());
   await seedSubmissions(await prisma.serviceRequest.findMany());

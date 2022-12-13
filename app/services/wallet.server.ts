@@ -1,4 +1,3 @@
-import type { User } from "@prisma/client";
 import { prisma } from "./prisma.server";
 
 /**
@@ -7,35 +6,33 @@ import { prisma } from "./prisma.server";
  * @param {string} blockchain - the blockchain the wallet address lives on.
  * @param {string} walletAddress - the address of the wallet.
  */
-export function updateWalletAddress(user: User, blockchain: string, walletAddress?: string) {
+export function updateWalletAddress(userId: string, walletAddress: string, newWalletAddress: string) {
   return prisma.wallet.update({
     where: {
       address: walletAddress,
     },
     data: {
-      address: walletAddress,
-      chain: blockchain,
-      userId: user.id,
+      address: newWalletAddress,
+      userId: userId,
     },
   });
 }
 
 /**
    * updates a users wallet address.
-   * @param {string} user - the user whos address should be updated.
+   * @param {string} user - the userId of the wallet owner.
    * @param {string} blockchain - the blockchain the wallet address lives on.
    * @param {string} walletAddress - the address of the wallet.
    * @param {boolean} isConnected - is the wallet currently connected.
   
    * 
    */
-export function addWalletAddress(user: User, blockchain: string, walletAddress: string, isConnected: boolean) {
+export function addWalletAddress(walletAddress: string, Id: string, user: string) {
   return prisma.wallet.create({
     data: {
       address: walletAddress,
-      chain: blockchain,
-      userId: user.id,
-      isConnected,
+      payableBlockchainId: Id,
+      userId: user,
     },
   });
 }
@@ -58,10 +55,23 @@ export function deleteWalletAddress(walletAddress: string) {
  * @param {User} user - the user.
  * @returns {Promise<Wallet[]>} - the wallets for the user.
  */
-export function findAllWalletsForUser(user: User) {
+export function findAllWalletsForUser(userId: string) {
   return prisma.wallet.findMany({
     where: {
-      userId: user.id,
+      userId: userId,
+    },
+  });
+}
+
+/**
+ * Find the PayableBlockchain for a wallet.
+ * @param {string} tokenSymbol - the user.
+ * @returns {Promise<PayableBlockchain>} - the PayableBlockchain that the wallet lives on.
+ */
+export function findBlockchainOfWallet(tokenSymbol: string) {
+  return prisma.payableBlockchain.findFirst({
+    where: {
+      tokenSymbol: tokenSymbol,
     },
   });
 }

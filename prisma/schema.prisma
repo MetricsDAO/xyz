@@ -18,11 +18,11 @@ model User {
 }
 
 model Wallet {
-  address     String  @id @unique
-  chain       String
-  user        User    @relation(fields: [userId], references: [id])
-  userId      String
-  isConnected Boolean
+  address             String            @id @unique
+  userId              String
+  user                User              @relation(fields: [userId], references: [id])
+  payableBlockchainId String
+  chain               PayableBlockchain @relation(fields: [payableBlockchainId], references: [id])
 }
 
 model Transaction {
@@ -41,9 +41,11 @@ model Project {
 
 // Represents a token that MDAO supports. Appear in labor market creation flows and search.
 model Token {
-  symbol       String        @id @unique
-  name         String
-  laborMarkets LaborMarket[]
+  symbol              String            @id @unique
+  name                String
+  payableBlockchainId String
+  chain               PayableBlockchain @relation(fields: [payableBlockchainId], references: [id])
+  laborMarkets        LaborMarket[]
 }
 
 // Indexed models...
@@ -97,4 +99,12 @@ model Submission {
   scoreStatus      String
   serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
   reviews          Review[]
+}
+
+model PayableBlockchain {
+  id          String   @id @unique
+  name        String
+  tokenSymbol String
+  Token       Token[]
+  Wallet      Wallet[]
 }

@@ -10,15 +10,51 @@ import { Header, Row, Table } from "~/components/table";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { listTokens } from "~/services/tokens.server";
-import type { DataFunctionArgs } from "@remix-run/node";
+import type { ActionFunction, DataFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
-import { ValidatedForm } from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
 import { withZod } from "@remix-validated-form/with-zod";
 import { z } from "zod";
 import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
 import { getUserId } from "~/services/session.server";
-import { findUserById } from "~/services/user.server";
-import { findAllWalletsForUser } from "~/services/wallet.server";
+import {
+  addWalletAddress,
+  deleteWalletAddress,
+  findAllWalletsForUser,
+  findBlockchainOfWallet,
+  updateWalletAddress,
+} from "~/services/wallet.server";
+import { redirect } from "@remix-run/node";
+import { Input, ValidatedInput } from "~/components";
+import type { ActionFunctionArgs } from "@remix-run/server-runtime/dist/router";
+
+export const action: ActionFunction = async ({ request }: ActionFunctionArgs) => {
+  const formData = await validator.validate(await request.formData());
+  if (formData.error) return validationError(formData.error);
+
+  console.log("formData", formData);
+
+  const token = formData.data.payment.tokenSymbol;
+  const address = formData.data.payment.address;
+  const user = formData.data.userId;
+  const payableBlockchain = await findBlockchainOfWallet(token);
+  const actionType = formData.data.action;
+  console.log("actionType", actionType);
+
+  if (payableBlockchain && actionType == "add") {
+    console.log("ADD");
+    await addWalletAddress(address, payableBlockchain.id, user);
+  } else if (payableBlockchain && actionType == "remove") {
+    console.log("REMOVE");
+    await deleteWalletAddress(address);
+  } else if (actionType == "update") {
+    console.log("UPDATE");
+    // await updateWalletAddress(user, address, newAddress);
+  }
+
+  return redirect("/app/rewards/addresses");
+};
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUserId(data.request);
@@ -28,31 +64,13 @@ export const loader = async (data: DataFunctionArgs) => {
     {
       tokens,
       wallets,
+      user,
     },
     { status: 200 }
   );
 };
 
 export default function PayoutAddresses() {
-  // const wallets = [
-  //   {
-  //     address: "0xb794f5ea0ba39494ce839613fffba74279579268",
-  //     chain: "Ethereum",
-  //     user: "idk",
-  //     userId: 22,
-  //     isConnected: true,
-  //   },
-  //   {
-  //     address: "0xb794f5ea0ba39494ce839613cccba74279579268",
-  //     chain: "Ethereum",
-  //     user: "idk",
-  //     userId: 22,
-  //     isConnected: true,
-  //   },
-  //   { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
-  //   { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
-  // ];
-
   const { wallets } = useTypedLoaderData<typeof loader>();
 
   return (
@@ -123,7 +141,7 @@ function AddressTable({ wallets }: { wallets: any }) {
               <CopyToClipboard className="text-black" content={w.address} iconRight={<Copy16 className="ml-0.5" />} />
             </Row.Column>
             <Row.Column span={2} className="text-black">
-              {fromNow("1999-01-01")}{" "}
+              {fromNow("1999-01-01")}
             </Row.Column>
             <Row.Column span={3} className="flex flex-wrap gap-2">
               <RemoveAddressButton />
@@ -180,6 +198,8 @@ const schema = z.object({
     z.object({ tokenSymbol: z.literal("SOL"), address: SolAddressSchema }),
     z.object({ tokenSymbol: z.literal("MATIC"), address: EthAddressSchema }),
   ]),
+  userId: z.string({ description: "The ID of the user the wallet belongs to." }),
+  action: z.string({ description: "The action to perform on the wallet. Either add, update, or remove" }),
 });
 
 const validator = withZod(schema);
@@ -187,9 +207,8 @@ function AddAddressButton() {
   const { tokens } = useTypedLoaderData<typeof loader>();
   const [openedAdd, setOpenedAdd] = useState(false);
 
-  function addAddress() {
-    console.log("add address");
-  }
+  const { user } = useTypedLoaderData<typeof loader>();
+  console.log("user", user);
 
   return (
     <>
@@ -197,15 +216,21 @@ function AddAddressButton() {
         Add Address
       </Button>
       <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
-        <ValidatedForm validator={validator} className="space-y-5 mt-5">
+        <ValidatedForm action="/app/rewards/addresses" method="post" validator={validator} className="space-y-5 mt-5">
           <div className="pb-44 pt-8">
             <AddPaymentAddressForm tokens={tokens} />
+          </div>
+          <div className="invisible h-0">
+            <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
+            <ValidatedInput type="hidden" id="action" name="action" value={"add"} />
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
               Cancel
             </Button>
-            <Button type="submit">Save</Button>
+            <Button onClick={() => setOpenedAdd(false)} type="submit">
+              Save
+            </Button>
           </div>
         </ValidatedForm>
       </Modal>
@@ -215,6 +240,7 @@ function AddAddressButton() {
 
 function RemoveAddressButton() {
   const [openedRemove, setOpenedRemove] = useState(false);
+  const { user } = useTypedLoaderData<typeof loader>();
 
   return (
     <>
@@ -227,12 +253,20 @@ function RemoveAddressButton() {
             <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
             <p className="pl-2">0x381764734678365783648</p>
           </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedRemove(false)}>
-              Cancel
-            </Button>
-            <Button>Remove</Button>
-          </div>
+          <ValidatedForm action="/app/rewards/addresses" method="post" validator={validator} className="space-y-5 mt-5">
+            <div className="invisible h-0">
+              <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
+              <ValidatedInput type="hidden" id="action" name="action" value={"remove"} />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="cancel" onClick={() => setOpenedRemove(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => setOpenedRemove(false)} type="submit">
+                Remove
+              </Button>
+            </div>
+          </ValidatedForm>
         </div>
       </Modal>
     </>
@@ -243,40 +277,34 @@ function UpdateAddressButton() {
   const [openedUpdate, setOpenedUpdate] = useState(false);
 
   const validAddress = false;
+  const { user, tokens } = useTypedLoaderData<typeof loader>();
 
   return (
     <>
       <Button variant="primary" onClick={() => setOpenedUpdate(true)}>
         Update
       </Button>
-      <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <div className="space-y-5 mt-5">
-          <div className="space-y-2">
-            <div className="flex border-solid border rounded-md border-trueGray-200">
-              <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
-              <div className="flex items-center ml-2">
-                {validAddress ? (
-                  <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
-                ) : (
-                  <WarningSquareFilled16 className="mr-1 text-rose-500" />
-                )}
-                <input id="update" placeholder="Update address" />
-              </div>
+      <>
+        <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update Address">
+          <ValidatedForm action="/app/rewards/addresses" method="post" validator={validator} className="space-y-5 mt-5">
+            <div className="pb-44 pt-8">
+              <AddPaymentAddressForm tokens={tokens} />
             </div>
-            {validAddress ? (
-              <></>
-            ) : (
-              <p className="text-xs text-red-500">Please enter a valid address. If you are having issues go here</p>
-            )}
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedUpdate(false)}>
-              Cancel
-            </Button>
-            <Button disabled={!validAddress}>Save</Button>
-          </div>
-        </div>
-      </Modal>
+            <div className="invisible h-0">
+              <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
+              <ValidatedInput type="hidden" id="action" name="action" value={"update"} />
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="cancel" onClick={() => setOpenedUpdate(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => setOpenedUpdate(false)} type="submit">
+                Save
+              </Button>
+            </div>
+          </ValidatedForm>
+        </Modal>
+      </>
     </>
   );
 }
