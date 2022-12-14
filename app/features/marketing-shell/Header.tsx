@@ -6,7 +6,7 @@ import { Link } from "@remix-run/react";
 const links = [
   { link: "/protocol", label: "Protocol" },
   { link: "https://docs.metricsdao.xyz/", label: "Docs" },
-  { link: "/gov", label: "Governance" },
+  { link: "https://discourse.metricsdao.xyz/", label: "Governance" },
   { link: "https://blog.metricsdao.xyz/", label: "Blog" },
   { link: "/partner", label: "Partner with Us" },
 ];
@@ -51,7 +51,11 @@ export default function Header() {
 
       <menu className="hidden md:flex flex-row gap-4 ml-4">{items}</menu>
 
-      <a href="/app/ecosystem" target="_blank" className="bg-green-200 px-4 py-2 font-bold rounded-lg">
+      <a
+        href="/app/ecosystem"
+        target="_blank"
+        className="bg-gradient-to-r to-green-300 from-sky-500 px-4 py-2 font-bold rounded-lg"
+      >
         Launch App
       </a>
     </header>

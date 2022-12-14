@@ -4,7 +4,7 @@ import { Link } from "@remix-run/react";
 const links = [
   { link: "/protocol", label: "Protocol" },
   { link: "https://docs.metricsdao.xyz/", label: "Docs" },
-  { link: "/gov", label: "Governance" },
+  { link: "https://discourse.metricsdao.xyz/", label: "Governance" },
   { link: "https://blog.metricsdao.xyz/", label: "Blog" },
   { link: "/partner", label: "Partner with Us" },
   { link: "https://blog.metricsdao.xyz/all-courses/", label: "Education" },
