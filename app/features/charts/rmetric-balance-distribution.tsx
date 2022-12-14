@@ -15,7 +15,7 @@ import mdaoTheme from "./mdaoTheme";
 
 type Props = {
   data: Data[];
-  userBalance: number;
+  userBalance?: number;
 };
 
 type Data = {
@@ -28,6 +28,7 @@ const accessors = {
   yAccessor: (d: Data) => d.balance,
 };
 
+// Chart with xAxis of user addresses and yAxis of rMetric balance. Optionally, the user's balance is highlighted with an annotation.
 export default function RmetricBalanceDistributionChart({ data, userBalance }: Props) {
   return (
     <ParentSize>
@@ -46,8 +47,11 @@ function RmetricBalanceDistributionChartUnwrapped({
 }: { width: number; height: number } & Props) {
   // Insert user info into data and sort by balance
   const { sortedData, userDatum } = useMemo(() => {
-    const userDatum = { address: "You", balance: userBalance };
-    data.push({ address: "You", balance: userBalance });
+    let userDatum;
+    if (userBalance) {
+      userDatum = { address: "You", balance: userBalance };
+      data.push({ address: "You", balance: userBalance });
+    }
     const sortedData = data.sort((a, b) => b.balance - a.balance);
     return { sortedData, userDatum };
   }, [data, userBalance]);
@@ -62,11 +66,13 @@ function RmetricBalanceDistributionChartUnwrapped({
         curve={curveCardinal}
       />
       <AnimatedAxis key="y" orientation="left" numTicks={5} label="rMetric Balance" />
-      <AnimatedAnnotation dataKey="rMetricHoldersAreaSeries" datum={userDatum} dx={10} dy={10}>
-        <AnnotationLineSubject />
-        <AnnotationConnector type="elbow" />
-        <AnnotationLabel title="You" subtitle={`${accessors.yAccessor(userDatum)} rMEtric`} showAnchorLine={false} />
-      </AnimatedAnnotation>
+      {userDatum && (
+        <AnimatedAnnotation dataKey="rMetricHoldersAreaSeries" datum={userDatum} dx={10} dy={10}>
+          <AnnotationLineSubject />
+          <AnnotationConnector type="elbow" />
+          <AnnotationLabel title="You" subtitle={`${accessors.yAccessor(userDatum)} rMEtric`} showAnchorLine={false} />
+        </AnimatedAnnotation>
+      )}
       <Tooltip<Data>
         snapTooltipToDatumX
         showVerticalCrosshair
