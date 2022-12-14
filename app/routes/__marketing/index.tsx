@@ -5,7 +5,7 @@ import SocialIcons from "~/features/marketing-shell/SocialIcons";
 export default function Index() {
   return (
     <>
-      <img src="/img/homepage-bg-top.png" className="absolute top-0 left-0 -z-10 h-screen w-screen" alt="" />
+      <img src="/img/marketing/homepage-bg-top.png" className="absolute top-0 left-0 -z-10 h-screen w-screen" alt="" />
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
@@ -37,7 +37,11 @@ export default function Index() {
             <p className="text-2xl max-w-lg">Connecting projects with the best analysts in Web3 for all data needs</p>
             <SocialIcons />
           </section>
-          <img src="/img/homepage-bg-bottom.png" className="absolute top-100 left-0 -z-10 h-screen w-screen" alt="" />
+          <img
+            src="/img/marketing/homepage-bg-bottom.png"
+            className="absolute top-100 left-0 -z-10 h-screen w-screen"
+            alt=""
+          />
           <div id="section-2" className="space-y-5 pt-24 pb-10 h-screen">
             <p className="text-white text-2xl">Our Mission</p>
             <p className="font-bold text-7xl">

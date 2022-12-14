@@ -21,7 +21,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="bottom" className="bg-local" style={{ backgroundImage: "url(/img/footer-blur.png)" }}>
+    <footer id="bottom" className="bg-local" style={{ backgroundImage: "url(/img/marketing/footer-blur.png)" }}>
       <p className="text-white text-8xl font-thin hover:font-bold">LAUNCH APP LAUNCH APP</p>
       <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-3 backdrop-blur-sm">
         <Link to="/" className="flex items-center gap-x-3">
