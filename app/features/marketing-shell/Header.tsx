@@ -19,7 +19,10 @@ export default function Header() {
   ));
 
   return (
-    <header className="relative h-16 backdrop-blur-sm ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
+    <header
+      id="top"
+      className="relative h-16 backdrop-blur-sm ring-1 ring-black/5 flex items-center justify-between px-6 z-10"
+    >
       <div className="flex items-center space-x-4">
         <Menu as="div" className="relative">
           <Menu.Button className="md:hidden flex items-center">

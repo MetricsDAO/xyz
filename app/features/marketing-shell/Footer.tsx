@@ -21,13 +21,16 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-3 my-4">
-      <Link to="/" className="flex items-center gap-x-3">
-        <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="38" />
-        <span>© {currentYear} MetricsDAO</span>
-      </Link>
-      <menu className="flex flex-col md:flex-row items-center gap-4 ml-4">{items}</menu>
-      <SocialIcons />
+    <footer id="bottom" className="bg-local" style={{ backgroundImage: "url(/img/footer-blur.png)" }}>
+      <p className="text-white text-8xl font-thin hover:font-bold">LAUNCH APP LAUNCH APP</p>
+      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-3 backdrop-blur-sm">
+        <Link to="/" className="flex items-center gap-x-3">
+          <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="38" />
+          <span>© {currentYear} MetricsDAO</span>
+        </Link>
+        <menu className="flex flex-col md:flex-row items-center gap-4 ml-4">{items}</menu>
+        <SocialIcons />
+      </div>
     </footer>
   );
 }
