@@ -20,6 +20,7 @@ async function main() {
       { slug: "flow", name: "Flow" },
       { slug: "ethereum", name: "Ethereum" },
     ],
+    skipDuplicates: true,
   });
 
   await prisma.payableBlockchain.createMany({
@@ -33,6 +34,7 @@ async function main() {
       { id: "7", tokenSymbol: "FLOW", name: "Flow" },
       { id: "8", tokenSymbol: "AVAX", name: "Avalanche" },
     ],
+    skipDuplicates: true,
   });
 
   async function seedTokens(payableBlockchain: PayableBlockchain[]) {

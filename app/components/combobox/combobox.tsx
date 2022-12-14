@@ -16,7 +16,7 @@ type Props = {
 
 type Option = { value: string; label: string; prefix?: React.ReactNode };
 
-const buttonStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-auto";
+const buttonStyles = "w-full border border-gray-300 rounded-lg flex items-center overflow-auto bg-white";
 
 const sizeStyles = {
   sm: "h-10",

@@ -5,16 +5,17 @@ import { Link, NavLink } from "@remix-run/react";
 import clsx from "clsx";
 import CustomConnectButton from "~/features/connect-button";
 import { LogoMark, LogoType } from "./logo";
+import { $path } from "remix-routes";
 
 const primaryLinks = [
-  { link: "/app/ecosystem", label: "Ecosystem" },
-  { link: "/app/brainstorm", label: "Brainstorm" },
-  { link: "/app/analyze", label: "Analyze" },
+  { link: $path("/app/ecosystem"), label: "Ecosystem" },
+  { link: $path("/app/:type", { type: "brainstorm" }), label: "Brainstorm" },
+  { link: $path("/app/:type", { type: "analyze" }), label: "Analyze" },
 ];
 
 const userLinks = [
   {
-    link: "/app/rewards",
+    link: $path("/app/rewards"),
     label: (
       <span>
         Rewards <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>
@@ -53,7 +54,7 @@ export function AppHeader() {
 
   return (
     <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center">
         <Menu as="div" className="relative">
           <Menu.Button className="md:hidden">
             <Bars3Icon className="h-5 w-5" />

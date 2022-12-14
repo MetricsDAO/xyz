@@ -1,6 +1,7 @@
 import type { User } from "@prisma/client";
 import { createCookieSessionStorage, json } from "@remix-run/node";
 import env from "~/env";
+import { prisma } from "./prisma.server";
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -14,7 +15,7 @@ export const sessionStorage = createCookieSessionStorage({
 });
 
 const USER_SESSION_KEY = "userId";
-const NONCE = "nonce";
+const NONCE_KEY = "nonce";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("cookie");
@@ -27,6 +28,18 @@ export async function getUserId(request: Request): Promise<string | undefined> {
   return userId;
 }
 
+export async function getUser(request: Request): Promise<User | null> {
+  const userId = await getUserId(request);
+  if (!userId) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (user) return user;
+
+  throw await logout(request);
+}
+
 /**
  * Returns the nonce from the session if it exists.
  * @param request - Request object
@@ -34,7 +47,7 @@ export async function getUserId(request: Request): Promise<string | undefined> {
  */
 export async function getNonce(request: Request): Promise<string | undefined> {
   const session = await getSession(request);
-  const nonce = session.get(NONCE);
+  const nonce = session.get(NONCE_KEY);
   return nonce;
 }
 
@@ -51,7 +64,7 @@ export async function createUserSession({ request, userId }: { request: Request;
 
 export async function createNonceSession({ request, nonce }: { request: Request; nonce: string }) {
   const session = await getSession(request);
-  session.set(NONCE, nonce);
+  session.set(NONCE_KEY, nonce);
 
   return json(nonce, {
     headers: {

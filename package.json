@@ -6,10 +6,12 @@
   "sideEffects": false,
   "scripts": {
     "build": "run-s build:*",
+    "build:routes": "remix-routes",
     "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
     "build:remix": "remix build",
     "build:server": "esbuild --platform=node --format=cjs ./server.ts --outdir=build --bundle",
     "dev": "run-p dev:*",
+    "dev:routes": "remix-routes -w",
     "dev:build": "cross-env NODE_ENV=development npm run build:server -- --watch",
     "dev:css": "yarn generate:css --watch",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
@@ -26,6 +28,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@axiomhq/axiom-node": "^0.10.0",
     "@carbon/icons-react": "^10.44.0",
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
@@ -35,6 +38,7 @@
     "@fortawesome/react-fontawesome": "^0.1.18",
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^2.0.13",
+    "@highlight-run/react": "^1.2.1",
     "@prisma/client": "4.5.0",
     "@radix-ui/react-avatar": "^1.0.1",
     "@radix-ui/react-checkbox": "^1.0.1",
@@ -48,6 +52,7 @@
     "@remix-run/react": "^1.7.0",
     "@remix-run/server-runtime": "^1.7.0",
     "@remix-validated-form/with-zod": "^2.0.5",
+    "@sentry/remix": "^7.26.0",
     "@solana/web3.js": "^1.66.2",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.8",
@@ -74,6 +79,7 @@
     "react-jazzicon": "^1.0.4",
     "react-use": "^17.4.0",
     "remix-params-helper": "^0.4.10",
+    "remix-routes": "^1.0.0",
     "remix-typedjson": "^0.1.3",
     "remix-utils": "^4.1.0",
     "remix-validated-form": "^4.6.4",
@@ -81,6 +87,7 @@
     "tiny-invariant": "^1.3.1",
     "wagmi": "0.7.11",
     "web3": "^1.8.1",
+    "winston": "^3.8.2",
     "zod": "^3.19.1",
     "zod-form-data": "^1.2.4"
   },
@@ -102,6 +109,7 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-instantsearch-dom": "6.12.3",
     "@vitejs/plugin-react": "^2.2.0",
+    "@vitest/coverage-c8": "^0.25.6",
     "autoprefixer": "^10.4.5",
     "concurrently": "^7.1.0",
     "eslint": "^8.25.0",
@@ -115,10 +123,10 @@
     "ts-node": "^10.9.1",
     "tsx": "^3.11.0",
     "typescript": "^4.7.4",
+    "typescript-remix-routes-plugin": "^1.0.0",
     "vite": "^3.2.4",
     "vite-tsconfig-paths": "^3.6.0",
-    "vitest": "^0.25.3",
-    "@vitest/coverage-c8": "^0.25.6"
+    "vitest": "^0.25.3"
   },
   "engines": {
     "node": ">=15"

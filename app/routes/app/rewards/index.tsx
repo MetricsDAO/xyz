@@ -183,9 +183,7 @@ function ClaimButton() {
             <p className="text-gray-500 text-center text-md">
               {"This transaction could take up to {x amount of time}. Please check back in a bit."}
             </p>
-            <p className="text-gray-500 text-center text-sm">
-              {"If there are any issues please reach out to {discord?}"}
-            </p>
+            <p className="text-gray-500 text-center text-sm">{"If there are any issues please reach out on Discord"}</p>
           </div>
           <div className="flex gap-2 w-full">
             <Button variant="cancel" fullWidth>

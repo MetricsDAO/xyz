@@ -67,7 +67,7 @@ function SearchAndFilter() {
       method="get"
       validator={validator}
       onChange={handleChange}
-      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-brand-400 bg-opacity-5"
+      className="space-y-3 p-3 border-[1px] border-solid border-[#EDEDED] rounded-md bg-blue-300 bg-opacity-5"
     >
       <ValidatedInput
         placeholder="Search"

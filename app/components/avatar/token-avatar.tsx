@@ -8,7 +8,7 @@ export function TokenAvatar({ token, ...avatarProps }: Props) {
   return (
     <Avatar
       {...avatarProps}
-      src={`/img/icons/token-icons/${token.symbol}.svg`}
+      src={`/img/icons/token-icons/${token.symbol.toLowerCase()}.svg`}
       alt={`${token.name} logo`}
       fallback={token.symbol.at(0)?.toUpperCase()}
     />

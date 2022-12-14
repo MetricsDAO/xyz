@@ -53,7 +53,7 @@ export default function ChallengeIdSubmissions() {
           method="get"
           validator={validator}
           onChange={handleChange}
-          className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-brand-400 bg-opacity-5 rounded-lg p-4"
+          className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4"
         >
           <ValidatedInput
             placeholder="Search"
