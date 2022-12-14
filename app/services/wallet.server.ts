@@ -23,7 +23,6 @@ export function updateWalletAddress(userId: string, walletAddress: string, newWa
    * @param {string} user - the userId of the wallet owner.
    * @param {string} blockchain - the blockchain the wallet address lives on.
    * @param {string} walletAddress - the address of the wallet.
-   * @param {boolean} isConnected - is the wallet currently connected.
   
    * 
    */
