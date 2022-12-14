@@ -81,7 +81,7 @@ export default function ChallengeSubmission() {
               <Badge>{fromNow(submission.createdAt.toString())}</Badge>
             </DetailItem>
             <DetailItem title="Overall Score">
-              <Badge variant="transparent" className={clsx(SCORE_COLOR_SECONDARY["Bad"], "pl-0")}>
+              <Badge className={clsx(SCORE_COLOR_SECONDARY["Bad"], "pl-0")}>
                 <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
                   {submission.scoreStatus}
                 </Badge>
