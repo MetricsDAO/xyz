@@ -102,8 +102,9 @@ model Submission {
 }
 
 model PayableBlockchain {
-  id     String   @id @unique
-  name   String
-  Token  Token[]
-  Wallet Wallet[]
+  id          String   @id @unique
+  name        String
+  tokenSymbol String
+  Token       Token[]
+  Wallet      Wallet[]
 }
