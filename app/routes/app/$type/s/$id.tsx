@@ -21,6 +21,7 @@ import {
   UserBadge,
   ValidatedSelect,
 } from "~/components";
+import { RewardBadge } from "~/components/reward-badge";
 import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
@@ -80,7 +81,7 @@ export default function ChallengeSubmission() {
               <Badge>{fromNow(submission.createdAt.toString())}</Badge>
             </DetailItem>
             <DetailItem title="Overall Score">
-              <Badge className={clsx(SCORE_COLOR_SECONDARY[submission.scoreStatus as Grade], "pl-0")}>
+              <Badge variant="transparent" className={clsx(SCORE_COLOR_SECONDARY["Bad"], "pl-0")}>
                 <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
                   {submission.scoreStatus}
                 </Badge>
@@ -92,10 +93,7 @@ export default function ChallengeSubmission() {
             </DetailItem>
             {isWinner && (
               <DetailItem title="Winner">
-                <Badge className="bg-yellow-600 pl-0">
-                  <Badge className="bg-yellow-200 text-yellow-700 mr-2">🏆 100 SOL</Badge>
-                  <span className="text-white">50 rMETRIC</span>
-                </Badge>
+                <RewardBadge amount={50} token="SOL" rMETRIC={100} variant="winner" />
               </DetailItem>
             )}
           </Detail>

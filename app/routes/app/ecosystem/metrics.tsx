@@ -56,8 +56,13 @@ export default function Metrics() {
               icon={<img alt="" src="/img/icons/dollar.svg" className="mr-2" />}
             />
           </div>
-          <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
-            <p className="py-20 mx-auto">Totally a chart</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mx-auto items-center">
+            <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
+              <p className="py-20 mx-auto">Totally a chart</p>
+            </div>
+            <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
+              <p className="py-20 mx-auto">Totally a chart</p>
+            </div>
           </div>
         </div>
         <div className="space-y-5">
