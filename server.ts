@@ -5,6 +5,7 @@ import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
 import prom from "express-prometheus-middleware";
 import { logger } from "~/services/logger.server";
+import { wrapExpressCreateRequestHandler } from "@sentry/remix";
 
 const app = express();
 const metricsApp = express();
@@ -30,6 +31,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+const createSentryRequestHandler = wrapExpressCreateRequestHandler(createRequestHandler);
 
 // if we're not in the primary region, then we need to make sure all
 // non-GET/HEAD/OPTIONS requests hit the primary region rather than read-only
@@ -83,10 +86,10 @@ const BUILD_DIR = path.join(process.cwd(), "build");
 app.all(
   "*",
   MODE === "production"
-    ? createRequestHandler({ build: require(BUILD_DIR) })
+    ? createSentryRequestHandler({ build: require(BUILD_DIR) })
     : (...args) => {
         purgeRequireCache();
-        const requestHandler = createRequestHandler({
+        const requestHandler = createSentryRequestHandler({
           build: require(BUILD_DIR),
           mode: MODE,
         });

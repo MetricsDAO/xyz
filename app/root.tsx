@@ -1,8 +1,6 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "~/contexts/wallet-provider";
-import { H } from "highlight.run";
-import { ErrorBoundary as HighlightErrorBoundary } from "@highlight-run/react";
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
 import { getUser } from "./services/session.server";
@@ -10,12 +8,22 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { Toaster } from "react-hot-toast";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import env from "./env";
+import { Blurs } from "./features/shell";
+import { Error } from "./components/error-boundary";
+import { withSentry } from "@sentry/remix";
 
-// H.init("memo69d2", { environment: process.env.ENVIRONMENT });
+// add types for window.ENV
+declare global {
+  interface Window {
+    ENV: {
+      [key: string]: string;
+    };
+  }
+}
 
 export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
-  return typedjson({ user, ENV: { ENVIRONMNET: env.ENVIRONMENT } });
+  return typedjson({ user, ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN } });
 }
 
 export const meta: MetaFunction = () => {
@@ -82,9 +90,25 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const ErrorBoundary = HighlightErrorBoundary;
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <html lang="en">
+      <head>
+        <title>Oh no...</title>
+        <Links />
+      </head>
+      <body>
+        <div className="w-screen h-screen flex items-center justify-center">
+          <Blurs />
+          <Error error={error} />
+        </div>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 
-export default function App() {
+function App() {
   const { user, ENV } = useTypedLoaderData<typeof loader>();
   const authStatus = user ? "authenticated" : "unauthenticated";
 
@@ -123,3 +147,5 @@ export default function App() {
     </html>
   );
 }
+
+export default withSentry(App);
