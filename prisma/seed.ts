@@ -19,7 +19,7 @@ async function main() {
       { slug: "near", name: "Near" },
       { slug: "flow", name: "Flow" },
       { slug: "ethereum", name: "Ethereum" },
-    ], 
+    ],
     skipDuplicates: true,
   });
 
@@ -33,7 +33,7 @@ async function main() {
       { symbol: "NEAR", name: "Near" },
       { symbol: "FLOW", name: "Flow" },
       { symbol: "AVAX", name: "Avalanche" },
-    ], 
+    ],
     skipDuplicates: true,
   });
 
