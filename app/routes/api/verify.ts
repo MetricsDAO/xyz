@@ -4,8 +4,7 @@ import { SiweMessage } from "siwe";
 import { createUserSession, getNonce } from "~/services/session.server";
 import { createUser, findUserByAddress } from "~/services/user.server";
 import chainalysisAbi from "~/abi/chainalysis.json";
-import Web3 from "web3";
-import type { AbiItem } from "web3-utils";
+import { ethers } from "ethers";
 
 const RPC_URL = "https://mainnet.infura.io/v3/54fcc811bac44f99b84a04a4a3e2f998";
 
@@ -41,9 +40,9 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
  * @returns {Promise<boolean>} - True if the address is sanctioned, false otherwise.
  */
 async function isAddressSanctioned(address: string): Promise<boolean> {
-  const web3 = new Web3(RPC_URL);
+  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
   const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";
-  const contract = new web3.eth.Contract(chainalysisAbi.abi as AbiItem[], contract_address);
-  const isSanctioned = await contract.methods.isSanctioned(address).call();
+  const contract = new ethers.Contract(contract_address, chainalysisAbi.abi, provider);
+  const isSanctioned = await contract.isSanctioned(address);
   return isSanctioned;
 }
