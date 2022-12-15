@@ -23,6 +23,7 @@ export function AddPaymentAddressForm({ tokens }: { tokens: Token[] }) {
             value: t.symbol,
             label: <SelectLabel token={t} />,
             selectedLabel: t.symbol,
+            defaultValues: { token: t },
           }))}
         />
         <ValidatedInput name="payment.address" placeholder="Select a chain and enter an address" />

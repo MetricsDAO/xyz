@@ -25,14 +25,12 @@ export const loader = async (data: DataFunctionArgs) => {
   const user = await getUserId(data.request);
   const wallets = user ? await findAllWalletsForUser(user) : [];
   const tokens = await listTokens();
-  return typedjson(
-    {
-      tokens,
-      wallets,
-      user,
-    },
-    { status: 200 }
-  );
+
+  return typedjson({
+    tokens,
+    wallets,
+    user,
+  });
 };
 
 export default function PayoutAddresses() {
@@ -288,7 +286,12 @@ function UpdateAddressButton({ wallet }: { wallet: Wallet }) {
                       <WarningSquareFilled16 className="mr-1 text-rose-500" />
                     )}
                   </div>
-                  <ValidatedInput id="newAddress" name="newAddress" placeholder="Update Address" />
+                  <input
+                    className="border-none w-100%"
+                    id="newAddress"
+                    name="newAddress"
+                    placeholder="Update Address"
+                  />
                   <div className="invisible h-0">
                     <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
                     <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />

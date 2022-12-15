@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { createCookieSessionStorage, json } from "@remix-run/node";
+import { createCookieSessionStorage, json, redirect } from "@remix-run/node";
 import env from "~/env";
 import { prisma } from "./prisma.server";
 
@@ -75,7 +75,7 @@ export async function createNonceSession({ request, nonce }: { request: Request;
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  return json(null, {
+  return redirect("/", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
