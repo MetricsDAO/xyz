@@ -52,7 +52,7 @@ export default function Header() {
         </Link>
       </div>
 
-      <menu className="hidden md:flex flex-row gap-4 ml-4">{items}</menu>
+      <menu className="hidden md:flex flex-row justify-between">{items}</menu>
 
       <a
         href="/app/ecosystem"
