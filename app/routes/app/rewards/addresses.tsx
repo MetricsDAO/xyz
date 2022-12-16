@@ -1,4 +1,5 @@
-import { CheckboxCheckedFilled16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
+import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
@@ -108,11 +109,15 @@ function AddressTable({ wallets }: { wallets: any }) {
             <Row.Column span={2}>project</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
               {validAddress ? (
-                <CheckboxCheckedFilled16 className="text-lime-500" />
+                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
               ) : (
-                <WarningSquareFilled16 className="text-rose-500" />
+                <XCircleIcon className="text-rose-500 h-5 w-5" />
               )}
-              <CopyToClipboard className="text-black" content={w.address} iconRight={<Copy16 className="ml-0.5" />} />
+              <CopyToClipboard
+                className="text-black"
+                content={w.address}
+                iconRight={<ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />}
+              />
             </Row.Column>
             <Row.Column span={2} className="text-black">
               {fromNow("1999-01-01")}{" "}
@@ -144,14 +149,14 @@ function AddressCards({ wallets }: { wallets: any }) {
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
               {validAddress ? (
-                <CheckboxCheckedFilled16 className="text-lime-500" />
+                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
               ) : (
-                <WarningSquareFilled16 className="text-rose-500" />
+                <XCircleIcon className="text-rose-500 h-5 w-5" />
               )}
               <p className="text-black">
                 {w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
               </p>
-              <Copy16 className="ml-0.5" />
+              <ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />
             </div>
             <div className="lg:hidden">Last Updated</div>
             <p className="text-black">{fromNow("1999-01-01")} </p>
@@ -244,9 +249,9 @@ function UpdateAddressButton() {
               <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
               <div className="flex items-center ml-2">
                 {validAddress ? (
-                  <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
+                  <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
                 ) : (
-                  <WarningSquareFilled16 className="mr-1 text-rose-500" />
+                  <XCircleIcon className="mr-1 text-rose-500 h-5 w-5" />
                 )}
                 <input id="update" placeholder="Update address" />
               </div>
