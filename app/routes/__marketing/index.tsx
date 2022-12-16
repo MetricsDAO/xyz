@@ -35,10 +35,12 @@ export default function Index() {
             alt=""
           />
           <section id="section-1" className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center">
-            <h1 className="font-bold text-6xl md:text-8xl max-w-4xl pt-7">
+            <h1 className="font-bold text-5xl md:text-8xl max-w-4xl pt-7">
               The <b className="text-white">DAO</b> for Web3 Data Analytics
             </h1>
-            <p className="text-2xl max-w-lg">Connecting projects with the best analysts in Web3 for all data needs</p>
+            <p className="text-lg md:text-2xl max-w-lg">
+              Connecting projects with the best analysts in Web3 for all data needs
+            </p>
             <SocialIcons />
           </section>
           <img
@@ -48,7 +50,7 @@ export default function Index() {
           />
           <div id="section-2" className="space-y-5 h-screen flex flex-col justify-center">
             <p className="text-white text-2xl">Our Mission</p>
-            <p className="font-bold text-5xl md:text-6xl lg:text-7xl">
+            <p className="font-bold text-4xl md:text-6xl lg:text-7xl">
               Creating a fair and flexible <b className="text-white">analytics marketplace</b> to remove barriers to
               <b className="text-white"> on-chain participation</b> and help <b className="text-white">Web3</b>{" "}
               organizations launch, grow, and <b className="text-white">succeed.</b>
@@ -56,9 +58,9 @@ export default function Index() {
             <MarketingButton label="Explore the Ecosystem" link="/app/ecosystem" variant="outline" />
           </div>
           <div id="section-3" className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center">
-            <img src="/img/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
+            <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
             <div className="max-w-lg space-y-10 mx-auto md:m-0">
-              <h2 className="text-5xl font-bold">Providing on-demand data to power your organization</h2>
+              <h2 className="text-4xl md:text-5xl font-bold">Providing on-demand data to power your organization</h2>
               <p className="text-stone-500 text-lg">
                 To drive insights, data often needs to be analyzed through a series of complex and time-consuming
                 processes. By partnering with MetricsDAO, organizations can tap the world’s best Web3 analyst community
@@ -68,9 +70,9 @@ export default function Index() {
             </div>
           </div>
           <div id="section-4" className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center">
-            <img src="/img/home-results.png" alt="" className="mx-auto md:m-0 w-full max-w-fit" />
+            <img src="/img/marketing/home-results.png" alt="" className="mx-auto md:m-0 w-full max-w-fit" />
             <div className="max-w-lg space-y-10 mx-auto">
-              <h2 className="text-5xl font-bold">Rewarding the best analysts in Web3</h2>
+              <h2 className="text-4xl md:text-5xl font-bold">Rewarding the best analysts in Web3</h2>
               <p className="text-stone-500 text-lg">
                 Analysts participate in challenges to earn partner reward tokens and rMETRIC while increasing their
                 reputation in the ecosystem. Ongoing engagements that support partners’ goals also increase analysts’
@@ -90,7 +92,7 @@ export default function Index() {
                 Source professional dashboards and tools that answer critical questions or solve complex problems.
                 Analytics challenges can originate directly from partner requests or community brainstorms.
               </p>
-              {/*<div className="space-y-3">
+              <div className="space-y-3">
                 <img src="/img/lightbulb.png" alt="" />
                 <p className="text-3xl font-bold text-white pt-2">Brainstorm</p>
                 <p className="text-white text-lg max-w-sm">
@@ -108,7 +110,7 @@ export default function Index() {
                 </div>
             </div>*/}
             <div className="max-w-lg space-y-10 mx-auto md:m-0">
-              <h2 className="text-5xl font-bold">Scaling on-demand analytics with a decentralized app</h2>
+              <h2 className="text-4xl md:text-5xl font-bold">Scaling on-demand analytics with a decentralized app</h2>
               <p className="text-stone-500 text-lg">
                 Partners fund time-bound challenges where analysts compete to answer questions or solve problems.
                 Winners earn tokens from the partner reward pool while increasing their reputation score in the

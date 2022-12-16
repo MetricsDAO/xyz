@@ -46,7 +46,7 @@ export default function Header() {
         </Menu>
         <Link className="flex flex-row items-center gap-2" to="/">
           <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="26" />
-          <p>
+          <p className="hidden md:block">
             Metrics<b>DAO</b>
           </p>
         </Link>

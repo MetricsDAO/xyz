@@ -14,7 +14,7 @@ export default function MarketingButton({
 }) {
   return (
     <a
-      className={clsx("border-2 rounded-lg w-fit h-10 flex items-center", {
+      className={clsx("border-2 rounded-lg w-fit h-10 flex items-center justify-start", {
         "border-sky-500": variant === "primary",
         "border-white": variant === "outline",
       })}
