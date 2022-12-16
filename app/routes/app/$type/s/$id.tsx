@@ -22,11 +22,12 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
+import { ScoreBadge } from "~/components/score";
 import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
-import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/helpers";
+import { SCORE_COLOR } from "~/utils/helpers";
 
 const paramsSchema = z.object({ id: z.string() });
 
@@ -81,12 +82,7 @@ export default function ChallengeSubmission() {
               <Badge>{fromNow(submission.createdAt.toString())}</Badge>
             </DetailItem>
             <DetailItem title="Overall Score">
-              <Badge className={clsx(SCORE_COLOR_SECONDARY["Bad"], "pl-0")}>
-                <Badge className={clsx(SCORE_COLOR[submission.scoreStatus as Grade], "mr-2")}>
-                  {submission.scoreStatus}
-                </Badge>
-                <span>80</span>
-              </Badge>
+              <ScoreBadge score={10} />
             </DetailItem>
             <DetailItem title="Reviews">
               <Badge>{reviews.length}</Badge>
