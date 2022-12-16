@@ -1,9 +1,8 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
+import { LaborMarketNetwork } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketPrepared } from "~/domain";
-
-const DEV_TEST_CONTRACT_ADDRESS = "0xd138D0B4F007EA66C8A8C0b95E671ffE788aa6A9";
 
 export function useCreateMarketplace({
   data,
@@ -15,25 +14,35 @@ export function useCreateMarketplace({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: DEV_TEST_CONTRACT_ADDRESS,
-    abi: [
+    address: "0x78d8d24c5a2d8717d64ba3bedb80c2500200fcbc",
+    abi: LaborMarketNetwork.abi,
+    functionName: "createLaborMarket",
+    args: [
+      "0xccbc48a243ef99f975617b0900547e32eea7f87a", // LaborMarket.address,
+      "0x7A9260b97113B51aDf233d2fb3F006F09a329654", // TODO: user address?
       {
-        inputs: [{ internalType: "uint256", name: "_num", type: "uint256" }],
-        name: "test",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        network: "0x78d8d24c5a2d8717d64ba3bedb80c2500200fcbc", //LaborMarketNetwork.address,
+        enforcementModule: "0xb6d253d25a0019d90cf67478acf73126c3cea41a", //LikertEnforcement.address,
+        paymentModule: "0x59ddc8a7429cda1e02cc05057da9a77f7fb9a171", //PaymentModule.address,
+        marketUri: data.ipfsHash,
+        delegateBadge: "0x7A9260b97113B51aDf233d2fb3F006F09a329654", //data.reviewBadgerAddress, //TODO
+        delegateTokenId: BigNumber.from(1), //data.reviewBadgerTokenId, //TODO
+        maintainerBadge: data.reviewBadgerAddress as `0x${string}`,
+        maintainerTokenId: BigNumber.from(data.reviewBadgerTokenId),
+        reputationModule: "0x5f701ce3f83402398832fe163c40c5380466c099", //ReputationModule.address,
+        reputationConfig: {
+          reputationEngine: "0x42c06b7f401d8d5ae65301881ce4331de2168729", //ReputationEngine.address,
+          signalStake: BigNumber.from(1), //TODO
+          providerThreshold: BigNumber.from(1), //TODO
+          maintainerThreshold: BigNumber.from(data.submitRepMin), //TODO
+        },
       },
     ],
-    functionName: "test",
-    args: [BigNumber.from(0)], //mocking. Should come from labor market data in the future.
   });
 
   const { data: transactionResultData, write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      console.log("data that would be commited", data);
-      // TODO: create transaction in Prisma
       onWriteSuccess?.();
     },
   });
@@ -44,9 +53,6 @@ export function useCreateMarketplace({
       console.log("error", error);
     },
     onSuccess(receipt) {
-      console.log("success", receipt);
-      // TODO: update transaction in Prisma?
-      // TODO: (for test/dev) create marketplace in Prisma
       onTransactionSuccess?.(receipt);
     },
   });
