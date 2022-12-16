@@ -118,7 +118,7 @@ export default function Brainstorm() {
                 onChange={handleChange}
                 options={[
                   { label: "Trending", value: "trending" },
-                  { label: "# Challenges", value: "serviceRequests" },
+                  { label: "Active Challenges", value: "serviceRequests" },
                   { label: "Chain/Project", value: "project" },
                 ]}
               />
@@ -189,7 +189,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Challenge Pool Totals</Header.Column>
         <Header.Column>Avg. Challenge Pool</Header.Column>
-        <Header.Column># Challenges</Header.Column>
+        <Header.Column>Active Challenges</Header.Column>
       </Header>
       {marketplaces.map((m) => {
         return (
@@ -266,7 +266,7 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
-                <div># Challenges</div>
+                <div>Active Challenges</div>
                 <div>{m._count.serviceRequests.toLocaleString()}</div>
               </Link>
             </Card>
