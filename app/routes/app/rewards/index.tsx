@@ -15,7 +15,7 @@ import RewardsTab from "~/features/rewards-tab";
 import { Card } from "~/components/card";
 import { fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
-import { CheckboxCheckedFilled16, Search16 } from "@carbon/icons-react";
+import { CheckCircleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 
 export default function Rewards() {
   //to be replaced
@@ -156,7 +156,7 @@ function ClaimButton() {
             <div className="flex border-solid border rounded-md border-trueGray-200">
               <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
               <div className="flex items-center p-3">
-                <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
+                <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
                 <p className="text-sm text-gray-600">0xs358437485395889094</p>
               </div>
             </div>
@@ -206,7 +206,7 @@ function SearchAndFilter() {
       validator={withZod(z.any())}
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
-      <Input placeholder="Search" name="q" iconLeft={<Search16 className="w-5 h-5 ml-2" />} />
+      <Input placeholder="Search" name="q" iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />} />
       <p className="text-lg font-semibold">Filter:</p>
       <p>Status</p>
       <Checkbox value="unclaimed" label="Unclaimed" />
