@@ -6,7 +6,7 @@ function TooltipContent({ children }: { children: React.ReactNode }) {
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         sideOffset={5}
-        className="bg-gray-200 text-black p-2 rounded-lg"
+        className="bg-gray-200 text-black p-2 rounded-lg z-20"
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         {children}

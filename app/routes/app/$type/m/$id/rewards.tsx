@@ -1,5 +1,6 @@
-import { Badge } from "~/components/badge";
+import { RewardBadge } from "~/components/reward-badge";
 import { Card } from "~/components/card";
+import { Badge } from "~/components/badge";
 
 export default function MarketplaceIdRewards() {
   return (
@@ -14,18 +15,14 @@ export default function MarketplaceIdRewards() {
             <Card className="p-4 space-around space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Challenge Pools Total</p>
               <p className="text-xs text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
-              <Badge className="bg-gray-200">
-                <Badge className="bg-gray-100">100 USD</Badge> 500 rMETRIC
-              </Badge>
+              <RewardBadge amount={10000} token="USD" rMETRIC={500} />
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Avg. Challenge Pool</p>
               <p className="text-xs text-gray-500">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </p>
-              <Badge className="bg-gray-200">
-                <Badge className="bg-gray-100">100 USD</Badge> 500 rMETRIC
-              </Badge>
+              <RewardBadge amount={100} token="USD" rMETRIC={50} />
             </Card>
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Reward Curve</p>

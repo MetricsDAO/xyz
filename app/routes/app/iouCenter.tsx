@@ -1,4 +1,4 @@
-import { WarningAltFilled16 } from "@carbon/icons-react";
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { Outlet } from "@remix-run/react";
 import { useState } from "react";
 import { Button } from "~/components/button";
@@ -23,7 +23,7 @@ export default function IOUCenter() {
             Create iouTokens to facilitate multi-chain payouts in partners’ native tokens
           </p>
           <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <WarningAltFilled16 className="text-yellow-700 mx-2" />
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
             <p className="text-yellow-700">
               You must ensure the DAO has enough token liquidity before issuing more iouTokens
             </p>
@@ -55,7 +55,7 @@ function CreateIOUButton() {
           <Input label="Name the iouToken" placeholder="iouToken name" />
           <Input label="Amount of iouToken" placeholder="Issue amount" />
           <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <WarningAltFilled16 className="text-yellow-700 mx-2" />
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
             <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
           </div>
           <div className="flex gap-2 justify-end">
