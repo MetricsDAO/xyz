@@ -54,6 +54,7 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
 /**
  * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
  * @param {LaborMarketNew} newLaborMarket - The LaborMarketNew to prepare.
+ * @param {User} user - The connected wallet (user) that is creating the LaborMarket.
  * @returns {LaborMarketPrepared} - The prepared LaborMarket.
  */
 export const prepareLaborMarket = async (newLaborMarket: LaborMarketNew, user: User) => {
