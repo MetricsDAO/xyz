@@ -1,25 +1,25 @@
-import { CheckboxCheckedFilled16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
-import { useEffect, useState } from "react";
-import { Button } from "~/components/button";
-import { Modal } from "~/components/modal";
-import { Container } from "~/components/container";
-import RewardsTab from "~/features/rewards-tab";
-import { Card } from "~/components/card";
-import { fromNow } from "~/utils/date";
-import { Header, Row, Table } from "~/components/table";
-import { CopyToClipboard } from "~/components/copy-to-clipboard";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { listTokens } from "~/services/tokens.server";
-import type { DataFunctionArgs } from "@remix-run/node";
-import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
-import { ValidatedForm } from "remix-validated-form";
-import { withZod } from "@remix-validated-form/with-zod";
-import { z } from "zod";
-import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
-import { getUserId } from "~/services/session.server";
-import { findAllWalletsForUser } from "~/services/wallet.server";
-import { ValidatedInput } from "~/components";
+import { CheckCircleIcon, ClipboardDocumentIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import type { Network, Wallet } from "@prisma/client";
+import type { DataFunctionArgs } from "@remix-run/node";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useEffect, useState } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
+import { ValidatedInput } from "~/components";
+import { Button } from "~/components/button";
+import { Card } from "~/components/card";
+import { Container } from "~/components/container";
+import { CopyToClipboard } from "~/components/copy-to-clipboard";
+import { Modal } from "~/components/modal";
+import { Header, Row, Table } from "~/components/table";
+import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
+import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
+import RewardsTab from "~/features/rewards-tab";
+import { getUserId } from "~/services/session.server";
+import { listTokens } from "~/services/tokens.server";
+import { findAllWalletsForUser } from "~/services/wallet.server";
+import { fromNow } from "~/utils/date";
 import { getNetworkByTokenSymbol, NETWORK_SYMBOLS, truncateAddress, VALIDATORS } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
@@ -102,14 +102,14 @@ function AddressTable({
             <Row.Column span={2}>project</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
               {validateAddress(wallet.address, wallet.chain.name) ? (
-                <CheckboxCheckedFilled16 className="text-lime-500" />
+                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
               ) : (
-                <WarningSquareFilled16 className="text-rose-500" />
+                <XCircleIcon className="text-rose-500 h-5 w-5" />
               )}
               <CopyToClipboard
                 className="text-black"
                 content={wallet.address}
-                iconRight={<Copy16 className="ml-0.5" />}
+                iconRight={<ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />}
               />
             </Row.Column>
             <Row.Column span={2} className="text-black">
@@ -147,12 +147,12 @@ function AddressCards({
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
               {validateAddress(wallet.address, wallet.chain.name) ? (
-                <CheckboxCheckedFilled16 className="text-lime-500" />
+                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
               ) : (
-                <WarningSquareFilled16 className="text-rose-500" />
+                <XCircleIcon className="text-rose-500 h-5 w-5" />
               )}
               <p className="text-black">{truncateAddress(wallet.address)}</p>
-              <Copy16 className="ml-0.5" />
+              <ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />
             </div>
             <div className="lg:hidden">Last Updated</div>
             <p className="text-black">{fromNow(wallet.createdAt)} </p>
@@ -324,9 +324,9 @@ function UpdateAddressButton({
                 <div className="flex items-center ml-2">
                   <div>
                     {validAddress ? (
-                      <CheckboxCheckedFilled16 className="mr-1 text-lime-500" />
+                      <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
                     ) : (
-                      <WarningSquareFilled16 className="mr-1 text-rose-500" />
+                      <XCircleIcon className="mr-1 text-rose-500 h-5 w-5" />
                     )}
                   </div>
                   <input

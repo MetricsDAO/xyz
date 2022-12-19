@@ -1,4 +1,4 @@
-import { Search16, WarningAltFilled16, WarningAltFilled32 } from "@carbon/icons-react";
+import { MagnifyingGlassIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { useRef, useState } from "react";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -44,7 +44,7 @@ function SearchAndFilter() {
       validator={withZod(z.any())}
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
-      <Input placeholder="Search" name="q" iconLeft={<Search16 className="ml-2" />} />
+      <Input placeholder="Search" name="q" iconLeft={<MagnifyingGlassIcon className="ml-2 h-5 w-5" />} />
       <h3 className="font-semibold text-lg">Sort:</h3>
       <Select
         placeholder="Select option"
@@ -181,7 +181,7 @@ function IssueButton() {
       <Button onClick={() => setOpenedAlert(true)}>Issue</Button>
       <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
         <div className="mx-auto space-y-7">
-          <WarningAltFilled32 className="text-yellow-700 mx-auto" />
+          <ExclamationTriangleIcon className="text-yellow-700 mx-auto h-5 w-5" />
           <div className="space-y-2">
             <h1 className="text-center text-lg font-semibold">Please check token liquidity</h1>
             <p className="text-gray-500 text-center text-md">
@@ -206,7 +206,7 @@ function IssueButton() {
             className="w-full"
           />
           <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <WarningAltFilled16 className="text-yellow-700 mx-2" />
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
             <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
           </div>
           <div className="flex gap-2 justify-end">

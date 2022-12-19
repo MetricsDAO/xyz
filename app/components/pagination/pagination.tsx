@@ -1,4 +1,4 @@
-import { ArrowLeft24, ArrowRight24 } from "@carbon/icons-react";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Link, useSearchParams } from "@remix-run/react";
 
 interface PageButtonProps {
@@ -21,7 +21,7 @@ export function Pagination({ page, totalPages }: { page: number; totalPages: num
     <div className="flex justify-center space-x-5 items-center">
       {hasPrevious && (
         <PageLink page={page - 1}>
-          <ArrowLeft24 />
+          <ArrowLeftIcon className="h-6 w-6" />
         </PageLink>
       )}
       {showFirstPage && (
@@ -41,7 +41,7 @@ export function Pagination({ page, totalPages }: { page: number; totalPages: num
       )}
       {hasNext && (
         <PageLink page={page + 1}>
-          <ArrowRight24 />
+          <ArrowRightIcon className="h-6 w-6" />
         </PageLink>
       )}
     </div>

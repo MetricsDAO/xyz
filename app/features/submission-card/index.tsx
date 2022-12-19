@@ -25,7 +25,7 @@ export function SubmissionCard({ submission, score, totalReviews }: Props) {
           <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>
         </div>
       </Link>
-      <div className="flex items-center text-xs">
+      <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.createdAt)} by </span>
         <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
       </div>

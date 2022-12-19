@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 export function Detail({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={clsx("flex space-x-6", className)}>{children}</div>;
+  return <div className={clsx("flex gap-x-6", className)}>{children}</div>;
 }
 
 export function DetailItem({ title, children }: { title: string; children: React.ReactNode }) {
