@@ -209,14 +209,14 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
 
               <Row.Column>
                 <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", payableBlockchainId: "3", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", networkId: "3", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
               </Row.Column>
 
               <Row.Column>
                 <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", payableBlockchainId: "3", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", networkId: "3", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
               </Row.Column>
@@ -256,13 +256,13 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
 
                 <div>Challenge Pool Totals</div>
                 <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", payableBlockchainId: "3", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", networkId: "3", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
                 <div>Avg. Challenge Pool</div>
                 <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", payableBlockchainId: "3", name: "USDC" }} />
+                  <TokenAvatar token={{ symbol: "usdc", networkId: "3", name: "USDC" }} />
                   <span className="mx-1">1000 USDC</span>
                 </Badge>
 
