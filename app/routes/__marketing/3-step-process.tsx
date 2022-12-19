@@ -1,6 +1,5 @@
 import Header from "~/features/marketing-shell/Header";
 import { Disclosure } from "@headlessui/react";
-import { ChevronRight24, ChevronDown24 } from "@carbon/icons-react";
 import AppFooter from "~/features/marketing-shell/Footer";
 import Aos from "aos";
 import { useEffect } from "react";
@@ -184,9 +183,6 @@ export default function Index() {
               >
                 <Disclosure.Button className="flex justify-between align-center w-full">
                   <span className="font-semibold self-center text-xl sm:text-2xl">What is MetricsDAO’s mission?</span>{" "}
-                  <span className="bg-[#08BCF6] p-3 rounded-full">
-                    {open ? <ChevronDown24 className="fill-white" /> : <ChevronRight24 className="fill-white" />}
-                  </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="pt-4 w-5/6 font-light text-xl sm:text-2xl">
                   Automating and decentralizing every step of the process to give us the speed and flexibility needed to
@@ -205,9 +201,6 @@ export default function Index() {
               >
                 <Disclosure.Button className="flex justify-between align-center w-full">
                   <span className="font-semibold self-center text-xl sm:text-2xl">How are analysts paid?</span>{" "}
-                  <span className="bg-[#08BCF6] p-3 rounded-full">
-                    {open ? <ChevronDown24 className="fill-white" /> : <ChevronRight24 className="fill-white" />}
-                  </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="pt-4 w-5/6 font-light text-xl sm:text-2xl">
                   Analysts are paid in partner project’s native tokens and/or in stablecoins.
@@ -225,9 +218,6 @@ export default function Index() {
                 <Disclosure.Button className="flex justify-between align-center w-full">
                   <span className="font-semibold self-center text-xl sm:text-2xl">
                     I have questions I need answered. Can I skip straight to analytics?
-                  </span>{" "}
-                  <span className="bg-[#08BCF6] p-3 rounded-full">
-                    {open ? <ChevronDown24 className="fill-white" /> : <ChevronRight24 className="fill-white" />}
                   </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="pt-4 w-5/6 font-light text-xl sm:text-2xl">
@@ -248,9 +238,6 @@ export default function Index() {
                 <Disclosure.Button className="flex justify-between align-center w-full">
                   <span className="font-semibold self-center text-xl sm:text-2xl">
                     How much does each component cost?
-                  </span>{" "}
-                  <span className="bg-[#08BCF6] p-3 rounded-full">
-                    {open ? <ChevronDown24 className="fill-white" /> : <ChevronRight24 className="fill-white" />}
                   </span>{" "}
                 </Disclosure.Button>
                 <Disclosure.Panel className="pt-4 w-5/6 font-light text-xl sm:text-2xl">

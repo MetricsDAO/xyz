@@ -1,4 +1,4 @@
-import { Close20 } from "@carbon/icons-react";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import toast from "react-hot-toast";
 
 export function customToast(content: React.ReactNode) {
@@ -10,7 +10,7 @@ export function customToast(content: React.ReactNode) {
     >
       {content}
       <button onClick={() => toast.dismiss(t.id)} className="flex items-center">
-        <Close20 />
+        <XMarkIcon className="h-5 w-5" />
       </button>
     </div>
   ));

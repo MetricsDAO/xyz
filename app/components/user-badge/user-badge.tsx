@@ -1,4 +1,4 @@
-import { UserAvatarFilledAlt32 } from "@carbon/icons-react";
+import { UserCircleIcon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
 import { useEnsAvatar, useEnsName } from "wagmi";
 import { Avatar } from "../avatar";
@@ -20,7 +20,7 @@ export function UserBadge({ url, address, balance }: { url: string; address: `0x
     <Link to={url}>
       <div className="flex rounded-full bg-[#ADB5BD] items-center pr-1">
         <div className="flex rounded-full bg-[#F1F3F5] px-1 gap-x-1 items-center py-1">
-          {ensAvatarUrl ? <Avatar src={ensAvatarUrl} /> : <UserAvatarFilledAlt32 height={16} width={16} />}
+          {ensAvatarUrl ? <Avatar src={ensAvatarUrl} /> : <UserCircleIcon height={16} width={16} />}
           <p className="text-sm">{ensName ?? truncateAddress(address)}</p>
         </div>
         <p className="text-xs px-1">{balance} rMETRIC</p>
