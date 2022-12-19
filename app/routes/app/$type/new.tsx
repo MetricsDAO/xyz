@@ -1,5 +1,5 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { useNavigate, useTransition } from "@remix-run/react";
+import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
@@ -19,6 +19,7 @@ import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { toast } from "react-hot-toast";
+import { getUser } from "~/services/session.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -34,10 +35,12 @@ const validator = withZod(LaborMarketNewSchema);
 
 type ActionResponse = { preparedLaborMarket: LaborMarketPrepared } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
+  const user = await getUser(request);
+  invariant(user, "You must be logged in to create a marketplace");
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedLaborMarket = await prepareLaborMarket(result.data);
+  const preparedLaborMarket = await prepareLaborMarket(result.data, user);
   return typedjson({ preparedLaborMarket });
 };
 
@@ -81,15 +84,11 @@ export default function CreateMarketplace() {
 function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
 
-  // const navigate = useNavigate();
-
   const { write, isLoading } = useCreateMarketplace({
     data: laborMarket,
     onTransactionSuccess() {
       toast.dismiss("creating-marketplace");
       toast.success("Marketplace created!");
-      // TODO: redirect?
-      // navigate("/app/brainstorm");
     },
     onWriteSuccess() {
       toast.loading("Creating marketplace...", { id: "creating-marketplace" });
@@ -100,15 +99,7 @@ function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMark
     <div className="space-y-8">
       <p>Please confirm that you would like to create a new marketplace.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button
-          size="md"
-          type="button"
-          onClick={() => {
-            console.log("writing", write);
-            write?.();
-          }}
-          loading={isLoading}
-        >
+        <Button size="md" type="button" onClick={() => write?.()} loading={isLoading}>
           Create
         </Button>
         <Button variant="cancel" size="md" onClick={onCancel}>
