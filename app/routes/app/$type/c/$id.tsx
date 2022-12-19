@@ -13,6 +13,7 @@ import { Badge } from "~/components/badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
+import { RewardBadge } from "~/components/reward-badge";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -32,16 +33,18 @@ export default function Challenge() {
   const { challenge, numOfReviews } = useTypedLoaderData<typeof loader>();
   return (
     <Container className="py-16">
-      <header className="flex space-x-4 mb-16">
-        <h1 className="text-3xl font-semibold w-full">{challenge.title}</h1>
-        <Button variant="cancel" size="lg" asChild>
-          <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
-        </Button>
-        <Button variant="primary" size="lg" asChild>
-          <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
-        </Button>
+      <header className="flex flex-wrap gap-5 justify-between pb-16">
+        <h1 className="text-3xl font-semibold">{challenge.title}</h1>
+        <div className="flex flex-wrap gap-5">
+          <Button variant="cancel" size="lg" asChild>
+            <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
+          </Button>
+          <Button variant="primary" size="lg" asChild>
+            <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
+          </Button>
+        </div>
       </header>
-      <Detail className="mb-6">
+      <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
           <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
         </DetailItem>
@@ -56,9 +59,7 @@ export default function Challenge() {
           </div>
         </DetailItem>
         <DetailItem title="Reward Pool">
-          <Badge className="bg-gray-200">
-            <Badge className="bg-gray-100">100 SOL</Badge> 500 rMETRIC
-          </Badge>
+          <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
         </DetailItem>
         <DetailItem title="Submissions">
           <Badge className="px-4 min-w-full">{challenge._count.submissions}</Badge>
