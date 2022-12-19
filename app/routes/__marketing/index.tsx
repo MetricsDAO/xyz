@@ -12,16 +12,16 @@ export default function Index() {
               <GlobeAltIcon className="text-black h-7 w-7" />
             </a>
             <a href="#section-2">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle fill="fill-black" />
             </a>
             <a href="#section-3">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle />
             </a>
             <a href="#section-4">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle />
             </a>
             <a href="#section-5">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle />
             </a>
             <a href="#bottom">
               <ArrowDownCircleIcon className="text-black h-7 w-7" />
@@ -122,5 +122,13 @@ export default function Index() {
         </main>
       </div>
     </>
+  );
+}
+
+function Circle({ fill = "fill-none" }: { fill?: string }) {
+  return (
+    <svg width="6" height="6" viewBox="0 0 6 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={fill}>
+      <circle cx="3" cy="3" r="2.5" stroke="#252525" />
+    </svg>
   );
 }
