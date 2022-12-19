@@ -9673,9 +9673,9 @@ kuler@^2.0.0:
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
 labor-markets-abi@^1.0.8:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.1.8.tgz#b4b7fd3cfef806fa836ed7388f853f7758a11939"
-  integrity sha512-WednunpxGp9zMgHcVscMGtnsNzHuh+bEa37CljFsTtm59rPe+ApKepWrm+Rc/RConeDhcp5qEM23ii7u6Sh/6w==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.2.0.tgz#6889b5434b10f45befd00af03ba3bd042f3fef03"
+  integrity sha512-Ngq7MRHHFI/syZGINbz8mv906K0W2R3fkEfpuI1V2TrGGp91Iyyya21fCirJiqIy4p5PhLiS+kn8Y4GHptItUg==
 
 language-subtag-registry@^0.3.20:
   version "0.3.22"
