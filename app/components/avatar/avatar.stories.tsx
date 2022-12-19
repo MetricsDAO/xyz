@@ -27,7 +27,7 @@ export const Project = () => {
 };
 
 export const Token = () => {
-  return <TokenAvatar token={{ name: "Ethereum", payableBlockchainId: "1", symbol: "ETH" }} />;
+  return <TokenAvatar token={{ name: "Ethereum", networkId: "1", symbol: "ETH" }} />;
 };
 
 export const Group = () => {

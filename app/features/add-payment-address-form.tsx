@@ -13,20 +13,32 @@ function SelectLabel({ token }: { token: Token }) {
   );
 }
 
-export function AddPaymentAddressForm({ tokens }: { tokens: Token[] }) {
+export function AddPaymentAddressForm({
+  tokens,
+  setSelectedNetwork,
+  setSelectedAddress,
+}: {
+  tokens: Token[];
+  setSelectedNetwork: any;
+  setSelectedAddress: any;
+}) {
   return (
     <>
       <div className="flex items-center">
         <ValidatedSelect
+          onChange={(e) => setSelectedNetwork(e)}
           name="payment.tokenSymbol"
           options={tokens.map((t) => ({
             value: t.symbol,
             label: <SelectLabel token={t} />,
             selectedLabel: t.symbol,
-            defaultValues: { token: t },
           }))}
         />
-        <ValidatedInput name="payment.address" placeholder="Select a chain and enter an address" />
+        <ValidatedInput
+          onChange={(e) => setSelectedAddress(e.target.value)}
+          name="payment.address"
+          placeholder="Select a chain and enter an address"
+        />
       </div>
       <Error name="payment.address" />
       <Error name="payment.tokenSymbol" />

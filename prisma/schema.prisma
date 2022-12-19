@@ -12,17 +12,19 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(cuid())
-  address String   @default("")
-  wallet  Wallet[]
+  id        String   @id @default(cuid())
+  address   String   @default("")
+  createdAt DateTime @default(now())
+  wallet    Wallet[]
 }
 
 model Wallet {
-  address             String            @id @unique
-  userId              String
-  user                User              @relation(fields: [userId], references: [id])
-  payableBlockchainId String
-  chain               PayableBlockchain @relation(fields: [payableBlockchainId], references: [id])
+  address   String   @id @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  networkId String   @default("1")
+  chain     Network  @relation(fields: [networkId], references: [id])
 }
 
 model Transaction {
@@ -36,16 +38,17 @@ model Project {
   id           String        @id @default(cuid())
   slug         String        @unique
   name         String
+  createdAt    DateTime      @default(now())
   laborMarkets LaborMarket[]
 }
 
 // Represents a token that MDAO supports. Appear in labor market creation flows and search.
 model Token {
-  symbol              String            @id @unique
-  name                String
-  payableBlockchainId String
-  chain               PayableBlockchain @relation(fields: [payableBlockchainId], references: [id])
-  laborMarkets        LaborMarket[]
+  symbol       String        @id @unique
+  name         String
+  networkId    String        @default("1")
+  chain        Network       @relation(fields: [networkId], references: [id])
+  laborMarkets LaborMarket[]
 }
 
 // Indexed models...
@@ -68,12 +71,14 @@ model LaborMarket {
   tokens              Token[]
   projects            Project[]
   serviceRequests     ServiceRequest[]
+  createdAt           DateTime         @default(now())
 }
 
 model ServiceRequest {
   id                 String       @id @unique
   title              String
   laborMarketAddress String
+  createdAt          DateTime     @default(now())
   laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
   submissions        Submission[]
 }
@@ -101,10 +106,9 @@ model Submission {
   reviews          Review[]
 }
 
-model PayableBlockchain {
-  id          String   @id @unique
-  name        String
-  tokenSymbol String
-  Token       Token[]
-  Wallet      Wallet[]
+model Network {
+  id     String   @id @unique
+  name   String
+  Token  Token[]
+  Wallet Wallet[]
 }

@@ -1,5 +1,5 @@
 import { CheckboxCheckedFilled16, Copy16, WarningSquareFilled16 } from "@carbon/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import { Container } from "~/components/container";
@@ -19,7 +19,8 @@ import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
 import { getUserId } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import { ValidatedInput } from "~/components";
-import type { Wallet } from "@prisma/client";
+import type { Network, Wallet } from "@prisma/client";
+import { getNetworkByTokenSymbol, NETWORK_SYMBOLS, truncateAddress, VALIDATORS } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUserId(data.request);
@@ -81,9 +82,13 @@ function AddressListView({ wallets }: { wallets: any }) {
   );
 }
 
-function AddressTable({ wallets }: { wallets: Wallet[] }) {
-  const validAddress = false;
-
+function AddressTable({
+  wallets,
+}: {
+  wallets: (Wallet & {
+    chain: Network;
+  })[];
+}) {
   return (
     <Table>
       <Header columns={12}>
@@ -96,7 +101,7 @@ function AddressTable({ wallets }: { wallets: Wallet[] }) {
           <Row columns={12} key={wallet.address}>
             <Row.Column span={2}>project</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
-              {validAddress ? (
+              {validateAddress(wallet.address, wallet.chain.name) ? (
                 <CheckboxCheckedFilled16 className="text-lime-500" />
               ) : (
                 <WarningSquareFilled16 className="text-rose-500" />
@@ -108,7 +113,7 @@ function AddressTable({ wallets }: { wallets: Wallet[] }) {
               />
             </Row.Column>
             <Row.Column span={2} className="text-black">
-              {fromNow("1999-01-01")}
+              {fromNow(wallet.createdAt)}
             </Row.Column>
             <Row.Column span={3} className="flex flex-wrap gap-2">
               <RemoveAddressButton wallet={wallet} />
@@ -121,8 +126,13 @@ function AddressTable({ wallets }: { wallets: Wallet[] }) {
   );
 }
 
-function AddressCards({ wallets }: { wallets: Wallet[] }) {
-  const validAddress = false;
+function AddressCards({
+  wallets,
+}: {
+  wallets: (Wallet & {
+    chain: Network;
+  })[];
+}) {
   return (
     <div className="space-y-3">
       {wallets.map((wallet) => {
@@ -136,20 +146,16 @@ function AddressCards({ wallets }: { wallets: Wallet[] }) {
             <p>project</p>
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
-              {validAddress ? (
+              {validateAddress(wallet.address, wallet.chain.name) ? (
                 <CheckboxCheckedFilled16 className="text-lime-500" />
               ) : (
                 <WarningSquareFilled16 className="text-rose-500" />
               )}
-              <p className="text-black">
-                {wallet.address.length > 10
-                  ? wallet.address?.slice(0, 6) + "..." + wallet.address?.slice(-4)
-                  : wallet.address}
-              </p>
+              <p className="text-black">{truncateAddress(wallet.address)}</p>
               <Copy16 className="ml-0.5" />
             </div>
             <div className="lg:hidden">Last Updated</div>
-            <p className="text-black">{fromNow("1999-01-01")} </p>
+            <p className="text-black">{fromNow(wallet.createdAt)} </p>
             <div className="flex flex-wrap gap-2">
               <RemoveAddressButton wallet={wallet} />
               <UpdateAddressButton wallet={wallet} />
@@ -189,6 +195,16 @@ function AddAddressButton() {
   const [openedAdd, setOpenedAdd] = useState(false);
 
   const { user } = useTypedLoaderData<typeof loader>();
+  const [selectedNetwork, setSelectedNetwork] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [validAddress, setValidAddress] = useState(false);
+
+  useEffect(() => {
+    if (selectedAddress && selectedNetwork) {
+      const isValid = validateAddress(selectedAddress, getNetworkByTokenSymbol(selectedNetwork));
+      setValidAddress(isValid);
+    }
+  }, [selectedAddress, selectedNetwork]);
 
   return (
     <>
@@ -197,15 +213,19 @@ function AddAddressButton() {
       </Button>
       <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
         <ValidatedForm
-          action="/app/rewards/add"
+          action="/app/rewards/wallet/add"
           method="post"
           validator={addWalletValidator}
           className="space-y-5 mt-5"
         >
           <div className="pb-44 pt-8">
-            <AddPaymentAddressForm tokens={tokens} />
+            <AddPaymentAddressForm
+              setSelectedNetwork={setSelectedNetwork}
+              setSelectedAddress={setSelectedAddress}
+              tokens={tokens}
+            />
           </div>
-          <div className="invisible h-0">
+          <div className="invisible h-0 w-0">
             <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
             <ValidatedInput type="hidden" id="action" name="action" value={"add"} />
           </div>
@@ -213,7 +233,7 @@ function AddAddressButton() {
             <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
               Cancel
             </Button>
-            <Button onClick={() => setOpenedAdd(false)} type="submit">
+            <Button disabled={!validAddress} onClick={() => setOpenedAdd(false)} type="submit">
               Save
             </Button>
           </div>
@@ -223,7 +243,7 @@ function AddAddressButton() {
   );
 }
 
-function RemoveAddressButton({ wallet }: { wallet: Wallet }) {
+function RemoveAddressButton({ wallet }: { wallet: Wallet & { chain: Network } }) {
   const [openedRemove, setOpenedRemove] = useState(false);
 
   return (
@@ -234,20 +254,22 @@ function RemoveAddressButton({ wallet }: { wallet: Wallet }) {
       <Modal isOpen={openedRemove} onClose={() => setOpenedRemove(false)} title="Are you sure you want to remove?">
         <div className="space-y-5 mt-5">
           <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
-            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
-            <p className="pl-2">0x381764734678365783648</p>
+            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
+              {NETWORK_SYMBOLS[wallet.chain.name as keyof typeof NETWORK_SYMBOLS]}
+            </p>
+            <p className="pl-2 overflow-clip">{wallet.address}</p>
           </div>
           <ValidatedForm
-            action="/app/rewards/remove"
+            action="/app/rewards/wallet/remove"
             method="post"
             validator={deleteWalletValidator}
             className="space-y-5 mt-5"
           >
-            <div className="invisible h-0">
+            <div className="invisible h-0 w-0">
               <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="cancel" onClick={() => setOpenedRemove(false)}>
+              <Button type="button" variant="cancel" onClick={() => setOpenedRemove(false)}>
                 Cancel
               </Button>
               <Button type="submit" onClick={() => setOpenedRemove(false)}>
@@ -260,12 +282,31 @@ function RemoveAddressButton({ wallet }: { wallet: Wallet }) {
     </>
   );
 }
+type ObjectKey = keyof typeof VALIDATORS;
 
-function UpdateAddressButton({ wallet }: { wallet: Wallet }) {
+export function validateAddress(address: string, network: string) {
+  try {
+    const networkName = network.toLowerCase() as ObjectKey;
+    if (!networkName) throw new Error("Sorry we don't support this network yet.");
+    const networkSchema = VALIDATORS[networkName];
+    networkSchema?.parse(address);
+  } catch (e) {
+    console.log(e, "not a valid address");
+    return false;
+  }
+  return true;
+}
+
+function UpdateAddressButton({
+  wallet,
+}: {
+  wallet: Wallet & {
+    chain: Network;
+  };
+}) {
   const [openedUpdate, setOpenedUpdate] = useState(false);
   const { user } = useTypedLoaderData<typeof loader>();
-
-  const validAddress = false;
+  const [validAddress, setValidAddress] = useState(false);
 
   return (
     <>
@@ -273,11 +314,13 @@ function UpdateAddressButton({ wallet }: { wallet: Wallet }) {
         Update
       </Button>
       <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <ValidatedForm action="/app/rewards/update" method="post" validator={updateWalletValidator}>
+        <ValidatedForm action="/app/rewards/wallet/update" method="post" validator={updateWalletValidator}>
           <div className="space-y-5 mt-5">
             <div className="space-y-2">
               <div className="flex border-solid border rounded-md border-trueGray-200">
-                <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
+                <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
+                  {NETWORK_SYMBOLS[wallet.chain.name as keyof typeof NETWORK_SYMBOLS]}
+                </p>
                 <div className="flex items-center ml-2">
                   <div>
                     {validAddress ? (
@@ -287,10 +330,15 @@ function UpdateAddressButton({ wallet }: { wallet: Wallet }) {
                     )}
                   </div>
                   <input
-                    className="border-none w-100%"
+                    className="border-none w-full focus:outline-none"
                     id="newAddress"
                     name="newAddress"
                     placeholder="Update Address"
+                    onChange={(e) => {
+                      validateAddress(e.target.value, wallet.chain.name)
+                        ? setValidAddress(true)
+                        : setValidAddress(false);
+                    }}
                   />
                   <div className="invisible h-0">
                     <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
@@ -303,10 +351,10 @@ function UpdateAddressButton({ wallet }: { wallet: Wallet }) {
               )}
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="cancel" onClick={() => setOpenedUpdate(false)}>
+              <Button type="reset" variant="cancel" onClick={() => setOpenedUpdate(false)}>
                 Cancel
               </Button>
-              <Button onClick={() => setOpenedUpdate(false)} type="submit">
+              <Button disabled={!validAddress} onClick={() => setOpenedUpdate(false)} type="submit">
                 Save
               </Button>
             </div>

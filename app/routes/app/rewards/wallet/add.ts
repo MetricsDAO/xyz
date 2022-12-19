@@ -2,7 +2,8 @@ import type { ActionFunction, ActionFunctionArgs } from "@remix-run/server-runti
 import { redirect } from "remix-typedjson";
 import { validationError } from "remix-validated-form";
 import { addWalletValidator } from "~/routes/app/rewards/addresses";
-import { addWalletAddress, findBlockchainOfWallet } from "~/services/wallet.server";
+import { addWalletAddress, findNetworkOfWallet } from "~/services/wallet.server";
+import { getNetworkByTokenSymbol } from "~/utils/helpers";
 
 export const action: ActionFunction = async ({ request }: ActionFunctionArgs) => {
   const formData = await addWalletValidator.validate(await request.formData());
@@ -13,10 +14,10 @@ export const action: ActionFunction = async ({ request }: ActionFunctionArgs) =>
   const token = formData.data.payment.tokenSymbol;
   const address = formData.data.payment.address;
   const user = formData.data.userId;
-  const payableBlockchain = await findBlockchainOfWallet(token);
+  const network = await findNetworkOfWallet(getNetworkByTokenSymbol(token));
 
-  if (payableBlockchain) {
-    await addWalletAddress(address, payableBlockchain.id, user);
+  if (network) {
+    await addWalletAddress(address, network.id, user);
   }
 
   return redirect("/app/rewards/addresses");

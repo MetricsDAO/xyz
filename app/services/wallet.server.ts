@@ -1,3 +1,4 @@
+import type { Token } from "@prisma/client";
 import { prisma } from "./prisma.server";
 
 /**
@@ -27,10 +28,12 @@ export function updateWalletAddress(userId: string, walletAddress: string, newWa
    * 
    */
 export function addWalletAddress(walletAddress: string, Id: string, user: string) {
-  return prisma.wallet.create({
-    data: {
+  return prisma.wallet.upsert({
+    where: { address: walletAddress },
+    update: { address: walletAddress },
+    create: {
       address: walletAddress,
-      payableBlockchainId: Id,
+      networkId: Id,
       userId: user,
     },
   });
@@ -59,18 +62,21 @@ export function findAllWalletsForUser(userId: string) {
     where: {
       userId: userId,
     },
+    include: {
+      chain: true,
+    },
   });
 }
 
 /**
- * Find the PayableBlockchain for a wallet.
+ * Find the Network for a wallet.
  * @param {string} tokenSymbol - the user.
- * @returns {Promise<PayableBlockchain>} - the PayableBlockchain that the wallet lives on.
+ * @returns {Promise<Network>} - the PayableBlockchain that the wallet lives on.
  */
-export function findBlockchainOfWallet(tokenSymbol: string) {
-  return prisma.payableBlockchain.findFirst({
+export function findNetworkOfWallet(name: string) {
+  return prisma.network.findFirst({
     where: {
-      tokenSymbol: tokenSymbol,
+      name: name,
     },
   });
 }

@@ -1,3 +1,6 @@
+import { token } from "morgan";
+import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
+
 export const PROJECT_ICONS: Record<string, string | undefined> = {
   Ethereum: "/img/icons/project-icons/eth.svg",
   Solana: "/img/icons/project-icons/sol.svg",
@@ -20,6 +23,29 @@ export const truncateAddress = (address: string) => {
   }
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+
+export const VALIDATORS = {
+  ethereum: EthAddressSchema,
+  solana: SolAddressSchema,
+} as const;
+
+export const NETWORK_SYMBOLS = {
+  Ethereum: "ETH",
+  Solana: "SOL",
+  "USD Coin": "USDC",
+  Polygon: "MATIC",
+  Axelar: "AXL",
+  Near: "NEAR",
+  Flow: "FLOW",
+  Avalanche: "AVAX",
+} as const;
+
+export function getNetworkByTokenSymbol(tokenSymbol: string) {
+  const network = Object.keys(NETWORK_SYMBOLS).find(
+    (key) => NETWORK_SYMBOLS[key as keyof typeof NETWORK_SYMBOLS] === tokenSymbol
+  );
+  return network != undefined ? network : "";
+}
 
 export const SCORE_COLOR = {
   Great: "bg-lime-100",
