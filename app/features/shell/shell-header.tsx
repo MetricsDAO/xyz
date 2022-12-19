@@ -87,7 +87,7 @@ export function AppHeader() {
       <menu className="hidden md:flex flex-row gap-4 ml-4">{items}</menu>
 
       <div className="flex items-center space-x-4">
-        {user != undefined ? <div className="hidden md:block">{secondaryItems}</div> : null}
+{user ? <div className="hidden md:block">{secondaryItems}</div> : null}
         <CustomConnectButton />
       </div>
     </header>
