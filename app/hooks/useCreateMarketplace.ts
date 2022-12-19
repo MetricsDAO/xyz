@@ -26,7 +26,7 @@ export function useCreateMarketplace({
     functionName: "createLaborMarket",
     args: [
       LaborMarket.address as `0x${string}`,
-      "0x7A9260b97113B51aDf233d2fb3F006F09a329654", // TODO: user address?
+      data.userAddress as `0x${string}`,
       {
         network: LaborMarketNetwork.address as `0x${string}`,
         enforcementModule: LikertEnforcement.address as `0x${string}`,

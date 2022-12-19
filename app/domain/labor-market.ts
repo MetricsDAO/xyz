@@ -57,7 +57,10 @@ export function fakeLaborMarketNew(): LaborMarketNew {
 }
 
 // Schema for a labor market with an IPFS CID.
-export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({ ipfsHash: z.string(), userAddress: z.string() });
+export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({
+  ipfsHash: z.string(),
+  userAddress: EthAddressSchema,
+});
 
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({
