@@ -1,6 +1,6 @@
-import Header from "~/features/marketing-shell/Header";
+import Header from "~/features/marketing-shell/header";
 import { Disclosure } from "@headlessui/react";
-import AppFooter from "~/features/marketing-shell/Footer";
+import AppFooter from "~/features/marketing-shell/footer";
 import Aos from "aos";
 import { useEffect } from "react";
 

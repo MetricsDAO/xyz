@@ -14,7 +14,7 @@ import { Modal } from "~/components/modal";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
 import { fakeLaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
-import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
+import { useCreateMarketplace } from "~/hooks/use-create-marketplace";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";

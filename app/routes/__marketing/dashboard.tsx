@@ -1,5 +1,5 @@
-import AppFooter from "~/features/marketing-shell/Footer";
-import Header from "~/features/marketing-shell/Header";
+import AppFooter from "~/features/marketing-shell/footer";
+import Header from "~/features/marketing-shell/header";
 
 export default function Index() {
   return (

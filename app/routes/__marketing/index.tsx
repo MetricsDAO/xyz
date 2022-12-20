@@ -1,6 +1,6 @@
-import AppFooter from "~/features/marketing-shell/Footer";
-import Header from "~/features/marketing-shell/Header";
-import SocialIcons from "~/features/marketing-shell/SocialIcons";
+import AppFooter from "~/features/marketing-shell/footer";
+import Header from "~/features/marketing-shell/header";
+import SocialIcons from "~/features/marketing-shell/social-icons";
 import Aos from "aos";
 import { useEffect } from "react";
 
