@@ -43,6 +43,7 @@ describe("LaborMarketNewSchema", () => {
         badgerAddress: faker.finance.ethereumAddress(),
         badgerTokenId: "1",
       },
+      userAddress: faker.finance.ethereumAddress(),
     };
     const result = LaborMarketNewSchema.safeParse(validLaborMarket);
     expect(result.success).toBe(true);

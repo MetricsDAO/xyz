@@ -1,4 +1,3 @@
-import type { User } from ".prisma/client";
 import type { LaborMarket, LaborMarketNew, LaborMarketPrepared, LaborMarketSearch } from "~/domain";
 import { LaborMarketMetaSchema } from "~/domain";
 import { uploadJsonToIpfs } from "./ipfs.server";
