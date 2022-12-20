@@ -7,12 +7,17 @@ export default function Index() {
     <>
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
+          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">
+            <div className="w-1 h-28 mx-3 mt-7 relative top-0">
+              <div id="pageProgress" style={{ height: `0%` }} className="w-full h-full bg-black " />
+            </div>
+          </div>
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
             <a href="#top">
               <GlobeAltIcon className="text-black h-7 w-7" />
             </a>
             <a href="#section-2">
-              <Circle fill="fill-black" />
+              <Circle />
             </a>
             <a href="#section-3">
               <Circle />
@@ -31,7 +36,7 @@ export default function Index() {
         <main className="px-8">
           <img
             src="/img/marketing/homepage-bg-top.png"
-            className="absolute top-0 left-0 -z-10 h-screen w-screen"
+            className="absolute top-0 left-0 -z-20 h-screen w-screen"
             alt=""
           />
           <section id="section-1" className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center">
@@ -45,7 +50,7 @@ export default function Index() {
           </section>
           <img
             src="/img/marketing/homepage-bg-bottom.png"
-            className="absolute top-100 left-0 -z-10 h-screen w-screen"
+            className="absolute top-100 left-0 -z-20 h-screen w-screen"
             alt=""
           />
           <div id="section-2" className="space-y-5 h-screen flex flex-col justify-center">
@@ -123,6 +128,21 @@ export default function Index() {
       </div>
     </>
   );
+}
+
+// When the user scrolls the page, execute myFunction
+if (typeof window !== "undefined") {
+  window.onscroll = function () {
+    scrollNav();
+  };
+}
+
+function scrollNav() {
+  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var scrolled = (winScroll / height) * 100;
+  scrolled = scrolled - 0.05 * scrolled; //adjusts for header + footer
+  document.getElementById("pageProgress")!.style.height = scrolled + "%";
 }
 
 function Circle({ fill = "fill-none" }: { fill?: string }) {
