@@ -195,8 +195,8 @@ function AddAddressButton() {
   const [openedAdd, setOpenedAdd] = useState(false);
 
   const { user } = useTypedLoaderData<typeof loader>();
-  const [selectedNetwork, setSelectedNetwork] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<string>("");
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
   const [validAddress, setValidAddress] = useState(false);
 
   useEffect(() => {

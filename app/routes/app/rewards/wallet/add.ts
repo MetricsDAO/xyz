@@ -9,8 +9,6 @@ export const action: ActionFunction = async ({ request }: ActionFunctionArgs) =>
   const formData = await addWalletValidator.validate(await request.formData());
   if (formData.error) return validationError(formData.error);
 
-  console.log("formData", formData);
-
   const token = formData.data.payment.tokenSymbol;
   const address = formData.data.payment.address;
   const user = formData.data.userId;

@@ -1,4 +1,5 @@
 import type { Token } from "@prisma/client";
+import type { SetStateAction } from "react";
 import { Error, TokenAvatar, ValidatedInput, ValidatedSelect } from "~/components";
 
 function SelectLabel({ token }: { token: Token }) {
@@ -19,8 +20,8 @@ export function AddPaymentAddressForm({
   setSelectedAddress,
 }: {
   tokens: Token[];
-  setSelectedNetwork: any;
-  setSelectedAddress: any;
+  setSelectedNetwork: React.Dispatch<SetStateAction<string>>;
+  setSelectedAddress: React.Dispatch<SetStateAction<string>>;
 }) {
   return (
     <>
