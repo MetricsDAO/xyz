@@ -1,11 +1,11 @@
-import type { ActionFunction, ActionFunctionArgs } from "@remix-run/server-runtime/dist/router";
+import type { ActionFunction, DataFunctionArgs } from "@remix-run/node";
 import { redirect } from "remix-typedjson";
 import { validationError } from "remix-validated-form";
 import { addWalletValidator } from "~/routes/app/rewards/addresses";
 import { addWalletAddress, findNetworkOfWallet } from "~/services/wallet.server";
 import { getNetworkByTokenSymbol } from "~/utils/helpers";
 
-export const action: ActionFunction = async ({ request }: ActionFunctionArgs) => {
+export const action: ActionFunction = async ({ request }: DataFunctionArgs) => {
   const formData = await addWalletValidator.validate(await request.formData());
   if (formData.error) return validationError(formData.error);
 

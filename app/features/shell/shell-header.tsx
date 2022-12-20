@@ -27,8 +27,6 @@ const userLinks = [
 
 export function AppHeader() {
   const user = useOptionalUser();
-  console.log("USER", user);
-
   const items = primaryLinks.map((link) => (
     <NavLink
       key={link.link}
