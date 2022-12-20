@@ -19,6 +19,7 @@ describe("LaborMarketNewSchema", () => {
       launch: {
         access: "delegates",
       },
+      userAddress: faker.finance.ethereumAddress(),
     };
     const result = LaborMarketNewSchema.safeParse(laborMarket);
     expect(result.success).toBe(false);
