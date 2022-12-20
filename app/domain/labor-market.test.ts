@@ -19,7 +19,6 @@ describe("LaborMarketNewSchema", () => {
       launch: {
         access: "delegates",
       },
-      userAddress: faker.finance.ethereumAddress(),
     };
     const result = LaborMarketNewSchema.safeParse(laborMarket);
     expect(result.success).toBe(false);
@@ -44,7 +43,6 @@ describe("LaborMarketNewSchema", () => {
         badgerAddress: faker.finance.ethereumAddress(),
         badgerTokenId: "1",
       },
-      userAddress: faker.finance.ethereumAddress(),
     };
     const result = LaborMarketNewSchema.safeParse(validLaborMarket);
     expect(result.success).toBe(true);

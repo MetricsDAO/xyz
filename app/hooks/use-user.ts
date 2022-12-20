@@ -2,7 +2,7 @@ import type { User } from "@prisma/client";
 import { useRouteData } from "remix-utils";
 
 function isUser(user: any): user is User {
-  return user && typeof user === "object" && typeof user.address === "string";
+  return user && typeof user === "object" && typeof user.email === "string";
 }
 
 export function useOptionalUser(): User | undefined {
