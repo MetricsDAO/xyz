@@ -1,4 +1,3 @@
 export default function AppHome() {
-  // console.log(window.env.ENVIONRMENT + 123);
-  return <h1>home</h1>;
+  return <meta http-equiv="refresh" content="0; URL=\app\ecosystem" />;
 }
