@@ -28,12 +28,6 @@ async function main() {
     data: [
       { id: "1", name: "Ethereum" },
       { id: "2", name: "Solana" },
-      { id: "3", name: "USD Coin" },
-      { id: "4", name: "Polygon" },
-      { id: "5", name: "Axelar" },
-      { id: "6", name: "Near" },
-      { id: "7", name: "Flow" },
-      { id: "8", name: "Avalanche" },
     ],
     skipDuplicates: true,
   });

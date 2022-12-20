@@ -16,6 +16,7 @@ import { Header, Row, Table } from "~/components/table";
 import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
+import { listNetworks } from "~/services/network.server";
 import { getUserId } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
@@ -26,9 +27,11 @@ export const loader = async (data: DataFunctionArgs) => {
   const user = await getUserId(data.request);
   const wallets = user ? await findAllWalletsForUser(user) : [];
   const tokens = await listTokens();
+  const networks = await listNetworks();
 
   return typedjson({
     tokens,
+    networks,
     wallets,
     user,
   });
@@ -168,10 +171,9 @@ function AddressCards({
 }
 
 const addWalletSchema = z.object({
-  payment: z.discriminatedUnion("tokenSymbol", [
-    z.object({ tokenSymbol: z.literal("ETH"), address: EthAddressSchema }),
-    z.object({ tokenSymbol: z.literal("SOL"), address: SolAddressSchema }),
-    z.object({ tokenSymbol: z.literal("MATIC"), address: EthAddressSchema }),
+  payment: z.discriminatedUnion("networkName", [
+    z.object({ networkName: z.literal("Ethereum"), address: EthAddressSchema }),
+    z.object({ networkName: z.literal("Solana"), address: SolAddressSchema }),
   ]),
   userId: z.string({ description: "The ID of the user the wallet belongs to." }),
 });
@@ -191,7 +193,7 @@ export const deleteWalletValidator = withZod(deleteWalletSchema);
 export const updateWalletValidator = withZod(updateWalletSchema);
 
 function AddAddressButton() {
-  const { tokens } = useTypedLoaderData<typeof loader>();
+  const { tokens, networks } = useTypedLoaderData<typeof loader>();
   const [openedAdd, setOpenedAdd] = useState(false);
 
   const { user } = useTypedLoaderData<typeof loader>();
@@ -219,11 +221,7 @@ function AddAddressButton() {
           className="space-y-5 mt-5"
         >
           <div className="pb-44 pt-8">
-            <AddPaymentAddressForm
-              setSelectedNetwork={setSelectedNetwork}
-              setSelectedAddress={setSelectedAddress}
-              tokens={tokens}
-            />
+            <AddPaymentAddressForm networks={networks} />
           </div>
           <div className="invisible h-0 w-0">
             <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
@@ -233,9 +231,7 @@ function AddAddressButton() {
             <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
               Cancel
             </Button>
-            <Button disabled={!validAddress} onClick={() => setOpenedAdd(false)} type="submit">
-              Save
-            </Button>
+            <Button type="submit">Save</Button>
           </div>
         </ValidatedForm>
       </Modal>
