@@ -12,3 +12,11 @@ export function findNetworkById(id: string) {
     },
   });
 }
+
+/**
+ * list all Networks.
+ * @returns {Promise<Network[]>} - the list of Networks.
+ */
+export function listNetworks() {
+  return prisma.network.findMany();
+}
