@@ -35,7 +35,9 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
   rewardTokens: true,
 });
 
-export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
+export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true }).extend({
+  userAddress: z.string().min(1, "Must be signed in with wallet").and(EthAddressSchema),
+});
 
 // Generate a fake LaborMarketNew for testing using faker.
 export function fakeLaborMarketNew(): LaborMarketNew {
@@ -53,13 +55,13 @@ export function fakeLaborMarketNew(): LaborMarketNew {
     reviewBadgerTokenId: faker.datatype.number(100).toString(),
     tokenSymbols: ["ETH"],
     projectIds: [],
+    userAddress: faker.finance.ethereumAddress(),
   };
 }
 
 // Schema for a labor market with an IPFS CID.
 export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({
   ipfsHash: z.string(),
-  userAddress: EthAddressSchema,
 });
 
 // Used for searching and filtering marketplaces.

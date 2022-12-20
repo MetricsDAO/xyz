@@ -2,24 +2,21 @@ import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { Button } from "~/components/button";
-import { Container } from "~/components/container";
-import { MarketplaceForm } from "~/features/marketplace-form";
-import { Modal } from "~/components/modal";
+import { Button, Container, Error, Modal } from "~/components";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
-import { fakeLaborMarketNew } from "~/domain";
-import { LaborMarketNewSchema } from "~/domain";
+import { fakeLaborMarketNew, LaborMarketNewSchema } from "~/domain";
+import { MarketplaceForm } from "~/features/marketplace-form";
 import { useCreateMarketplace } from "~/hooks/use-create-marketplace";
+import { useOptionalUser } from "~/hooks/use-user";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { toast } from "react-hot-toast";
-import { getUser } from "~/services/session.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -35,12 +32,10 @@ const validator = withZod(LaborMarketNewSchema);
 
 type ActionResponse = { preparedLaborMarket: LaborMarketPrepared } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedLaborMarket = await prepareLaborMarket(result.data, user);
+  const preparedLaborMarket = await prepareLaborMarket(result.data);
   return typedjson({ preparedLaborMarket });
 };
 
@@ -48,6 +43,7 @@ export default function CreateMarketplace() {
   const transition = useTransition();
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+  const user = useOptionalUser();
 
   const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketPrepared; isOpen: boolean }>({ isOpen: false });
 
@@ -67,6 +63,8 @@ export default function CreateMarketplace() {
         <ValidatedForm<LaborMarketNew> validator={validator} method="post" defaultValues={defaultValues}>
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
+          <input type="hidden" name="userAddress" value={user?.address} />
+          <Error name="userAddress" />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">
               {transition.state === "submitting" ? "Loading..." : "Next"}

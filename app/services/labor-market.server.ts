@@ -57,10 +57,10 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
  * @param {User} user - The connected wallet (user) that is creating the LaborMarket.
  * @returns {LaborMarketPrepared} - The prepared LaborMarket.
  */
-export const prepareLaborMarket = async (newLaborMarket: LaborMarketNew, user: User) => {
+export const prepareLaborMarket = async (newLaborMarket: LaborMarketNew) => {
   const metadata = LaborMarketMetaSchema.parse(newLaborMarket); // Prune extra fields from LaborMarketNew
   const cid = await uploadJsonToIpfs(metadata);
-  const result: LaborMarketPrepared = { ...newLaborMarket, userAddress: user.address, ipfsHash: cid };
+  const result: LaborMarketPrepared = { ...newLaborMarket, ipfsHash: cid };
   return result;
 };
 
