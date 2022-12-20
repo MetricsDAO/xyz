@@ -75,7 +75,7 @@ export async function createNonceSession({ request, nonce }: { request: Request;
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  return redirect("/", {
+  return redirect("/app", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
