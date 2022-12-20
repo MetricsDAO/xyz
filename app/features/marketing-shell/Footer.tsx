@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react";
+import { SocialIcons } from "./social-icons";
 
 export default function AppFooter() {
   return (
