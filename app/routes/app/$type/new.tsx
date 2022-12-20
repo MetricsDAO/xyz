@@ -14,7 +14,7 @@ import { Modal } from "~/components/modal";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
 import { fakeLaborMarketNew } from "~/domain";
 import { LaborMarketNewSchema } from "~/domain";
-import { useCreateMarketplace } from "~/hooks/useCreateMarketplace";
+import { useCreateMarketplace } from "~/hooks/use-create-marketplace";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
@@ -75,13 +75,13 @@ export default function CreateMarketplace() {
         </ValidatedForm>
       </div>
       <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction laborMarket={modalData.laborMarket} onCancel={closeModal} />
+        <ConfirmTransaction laborMarket={modalData.laborMarket} onClose={closeModal} />
       </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
+function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarketPrepared; onClose: () => void }) {
   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
 
   const { write, isLoading } = useCreateMarketplace({
@@ -92,17 +92,22 @@ function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMark
     },
     onWriteSuccess() {
       toast.loading("Creating marketplace...", { id: "creating-marketplace" });
+      onClose();
     },
   });
+
+  const onCreate = () => {
+    write?.();
+  };
 
   return (
     <div className="space-y-8">
       <p>Please confirm that you would like to create a new marketplace.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={() => write?.()} loading={isLoading}>
+        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
           Create
         </Button>
-        <Button variant="cancel" size="md" onClick={onCancel}>
+        <Button variant="cancel" size="md" onClick={onClose}>
           Cancel
         </Button>
       </div>
