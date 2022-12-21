@@ -8,28 +8,28 @@ export default function Index() {
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">
-            <div className="w-1 h-28 mx-3 mt-7 relative top-0">
-              <div id="pageProgress" style={{ height: `0%` }} className="w-full h-full bg-black " />
+            <div className="w-1 h-28 mx-2.5 mt-7 relative top-0">
+              <div id="pageProgress" style={{ height: `0%` }} className="w-0.5 ml-px h-full bg-black " />
             </div>
           </div>
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
             <a href="#top">
-              <GlobeAltIcon className="text-black h-7 w-7" />
+              <GlobeAltIcon className="text-black h-6 w-6" />
             </a>
             <a href="#section-2">
-              <Circle />
+              <Circle id="missionCircle" />
             </a>
             <a href="#section-3">
-              <Circle />
+              <Circle id="partnerCircle" />
             </a>
             <a href="#section-4">
-              <Circle />
+              <Circle id="learnCircle" />
             </a>
             <a href="#section-5">
-              <Circle />
+              <Circle id="scalingCircle" />
             </a>
             <a href="#bottom">
-              <ArrowDownCircleIcon className="text-black h-7 w-7" />
+              <ArrowDownCircleIcon className="text-black h-6 w-6" />
             </a>
           </div>
         </aside>
@@ -143,11 +143,23 @@ function scrollNav() {
   var scrolled = (winScroll / height) * 100;
   scrolled = scrolled - 0.05 * scrolled; //adjusts for header + footer
   document.getElementById("pageProgress")!.style.height = scrolled + "%";
+  scrolled > 16
+    ? (document.getElementById("missionCircle")!.style.fill = "black")
+    : (document.getElementById("missionCircle")!.style.fill = "none");
+  scrolled > 37
+    ? (document.getElementById("partnerCircle")!.style.fill = "black")
+    : (document.getElementById("partnerCircle")!.style.fill = "none");
+  scrolled > 61
+    ? (document.getElementById("learnCircle")!.style.fill = "black")
+    : (document.getElementById("learnCircle")!.style.fill = "none");
+  scrolled > 85
+    ? (document.getElementById("scalingCircle")!.style.fill = "black")
+    : (document.getElementById("scalingCircle")!.style.fill = "none");
 }
 
-function Circle({ fill = "fill-none" }: { fill?: string }) {
+function Circle({ id }: { id: string }) {
   return (
-    <svg width="6" height="6" viewBox="0 0 6 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={fill}>
+    <svg id={id} width="6" height="6" viewBox="0 0 6 6" style={{ fill: "none" }} xmlns="http://www.w3.org/2000/svg">
       <circle cx="3" cy="3" r="2.5" stroke="#252525" />
     </svg>
   );
