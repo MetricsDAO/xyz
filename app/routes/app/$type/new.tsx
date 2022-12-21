@@ -1,22 +1,21 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { useNavigate, useTransition } from "@remix-run/react";
+import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { Button } from "~/components/button";
-import { Container } from "~/components/container";
-import { MarketplaceForm } from "~/features/marketplace-form";
-import { Modal } from "~/components/modal";
+import { Button, Container, Modal } from "~/components";
 import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
-import { fakeLaborMarketNew } from "~/domain";
-import { LaborMarketNewSchema } from "~/domain";
+import { fakeLaborMarketNew, LaborMarketNewSchema } from "~/domain";
+import { MarketplaceForm } from "~/features/marketplace-form";
 import { useCreateMarketplace } from "~/hooks/use-create-marketplace";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
+import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
@@ -33,10 +32,12 @@ const validator = withZod(LaborMarketNewSchema);
 
 type ActionResponse = { preparedLaborMarket: LaborMarketPrepared } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
+  const user = await getUser(request);
+  invariant(user, "You must be logged in to create a marketplace");
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedLaborMarket = await prepareLaborMarket(result.data);
+  const preparedLaborMarket = await prepareLaborMarket(result.data, user);
   return typedjson({ preparedLaborMarket });
 };
 
@@ -71,35 +72,39 @@ export default function CreateMarketplace() {
         </ValidatedForm>
       </div>
       <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction laborMarket={modalData.laborMarket} onCancel={closeModal} />
+        <ConfirmTransaction laborMarket={modalData.laborMarket} onClose={closeModal} />
       </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
+function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarketPrepared; onClose: () => void }) {
   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
-
-  const navigate = useNavigate();
 
   const { write, isLoading } = useCreateMarketplace({
     data: laborMarket,
     onTransactionSuccess() {
-      navigate("/app/brainstorm");
+      toast.dismiss("creating-marketplace");
+      toast.success("Marketplace created!");
     },
     onWriteSuccess() {
-      // TODO: toast message or some kind of feedback
+      toast.loading("Creating marketplace...", { id: "creating-marketplace" });
+      onClose();
     },
   });
+
+  const onCreate = () => {
+    write?.();
+  };
 
   return (
     <div className="space-y-8">
       <p>Please confirm that you would like to create a new marketplace.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={() => write?.()} loading={isLoading}>
+        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
           Create
         </Button>
-        <Button variant="cancel" size="md" onClick={onCancel}>
+        <Button variant="cancel" size="md" onClick={onClose}>
           Cancel
         </Button>
       </div>
