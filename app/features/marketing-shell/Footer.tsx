@@ -30,7 +30,7 @@ export default function Footer() {
         href="/app/ecosystem"
         className="block py-3 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip"
       >
-        LAUNCH APP LAUNCH APP LAUNCH
+        LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP
       </a>
 
       <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-3 backdrop-blur-sm">
