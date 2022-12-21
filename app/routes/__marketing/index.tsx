@@ -1,215 +1,137 @@
-import AppFooter from "~/features/marketing-shell/Footer";
-import Header from "~/features/marketing-shell/Header";
+import { ArrowDownCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import MarketingButton from "~/components/marketing-button/marketing-button";
 import SocialIcons from "~/features/marketing-shell/SocialIcons";
-import Aos from "aos";
-import { useEffect } from "react";
 
 export default function Index() {
-  useEffect(() => {
-    Aos.init({
-      once: true,
-    });
-  }, []);
-
   return (
     <>
-      <section className="hero-section">
-        <section className="site-header">
-          <div className="container">
-            <Header />
-            <section className="intro text-center h-screen lg:h-auto flex flex-col justify-center">
-              <h1 className="section-title" data-aos="fade" data-aos-duration="1000">
-                <strong>On-Demand Data Analytics for Crypto Projects</strong>
-              </h1>
-              <div data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-                <a className="btn-main" href="https://discord.gg/p3GMjK2zAr">
-                  <span>
-                    <i className="bi bi-discord mr-2"></i>
-                    JOIN
-                  </span>
-                  <span>
-                    <i className="bi bi-arrow-right-short"></i>
-                  </span>
-                </a>
+      <div className="flex flex-row">
+        <aside className="hidden md:block w-1/6">
+          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
+            <a href="#top">
+              <GlobeAltIcon className="text-black h-7 w-7" />
+            </a>
+            <a href="#mission">
+              <img src="/img/circle-outline.svg" alt="" />
+            </a>
+            <a href="#partner">
+              <img src="/img/circle-outline.svg" alt="" />
+            </a>
+            <a href="#learn">
+              <img src="/img/circle-outline.svg" alt="" />
+            </a>
+            <a href="#scaling">
+              <img src="/img/circle-outline.svg" alt="" />
+            </a>
+            <a href="#bottom">
+              <ArrowDownCircleIcon className="text-black h-7 w-7" />
+            </a>
+          </div>
+        </aside>
+        <main className="px-8">
+          <img
+            src="/img/marketing/homepage-bg-top.png"
+            className="absolute top-0 left-0 -z-10 h-screen w-screen"
+            alt=""
+          />
+          <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center">
+            <h1 className="font-bold text-5xl md:text-8xl max-w-4xl pt-7">
+              The <b className="text-white">DAO</b> for Web3 Data Analytics
+            </h1>
+            <p className="text-lg md:text-2xl max-w-lg">
+              Connecting projects with the best analysts in Web3 for all data needs
+            </p>
+            <SocialIcons />
+          </section>
+          <img
+            src="/img/marketing/homepage-bg-bottom.png"
+            className="absolute top-100 left-0 -z-10 h-screen w-screen"
+            alt=""
+          />
+          <div id="mission" className="space-y-5 h-screen flex flex-col justify-center">
+            <p className="text-white text-2xl">Our Mission</p>
+            <p className="font-bold text-4xl md:text-6xl lg:text-7xl">
+              Creating a fair and flexible <b className="text-white">analytics marketplace</b> to remove barriers to
+              <b className="text-white"> on-chain participation</b> and help <b className="text-white">Web3</b>{" "}
+              organizations launch, grow, and <b className="text-white">succeed.</b>
+            </p>
+            <MarketingButton label="Explore the Ecosystem" link="/app/ecosystem" variant="outline" />
+          </div>
+          <InfoSection id="partner">
+            <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
+            <div className="max-w-lg space-y-10 mx-auto md:m-0">
+              <h2 className="text-4xl md:text-5xl font-bold">Providing on-demand data to power your organization</h2>
+              <p className="text-stone-500 text-lg">
+                To drive insights, data often needs to be analyzed through a series of complex and time-consuming
+                processes. By partnering with MetricsDAO, organizations can tap the world’s best Web3 analyst community
+                and streamline access to expert analytics work.
+              </p>
+              <MarketingButton label="Partner with us" link="/partner" />
+            </div>
+          </InfoSection>
+          <InfoSection id="learn">
+            <img src="/img/marketing/home-results.png" alt="" className="mx-auto md:m-0 w-full max-w-fit" />
+            <div className="max-w-lg space-y-10 mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold">Rewarding the best analysts in Web3</h2>
+              <p className="text-stone-500 text-lg">
+                Analysts participate in challenges to earn partner reward tokens and rMETRIC while increasing their
+                reputation in the ecosystem. Ongoing engagements that support partners’ goals also increase analysts’
+                access to future earning opportunities.
+              </p>
+              <MarketingButton label="Learn about reputation & rMETRIC" link="" />
+            </div>
+          </InfoSection>
+          <InfoSection id="scaling">
+            {/*<div
+              className="rounded-3xl bg-auto bg-no-repeat p-10 space-y-3 w-min h-min mx-auto md:order-2"
+              style={{ backgroundImage: "url(/img/home-scroll-bg.svg)" }}
+            >
+              <img src="/img/eye.png" alt="" />
+              <p className="text-3xl font-bold text-white pt-2">Analyze</p>
+              <p className="text-white text-lg w-80">
+                Source professional dashboards and tools that answer critical questions or solve complex problems.
+                Analytics challenges can originate directly from partner requests or community brainstorms.
+              </p>
+              <div className="space-y-3">
+                <img src="/img/lightbulb.png" alt="" />
+                <p className="text-3xl font-bold text-white pt-2">Brainstorm</p>
+                <p className="text-white text-lg max-w-sm">
+                  Optionally source and prioritize the best questions for analysts to answer. Community question
+                  brainstorms generally focus around a partner’s project or a timely Web3 topic or event.
+                </p>
               </div>
-              <div className="flex lg:hidden list-none justify-center absolute w-full left-0 bottom-16">
-                <SocialIcons />
-              </div>
-            </section>
-          </div>
-        </section>
-        <section className="text-center bg-white lg:bg-transparent">
-          <div className="container flex flex-col lg:flex-row gap-20 py-24">
-            <div className="feature mx-6 lg:mx-auto" data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-              <div className="feature-icon">
-                <img src="img/equal.png" alt="" />
-              </div>
-              <p>
-                We believe that <span className="fw-bold">equal access to on-chain data</span>, regardless of provider,
-                is necessary to answer the most pressing questions for decentralized organizations.
+              <div className="space-y-3">
+                <img src="/img/person-check.png" alt="" />
+                <p className="text-3xl font-bold text-white pt-2">Peer Review</p>
+                <p className="text-white text-lg max-w-sm">
+                  To effectively fulfill our partners’ requests, qualified reviewers are incentivized to enforce
+                  submission quality and help reward the best work for every challenge.
+                </p>
+                </div>
+            </div>*/}
+            <div className="max-w-lg space-y-10 mx-auto md:m-0">
+              <h2 className="text-4xl md:text-5xl font-bold">Scaling on-demand analytics with a decentralized app</h2>
+              <p className="text-stone-500 text-lg">
+                Partners fund time-bound challenges where analysts compete to answer questions or solve problems.
+                Winners earn tokens from the partner reward pool while increasing their reputation score in the
+                MetricsDAO ecosystem.
               </p>
+              <MarketingButton label="Launch App" link="/app/ecosystem" />
             </div>
-            <div className="feature mx-6 lg:mx-auto" data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-              <div className="feature-icon">
-                <img src="img/empowering.png" alt="" />
-              </div>
-              <p>
-                We believe that <span className="fw-bold">empowering analysts</span>, irrespective of financial or
-                geographic circumstance, will unleash groundbreaking solutions and innovations for the entire blockchain
-                ecosystem.
-              </p>
-            </div>
-            <div className="feature mx-6 lg:mx-auto" data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-              <div className="feature-icon">
-                <img src="img/operating.png" alt="" />
-              </div>
-              <p>
-                We believe that a <span className="fw-bold">new operating system connecting DAOs with analysts</span>{" "}
-                will fuel the Organized Power Usage needed to drive the next era of Web3 development.
-              </p>
-            </div>
-          </div>
-        </section>
-      </section>
-      <section className="section-1">
-        <div className="container d-flex flex-wrap justify-content-center align-items-center">
-          <div className="row section-what-we-do">
-            <div className="col-1" data-aos="fade-up" data-aos-duration="1000">
-              <h2 className="section-label">About MetricsDAO</h2>
-            </div>
-            <div className="col-10 col-lg-8 col-xl-6 offset-2 offset-lg-1 offset-xl-2">
-              <p className="text-content">
-                The three-step Brainstorming, Analytics, and Review system provides a variety of ways for the community
-                and Web3 organizations to generate engagement, education, content, and peer reviewed analytics about
-                protocols or topics they care about. Each step can be activated on its own or together.
-              </p>
-            </div>
-            <div className="col-12" data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-              <p className="text-center pt-5 mt-5 d-flex flex-md-row flex-column justify-content-center align-items-center">
-                <a
-                  href="/docs/metricsdao-whitepaper-2022.pdf"
-                  className="btn btn-sm btn-outline-light rounded-pill px-3 mx-2 mb-4"
-                >
-                  READ THE WHITEPAPER <i className="bi bi-arrow-right-short"></i>
-                </a>
-                <a
-                  href="https://metricsdao.ghost.io/"
-                  className="btn btn-sm btn-outline-light rounded-pill px-3 mx-2 mb-4"
-                >
-                  VIEW BLOG <i className="bi bi-arrow-right-short"></i>
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="section-2" id="roadmap">
-        <div className="container d-flex flex-wrap justify-content-center align-items-center">
-          <div className="row">
-            <div className="col-12 text-center" data-aos="fade" data-aos-delay="300" data-aos-duration="2000">
-              <h2 className="section-title">3 Components to Engage, Educate and Create Peer Reviewed Analytics</h2>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="section-3">
-        <div className="container d-flex flex-wrap justify-content-center align-items-center">
-          <div className="row section-creation">
-            <div className="col-6">
-              <h3 className="section-subtitle">
-                <span className="fw-bold">Community Brainstorming</span>
-              </h3>
-              <p>
-                Submit questions and/or upvote others’ so that the most relevant questions are prioritized, and spam is
-                filtered out. No xMETRIC is required to participate in this component. Qualified submissions will earn
-                50 xMETRIC and $10 in partner tokens or stablecoins. Qualified upvotes will earn 5 xMETRIC.
-              </p>
-              <p>
-                <a className="btn btn-sm btn-outline-primary rounded-pill px-3" href="https://bounty.metricsdao.xyz/">
-                  Join a Community Brainstorm <i className="bi bi-arrow-right-short"></i>
-                </a>
-              </p>
-            </div>
-            <div className="col-6" data-aos="fade-up" data-aos-delay="300" data-aos-duration="2000">
-              <img src="img/pic-creation.png" alt="" className="img-fluid" />
-            </div>
-          </div>
-          <div className="row section-generation">
-            <div className="col-6 order-1 order-lg-0" data-aos="fade-up" data-aos-delay="300" data-aos-duration="2000">
-              <img src="img/pic-generation.png" alt="" className="img-fluid" />
-            </div>
-            <div className="col-6">
-              <h4 className="section-subtitle">
-                <span className="fw-bold">Analytics </span>
-              </h4>
-              <p>
-                In this component, questions are turned into actionable bounties for our community of analysts to solve
-                by creating analytics, tools and/or content. Analytics are rewarded in partner tokens or stablecoins.
-                Most bounties require no xMETRIC to solve.
-              </p>
-              <p>
-                <a
-                  className="btn btn-sm btn-outline-primary rounded-pill px-3"
-                  href="https://metricsdao.notion.site/metricsdao/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
-                >
-                  VIEW OPEN REQUESTS <i className="bi bi-arrow-right-short"></i>
-                </a>
-              </p>
-            </div>
-          </div>
-          <div className="row section-review">
-            <div className="col-6">
-              <h4 className="section-subtitle">
-                <span className="fw-bold">Peer Review</span>
-              </h4>
-              <p>
-                Analytics, tools and content are peer reviewed by a dynamic network of top analysts in order to validate
-                and score results. This component is gated for analysts who have earned 2,000 xMETRIC or more and
-                demonstrated their crypto analytics proficiency.
-              </p>
-              <p>
-                <a
-                  className="btn btn-sm btn-outline-primary rounded-pill px-3"
-                  href="https://metricsdao.ghost.io/xmetric/"
-                >
-                  Learn more about xMETRIC <i className="bi bi-arrow-right-short"></i>
-                </a>
-              </p>
-            </div>
-            <div className="col-6" data-aos="fade-up" data-aos-delay="300" data-aos-duration="2000">
-              <img src="img/pic-review.png" alt="" className="img-fluid" />
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="section-4" id="contactus">
-        <div className="container d-flex flex-wrap justify-content-center align-items-center">
-          <div className="row">
-            <div className="col-12 text-center">
-              <p className="section-title my-5" data-aos="fade" data-aos-duration="1000">
-                Looking for <br className="mobile-break" />
-                <span className="fw-bold">
-                  on-chain <br className="mobile-break" />
-                  analytics
-                </span>{" "}
-                <br className="d-none d-lg-block" />
-                for <br className="mobile-break" />
-                your own <br className="mobile-break" />
-                project?
-              </p>
-              <div data-aos="fade-up" data-aos-delay="300" data-aos-duration="2000">
-                <a className="btn-main-white" href="https://partnerwith.metricsdao.xyz">
-                  <span>PARTNER WITH US!</span>
-                  <span>
-                    <i className="bi bi-arrow-right-short"></i>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <AppFooter />
+          </InfoSection>
+        </main>
+      </div>
     </>
+  );
+}
+
+function InfoSection({ children, id }: { children: React.ReactNode; id: string }) {
+  return (
+    <div
+      id={id}
+      className="max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center mx-auto"
+    >
+      {children}
+    </div>
   );
 }

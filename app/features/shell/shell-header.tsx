@@ -75,7 +75,7 @@ export function AppHeader() {
             </Menu.Items>
           </Transition>
         </Menu>
-        <Link className="flex flex-row items-center gap-2" to="/">
+        <Link className="flex flex-row items-center gap-2" to="/app/ecosystem">
           <LogoMark className="h-5 w-5" /> <LogoType className="hidden md:block" />
         </Link>
       </div>
