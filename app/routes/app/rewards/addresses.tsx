@@ -2,10 +2,9 @@ import { CheckCircleIcon, ClipboardDocumentIcon, XCircleIcon } from "@heroicons/
 import type { Network, Wallet } from "@prisma/client";
 import type { DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { ValidatedForm } from "remix-validated-form";
-import { z } from "zod";
+import { useIsValid, ValidatedForm } from "remix-validated-form";
 import { ValidatedInput } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -13,7 +12,7 @@ import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
-import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
+import { updateWalletSchema, addWalletSchema, deleteWalletSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
@@ -21,7 +20,7 @@ import { getUserId } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
-import { getNetworkByTokenSymbol, NETWORK_SYMBOLS, truncateAddress, VALIDATORS } from "~/utils/helpers";
+import { truncateAddress } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUserId(data.request);
@@ -92,6 +91,8 @@ function AddressTable({
     chain: Network;
   })[];
 }) {
+  const isValid = false;
+
   return (
     <Table>
       <Header columns={12}>
@@ -104,7 +105,7 @@ function AddressTable({
           <Row columns={12} key={wallet.address}>
             <Row.Column span={2}>project</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
-              {validateAddress(wallet.address, wallet.chain.name) ? (
+              {isValid ? (
                 <CheckCircleIcon className="text-lime-500 h-5 w-5" />
               ) : (
                 <XCircleIcon className="text-rose-500 h-5 w-5" />
@@ -136,6 +137,9 @@ function AddressCards({
     chain: Network;
   })[];
 }) {
+  // const isValid = isFieldError();
+  const isValid = false;
+
   return (
     <div className="space-y-3">
       {wallets.map((wallet) => {
@@ -149,7 +153,7 @@ function AddressCards({
             <p>project</p>
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
-              {validateAddress(wallet.address, wallet.chain.name) ? (
+              {isValid ? (
                 <CheckCircleIcon className="text-lime-500 h-5 w-5" />
               ) : (
                 <XCircleIcon className="text-rose-500 h-5 w-5" />
@@ -170,43 +174,15 @@ function AddressCards({
   );
 }
 
-const addWalletSchema = z.object({
-  payment: z.discriminatedUnion("networkName", [
-    z.object({ networkName: z.literal("Ethereum"), address: EthAddressSchema }),
-    z.object({ networkName: z.literal("Solana"), address: SolAddressSchema }),
-  ]),
-  userId: z.string({ description: "The ID of the user the wallet belongs to." }),
-});
-
-const updateWalletSchema = z.object({
-  userId: z.string({ description: "The ID of the user the wallet belongs to." }),
-  currentAddress: z.string({ description: "The current address of the wallet." }),
-  newAddress: z.string({ description: "The new address of the wallet." }),
-});
-
-const deleteWalletSchema = z.object({
-  currentAddress: z.string({ description: "The current address of the wallet." }),
-});
-
 export const addWalletValidator = withZod(addWalletSchema);
 export const deleteWalletValidator = withZod(deleteWalletSchema);
 export const updateWalletValidator = withZod(updateWalletSchema);
 
 function AddAddressButton() {
-  const { tokens, networks } = useTypedLoaderData<typeof loader>();
+  const { networks } = useTypedLoaderData<typeof loader>();
   const [openedAdd, setOpenedAdd] = useState(false);
 
-  const { user } = useTypedLoaderData<typeof loader>();
-  const [selectedNetwork, setSelectedNetwork] = useState<string>("");
-  const [selectedAddress, setSelectedAddress] = useState<string>("");
-  const [validAddress, setValidAddress] = useState(false);
-
-  useEffect(() => {
-    if (selectedAddress && selectedNetwork) {
-      const isValid = validateAddress(selectedAddress, getNetworkByTokenSymbol(selectedNetwork));
-      setValidAddress(isValid);
-    }
-  }, [selectedAddress, selectedNetwork]);
+  const isValid = useIsValid("addWallet");
 
   return (
     <>
@@ -215,6 +191,7 @@ function AddAddressButton() {
       </Button>
       <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
         <ValidatedForm
+          id="addWallet"
           action="/app/rewards/wallet/add"
           method="post"
           validator={addWalletValidator}
@@ -223,15 +200,13 @@ function AddAddressButton() {
           <div className="pb-44 pt-8">
             <AddPaymentAddressForm networks={networks} />
           </div>
-          <div className="invisible h-0 w-0">
-            <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
-            <ValidatedInput type="hidden" id="action" name="action" value={"add"} />
-          </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
               Cancel
             </Button>
-            <Button type="submit">Save</Button>
+            <Button disabled={!isValid} onClick={() => setOpenedAdd(false)} type="submit">
+              Save
+            </Button>
           </div>
         </ValidatedForm>
       </Modal>
@@ -251,7 +226,7 @@ function RemoveAddressButton({ wallet }: { wallet: Wallet & { chain: Network } }
         <div className="space-y-5 mt-5">
           <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
             <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
-              {NETWORK_SYMBOLS[wallet.chain.name as keyof typeof NETWORK_SYMBOLS]}
+              {wallet.networkName}
             </p>
             <p className="pl-2 overflow-clip">{wallet.address}</p>
           </div>
@@ -278,20 +253,6 @@ function RemoveAddressButton({ wallet }: { wallet: Wallet & { chain: Network } }
     </>
   );
 }
-type ObjectKey = keyof typeof VALIDATORS;
-
-export function validateAddress(address: string, network: string) {
-  try {
-    const networkName = network.toLowerCase() as ObjectKey;
-    if (!networkName) throw new Error("Sorry we don't support this network yet.");
-    const networkSchema = VALIDATORS[networkName];
-    networkSchema?.parse(address);
-  } catch (e) {
-    console.log(e, "not a valid address");
-    return false;
-  }
-  return true;
-}
 
 function UpdateAddressButton({
   wallet,
@@ -301,56 +262,54 @@ function UpdateAddressButton({
   };
 }) {
   const [openedUpdate, setOpenedUpdate] = useState(false);
-  const { user } = useTypedLoaderData<typeof loader>();
-  const [validAddress, setValidAddress] = useState(false);
 
+  const isValid = useIsValid("updateWallet");
   return (
     <>
       <Button variant="primary" onClick={() => setOpenedUpdate(true)}>
         Update
       </Button>
       <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <ValidatedForm action="/app/rewards/wallet/update" method="post" validator={updateWalletValidator}>
+        <ValidatedForm
+          id="updateWallet"
+          action="/app/rewards/wallet/update"
+          method="post"
+          validator={updateWalletValidator}
+        >
           <div className="space-y-5 mt-5">
             <div className="space-y-2">
               <div className="flex border-solid border rounded-md border-trueGray-200">
                 <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
-                  {NETWORK_SYMBOLS[wallet.chain.name as keyof typeof NETWORK_SYMBOLS]}
+                  {wallet.networkName}
                 </p>
-                <div className="flex items-center ml-2">
+                <div className="flex items-center ml-2 w-full">
                   <div>
-                    {validAddress ? (
+                    {isValid ? (
                       <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
                     ) : (
                       <XCircleIcon className="mr-1 text-rose-500 h-5 w-5" />
                     )}
                   </div>
-                  <input
-                    className="border-none w-full focus:outline-none"
-                    id="newAddress"
-                    name="newAddress"
-                    placeholder="Update Address"
-                    onChange={(e) => {
-                      validateAddress(e.target.value, wallet.chain.name)
-                        ? setValidAddress(true)
-                        : setValidAddress(false);
-                    }}
-                  />
-                  <div className="invisible h-0">
-                    <ValidatedInput type="hidden" id="userId" name="userId" value={user ? user : ""} />
+                  <div className="invisible h-0 w-0">
                     <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
+                    <ValidatedInput type="hidden" name="payment.networkName" value={wallet.networkName} />
                   </div>
+                  <ValidatedInput
+                    className="border-none w-full focus:outline-none"
+                    name="payment.address"
+                    placeholder="Update Address"
+                  />
                 </div>
               </div>
-              {validAddress ? null : (
-                <p className="text-xs text-red-500">Please enter a valid address. If you are having issues go here</p>
+              {isValid ? null : (
+                <p className="text-xs text-red-500">{`Please enter a valid ${wallet.networkName} address.`}</p>
               )}
             </div>
             <div className="flex gap-2 justify-end">
-              <Button type="reset" variant="cancel" onClick={() => setOpenedUpdate(false)}>
+              <Button type="button" variant="cancel" onClick={() => setOpenedUpdate(false)}>
                 Cancel
               </Button>
-              <Button disabled={!validAddress} onClick={() => setOpenedUpdate(false)} type="submit">
+              <Button disabled={!isValid} onClick={() => setOpenedUpdate(false)} type="submit">
                 Save
               </Button>
             </div>

@@ -1,14 +1,14 @@
 import { prisma } from "./prisma.server";
 
 /**
- * Find the Network by its Id.
- * @param {string} networkId - the Id of the Network.
+ * Find the Network by its name.
+ * @param {string} name - the Id of the Network.
  * @returns {Promise<Network>} - the PayableBlockchain that the wallet lives on.
  */
-export function findNetworkById(id: string) {
+export function findNetworkByName(name: string) {
   return prisma.network.findUnique({
     where: {
-      id: id,
+      name: name,
     },
   });
 }

@@ -1,4 +1,3 @@
-import type { Token } from "@prisma/client";
 import { prisma } from "./prisma.server";
 
 /**
@@ -6,8 +5,15 @@ import { prisma } from "./prisma.server";
  * @param {string} user - the user whos address should be updated.
  * @param {string} blockchain - the blockchain the wallet address lives on.
  * @param {string} walletAddress - the address of the wallet.
+ * @param {string} networkName - the blockchain.
+
  */
-export function updateWalletAddress(userId: string, walletAddress: string, newWalletAddress: string) {
+export function updateWalletAddress(
+  userId: string,
+  walletAddress: string,
+  newWalletAddress: string,
+  networkName: string
+) {
   return prisma.wallet.update({
     where: {
       address: walletAddress,
@@ -15,6 +21,7 @@ export function updateWalletAddress(userId: string, walletAddress: string, newWa
     data: {
       address: newWalletAddress,
       userId: userId,
+      networkName: networkName,
     },
   });
 }
@@ -27,13 +34,11 @@ export function updateWalletAddress(userId: string, walletAddress: string, newWa
   
    * 
    */
-export function addWalletAddress(walletAddress: string, Id: string, user: string) {
-  return prisma.wallet.upsert({
-    where: { address: walletAddress },
-    update: { address: walletAddress },
-    create: {
+export function addWalletAddress(walletAddress: string, networkName: string, user: string) {
+  return prisma.wallet.create({
+    data: {
       address: walletAddress,
-      networkId: Id,
+      networkName: networkName,
       userId: user,
     },
   });

@@ -19,12 +19,12 @@ model User {
 }
 
 model Wallet {
-  address   String   @id @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  networkId String   @default("1")
-  chain     Network  @relation(fields: [networkId], references: [id])
+  address     String   @id @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  networkName String
+  chain       Network  @relation(fields: [networkName], references: [name])
 }
 
 model Transaction {
@@ -46,8 +46,8 @@ model Project {
 model Token {
   symbol       String        @id @unique
   name         String
-  networkId    String        @default("1")
-  chain        Network       @relation(fields: [networkId], references: [id])
+  networkName  String
+  chain        Network       @relation(fields: [networkName], references: [name])
   laborMarkets LaborMarket[]
 }
 
@@ -107,8 +107,7 @@ model Submission {
 }
 
 model Network {
-  id     String   @id @unique
-  name   String
+  name   String   @id @unique
   Token  Token[]
   Wallet Wallet[]
 }

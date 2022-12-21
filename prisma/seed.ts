@@ -4,9 +4,8 @@ import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
 import { upsertServiceRequest } from "~/services/challenges-service.server";
 import { upsertSubmission } from "~/services/submissions.server";
-import type { LaborMarket, Network, ServiceRequest, Submission, Token } from "@prisma/client";
+import type { LaborMarket, ServiceRequest, Submission } from "@prisma/client";
 import { upsertReview } from "~/services/review-service.server";
-import { NETWORK_SYMBOLS } from "~/utils/helpers";
 
 async function main() {
   await prisma.project.createMany({
@@ -25,26 +24,29 @@ async function main() {
   });
 
   await prisma.network.createMany({
-    data: [
-      { id: "1", name: "Ethereum" },
-      { id: "2", name: "Solana" },
-    ],
+    data: [{ name: "Ethereum" }, { name: "Solana" }],
     skipDuplicates: true,
   });
 
-  async function seedTokens(networks: Network[]) {
-    for (const network of networks) {
-      const networkName = network.name;
-
-      await prisma.token.create({
-        data: {
-          name: network.name,
-          networkId: network.id,
-          symbol: NETWORK_SYMBOLS[networkName as keyof typeof NETWORK_SYMBOLS],
-        },
-      });
-    }
-  }
+  await prisma.token.createMany({
+    data: [
+      {
+        name: "USD Coin",
+        networkName: "Ethereum",
+        symbol: "USDC",
+      },
+      {
+        name: "Ethereum",
+        networkName: "Ethereum",
+        symbol: "ETH",
+      },
+      {
+        name: "Solana",
+        networkName: "Solana",
+        symbol: "SOL",
+      },
+    ],
+  });
 
   async function seedLaborMarkets() {
     const projectIds = (await prisma.project.findMany()).map((p) => p.id);
@@ -85,7 +87,6 @@ async function main() {
     }
   }
 
-  await seedTokens(await prisma.network.findMany());
   await seedLaborMarkets();
   await seedServiceRequests(await prisma.laborMarket.findMany());
   await seedSubmissions(await prisma.serviceRequest.findMany());
