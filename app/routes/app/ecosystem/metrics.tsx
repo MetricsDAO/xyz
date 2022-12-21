@@ -32,9 +32,9 @@ export default function Metrics() {
         <div className="space-y-5">
           <p className="font-semibold text-md">Participants</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mx-auto items-center">
-            <StatsCard figure={64000} title="Total participants" />
-            <StatsCard figure={23000} title="Analysts" />
-            <StatsCard figure={52000} title="Reviewers" />
+            <StatsCard figure={"64,000"} title="Total participants" />
+            <StatsCard figure={"23,000"} title="Analysts" />
+            <StatsCard figure={"52,000"} title="Reviewers" />
           </div>
           <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
             <p className="py-20 mx-auto">Totally a chart</p>
@@ -56,8 +56,13 @@ export default function Metrics() {
               icon={<img alt="" src="/img/icons/dollar.svg" className="mr-2" />}
             />
           </div>
-          <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
-            <p className="py-20 mx-auto">Totally a chart</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mx-auto items-center">
+            <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
+              <p className="py-20 mx-auto">Totally a chart</p>
+            </div>
+            <div className="bg-stone-200 rounded-md w-full h-44 border flex items-center">
+              <p className="py-20 mx-auto">Totally a chart</p>
+            </div>
           </div>
         </div>
         <div className="space-y-5">
@@ -102,6 +107,10 @@ function StatsCard({
   description?: string;
   icon?: React.ReactNode;
 }) {
+  if (typeof figure === "number") {
+    figure = figure.toLocaleString();
+  }
+
   return (
     <div className="flex flex-col gap-1 items-center border bg-blue-300/[.05] rounded-lg w-full h-full py-16 px-3">
       <div className="flex">

@@ -16,16 +16,16 @@ export default function Index() {
             <a href="#top">
               <GlobeAltIcon className="text-black h-6 w-6" />
             </a>
-            <a href="#section-2">
+            <a href="#mission">
               <Circle id="missionCircle" />
             </a>
-            <a href="#section-3">
+            <a href="#partner">
               <Circle id="partnerCircle" />
             </a>
-            <a href="#section-4">
+            <a href="#learn">
               <Circle id="learnCircle" />
             </a>
-            <a href="#section-5">
+            <a href="#scaling">
               <Circle id="scalingCircle" />
             </a>
             <a href="#bottom">
@@ -39,7 +39,7 @@ export default function Index() {
             className="absolute top-0 left-0 -z-20 h-screen w-screen"
             alt=""
           />
-          <section id="section-1" className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center">
+          <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center">
             <h1 className="font-bold text-5xl md:text-8xl max-w-4xl pt-7">
               The <b className="text-white">DAO</b> for Web3 Data Analytics
             </h1>
@@ -53,7 +53,7 @@ export default function Index() {
             className="absolute top-100 left-0 -z-20 h-screen w-screen"
             alt=""
           />
-          <div id="section-2" className="space-y-5 h-screen flex flex-col justify-center">
+          <div id="mission" className="space-y-5 h-screen flex flex-col justify-center">
             <p className="text-white text-2xl">Our Mission</p>
             <p className="font-bold text-4xl md:text-6xl lg:text-7xl">
               Creating a fair and flexible <b className="text-white">analytics marketplace</b> to remove barriers to
@@ -62,7 +62,10 @@ export default function Index() {
             </p>
             <MarketingButton label="Explore the Ecosystem" link="/app/ecosystem" variant="outline" />
           </div>
-          <div id="section-3" className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center">
+          <div
+            id="partner"
+            className="max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center"
+          >
             <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
             <div className="max-w-lg space-y-10 mx-auto md:m-0">
               <h2 className="text-4xl md:text-5xl font-bold">Providing on-demand data to power your organization</h2>
@@ -74,7 +77,10 @@ export default function Index() {
               <MarketingButton label="Partner with us" link="/partner" />
             </div>
           </div>
-          <div id="section-4" className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center">
+          <div
+            id="learn"
+            className="max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center"
+          >
             <img src="/img/marketing/home-results.png" alt="" className="mx-auto md:m-0 w-full max-w-fit" />
             <div className="max-w-lg space-y-10 mx-auto">
               <h2 className="text-4xl md:text-5xl font-bold">Rewarding the best analysts in Web3</h2>
@@ -86,7 +92,10 @@ export default function Index() {
               <MarketingButton label="Learn about reputation & rMETRIC" link="" />
             </div>
           </div>
-          <div id="section-5" className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center">
+          <div
+            id="scaling"
+            className="max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10 py-10 md:py-36 items-center"
+          >
             {/*<div
               className="rounded-3xl bg-auto bg-no-repeat p-10 space-y-3 w-min h-min mx-auto md:order-2"
               style={{ backgroundImage: "url(/img/home-scroll-bg.svg)" }}

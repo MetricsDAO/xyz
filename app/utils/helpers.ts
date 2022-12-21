@@ -23,16 +23,16 @@ export const truncateAddress = (address: string) => {
 
 export const SCORE_COLOR = {
   Great: "bg-lime-100",
-  Good: "bg-violet-200",
+  Good: "bg-blue-200",
   Average: "bg-neutral-200",
-  Bad: "bg-amber-100",
+  Bad: "bg-orange-200",
   Spam: "bg-rose-200",
 };
 
 export const SCORE_COLOR_SECONDARY = {
-  Great: "bg-lime-400",
+  Great: "bg-lime-500",
   Good: "bg-blue-400",
   Average: "bg-zinc-500",
-  Bad: "bg-orange-300",
+  Bad: "bg-amber-500",
   Spam: "bg-rose-400",
 };

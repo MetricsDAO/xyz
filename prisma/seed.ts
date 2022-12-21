@@ -20,6 +20,7 @@ async function main() {
       { slug: "flow", name: "Flow" },
       { slug: "ethereum", name: "Ethereum" },
     ],
+    skipDuplicates: true,
   });
 
   await prisma.token.createMany({
@@ -33,6 +34,7 @@ async function main() {
       { symbol: "FLOW", name: "Flow" },
       { symbol: "AVAX", name: "Avalanche" },
     ],
+    skipDuplicates: true,
   });
 
   async function seedLaborMarkets() {

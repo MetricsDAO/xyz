@@ -1,4 +1,4 @@
-import { ClipboardDocumentIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { DocumentDuplicateIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ValidatedForm } from "remix-validated-form";
 import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -190,7 +190,7 @@ function SubmissionsTable() {
                   <CopyToClipboard
                     className="text-stone-500"
                     content={truncateAddress(w.address)}
-                    iconRight={<ClipboardDocumentIcon />}
+                    iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                   />
                 </div>
               </Row.Column>
@@ -240,7 +240,7 @@ function SubmissionsCard() {
                   <CopyToClipboard
                     className="text-stone-500"
                     content={truncateAddress(w.address)}
-                    iconRight={<ClipboardDocumentIcon />}
+                    iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                   />
                 </div>
               </div>
@@ -285,7 +285,7 @@ function RMETRICHoldersTable() {
                 <CopyToClipboard
                   className="text-stone-500"
                   content={"0xb794f5ea0ba39494ce839613cccba74279579268"}
-                  iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
+                  iconRight={<DocumentDuplicateIcon className="ml-0.5 w-5 h-5" />}
                 />
               </Row.Column>
               <Row.Column>11.82%</Row.Column>
@@ -314,7 +314,7 @@ function RMETRICHoldersCard() {
                 <CopyToClipboard
                   className="text-stone-500"
                   content={truncateAddress(w.address)}
-                  iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
+                  iconRight={<DocumentDuplicateIcon className="ml-0.5" />}
                 />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-y-2">
@@ -337,40 +337,36 @@ function ParticpantsTable() {
 
   return (
     <Table>
-      <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
-        <Header.Column span={3}>Address</Header.Column>
-        <Header.Column span={2}>rMETRIC</Header.Column>
-        <Header.Column span={2}>Challenges Launched</Header.Column>
+      <Header columns={6} className="mb-2 pt-2 text-sm text-stone-500">
+        <Header.Column span={1}>Address</Header.Column>
+        <Header.Column span={1}>rMETRIC</Header.Column>
+        <Header.Column span={1}>Challenges Launched</Header.Column>
         <Header.Column span={1}>Challenges Won</Header.Column>
-        <Header.Column span={2}>Tokens Funded</Header.Column>
-        <Header.Column span={2}>Tokens Claimed</Header.Column>
+        <Header.Column span={1}>Tokens Funded</Header.Column>
+        <Header.Column span={1}>Tokens Claimed</Header.Column>
       </Header>
       {[1, 2].map((p) => {
         return (
-          <Row asChild columns={12} key={p}>
+          <Row asChild columns={6} key={p}>
             <Link to={`/app/brainstorm/c/${p}`} className="text-sm font-medium text-stone-500">
-              <Row.Column span={3} className="flex flex-row items-center gap-x-2">
+              <Row.Column span={1} className="flex flex-row items-center gap-x-2">
                 <img alt="" src="/img/icons/poly.svg" />
-                <CopyToClipboard
-                  className="text-stone-500"
-                  content={truncateAddress(w.address)}
-                  iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
-                />
+                <CopyToClipboard className="text-stone-500" content={truncateAddress(w.address)} />
               </Row.Column>
-              <Row.Column span={2}>
+              <Row.Column span={1}>
                 <Badge>400 rMETRIC</Badge>
               </Row.Column>
-              <Row.Column span={2} className="text-center">
+              <Row.Column span={1} className="text-center">
                 70
               </Row.Column>
               <Row.Column span={1} className="text-center">
                 22
               </Row.Column>
-              <Row.Column span={2} className="flex gap-1 items-center">
+              <Row.Column span={1} className="flex gap-1 items-center">
                 <img src="/img/icons/dollar.svg" alt="" />
                 73248
               </Row.Column>
-              <Row.Column span={2} className="flex gap-1 items-center">
+              <Row.Column span={1} className="flex gap-1 items-center">
                 <img src="/img/icons/dollar.svg" alt="" />
                 73248
               </Row.Column>
@@ -399,7 +395,7 @@ function ParticipantsCard() {
                 <CopyToClipboard
                   className="text-stone-500"
                   content={truncateAddress(w.address)}
-                  iconRight={<ClipboardDocumentIcon className="ml-0.5" />}
+                  iconRight={<DocumentDuplicateIcon className="ml-0.5 w-5 h-5" />}
                 />
               </div>
               <p>User rMETRIC</p>

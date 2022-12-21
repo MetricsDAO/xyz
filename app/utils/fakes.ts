@@ -64,3 +64,14 @@ export const fakeReview = (data: Partial<Review>, submissionId: string): Review 
     submissionId: submissionId,
   };
 };
+
+export const fakeRMetricDistributionData = () => {
+  const data = [];
+  for (let i = 0; i < 100; i++) {
+    data.push({
+      address: faker.finance.ethereumAddress(),
+      balance: faker.datatype.number({ min: 0, max: 1000 }),
+    });
+  }
+  return data;
+};
