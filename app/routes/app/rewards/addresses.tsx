@@ -91,8 +91,6 @@ function AddressTable({
     chain: Network;
   })[];
 }) {
-  const isValid = false;
-
   return (
     <Table>
       <Header columns={12}>

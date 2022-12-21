@@ -6,7 +6,6 @@ export const addWalletSchema = z.object({
     z.object({ networkName: z.literal("Ethereum"), address: EthAddressSchema }),
     z.object({ networkName: z.literal("Solana"), address: SolAddressSchema }),
   ]),
-  userId: z.string({ description: "The ID of the user the wallet belongs to." }),
 });
 
 export const updateWalletSchema = z.object({

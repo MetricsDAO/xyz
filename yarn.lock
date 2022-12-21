@@ -9661,7 +9661,7 @@ labor-markets-abi@^1.0.8:
   resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.2.0.tgz#6889b5434b10f45befd00af03ba3bd042f3fef03"
   integrity sha512-Ngq7MRHHFI/syZGINbz8mv906K0W2R3fkEfpuI1V2TrGGp91Iyyya21fCirJiqIy4p5PhLiS+kn8Y4GHptItUg==
 
-language-subtag-registry@~0.3.2:
+language-subtag-registry@^0.3.20:
   version "0.3.22"
   resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.22.tgz#2e1500861b2e457eba7e7ae86877cbd08fa1fd1d"
   integrity sha512-tN0MCzyWnoz/4nHS6uxdlFWoUZT7ABptwKPQ52Ea7URk6vll88bWBVhodtnlfEuCcKWNGoc+uGbw1cwa9IKh/w==
