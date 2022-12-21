@@ -12,7 +12,7 @@ import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
-import { updateWalletSchema, addWalletSchema, deleteWalletSchema } from "~/domain/wallet";
+import { WalletUpdateSchema, WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
@@ -159,9 +159,9 @@ function AddressCards({
   );
 }
 
-export const addWalletValidator = withZod(addWalletSchema);
-export const deleteWalletValidator = withZod(deleteWalletSchema);
-export const updateWalletValidator = withZod(updateWalletSchema);
+export const addWalletValidator = withZod(WalletAddSchema);
+export const deleteWalletValidator = withZod(WalletDeleteSchema);
+export const updateWalletValidator = withZod(WalletUpdateSchema);
 
 function AddAddressButton() {
   const { networks } = useTypedLoaderData<typeof loader>();

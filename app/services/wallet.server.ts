@@ -1,58 +1,50 @@
+import type { WalletAdd, WalletDelete, WalletUpdate } from "~/domain/wallet";
 import { prisma } from "./prisma.server";
 
 /**
  * updates a users wallet address.
- * @param {string} user - the user whos address should be updated.
- * @param {string} blockchain - the blockchain the wallet address lives on.
- * @param {string} walletAddress - the address of the wallet.
- * @param {string} networkName - the blockchain.
+ * @param {string} userId - the id of the user.
+ * @param {WalletUpdate} input - the new address and network of the wallet.
 
  */
-export function updateWalletAddress(
-  userId: string,
-  walletAddress: string,
-  newWalletAddress: string,
-  networkName: string
-) {
+export function updateWalletAddress(userId: string, input: WalletUpdate) {
   return prisma.wallet.update({
     where: {
-      address: walletAddress,
+      address: input.currentAddress,
     },
     data: {
-      address: newWalletAddress,
+      address: input.payment.address,
       userId: userId,
-      networkName: networkName,
+      networkName: input.payment.networkName,
     },
   });
 }
 
 /**
-   * updates a users wallet address.
-   * @param {string} user - the userId of the wallet owner.
-   * @param {string} blockchain - the blockchain the wallet address lives on.
-   * @param {string} walletAddress - the address of the wallet.
-  
-   * 
-   */
-export function addWalletAddress(walletAddress: string, networkName: string, user: string) {
+ * updates a users wallet address.
+ * @param {string} userId - the userId of the wallet owner.
+ * @param {WalletAdd} input - the blockchain and address of the new wallet.
+ *
+ */
+export function addWalletAddress(userId: string, input: WalletAdd) {
   return prisma.wallet.create({
     data: {
-      address: walletAddress,
-      networkName: networkName,
-      userId: user,
+      address: input.payment.address,
+      networkName: input.payment.networkName,
+      userId: userId,
     },
   });
 }
 
 /**
  * deletes a wallet by its address.
- * @param {string} walletAddress - the address of the wallet.
+ * @param {WalletDelete} input - the address of the wallet to delete.
  *
  */
-export function deleteWalletAddress(walletAddress: string) {
+export function deleteWalletAddress(input: WalletDelete) {
   return prisma.wallet.delete({
     where: {
-      address: walletAddress,
+      address: input.currentAddress,
     },
   });
 }
@@ -69,19 +61,6 @@ export function findAllWalletsForUser(userId: string) {
     },
     include: {
       chain: true,
-    },
-  });
-}
-
-/**
- * Find the Network for a wallet.
- * @param {string} tokenSymbol - the user.
- * @returns {Promise<Network>} - the PayableBlockchain that the wallet lives on.
- */
-export function findNetworkOfWallet(name: string) {
-  return prisma.network.findFirst({
-    where: {
-      name: name,
     },
   });
 }

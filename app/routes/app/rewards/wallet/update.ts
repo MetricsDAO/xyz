@@ -11,11 +11,7 @@ export const action: ActionFunction = async ({ request }: DataFunctionArgs) => {
   const formData = await updateWalletValidator.validate(await request.formData());
   if (formData.error) return validationError(formData.error);
 
-  const address = formData.data.currentAddress;
-  const newAddress = formData.data.payment.address;
-  const networkName = formData.data.payment.networkName;
-
-  if (user) await updateWalletAddress(user, address, newAddress, networkName);
+  if (user) await updateWalletAddress(user, formData.data);
 
   return redirect("/app/rewards/addresses");
 };

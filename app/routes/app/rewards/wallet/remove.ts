@@ -8,11 +8,7 @@ export const action: ActionFunction = async ({ request }: DataFunctionArgs) => {
   const formData = await deleteWalletValidator.validate(await request.formData());
   if (formData.error) return validationError(formData.error);
 
-  console.log("formData", formData);
-
-  const address = formData.data.currentAddress;
-
-  await deleteWalletAddress(address);
+  await deleteWalletAddress(formData.data);
 
   return redirect("/app/rewards/addresses");
 };
