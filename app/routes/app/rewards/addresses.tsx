@@ -105,14 +105,9 @@ function AddressTable({
           <Row columns={12} key={wallet.address}>
             <Row.Column span={2}>project</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
-              {isValid ? (
-                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
-              ) : (
-                <XCircleIcon className="text-rose-500 h-5 w-5" />
-              )}
               <CopyToClipboard
                 className="text-black"
-                content={wallet.address}
+                content={truncateAddress(wallet.address)}
                 iconRight={<ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />}
               />
             </Row.Column>
@@ -137,9 +132,6 @@ function AddressCards({
     chain: Network;
   })[];
 }) {
-  // const isValid = isFieldError();
-  const isValid = false;
-
   return (
     <div className="space-y-3">
       {wallets.map((wallet) => {
@@ -153,11 +145,6 @@ function AddressCards({
             <p>project</p>
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
-              {isValid ? (
-                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
-              ) : (
-                <XCircleIcon className="text-rose-500 h-5 w-5" />
-              )}
               <p className="text-black">{truncateAddress(wallet.address)}</p>
               <ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />
             </div>
@@ -294,11 +281,7 @@ function UpdateAddressButton({
                     <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
                     <ValidatedInput type="hidden" name="payment.networkName" value={wallet.networkName} />
                   </div>
-                  <ValidatedInput
-                    className="border-none w-full focus:outline-none"
-                    name="payment.address"
-                    placeholder="Update Address"
-                  />
+                  <ValidatedInput name="payment.address" placeholder="Update Address" />
                 </div>
               </div>
               {isValid ? null : (
