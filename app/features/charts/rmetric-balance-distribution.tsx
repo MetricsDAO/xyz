@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from "@visx/xychart";
 import { useMemo } from "react";
-import mdaoTheme from "./mdaoTheme";
+import mdaoTheme from "./mdao-theme";
 
 type Props = {
   data: Data[];

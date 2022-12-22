@@ -1,6 +1,6 @@
 import { ArrowDownCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import MarketingButton from "~/components/marketing-button/marketing-button";
-import SocialIcons from "~/features/marketing-shell/SocialIcons";
+import SocialIcons from "~/features/marketing-shell/social-icons";
 
 export default function Index() {
   return (

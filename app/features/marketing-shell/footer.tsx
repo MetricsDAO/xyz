@@ -1,4 +1,4 @@
-import SocialIcons from "./SocialIcons";
+import SocialIcons from "./social-icons";
 import { Link } from "@remix-run/react";
 
 const links = [
