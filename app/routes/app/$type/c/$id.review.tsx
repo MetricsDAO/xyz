@@ -1,5 +1,5 @@
 import { withZod } from "@remix-validated-form/with-zod";
-import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { ValidatedSegmentedRadio } from "~/components";
@@ -11,12 +11,11 @@ import { useClaimToReview } from "~/hooks/use-claim-to-review";
 import { findChallenge } from "~/services/challenges-service.server";
 import invariant from "tiny-invariant";
 import { toast } from "react-hot-toast";
-import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { ValidatedForm, validationError, ValidationErrorResponseData } from "remix-validated-form";
+import type { DataFunctionArgs } from "@remix-run/node";
+import { ValidatedForm } from "remix-validated-form";
 import type { ClaimToReviewPrepared } from "~/domain";
 import { ClaimToReviewPreparedSchema } from "~/domain";
-import { getUser } from "~/services/session.server";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -30,32 +29,19 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 };
 
 const validator = withZod(ClaimToReviewPreparedSchema);
-type ActionResponse = { preparedClaimToReview: ClaimToReviewPrepared } | ValidationErrorResponseData;
-export const action = async ({ request }: ActionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
-  const result = await validator.validate(await request.formData());
-  if (result.error) return validationError(result.error);
-};
 
 export default function ClaimToReview() {
   const { challenge } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<ActionResponse>();
 
-  const [data, setData] = useState<ClaimToReviewPrepared>({ quantity: 0 });
-
-  useEffect(() => {
-    if (actionData && "preparedClaimToReview" in actionData) {
-      setData(actionData.preparedClaimToReview);
-    }
-    console.log(data);
-  }, [actionData]);
+  const [formData, setFormData] = useState<ClaimToReviewPrepared>({ quantity: 0 });
 
   return (
     <Container className="py-16">
-      <ValidatedForm<ClaimToReviewPrepared>
+      <ValidatedForm
+        onSubmit={(data) => {
+          setFormData(data);
+        }}
         validator={validator}
-        method="post"
         className="mx-auto px-10 max-w-4xl space-y-7 mb-12"
       >
         <div className="space-y-2">
@@ -108,7 +94,7 @@ export default function ClaimToReview() {
           <h2 className="text-lg font-semibold">Lock rMETRIC</h2>
           <div className="flex flex-col md:flex-row gap-2 md:items-center">
             <p>
-              You must lock <Badge>{data.quantity * 5}</Badge> rMETRIC to claim
+              You must lock <Badge>{formData.quantity * 5}</Badge> rMETRIC to claim
             </p>
             <Button variant="outline">Lock rMETRIC</Button>
           </div>
@@ -116,7 +102,7 @@ export default function ClaimToReview() {
             Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
           </p>
         </div>
-        <ConfirmTransaction ClaimToReview={data} />
+        <ConfirmTransaction ClaimToReview={formData} />
       </ValidatedForm>
     </Container>
   );
@@ -142,7 +128,7 @@ function ConfirmTransaction({ ClaimToReview }: { ClaimToReview?: ClaimToReviewPr
 
   return (
     <div className="flex flex-wrap gap-5">
-      <Button onClick={onCreate} loading={isLoading}>
+      <Button onClick={onCreate} loading={isLoading} type="submit">
         Claim to Review
       </Button>
       <Button variant="cancel">Cancel</Button>
