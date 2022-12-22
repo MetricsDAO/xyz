@@ -16,3 +16,12 @@ export function countDown(date: Date | string) {
 
   return dayjs(duration).format("h[h] m[m] s[s]");
 }
+
+/**
+ * Returns the unix timestamp (in seconds) of a date
+ * @param date
+ * @returns
+ */
+export function unixTimestamp(date: Date): number {
+  return dayjs(date).unix();
+}

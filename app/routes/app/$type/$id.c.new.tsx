@@ -1,12 +1,44 @@
+import { faker } from "@faker-js/faker";
 import { withZod } from "@remix-validated-form/with-zod";
+import { useMemo } from "react";
+import toast from "react-hot-toast";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import { Button } from "~/components/button";
 import { Input } from "~/components/input/input";
 import { Select } from "~/components/select";
 import { Textarea } from "~/components/textarea/textarea";
+import { useSubmitRequest } from "~/hooks/use-submit-request";
 
 export default function CreateChallenge() {
+  const challengeData = useMemo(() => {
+    return {
+      laborMarketAddress: "0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33", // recently created labor market on Goerli https://goerli.etherscan.io/address/0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33
+      pTokenAddress: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc", // FAU token https://erc20faucet.com/
+      pTokenQuantity: 100,
+      pTokenId: 1, // TODO ???
+      title: "Babies first Challenge",
+      description: "We all start somewhere",
+      uri: "ipfs-uri",
+      enforcementExpiration: faker.date.future(),
+      submissionExpiration: faker.date.future(),
+      signalExpiration: faker.date.future(),
+    };
+  }, []);
+
+  console.log("challengeData", challengeData);
+
+  const { write, isLoading } = useSubmitRequest({
+    data: challengeData,
+    onTransactionSuccess() {
+      toast.dismiss("creating-challenge");
+      toast.success("Challenge created!");
+    },
+    onWriteSuccess() {
+      toast.loading("Creating challenge...", { id: "creating-challenge" });
+    },
+  });
+
   const marketplace = true;
 
   return (
@@ -132,7 +164,15 @@ export default function CreateChallenge() {
 
       <div>
         <div className="flex flex-row gap-5">
-          <Button variant="primary">Launch Challenge</Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              console.log("launch challenge", write);
+              write?.();
+            }}
+          >
+            Launch Challenge
+          </Button>
           <Button variant="cancel">Cancel</Button>
         </div>
       </div>

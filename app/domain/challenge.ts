@@ -8,7 +8,15 @@ export const ChallengeSchema = z.object({
   laborMarketAddress: EthAddressSchema,
 });
 
-export const ChallengeNewSchema = ChallengeSchema.omit({ id: true });
+export const ChallengeNewSchema = ChallengeSchema.omit({ id: true }).extend({
+  pTokenAddress: EthAddressSchema.describe("The address of the payment token."),
+  pTokenId: z.number().describe("The id of the payment token."),
+  pTokenQuantity: z.number().describe("The quantity of the payment token."),
+  signalExpiration: z.date().describe("The signal deadline expiration."),
+  submissionExpiration: z.date().describe("The submission deadline expiration."),
+  enforcementExpiration: z.date().describe("The enforcement deadline expiration."),
+  uri: z.string().describe("The uri of the service request data."),
+});
 
 export const ChallengeSearchSchema = z.object({
   page: z.number().default(1),
