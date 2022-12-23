@@ -39,7 +39,6 @@ export function ValidatedSegmentedRadio({ onChange, ...props }: Props & { name: 
   const handleChange = (value: string) => {
     setValue(value);
     onChange?.(value);
-    console.log(value);
   };
 
   const prevValue = usePrevious(value);
