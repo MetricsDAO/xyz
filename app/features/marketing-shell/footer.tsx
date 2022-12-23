@@ -28,7 +28,7 @@ export default function Footer() {
     >
       <a
         href="/app/ecosystem"
-        className="block py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip"
+        className="block py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
         LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP
       </a>
