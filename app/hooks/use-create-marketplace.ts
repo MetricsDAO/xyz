@@ -32,19 +32,13 @@ export function useCreateMarketplace({
         enforcementModule: LikertEnforcement.address as `0x${string}`,
         paymentModule: PaymentModule.address as `0x${string}`,
         marketUri: data.ipfsHash,
-        delegateBadge:
-          data.launch.access === "delegates"
-            ? (data.launch.badgerAddress as `0x${string}`)
-            : (data.reviewBadgerAddress as `0x${string}`), //TODO: reviewers as delegates should not be the "anyone" case
-        delegateTokenId:
-          data.launch.access === "delegates"
-            ? BigNumber.from(data.launch.badgerTokenId)
-            : BigNumber.from(data.reviewBadgerTokenId), //TODO: reviewers as delegates should not be the "anyone" case
-        maintainerBadge: data.reviewBadgerAddress as `0x${string}`,
-        maintainerTokenId: BigNumber.from(data.reviewBadgerTokenId),
+        delegateBadge: "0x0d033b4307231711e437937850ebf9ff6bfeeb82",
+        delegateTokenId: BigNumber.from(1),
+        maintainerBadge: "0x0d033b4307231711e437937850ebf9ff6bfeeb82",
+        maintainerTokenId: BigNumber.from(1),
         reputationModule: ReputationModule.address as `0x${string}`,
         reputationConfig: {
-          reputationEngine: ReputationEngine.address as `0x${string}`,
+          reputationEngine: "0x305aD87b3eD2132EF1d90dF26d3081511B001650",
           signalStake: BigNumber.from(1), //TODO
           providerThreshold: BigNumber.from(1), //TODO
           maintainerThreshold: BigNumber.from(data.submitRepMin), //TODO

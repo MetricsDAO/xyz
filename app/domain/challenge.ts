@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { z } from "zod";
 import { EthAddressSchema } from "./address";
 
@@ -28,6 +29,22 @@ export const ChallengeSearchSchema = z.object({
   project: z.string().optional(),
   first: z.number().default(12),
 });
+
+// Generate a fake Challenge for testing using faker.
+export function fakeChallengeNew(): ChallengeNew {
+  return {
+    title: faker.commerce.productName(),
+    description: faker.lorem.paragraphs(2),
+    laborMarketAddress: faker.finance.ethereumAddress(),
+    pTokenAddress: faker.finance.ethereumAddress(),
+    pTokenId: faker.datatype.number(100),
+    pTokenQuantity: faker.datatype.number(100),
+    signalExpiration: faker.date.future(),
+    submissionExpiration: faker.date.future(),
+    enforcementExpiration: faker.date.future(),
+    uri: faker.internet.url(),
+  };
+}
 
 export type Challenge = z.infer<typeof ChallengeSchema>;
 export type ChallengeNew = z.infer<typeof ChallengeNewSchema>;
