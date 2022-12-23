@@ -141,34 +141,3 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
     </div>
   );
 }
-
-// function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
-//   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
-
-//   const navigate = useNavigate();
-
-//   const { write, isLoading } = useCreateMarketplace({
-//     data: laborMarket,
-//     onTransactionSuccess() {
-//       navigate("/app/brainstorm");
-//     },
-//     onWriteSuccess() {
-//       // TODO: toast message or some kind of feedback
-//     },
-//   });
-
-//   return (
-//     <div className="space-y-8">
-//       <Title>Confirm Transaction</Title>
-//       <Text>Please confirm that you would like to create a new marketplace.</Text>
-//       <div className="flex flex-col sm:flex-row justify-center gap-5">
-//         <Button size="md" color="brand.5" type="button" onClick={() => write?.()} loading={isLoading}>
-//           Create
-//         </Button>
-//         <Button variant="default" color="dark" size="md" onClick={onCancel}>
-//           Cancel
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// }
