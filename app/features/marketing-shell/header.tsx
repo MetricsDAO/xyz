@@ -52,12 +52,12 @@ export default function Header() {
         </Link>
       </div>
 
-      <menu className="hidden md:flex flex-row justify-between">{items}</menu>
+      <menu className="hidden md:flex flex-row justify-between lg:gap-x-6">{items}</menu>
 
       <a
         href="/app/ecosystem"
         target="_blank"
-        className="bg-gradient-to-r to-green-300 from-sky-500 px-4 py-2 font-bold rounded-lg"
+        className="bg-gradient-to-r to-green-300 from-sky-500 px-4 py-2 font-semibold rounded-lg"
       >
         Launch App
       </a>
