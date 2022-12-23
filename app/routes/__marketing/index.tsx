@@ -130,7 +130,6 @@ export default function Index() {
   );
 }
 
-
 // When the user scrolls the page, execute myFunction
 if (typeof window !== "undefined") {
   window.onscroll = function () {
@@ -163,7 +162,9 @@ function Circle({ id }: { id: string }) {
     <svg id={id} width="6" height="6" viewBox="0 0 6 6" style={{ fill: "none" }} xmlns="http://www.w3.org/2000/svg">
       <circle cx="3" cy="3" r="2.5" stroke="#252525" />
     </svg>
-    
+  );
+}
+
 function InfoSection({ children, id }: { children: React.ReactNode; id: string }) {
   return (
     <div
