@@ -14,15 +14,6 @@ export function useSubmitRequest({
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
-  console.log("data", [
-    data.pTokenAddress as `0x${string}`,
-    data.pTokenId,
-    data.pTokenQuantity,
-    unixTimestamp(data.signalExpiration),
-    unixTimestamp(data.submissionExpiration),
-    unixTimestamp(data.enforcementExpiration),
-    data.uri,
-  ]);
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress,
     abi: LaborMarket.abi,
@@ -37,16 +28,12 @@ export function useSubmitRequest({
       data.uri,
     ],
   });
-  console.log("config", config);
-
   const { data: transactionResultData, write } = useContractWrite({
     ...config,
     onSuccess(result) {
       onWriteSuccess?.();
     },
   });
-
-  console.log("data", transactionResultData, write);
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,

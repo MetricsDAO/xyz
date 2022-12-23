@@ -26,8 +26,6 @@ export default function CreateChallenge() {
     };
   }, []);
 
-  console.log("challengeData", challengeData);
-
   const { write, isLoading } = useSubmitRequest({
     data: challengeData,
     onTransactionSuccess() {
