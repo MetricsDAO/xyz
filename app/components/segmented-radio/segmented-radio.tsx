@@ -1,23 +1,23 @@
 import { RadioGroup } from "@headlessui/react";
 import clsx from "clsx";
 import { useControlField } from "remix-validated-form";
-import { useEffect } from "react";
-import { usePrevious } from "react-use";
 
 type Props = {
-  name?: string;
-  options: Option[];
-  value?: string;
-  onChange?: (value: string) => void;
+  name: string;
+  options?: Option[];
 };
 
 type Option = { value: string; label: React.ReactNode };
 
-export function SegmentedRadio({ value, onChange, options, name }: Props) {
+export function SegmentedRadio({
+  value,
+  setValue,
+  ...props
+}: Props & { value: string; setValue: (value: string) => void }) {
   return (
-    <RadioGroup value={value} onChange={onChange} name={name}>
+    <RadioGroup value={value} onChange={setValue} name={props.name}>
       <div className="flex flex-wrap gap-x-8 gap-y-3">
-        {options?.map((option) => (
+        {props.options?.map((option) => (
           <RadioGroup.Option
             key={option.value}
             value={option.value}
@@ -33,20 +33,7 @@ export function SegmentedRadio({ value, onChange, options, name }: Props) {
   );
 }
 
-export function ValidatedSegmentedRadio({ onChange, ...props }: Props & { name: string }) {
+export function ValidatedSegmentedRadio(props: Props) {
   const [value, setValue] = useControlField<string>(props.name);
-
-  const handleChange = (value: string) => {
-    setValue(value);
-    onChange?.(value);
-  };
-
-  const prevValue = usePrevious(value);
-  useEffect(() => {
-    if (onChange && prevValue !== value) {
-      onChange(value);
-    }
-  }, [value, prevValue, onChange]);
-
-  return <SegmentedRadio value={value} onChange={handleChange} {...props} />;
+  return <SegmentedRadio value={value} setValue={setValue} {...props} />;
 }
