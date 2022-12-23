@@ -9549,6 +9549,11 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
+labor-markets-abi@^1.0.8:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.2.0.tgz#6889b5434b10f45befd00af03ba3bd042f3fef03"
+  integrity sha512-Ngq7MRHHFI/syZGINbz8mv906K0W2R3fkEfpuI1V2TrGGp91Iyyya21fCirJiqIy4p5PhLiS+kn8Y4GHptItUg==
+
 language-subtag-registry@~0.3.2:
   version "0.3.22"
   resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.22.tgz#2e1500861b2e457eba7e7ae86877cbd08fa1fd1d"

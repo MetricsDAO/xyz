@@ -56,7 +56,7 @@ export function AppHeader() {
     <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
       <div className="flex items-center">
         <Menu as="div" className="relative">
-          <Menu.Button className="md:hidden">
+          <Menu.Button className="flex items-center mr-3 md:hidden">
             <Bars3Icon className="h-5 w-5" />
           </Menu.Button>
           <Transition
