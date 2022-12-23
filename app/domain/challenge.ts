@@ -9,7 +9,7 @@ export const ChallengeSchema = z.object({
 });
 
 export const ChallengeNewSchema = ChallengeSchema.omit({ id: true }).extend({
-  pTokenAddress: EthAddressSchema.describe("The address of the payment token."),
+  pTokenAddress: EthAddressSchema,
   pTokenId: z.number().describe("The id of the payment token."),
   pTokenQuantity: z.number().describe("The quantity of the payment token."),
   signalExpiration: z.date().describe("The signal deadline expiration."),
