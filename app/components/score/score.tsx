@@ -28,6 +28,6 @@ export function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-function scoreNumToLabel(score: number) {
+export function scoreNumToLabel(score: number) {
   return score > 80 ? "Great" : score > 70 ? "Good" : score > 60 ? "Average" : score > 20 ? "Bad" : "Spam";
 }

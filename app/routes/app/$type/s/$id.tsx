@@ -22,19 +22,19 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
-import { ScoreBadge } from "~/components/score";
+import { ScoreBadge, scoreNumToLabel } from "~/components/score";
 import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
 import { SCORE_COLOR } from "~/utils/helpers";
+import { toast } from "react-hot-toast";
+import { useReviewSubmission } from "~/hooks/use-review-submission";
 
 const paramsSchema = z.object({ id: z.string() });
 
 const validator = withZod(ReviewSearchSchema);
 
-// Shouldn't need this in the future
-type Grade = "Great" | "Good" | "Average" | "Bad" | "Spam";
 export const loader = async (data: DataFunctionArgs) => {
   const { id } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
@@ -71,7 +71,7 @@ export default function ChallengeSubmission() {
             <h1 className="text-3xl font-semibold">{submission.title}</h1>
             {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
           </div>
-          <ReviewQuestionDrawerButton />
+          <ReviewQuestionDrawerButton requestId={submission.serviceRequestId} submissionId={submission.id} />
         </section>
         <section className="flex flex-col space-y-7 pb-24">
           <Detail className="flex flex-wrap gap-x-8 gap-y-4">
@@ -116,11 +116,11 @@ export default function ChallengeSubmission() {
                         <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                           <div
                             className={clsx(
-                              SCORE_COLOR[r.scoreStatus as Grade],
+                              SCORE_COLOR[scoreNumToLabel(r.score)],
                               "flex w-24 h-12 justify-center items-center rounded-lg"
                             )}
                           >
-                            <p>{r.scoreStatus}</p>
+                            <p>{scoreNumToLabel(r.score)}</p>
                           </div>
                           <Avatar />
                           <p className="font-medium">user.ETH</p>
@@ -166,9 +166,25 @@ export default function ChallengeSubmission() {
   );
 }
 
-function ReviewQuestionDrawerButton() {
+function ReviewQuestionDrawerButton({ requestId, submissionId }: { requestId: string; submissionId: string }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<"great" | "good" | "average" | "bad" | "spam">("average");
+  const [selected, setSelected] = useState<100 | 75 | 50 | 25 | 0>(50);
+
+  const { write, isLoading } = useReviewSubmission({
+    data: [requestId, submissionId, selected],
+    onTransactionSuccess() {
+      toast.dismiss("review-submission");
+      toast.success("Submission Reviewed!");
+    },
+    onWriteSuccess() {
+      toast.loading("Reviewing Submision...", { id: "review-submission" });
+      setOpen(false);
+    },
+  });
+
+  const onCreate = () => {
+    write?.();
+  };
 
   return (
     <>
@@ -176,7 +192,7 @@ function ReviewQuestionDrawerButton() {
       <Drawer open={open} onClose={() => setOpen(false)}>
         <div className="flex flex-col mx-auto space-y-10 px-2">
           <div className="space-y-3">
-            <p className="text-3xl font-semibold">{"Review Question"}</p>
+            <p className="text-3xl font-semibold">Review Question</p>
             <p className="italic text-gray-500">
               Important: You can't edit this score after submitting. Double check your score and ensure it's good to go
             </p>
@@ -184,45 +200,45 @@ function ReviewQuestionDrawerButton() {
           <div className="flex flex-col space-y-3">
             <Button
               variant="outline"
-              onClick={() => setSelected("great")}
+              onClick={() => setSelected(100)}
               className={clsx("hover:bg-green-200", {
-                "bg-green-200": selected === "great",
+                "bg-green-200": selected === 100,
               })}
             >
               Great
             </Button>
             <Button
               variant="outline"
-              onClick={() => setSelected("good")}
+              onClick={() => setSelected(75)}
               className={clsx("hover:bg-blue-200", {
-                "bg-blue-200": selected === "good",
+                "bg-blue-200": selected === 75,
               })}
             >
               Good
             </Button>
             <Button
               variant="outline"
-              onClick={() => setSelected("average")}
+              onClick={() => setSelected(50)}
               className={clsx("hover:bg-gray-200", {
-                "bg-gray-200": selected === "average",
+                "bg-gray-200": selected === 50,
               })}
             >
               Average
             </Button>
             <Button
               variant="outline"
-              onClick={() => setSelected("bad")}
+              onClick={() => setSelected(25)}
               className={clsx("hover:bg-orange-200", {
-                "bg-orange-200": selected === "bad",
+                "bg-orange-200": selected === 25,
               })}
             >
               Bad
             </Button>
             <Button
               variant="outline"
-              onClick={() => setSelected("spam")}
+              onClick={() => setSelected(0)}
               className={clsx("hover:bg-red-200", {
-                "bg-red-200": selected === "spam",
+                "bg-red-200": selected === 0,
               })}
             >
               Spam
@@ -232,7 +248,9 @@ function ReviewQuestionDrawerButton() {
             <Button variant="cancel" className="w-full" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button className="w-full">Submit Score</Button>
+            <Button className="w-full" onClick={onCreate}>
+              Submit Score
+            </Button>
           </div>
         </div>
       </Drawer>
