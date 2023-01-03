@@ -75,7 +75,7 @@ export const prepareChallenge = (newChallenge: ChallengeNew): ChallengePrepared 
     laborMarketAddress: "0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33", // recently created labor market on Goerli https://goerli.etherscan.io/address/0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33
     pTokenAddress: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc", // FAU token https://erc20faucet.com/
     pTokenQuantity: 0, //TODO
-    pTokenId: 0, // TODO
+    pTokenId: 0, // Not used by contract. Left over appendage from when we were using ERC1155
     uri: "ipfs-uri",
     enforcementExpiration: customStringToDate(newChallenge.reviewEndDate, newChallenge.reviewEndTime),
     submissionExpiration: customStringToDate(newChallenge.endDate, newChallenge.endTime),
