@@ -90,21 +90,6 @@ export default function ChallengeIdSubmissions() {
 }
 
 function averageScore(reviews: Review[]) {
-  const score = reviews.reduce((sum, r) => sum + numScore(r.scoreStatus), 0);
+  const score = reviews.reduce((sum, r) => sum + r.score, 0);
   return score / reviews.length;
-}
-
-function numScore(status: string) {
-  switch (status) {
-    case "Great":
-      return 100;
-    case "Good":
-      return 75;
-    case "Average":
-      return 50;
-    case "Bad":
-      return 25;
-    default:
-      return 0;
-  }
 }

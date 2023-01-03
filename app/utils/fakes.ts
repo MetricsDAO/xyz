@@ -49,7 +49,7 @@ export const fakeSubmission = (data: Partial<Submission>, serviceRequestId: stri
     description: faker.random.words(10),
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
-    scoreStatus: "Bad",
+    score: 10,
     serviceRequestId: serviceRequestId,
   };
 };
@@ -58,7 +58,7 @@ export const fakeReview = (data: Partial<Review>, submissionId: string): Review 
   return {
     id: faker.datatype.uuid(),
     comment: faker.random.words(3),
-    scoreStatus: "Bad",
+    score: 10,
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
     submissionId: submissionId,
