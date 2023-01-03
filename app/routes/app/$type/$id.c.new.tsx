@@ -33,7 +33,6 @@ export const action = async ({ request }: ActionArgs) => {
   if (result.error) return validationError(result.error);
 
   const preparedChallenge = await prepareChallenge(result.data);
-  console.log("preparedChallenge", preparedChallenge);
   return typedjson({ preparedChallenge });
 };
 
@@ -66,13 +65,7 @@ export default function CreateChallenge() {
         </p>
       </div>
 
-      <ValidatedForm
-        id="myform"
-        method="post"
-        defaultValues={defaultValues}
-        validator={validator}
-        className="space-y-10"
-      >
+      <ValidatedForm method="post" defaultValues={defaultValues} validator={validator} className="space-y-10">
         <section className="space-y-3">
           <h2 className="font-bold">Challenge Title</h2>
           <ValidatedInput name="title" placeholder="Challenge Title" className="w-full" />
@@ -165,7 +158,7 @@ export default function CreateChallenge() {
           <Button variant="cancel">Cancel</Button>
         </div>
       </ValidatedForm>
-      <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
+      <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
         <ConfirmTransaction challenge={modalData.challenge} onClose={closeModal} />
       </Modal>
     </Container>
