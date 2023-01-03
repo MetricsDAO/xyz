@@ -1,72 +1,57 @@
-import { faker } from "@faker-js/faker";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
-import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { ValidatedForm } from "remix-validated-form";
+import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import type { ValidationErrorResponseData } from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { z } from "zod";
-import { Container } from "~/components";
+import { Container, Modal } from "~/components";
 import { Button } from "~/components/button";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
 import { ValidatedTextarea } from "~/components/textarea/textarea";
-import { fakeChallengeNew } from "~/domain";
+import type { ChallengePrepared } from "~/domain";
+import { ChallengeNewSchema, fakeChallengeNew } from "~/domain";
 import { useSubmitRequest } from "~/hooks/use-submit-request";
+import { prepareChallenge } from "~/services/challenges-service.server";
 
-const inputDateSchema = z.string().refine((d) => {
-  const date = dayjs(d).toDate();
-  try {
-    z.date().parse(date);
-    return true;
-  } catch (e) {
-    console.error(e);
-  }
-  return false;
-});
+const validator = withZod(ChallengeNewSchema);
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+const paramsSchema = z.object({ id: z.string() });
+export const loader = async ({ request, params }: DataFunctionArgs) => {
+  const { id } = paramsSchema.parse(params);
   const url = new URL(request.url);
   const defaultValues = url.searchParams.get("fake") ? fakeChallengeNew() : undefined;
-  return typedjson({ defaultValues });
+  return typedjson({ defaultValues, laborMarketAddress: id });
+};
+
+type ActionResponse = { preparedChallenge: ChallengePrepared } | ValidationErrorResponseData;
+export const action = async ({ request }: ActionArgs) => {
+  const result = await validator.validate(await request.formData());
+  if (result.error) return validationError(result.error);
+
+  const preparedChallenge = await prepareChallenge(result.data);
+  console.log("preparedChallenge", preparedChallenge);
+  return typedjson({ preparedChallenge });
 };
 
 export default function CreateChallenge() {
   const { defaultValues } = useTypedLoaderData<typeof loader>();
-  const challengeData = useMemo(() => {
-    return {
-      laborMarketAddress: "0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33", // recently created labor market on Goerli https://goerli.etherscan.io/address/0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33
-      pTokenAddress: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc", // FAU token https://erc20faucet.com/
-      pTokenQuantity: 0, //TODO
-      pTokenId: 0, // TODO
-      title: "Babies first Challenge",
-      description: "We all start somewhere",
-      uri: "ipfs-uri",
-      enforcementExpiration: faker.date.future(),
-      submissionExpiration: faker.date.future(),
-      signalExpiration: faker.date.future(),
-    };
-  }, []);
+  const actionData = useTypedActionData<ActionResponse>();
 
-  const { write } = useSubmitRequest({
-    data: challengeData,
-    onTransactionSuccess() {
-      toast.dismiss("creating-challenge");
-      toast.success("Challenge created!");
-    },
-    onWriteSuccess() {
-      toast.loading("Creating challenge...", { id: "creating-challenge" });
-    },
-  });
+  const [modalData, setModalData] = useState<{ challenge?: ChallengePrepared; isOpen: boolean }>({ isOpen: false });
 
-  // const x = useFormContext("myform");
+  function closeModal() {
+    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
+  }
 
-  // console.log("fieldErrors", x);
-
-  // for (let [key, value] of x.getValues()) {
-  //   console.log(key, value, typeof value);
-  // }
+  useEffect(() => {
+    if (actionData && "preparedChallenge" in actionData) {
+      setModalData({ challenge: actionData.preparedChallenge, isOpen: true });
+    }
+  }, [actionData]);
 
   return (
     <Container className="max-w-3xl mt-10 space-y-10">
@@ -83,38 +68,9 @@ export default function CreateChallenge() {
 
       <ValidatedForm
         id="myform"
-        defaultValues={{
-          ...defaultValues,
-          language: "english",
-          projects: "ethereum",
-          startDate: dayjs().format("YYYY-MM-DD"),
-          startTime: dayjs().format("HH:mm"),
-          endDate: dayjs().format("YYYY-MM-DD"),
-          endTime: dayjs().format("HH:mm"),
-          reviewEndDate: dayjs().format("YYYY-MM-DD"),
-          reviewEndTime: dayjs().format("HH:mm"),
-          rewardToken: "ETH",
-          rewardPool: "5",
-        }}
-        validator={withZod(
-          z.object({
-            title: z.string(),
-            description: z.string(),
-            language: z.enum(["english", "spanish"]),
-            projects: z.enum(["ethereum", "solana"]),
-            startDate: inputDateSchema,
-            startTime: z.string(),
-            endDate: inputDateSchema,
-            endTime: z.string(),
-            reviewEndDate: inputDateSchema,
-            reviewEndTime: z.string(),
-            rewardToken: z.enum(["ETH"]),
-            rewardPool: z.string(),
-          })
-        )}
-        onSubmit={(data) => {
-          console.log("data", data);
-        }}
+        method="post"
+        defaultValues={defaultValues}
+        validator={validator}
         className="space-y-10"
       >
         <section className="space-y-3">
@@ -203,10 +159,49 @@ export default function CreateChallenge() {
         </section>
 
         <div className="flex flex-row flex-wrap gap-5">
-          <Button variant="primary">Launch Challenge</Button>
+          <Button variant="primary" type="submit">
+            Launch Challenge
+          </Button>
           <Button variant="cancel">Cancel</Button>
         </div>
       </ValidatedForm>
+      <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
+        <ConfirmTransaction challenge={modalData.challenge} onClose={closeModal} />
+      </Modal>
     </Container>
+  );
+}
+
+function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepared; onClose: () => void }) {
+  invariant(challenge, "challenge is required"); // this should never happen but just in case
+
+  const { write } = useSubmitRequest({
+    data: challenge,
+    onTransactionSuccess() {
+      toast.dismiss("creating-challenge");
+      toast.success("Challenge created!");
+    },
+    onWriteSuccess() {
+      toast.loading("Creating challenge...", { id: "creating-challenge" });
+    },
+  });
+
+  const onCreate = () => {
+    write?.();
+  };
+
+  return (
+    <div className="space-y-8">
+      <p>Please confirm that you would like to launch a new challenge.</p>
+      <p>{JSON.stringify(challenge, null, 2)}</p>
+      <div className="flex flex-col sm:flex-row justify-center gap-5">
+        <Button size="md" type="button" onClick={onCreate}>
+          Launch
+        </Button>
+        <Button variant="cancel" size="md" onClick={onClose}>
+          Cancel
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { ChallengeNew } from "~/domain";
+import type { ChallengePrepared } from "~/domain";
 import { unixTimestamp } from "~/utils/date";
 
 export function useSubmitRequest({
@@ -10,7 +10,7 @@ export function useSubmitRequest({
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: ChallengeNew;
+  data: ChallengePrepared;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {

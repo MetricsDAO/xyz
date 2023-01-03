@@ -1,5 +1,6 @@
 import type { ServiceRequest } from "@prisma/client";
-import type { ChallengeSearch } from "~/domain/challenge";
+import type { ChallengeNew, ChallengePrepared, ChallengeSearch } from "~/domain/challenge";
+import { customStringToDate } from "~/utils/date";
 import { prisma } from "./prisma.server";
 
 /**
@@ -61,4 +62,23 @@ export const upsertServiceRequest = async (challenge: ServiceRequest) => {
     data: { id, title, laborMarketAddress },
   });
   return newChallenge;
+};
+
+/**
+ * Prepare a new Challenge for submission to the contract.
+ * @param {ChallengeNew} newChallenge - The ChallengeNew to prepare.
+ * @returns {ChallengePrepared} - The prepared Challenge.
+ */
+export const prepareChallenge = (newChallenge: ChallengeNew): ChallengePrepared => {
+  // TODO: upload data to ipfs
+  return {
+    laborMarketAddress: "0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33", // recently created labor market on Goerli https://goerli.etherscan.io/address/0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33
+    pTokenAddress: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc", // FAU token https://erc20faucet.com/
+    pTokenQuantity: 0, //TODO
+    pTokenId: 0, // TODO
+    uri: "ipfs-uri",
+    enforcementExpiration: customStringToDate(newChallenge.reviewEndDate, newChallenge.reviewEndTime),
+    submissionExpiration: customStringToDate(newChallenge.endDate, newChallenge.endTime),
+    signalExpiration: customStringToDate(newChallenge.startDate, newChallenge.startTime),
+  };
 };
