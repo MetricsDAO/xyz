@@ -21,12 +21,35 @@ export function updateWalletAddress(userId: string, input: WalletUpdate) {
 }
 
 /**
+ * Checks if the wallet exists.
+ * @param {string} address - the blockchain and address of the wallet.
+ * @returns {Promise<Wallet[] | null>} - the wallets for the user or wallet already exists.
+
+ */
+export async function walletExists(address: string) {
+  return prisma.wallet.findUnique({
+    where: {
+      address: address,
+    },
+  });
+}
+
+/**
  * updates a users wallet address.
  * @param {string} userId - the userId of the wallet owner.
  * @param {WalletAdd} input - the blockchain and address of the new wallet.
- *
+ * @returns {Promise<Wallet[] | Error>} - the wallets for the user or wallet already exists.
+
  */
-export function addWalletAddress(userId: string, input: WalletAdd) {
+export async function addWalletAddress(userId: string, input: WalletAdd) {
+  // const alreadyExists = prisma.wallet.findUnique({
+  //   where: {
+  //     address: input.payment.address,
+  //   },
+  // });
+  // if (await alreadyExists) {
+  //   return new Error("Wallet already exists.");
+  // }
   return prisma.wallet.create({
     data: {
       address: input.payment.address,
