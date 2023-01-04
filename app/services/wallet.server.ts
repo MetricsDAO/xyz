@@ -2,17 +2,6 @@ import type { WalletAdd, WalletDelete } from "~/domain/wallet";
 import { prisma } from "./prisma.server";
 
 /**
- * Checks if the wallet exists.
- * @param  address - the blockchain and address of the wallet.
- * @returns boolean - the wallets for the user or wallet already exists.
-
- */
-export async function walletExists(address: string) {
-  const walletsCount = await prisma.wallet.count({ where: { address } });
-  return walletsCount > 0;
-}
-
-/**
  * updates a users wallet address.
  * @param {string} userId - the userId of the wallet owner.
  * @param {WalletAdd} input - the blockchain and address of the new wallet.
