@@ -1,5 +1,6 @@
 import SocialIcons from "./social-icons";
 import { Link } from "@remix-run/react";
+import clsx from "clsx";
 
 const links = [
   { link: "/protocol", label: "Protocol" },
@@ -22,11 +23,20 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
 
   const currentYear = new Date().getFullYear();
 
+  var imgUrl = "";
+
+  if (variant === "gradient") {
+    imgUrl = "url(/img/marketing/footer-blur.png)";
+  }
+
   return (
     <footer
       id="bottom"
-      className="bg-local bg-cover whitespace-nowrap"
-      style={{ backgroundImage: "url(/img/marketing/footer-blur.png)" }}
+      className={clsx("whitespace-nowrap", {
+        "bg-local bg-cover": variant === "gradient",
+        "bg-none": variant === "transparent",
+      })}
+      style={{ backgroundImage: imgUrl }}
     >
       <a
         href="/app/ecosystem"

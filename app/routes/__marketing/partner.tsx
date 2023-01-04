@@ -6,15 +6,15 @@ import Footer from "~/features/marketing-shell/footer";
 export default function Index() {
   return (
     <>
-      <div>
-        <div className="relative flex flex-row">
-          <img
-            src="/img/marketing/partner-bg-testimony.png"
-            className="absolute bottom-0 left-0 -z-10 h-screen w-screen"
-            alt=""
-          />
+      <div className="relative">
+        <img
+          src="/img/marketing/partner-bg-testimony.png"
+          className="absolute bottom-0 left-0 -z-10 h-screen w-screen"
+          alt=""
+        />
+        <div className="flex flex-row">
           <aside className="hidden md:block w-1/6">
-            <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
+            <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 z-10">
               <a href="#top">
                 <GlobeAltIcon className="text-black h-7 w-7" />
               </a>

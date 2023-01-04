@@ -8,7 +8,7 @@ export default function Index() {
     <div>
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
-          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
+          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 z-10">
             <a href="#top">
               <GlobeAltIcon className="text-black h-7 w-7" />
             </a>
