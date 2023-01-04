@@ -171,7 +171,7 @@ function ReviewQuestionDrawerButton({ requestId, submissionId }: { requestId: st
   const [selected, setSelected] = useState<number>(50);
 
   const { write, isLoading } = useReviewSubmission({
-    data: { requestId, submissionId, selected },
+    data: { requestId: requestId, submissionId: submissionId, score: selected },
     onTransactionSuccess() {
       toast.dismiss("review-submission");
       toast.success("Submission Reviewed!");
