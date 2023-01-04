@@ -1,10 +1,11 @@
 import { ArrowDownCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import MarketingButton from "~/components/marketing-button/marketing-button";
+import Footer from "~/features/marketing-shell/footer";
 import SocialIcons from "~/features/marketing-shell/social-icons";
 
 export default function Index() {
   return (
-    <>
+    <div>
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
@@ -121,7 +122,8 @@ export default function Index() {
           </InfoSection>
         </main>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 

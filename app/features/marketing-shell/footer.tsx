@@ -11,7 +11,9 @@ const links = [
   { link: "/terms", label: "Terms & Privacy" },
 ];
 
-export default function Footer() {
+type Variant = "gradient" | "transparent";
+
+export default function Footer({ variant = "gradient" }: { variant?: Variant }) {
   const items = links.map((link) => (
     <a key={link.link} href={link.link} className="block px-2 py-1.5 text-black">
       {link.label}

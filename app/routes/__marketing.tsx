@@ -8,7 +8,6 @@ export default function Marketing() {
     <>
       <Header />
       <Outlet />
-      <Footer />
     </>
   );
 }
