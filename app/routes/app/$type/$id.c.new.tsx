@@ -14,6 +14,7 @@ import { ValidatedSelect } from "~/components/select";
 import { ValidatedTextarea } from "~/components/textarea/textarea";
 import type { ChallengePrepared } from "~/domain";
 import { ChallengeNewSchema, fakeChallengeNew } from "~/domain";
+import { useIncreaseAllowance } from "~/hooks/use-increase-allowance";
 import { useSubmitRequest } from "~/hooks/use-submit-request";
 import { prepareChallenge } from "~/services/challenges-service.server";
 
@@ -136,8 +137,7 @@ export default function CreateChallenge() {
                 name="rewardToken"
                 placeholder="Token"
                 options={[
-                  { label: "ETH", value: "ETH" },
-                  { label: "SOL", value: "SOL" },
+                  { label: "FAU", value: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc" }, // FAU token https://erc20faucet.com/
                 ]}
               />
             </div>
@@ -168,7 +168,9 @@ export default function CreateChallenge() {
 function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepared; onClose: () => void }) {
   invariant(challenge, "challenge is required"); // this should never happen but just in case
 
-  const { write } = useSubmitRequest({
+  const [isApproved, setIsApproved] = useState(false);
+
+  const { write: writeChallenge } = useSubmitRequest({
     data: challenge,
     onTransactionSuccess() {
       toast.dismiss("creating-challenge");
@@ -179,22 +181,61 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
     },
   });
 
-  const onCreate = () => {
-    write?.();
+  const { write: writeIncreaseAllowance } = useIncreaseAllowance({
+    data: {
+      ERC20address: challenge.pTokenAddress,
+      amount: challenge.pTokenQuantity,
+      spender: challenge.laborMarketAddress as `0x${string}`,
+    },
+    onTransactionSuccess() {
+      toast.dismiss("approving-challenge");
+      toast.success("Challenge approved!");
+      setIsApproved(true);
+    },
+    onWriteSuccess() {
+      toast.loading("Approving challenge to spend ERC20...", { id: "approving-challenge" });
+    },
+  });
+
+  const onCreateChallenge = () => {
+    writeChallenge?.();
+  };
+
+  const onIncreaseAllowance = () => {
+    writeIncreaseAllowance?.();
   };
 
   return (
     <div className="space-y-8">
-      <p>Please confirm that you would like to launch a new challenge.</p>
-      <p>{JSON.stringify(challenge, null, 2)}</p>
-      <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={onCreate}>
-          Launch
-        </Button>
-        <Button variant="cancel" size="md" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
+      {!isApproved && (
+        <>
+          <p className="p-5 text-sm">
+            First you must approve that your service request is allowed to transer <b>{challenge.pTokenQuantity}</b> of
+            ERC20 with address <b>{challenge.pTokenAddress}</b> on your behalf{" "}
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-5">
+            <Button size="md" type="button" onClick={onIncreaseAllowance}>
+              Approve
+            </Button>
+            <Button variant="cancel" size="md" onClick={onClose}>
+              Cancel
+            </Button>
+          </div>
+        </>
+      )}
+      {isApproved && (
+        <>
+          <p>Please confirm that you would like to launch a new challenge.</p>
+          <div className="flex flex-col sm:flex-row justify-center gap-5">
+            <Button size="md" type="button" onClick={onCreateChallenge}>
+              Launch
+            </Button>
+            <Button variant="cancel" size="md" onClick={onClose}>
+              Cancel
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

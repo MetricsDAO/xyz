@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { validateDate, validateTime } from "~/utils/date";
 import { EthAddressSchema } from "./address";
 
@@ -29,8 +30,8 @@ export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAd
   endTime: inputTimeSchema,
   reviewEndDate: inputDateSchema,
   reviewEndTime: inputTimeSchema,
-  rewardToken: z.enum(["ETH"]),
-  rewardPool: z.string(),
+  rewardToken: EthAddressSchema,
+  rewardPool: zfd.numeric(z.number().min(0)),
 });
 
 // Contract input
@@ -72,8 +73,8 @@ export function fakeChallengeNew(): ChallengeNew {
     endTime: dayjs(endDate).format("HH:mm"),
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
-    rewardToken: "ETH",
-    rewardPool: "5",
+    rewardToken: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc",
+    rewardPool: 5,
   };
 }
 
