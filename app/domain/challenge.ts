@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
-import { ethers } from "ethers";
 import { z } from "zod";
 import { validateDate, validateTime } from "~/utils/date";
+import { parseTokenAmount } from "~/utils/helpers";
 import { EthAddressSchema } from "./address";
 
 export const ChallengeSchema = z.object({
@@ -14,7 +14,7 @@ export const ChallengeSchema = z.object({
 
 const tokenAmountSchema = z.string().refine((r) => {
   try {
-    ethers.utils.parseUnits(r, 18);
+    parseTokenAmount(r);
     return true;
   } catch (e) {
     return false;
@@ -46,12 +46,12 @@ export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAd
 // Contract input
 export const ChallengePreparedSchema = ChallengeSchema.pick({ laborMarketAddress: true }).extend({
   pTokenAddress: EthAddressSchema,
-  pTokenId: z.number().describe("The id of the payment token."),
-  pTokenQuantity: z.number().describe("The quantity of the payment token."),
-  signalExpiration: z.date().describe("The signal deadline expiration."),
-  submissionExpiration: z.date().describe("The submission deadline expiration."),
-  enforcementExpiration: z.date().describe("The enforcement deadline expiration."),
-  uri: z.string().describe("The uri of the service request data."),
+  pTokenId: z.number(),
+  pTokenQuantity: tokenAmountSchema,
+  signalExpiration: z.date(),
+  submissionExpiration: z.date(),
+  enforcementExpiration: z.date(),
+  uri: z.string(),
 });
 
 export const ChallengeSearchSchema = z.object({

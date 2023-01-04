@@ -1,11 +1,11 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
-import { utils } from "ethers";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { parseTokenAmount } from "~/utils/helpers";
 
 type Data = {
   ERC20address: string;
   spender: `0x${string}`;
-  amount: number;
+  amount: string;
 };
 
 export function useApproveERC20({
@@ -34,7 +34,7 @@ export function useApproveERC20({
       },
     ],
     functionName: "approve",
-    args: [data.spender, utils.parseUnits(data.amount.toString(), 18)],
+    args: [data.spender, parseTokenAmount(data.amount)],
   });
   const { data: transactionResultData, write } = useContractWrite({
     ...config,

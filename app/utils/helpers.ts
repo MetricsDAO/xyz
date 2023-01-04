@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 export const PROJECT_ICONS: Record<string, string | undefined> = {
   Ethereum: "/img/icons/project-icons/eth.svg",
   Solana: "/img/icons/project-icons/sol.svg",
@@ -35,4 +37,13 @@ export const SCORE_COLOR_SECONDARY = {
   Average: "bg-zinc-500",
   Bad: "bg-amber-500",
   Spam: "bg-rose-400",
+};
+
+/**
+ * Standardized way of parsing token string amount. An amount of 1 is 1e18 units.
+ * @param amount string amount that cannot be less than 1e-18
+ * @returns {BigNumber}
+ */
+export const parseTokenAmount = (amount: string) => {
+  return ethers.utils.parseUnits(amount, 18);
 };

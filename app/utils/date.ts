@@ -32,7 +32,7 @@ export function unixTimestamp(date: Date): number {
  * @param date a date with format YYYY-MM-DD
  * @param time a time with format HH:mm
  */
-export function customStringToDate(date: string, time: string): Date {
+export function parseDatetime(date: string, time: string): Date {
   return dayjs(`${date} ${time}`, "YYYY-MM-DD HH:mm", true).toDate();
 }
 
