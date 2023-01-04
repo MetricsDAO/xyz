@@ -1,8 +1,12 @@
 import { tracer as createTracer } from "@flipsidecrypto/pine-sdk";
+import invariant from "tiny-invariant";
+
+invariant(process.env.PINE_API_KEY, "PINE_API_KEY is required");
+const PINE_API_KEY = process.env.PINE_API_KEY;
 
 const tracer = createTracer({
   connection: {
-    apikey: "your_api",
+    apikey: PINE_API_KEY,
     endpoint: "https://api.flipsidecrypto.com/api/v2",
   },
   tracer: {
@@ -13,7 +17,8 @@ const tracer = createTracer({
 
 const consumer = tracer.consume(
   async function (response) {
-    return true;
+    console.log({ response });
+    return false;
   },
   { name: "local", batchSize: 100 }
 );
