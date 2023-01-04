@@ -185,7 +185,7 @@ function AddAddressForm({ onDone }: { onDone: () => void }) {
   const { networks } = useTypedLoaderData<typeof loader>();
   const fetcher = useFetcher<ActionResponse>();
   useEffect(() => {
-    if (!isValidationError(fetcher.data)) {
+    if (fetcher.data && !isValidationError(fetcher.data)) {
       onDone();
     }
   }, [fetcher.data, onDone]);
