@@ -30,6 +30,7 @@ import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
 import { namedAction } from "remix-utils";
 import { useFetcher } from "@remix-run/react";
+import { isValidationError } from "~/utils/utils";
 
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
@@ -161,29 +162,27 @@ function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
 function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <div className="space-y-3">
-      {wallets.map((wallet) => {
-        return (
-          <Card
-            // On mobile, two column grid with "labels". On desktop hide the "labels".
-            className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
-            key={wallet.address}
-          >
-            <div className="lg:hidden">Chain/Project</div>
-            <p>project</p>
-            <div className="lg:hidden">Address</div>
-            <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
-              <p className="text-black">{truncateAddress(wallet.address)}</p>
-              <ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />
-            </div>
-            <div className="lg:hidden">Last Updated</div>
-            <p className="text-black">{fromNow(wallet.createdAt)} </p>
-            <div className="flex flex-wrap gap-2">
-              <RemoveAddressButton wallet={wallet} />
-              <UpdateAddressButton wallet={wallet} />
-            </div>
-          </Card>
-        );
-      })}
+      {wallets.map((wallet) => (
+        <Card
+          // On mobile, two column grid with "labels". On desktop hide the "labels".
+          className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
+          key={wallet.address}
+        >
+          <div className="lg:hidden">Chain/Project</div>
+          <p>project</p>
+          <div className="lg:hidden">Address</div>
+          <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
+            <p className="text-black">{truncateAddress(wallet.address)}</p>
+            <ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />
+          </div>
+          <div className="lg:hidden">Last Updated</div>
+          <p className="text-black">{fromNow(wallet.createdAt)} </p>
+          <div className="flex flex-wrap gap-2">
+            <RemoveAddressButton wallet={wallet} />
+            <UpdateAddressButton wallet={wallet} />
+          </div>
+        </Card>
+      ))}
     </div>
   );
 }
@@ -207,8 +206,8 @@ function AddAddressForm({ onDone }: { onDone: () => void }) {
   const { networks } = useTypedLoaderData<typeof loader>();
   const fetcher = useFetcher<ActionResponse>();
   useEffect(() => {
-    if (fetcher.data && "wallet" in fetcher.data) {
-      onDone?.();
+    if (!isValidationError(fetcher.data)) {
+      onDone();
     }
   }, [fetcher.data, onDone]);
 
