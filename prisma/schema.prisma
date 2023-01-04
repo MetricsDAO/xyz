@@ -19,7 +19,8 @@ model User {
 }
 
 model Wallet {
-  address     String   @id
+  id          String   @id @default(cuid())
+  address     String
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
