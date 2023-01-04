@@ -1,11 +1,11 @@
-import { CheckCircleIcon, ClipboardDocumentIcon, XCircleIcon } from "@heroicons/react/20/solid";
+import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
 import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useEffect, useState } from "react";
-import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
-import { useIsValid, ValidatedForm, validationError } from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
 import { ValidatedInput } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -52,17 +52,6 @@ export async function action({ request }: ActionArgs) {
       const wallet = await addWalletAddress(user.id, formData.data);
       return typedjson({ wallet });
     },
-
-    async update() {
-      const formData = await updateWalletValidator.validate(await request.formData());
-      if (formData.error) return validationError(formData.error);
-      if (await walletExists(formData.data.payment.address)) {
-        return validationError({ fieldErrors: { "payment.address": "Wallet already exists" }, subaction: "update" });
-      }
-      const wallet = await updateWalletAddress(user.id, formData.data);
-      return typedjson({ wallet });
-    },
-
     async delete() {
       const formData = await deleteWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
@@ -149,7 +138,6 @@ function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
             </Row.Column>
             <Row.Column span={3} className="flex flex-wrap gap-2">
               <RemoveAddressButton wallet={wallet} />
-              <UpdateAddressButton wallet={wallet} />
             </Row.Column>
           </Row>
         );
@@ -179,7 +167,6 @@ function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
             <p className="text-black">{fromNow(wallet.createdAt)} </p>
             <div className="flex flex-wrap gap-2">
               <RemoveAddressButton wallet={wallet} />
-              <UpdateAddressButton wallet={wallet} />
             </div>
           </Card>
         );
@@ -264,7 +251,7 @@ function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
           </div>
           <ValidatedForm method="post" action="?/delete" validator={deleteWalletValidator} className="space-y-5 mt-5">
             <div className="invisible h-0 w-0">
-              <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
+              <ValidatedInput type="hidden" id="id" name="id" value={wallet.id} />
             </div>
             <div className="flex gap-2 justify-end">
               <Button type="button" variant="cancel" onClick={() => setOpenedRemove(false)}>
@@ -274,63 +261,6 @@ function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
             </div>
           </ValidatedForm>
         </div>
-      </Modal>
-    </>
-  );
-}
-
-function UpdateAddressButton({ wallet }: { wallet: WalletWithChain }) {
-  const [openedUpdate, setOpenedUpdate] = useState(false);
-
-  const actionData = useTypedActionData<ActionResponse>();
-  useEffect(() => {
-    if (actionData && "wallet" in actionData) {
-      setOpenedUpdate(false);
-    }
-  }, [actionData]);
-
-  const isValid = useIsValid("update");
-  return (
-    <>
-      <Button variant="primary" onClick={() => setOpenedUpdate(true)}>
-        Update
-      </Button>
-      <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <ValidatedForm id="update" method="post" action="?/update" subaction="update" validator={updateWalletValidator}>
-          <div className="space-y-5 mt-5">
-            <div className="space-y-2">
-              <div className="flex border-solid border rounded-md border-trueGray-200">
-                <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
-                  {wallet.networkName}
-                </p>
-                <div className="flex items-center ml-2 w-full">
-                  <div>
-                    {isValid ? (
-                      <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
-                    ) : (
-                      <XCircleIcon className="mr-1 text-rose-500 h-5 w-5" />
-                    )}
-                  </div>
-                  <div className="invisible h-0 w-0">
-                    <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
-                    <ValidatedInput type="hidden" name="payment.networkName" value={wallet.networkName} />
-                  </div>
-                  <input
-                    className="border-none w-full outline-none"
-                    name="payment.address"
-                    placeholder="Update Address"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button type="button" variant="cancel" onClick={() => setOpenedUpdate(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save</Button>
-            </div>
-          </div>
-        </ValidatedForm>
       </Modal>
     </>
   );

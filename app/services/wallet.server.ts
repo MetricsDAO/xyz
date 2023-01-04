@@ -1,24 +1,5 @@
-import type { WalletAdd, WalletDelete, WalletUpdate } from "~/domain/wallet";
+import type { WalletAdd, WalletDelete } from "~/domain/wallet";
 import { prisma } from "./prisma.server";
-
-/**
- * updates a users wallet address.
- * @param {string} userId - the id of the user.
- * @param {WalletUpdate} input - the new address and network of the wallet.
-
- */
-export function updateWalletAddress(userId: string, input: WalletUpdate) {
-  return prisma.wallet.update({
-    where: {
-      address: input.currentAddress,
-    },
-    data: {
-      address: input.payment.address,
-      userId: userId,
-      networkName: input.payment.networkName,
-    },
-  });
-}
 
 /**
  * Checks if the wallet exists.
@@ -64,7 +45,7 @@ export async function addWalletAddress(userId: string, input: WalletAdd) {
 export function deleteWalletAddress(input: WalletDelete) {
   return prisma.wallet.delete({
     where: {
-      address: input.currentAddress,
+      id: input.id,
     },
   });
 }
