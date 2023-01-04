@@ -16,8 +16,23 @@ import { Card } from "~/components/card";
 import { fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
 import { CheckCircleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { getUserId } from "~/services/session.server";
+import { findAllWalletsForUser } from "~/services/wallet.server";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+
+export const loader = async (data: DataFunctionArgs) => {
+  const user = await getUserId(data.request);
+  const wallets = user ? await findAllWalletsForUser(user) : [];
+  return typedjson({
+    wallets,
+    user,
+  });
+};
 
 export default function Rewards() {
+  const { wallets } = useTypedLoaderData<typeof loader>();
+
   //to be replaced
   const rewards = [
     { id: 123, title: "silly string" },
@@ -37,7 +52,7 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={22} />
+      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets ? wallets?.length : 0} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
