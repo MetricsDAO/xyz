@@ -108,7 +108,7 @@ export default function ClaimToReview() {
           </p>
         </div>
         <div className="flex flex-wrap gap-5">
-          <Button type="submit">Claim to Review</Button>
+          <Button type="submit">Next</Button>
         </div>
       </ValidatedForm>
       <Modal title="Claim to review?" isOpen={modalData.isOpen} onClose={closeModal}>
@@ -143,7 +143,7 @@ function ConfirmTransaction({ data, onClose }: { data?: ClaimToReviewPrepared; o
       </p>
       <div className="flex flex-wrap gap-5">
         <Button loading={isLoading} onClick={onCreate}>
-          Commit
+          Claim
         </Button>
         <Button variant="cancel" onClick={onClose}>
           Cancel
