@@ -11,6 +11,20 @@ export const findUserByAddress = async (address: string) => {
   });
 };
 
+/**
+ * Finds a user by its id in our database.
+ * @param {string} id - The id of the user to find.
+ * @returns {Promise<User | null>} - The User or null if not found.
+ */
+export const findUserById = async (id: string) => {
+  return prisma.user.findFirst({
+    where: { id: id },
+    include: {
+      wallet: true,
+    },
+  });
+};
+
 export const createUser = async (address: string) => {
   return prisma.user.create({
     data: {

@@ -2,7 +2,7 @@ import type { Token } from "@prisma/client";
 import type { Props as AvatarProps } from "./avatar";
 import { Avatar } from "./avatar";
 
-type Props = { token: Token } & AvatarProps;
+type Props = { token: Pick<Token, "name" | "symbol"> } & AvatarProps;
 
 export function TokenAvatar({ token, ...avatarProps }: Props) {
   return (
