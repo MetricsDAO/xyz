@@ -12,7 +12,7 @@ export const ChallengeSchema = z.object({
   laborMarketAddress: EthAddressSchema,
 });
 
-const tokenAmountSchema = z.string().refine((r) => {
+const TokenAmountSchema = z.string().refine((r) => {
   try {
     parseTokenAmount(r);
     return true;
@@ -21,11 +21,11 @@ const tokenAmountSchema = z.string().refine((r) => {
   }
 }, "Invalid amount");
 
-const inputDateSchema = z.string().refine((d) => {
+const InputDateSchema = z.string().refine((d) => {
   return validateDate(d);
 });
 
-const inputTimeSchema = z.string().refine((t) => {
+const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
@@ -33,21 +33,21 @@ const inputTimeSchema = z.string().refine((t) => {
 export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAddress: true }).extend({
   language: z.enum(["english", "spanish"]),
   projects: z.enum(["ethereum", "solana"]),
-  startDate: inputDateSchema,
-  startTime: inputTimeSchema,
-  endDate: inputDateSchema,
-  endTime: inputTimeSchema,
-  reviewEndDate: inputDateSchema,
-  reviewEndTime: inputTimeSchema,
+  startDate: InputDateSchema,
+  startTime: InputTimeSchema,
+  endDate: InputDateSchema,
+  endTime: InputTimeSchema,
+  reviewEndDate: InputDateSchema,
+  reviewEndTime: InputTimeSchema,
   rewardToken: EthAddressSchema,
-  rewardPool: tokenAmountSchema,
+  rewardPool: TokenAmountSchema,
 });
 
 // Contract input
 export const ChallengePreparedSchema = ChallengeSchema.pick({ laborMarketAddress: true }).extend({
   pTokenAddress: EthAddressSchema,
   pTokenId: z.number(),
-  pTokenQuantity: tokenAmountSchema,
+  pTokenQuantity: TokenAmountSchema,
   signalExpiration: z.date(),
   submissionExpiration: z.date(),
   enforcementExpiration: z.date(),

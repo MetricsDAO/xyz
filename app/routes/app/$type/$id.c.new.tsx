@@ -71,7 +71,15 @@ export default function CreateChallenge() {
         </p>
       </div>
 
-      <ValidatedForm method="post" defaultValues={defaultValues} validator={validator} className="space-y-10">
+      <ValidatedForm
+        method="post"
+        defaultValues={{
+          ...defaultValues,
+          language: "english",
+        }}
+        validator={validator}
+        className="space-y-10"
+      >
         <section className="space-y-3">
           <h2 className="font-bold">Challenge Title</h2>
           <Field>
@@ -94,10 +102,7 @@ export default function CreateChallenge() {
                 <ValidatedSelect
                   name="language"
                   placeholder="Language"
-                  options={[
-                    { label: "English", value: "english" },
-                    { label: "Spanish", value: "spanish" },
-                  ]}
+                  options={[{ label: "English", value: "english" }]}
                 />
                 <Error name="language" />
               </Field>
