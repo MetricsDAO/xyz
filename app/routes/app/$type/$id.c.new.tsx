@@ -74,34 +74,46 @@ export default function CreateChallenge() {
       <ValidatedForm method="post" defaultValues={defaultValues} validator={validator} className="space-y-10">
         <section className="space-y-3">
           <h2 className="font-bold">Challenge Title</h2>
-          <ValidatedInput name="title" placeholder="Challenge Title" className="w-full" />
+          <Field>
+            <ValidatedInput name="title" placeholder="Challenge Title" className="w-full" />
+            <Error name="title" />
+          </Field>
         </section>
         <section className="space-y-3">
           <h2 className="font-bold">What do you want to source questions about?</h2>
-          <ValidatedTextarea
-            name="description"
-            placeholder="Crowdsource the best questions for blockchain analysts to answer about any web3 topic."
-          />
+          <Field>
+            <ValidatedTextarea
+              name="description"
+              placeholder="Crowdsource the best questions for blockchain analysts to answer about any web3 topic."
+            />
+            <Error name="description" />
+          </Field>
           <div className="flex flex-col md:flex-row gap-2">
             <div className="flex-grow">
-              <ValidatedSelect
-                name="language"
-                placeholder="Language"
-                options={[
-                  { label: "English", value: "english" },
-                  { label: "Spanish", value: "spanish" },
-                ]}
-              />
+              <Field>
+                <ValidatedSelect
+                  name="language"
+                  placeholder="Language"
+                  options={[
+                    { label: "English", value: "english" },
+                    { label: "Spanish", value: "spanish" },
+                  ]}
+                />
+                <Error name="language" />
+              </Field>
             </div>
             <div className="flex-grow">
-              <ValidatedSelect
-                name="projects"
-                placeholder="Blockchain/Project(s)"
-                options={[
-                  { label: "Ethereum", value: "ethereum" },
-                  { label: "Solana", value: "solana" },
-                ]}
-              />
+              <Field>
+                <ValidatedSelect
+                  name="projects"
+                  placeholder="Blockchain/Project(s)"
+                  options={[
+                    { label: "Ethereum", value: "ethereum" },
+                    { label: "Solana", value: "solana" },
+                  ]}
+                />
+                <Error name="projects" />
+              </Field>
             </div>
           </div>
         </section>
@@ -111,13 +123,25 @@ export default function CreateChallenge() {
           <div className="flex flex-col md:flex-row gap-2">
             <div className="flex-grow">
               <p>Start</p>
-              <ValidatedInput type="date" name="startDate" placeholder="Start date" />
-              <ValidatedInput type="time" name="startTime" placeholder="Start time" />
+              <Field>
+                <ValidatedInput type="date" name="startDate" placeholder="Start date" />
+                <Error name="startDate" />
+              </Field>
+              <Field>
+                <ValidatedInput type="time" name="startTime" placeholder="Start time" />
+                <Error name="startTime" />
+              </Field>
             </div>
             <div className="flex-grow">
               <p>End</p>
-              <ValidatedInput type="date" name="endDate" placeholder="End date" />
-              <ValidatedInput type="time" name="endTime" placeholder="End time" />
+              <Field>
+                <ValidatedInput type="date" name="endDate" placeholder="End date" />
+                <Error name="endDate" />
+              </Field>
+              <Field>
+                <ValidatedInput type="time" name="endTime" placeholder="End time" />
+                <Error name="endTime" />
+              </Field>
             </div>
           </div>
           <p className="text-gray-400 italic">
@@ -127,8 +151,14 @@ export default function CreateChallenge() {
 
         <section className="space-y-3">
           <h2 className="font-bold">When must peer review be complete and winners selected by?</h2>
-          <ValidatedInput type="date" name="reviewEndDate" placeholder="End date" />
-          <ValidatedInput type="time" name="reviewEndTime" placeholder="End time" />
+          <Field>
+            <ValidatedInput type="date" name="reviewEndDate" placeholder="End date" />
+            <Error name="reviewEndDate" />
+          </Field>
+          <Field>
+            <ValidatedInput type="time" name="reviewEndTime" placeholder="End time" />
+            <Error name="reviewEndTime" />
+          </Field>
           <p className="text-gray-400 italic">
             Reviewers must claim this topic by (local timestamp) to score questions
           </p>
@@ -138,13 +168,16 @@ export default function CreateChallenge() {
           <h2 className="font-bold">Rewards</h2>
           <div className="flex flex-col md:flex-row gap-2 items-baseline">
             <div className="flex-grow w-full">
-              <ValidatedSelect
-                name="rewardToken"
-                placeholder="Token"
-                options={[
-                  { label: "FAU", value: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc" }, // FAU token https://erc20faucet.com/
-                ]}
-              />
+              <Field>
+                <ValidatedSelect
+                  name="rewardToken"
+                  placeholder="Token"
+                  options={[
+                    { label: "FAU", value: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc" }, // FAU token https://erc20faucet.com/
+                  ]}
+                />
+                <Error name="rewardToken" />
+              </Field>
             </div>
             <div className="flex-grow w-full">
               <Field>
