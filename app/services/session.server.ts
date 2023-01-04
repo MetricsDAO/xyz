@@ -40,6 +40,13 @@ export async function getUser(request: Request): Promise<User | null> {
   throw await logout(request);
 }
 
+export async function requireUser(request: Request): Promise<User> {
+  const user = await getUser(request);
+  if (user) return user;
+
+  throw await logout(request);
+}
+
 /**
  * Returns the nonce from the session if it exists.
  * @param request - Request object
