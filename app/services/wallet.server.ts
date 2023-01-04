@@ -22,16 +22,13 @@ export function updateWalletAddress(userId: string, input: WalletUpdate) {
 
 /**
  * Checks if the wallet exists.
- * @param {string} address - the blockchain and address of the wallet.
- * @returns {Promise<Wallet[] | null>} - the wallets for the user or wallet already exists.
+ * @param  address - the blockchain and address of the wallet.
+ * @returns boolean - the wallets for the user or wallet already exists.
 
  */
 export async function walletExists(address: string) {
-  return prisma.wallet.findUnique({
-    where: {
-      address: address,
-    },
-  });
+  const walletsCount = await prisma.wallet.count({ where: { address } });
+  return walletsCount > 0;
 }
 
 /**

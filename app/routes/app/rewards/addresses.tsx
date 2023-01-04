@@ -2,8 +2,8 @@ import { CheckCircleIcon, ClipboardDocumentIcon, XCircleIcon } from "@heroicons/
 import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useEffect, useState } from "react";
-import { redirect, typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { useCallback, useEffect, useState } from "react";
+import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { useIsValid, ValidatedForm, validationError } from "remix-validated-form";
 import { ValidatedInput } from "~/components";
@@ -17,7 +17,7 @@ import { WalletUpdateSchema, WalletAddSchema, WalletDeleteSchema } from "~/domai
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
-import { getUserId } from "~/services/session.server";
+import { getUserId, requireUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import {
   addWalletAddress,
@@ -29,47 +29,45 @@ import {
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
 import { namedAction } from "remix-utils";
-import invariant from "tiny-invariant";
-import { logger } from "ethers";
+import { useFetcher } from "@remix-run/react";
+
+export const addWalletValidator = withZod(WalletAddSchema);
+export const deleteWalletValidator = withZod(WalletDeleteSchema);
+export const updateWalletValidator = withZod(WalletUpdateSchema);
+
+type WalletWithChain = Wallet & { chain: Network };
 
 type ActionResponse = { wallet: Wallet } | ValidationErrorResponseData;
 
 export async function action({ request }: ActionArgs) {
-  const user = await getUserId(request);
-  invariant(user, "You must be logged in to add a wallet");
+  const user = await requireUser(request);
 
   return namedAction(request, {
     async create() {
       const formData = await addWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
-
-      const exists = await walletExists(formData.data.payment.address);
-
-      if (exists != null) {
-        return typedjson({ addError: { message: "Wallet already exists" } });
+      if (await walletExists(formData.data.payment.address)) {
+        return validationError({ fieldErrors: { "payment.address": "Wallet already exists" }, subaction: "create" });
       }
-      const wallet = await addWalletAddress(user, formData.data);
+      const wallet = await addWalletAddress(user.id, formData.data);
       return typedjson({ wallet });
     },
+
     async update() {
       const formData = await updateWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
-
-      const exists = await walletExists(formData.data.payment.address);
-
-      if (exists != null) {
-        return typedjson({ updateError: { message: "Wallet already exists" } });
+      if (await walletExists(formData.data.payment.address)) {
+        return validationError({ fieldErrors: { "payment.address": "Wallet already exists" }, subaction: "update" });
       }
-      const wallet = await updateWalletAddress(user, formData.data);
-
+      const wallet = await updateWalletAddress(user.id, formData.data);
       return typedjson({ wallet });
     },
+
     async delete() {
       const formData = await deleteWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
-
       await deleteWalletAddress(formData.data);
-      return redirect("/app/rewards/addresses");
+      return typedjson(null, 200);
     },
   });
 }
@@ -79,7 +77,6 @@ export const loader = async (data: DataFunctionArgs) => {
   const wallets = user ? await findAllWalletsForUser(user) : [];
   const tokens = await listTokens();
   const networks = await listNetworks();
-
   return typedjson({
     tokens,
     networks,
@@ -108,41 +105,27 @@ export default function PayoutAddresses() {
         </section>
       </div>
       <RewardsTab rewardsNum={10} addressesNum={wallets ? wallets?.length : 0} />
-      <AddressListView wallets={wallets} />
+      {wallets.length === 0 ? (
+        <div className="flex">
+          <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
+        </div>
+      ) : (
+        <>
+          {/* Desktop */}
+          <div className="hidden lg:block">
+            <AddressTable wallets={wallets} />
+          </div>
+          {/* Mobile */}
+          <div className="block lg:hidden">
+            <AddressCards wallets={wallets} />
+          </div>
+        </>
+      )}
     </Container>
   );
 }
 
-function AddressListView({ wallets }: { wallets: any }) {
-  if (wallets?.length === 0) {
-    return (
-      <div className="flex">
-        <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {/* Desktop */}
-      <div className="hidden lg:block">
-        <AddressTable wallets={wallets} />
-      </div>
-      {/* Mobile */}
-      <div className="block lg:hidden">
-        <AddressCards wallets={wallets} />
-      </div>
-    </>
-  );
-}
-
-function AddressTable({
-  wallets,
-}: {
-  wallets: (Wallet & {
-    chain: Network;
-  })[];
-}) {
+function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <Table>
       <Header columns={12}>
@@ -175,13 +158,7 @@ function AddressTable({
   );
 }
 
-function AddressCards({
-  wallets,
-}: {
-  wallets: (Wallet & {
-    chain: Network;
-  })[];
-}) {
+function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <div className="space-y-3">
       {wallets.map((wallet) => {
@@ -211,59 +188,60 @@ function AddressCards({
   );
 }
 
-export const addWalletValidator = withZod(WalletAddSchema);
-export const deleteWalletValidator = withZod(WalletDeleteSchema);
-export const updateWalletValidator = withZod(WalletUpdateSchema);
-
 function AddAddressButton() {
-  const { networks } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<ActionResponse>();
-  const [openedAdd, setOpenedAdd] = useState(false);
-
-  useEffect(() => {
-    if (actionData && "wallet" in actionData) {
-      setOpenedAdd(false);
-    } else if (actionData && "addError" in actionData) {
-      logger.info("Wallet already exists");
-    }
-  }, [actionData]);
-
+  const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), [setOpen]);
   return (
     <>
-      <Button className="mx-auto" onClick={() => setOpenedAdd(true)}>
+      <Button className="mx-auto" onClick={() => setOpen(true)}>
         Add Address
       </Button>
-      <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
-        <ValidatedForm
-          defaultValues={{
-            payment: {
-              networkName: "Ethereum",
-              address: "",
-            },
-          }}
-          method="post"
-          action="?/create"
-          name="create"
-          validator={addWalletValidator}
-          className="space-y-5 mt-5"
-        >
-          <div className="pb-44 pt-8">
-            <AddPaymentAddressForm networks={networks} />
-            {actionData && "addError" in actionData && <p className=" text-red-500">{"This wallet already exists."}</p>}
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
-              Cancel
-            </Button>
-            <Button type="submit">Save</Button>
-          </div>
-        </ValidatedForm>
+      <Modal isOpen={open} onClose={close} title="Add an address" unmount>
+        <AddAddressForm onDone={close} />
       </Modal>
     </>
   );
 }
 
-function RemoveAddressButton({ wallet }: { wallet: Wallet & { chain: Network } }) {
+function AddAddressForm({ onDone }: { onDone: () => void }) {
+  const { networks } = useTypedLoaderData<typeof loader>();
+  const fetcher = useFetcher<ActionResponse>();
+  useEffect(() => {
+    if (fetcher.data && "wallet" in fetcher.data) {
+      onDone?.();
+    }
+  }, [fetcher.data, onDone]);
+
+  return (
+    <ValidatedForm
+      fetcher={fetcher}
+      defaultValues={{
+        payment: {
+          networkName: "Ethereum",
+          address: "",
+        },
+      }}
+      method="post"
+      action="?/create"
+      name="create"
+      subaction="create"
+      validator={addWalletValidator}
+      className="space-y-5 mt-5"
+    >
+      <div className="pb-44 pt-8">
+        <AddPaymentAddressForm networks={networks} />
+      </div>
+      <div className="flex gap-2 justify-end">
+        <Button variant="cancel" onClick={onDone} type="button">
+          Cancel
+        </Button>
+        <Button type="submit">Save</Button>
+      </div>
+    </ValidatedForm>
+  );
+}
+
+function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
   const [openedRemove, setOpenedRemove] = useState(false);
 
   return (
@@ -271,7 +249,12 @@ function RemoveAddressButton({ wallet }: { wallet: Wallet & { chain: Network } }
       <Button variant="cancel" onClick={() => setOpenedRemove(true)}>
         Remove
       </Button>
-      <Modal isOpen={openedRemove} onClose={() => setOpenedRemove(false)} title="Are you sure you want to remove?">
+      <Modal
+        isOpen={openedRemove}
+        onClose={() => setOpenedRemove(false)}
+        title="Are you sure you want to remove?"
+        unmount
+      >
         <div className="space-y-5 mt-5">
           <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
             <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
@@ -296,22 +279,13 @@ function RemoveAddressButton({ wallet }: { wallet: Wallet & { chain: Network } }
   );
 }
 
-function UpdateAddressButton({
-  wallet,
-}: {
-  wallet: Wallet & {
-    chain: Network;
-  };
-}) {
+function UpdateAddressButton({ wallet }: { wallet: WalletWithChain }) {
   const [openedUpdate, setOpenedUpdate] = useState(false);
 
   const actionData = useTypedActionData<ActionResponse>();
-
   useEffect(() => {
     if (actionData && "wallet" in actionData) {
       setOpenedUpdate(false);
-    } else if (actionData && "updateError" in actionData) {
-      logger.info("Wallet already exists");
     }
   }, [actionData]);
 
@@ -322,7 +296,7 @@ function UpdateAddressButton({
         Update
       </Button>
       <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <ValidatedForm id="update" method="post" action="?/update" validator={updateWalletValidator}>
+        <ValidatedForm id="update" method="post" action="?/update" subaction="update" validator={updateWalletValidator}>
           <div className="space-y-5 mt-5">
             <div className="space-y-2">
               <div className="flex border-solid border rounded-md border-trueGray-200">
@@ -348,10 +322,6 @@ function UpdateAddressButton({
                   />
                 </div>
               </div>
-              {isValid ? null : <p className="text-red-500">{`Please enter a valid ${wallet.networkName} address.`}</p>}
-              {actionData && "updateError" in actionData && (
-                <p className=" text-red-500">{"This wallet already exists."}</p>
-              )}
             </div>
             <div className="flex gap-2 justify-end">
               <Button type="button" variant="cancel" onClick={() => setOpenedUpdate(false)}>
