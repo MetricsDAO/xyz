@@ -7,14 +7,19 @@ import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { Container, Modal } from "~/components";
-import { Button } from "~/components/button";
-import { ValidatedInput } from "~/components/input/input";
-import { ValidatedSelect } from "~/components/select";
-import { ValidatedTextarea } from "~/components/textarea/textarea";
+import {
+  Container,
+  Modal,
+  Error,
+  ValidatedInput,
+  ValidatedTextarea,
+  ValidatedSelect,
+  Button,
+  Field,
+} from "~/components";
 import type { ChallengePrepared } from "~/domain";
 import { ChallengeNewSchema, fakeChallengeNew } from "~/domain";
-import { useIncreaseAllowance } from "~/hooks/use-increase-allowance";
+import { useApproveERC20 } from "~/hooks/use-approve-erc20";
 import { useSubmitRequest } from "~/hooks/use-submit-request";
 import { prepareChallenge } from "~/services/challenges-service.server";
 
@@ -142,7 +147,10 @@ export default function CreateChallenge() {
               />
             </div>
             <div className="flex-grow w-full">
-              <ValidatedInput name="rewardPool" placeholder="Token amount distributed across winners" />
+              <Field>
+                <ValidatedInput name="rewardPool" placeholder="Token amount distributed across winners" />
+                <Error name="rewardPool" />
+              </Field>
             </div>
           </div>
           <p className="text-gray-400 italic">
@@ -181,7 +189,7 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
     },
   });
 
-  const { write: writeIncreaseAllowance } = useIncreaseAllowance({
+  const { write: writeApprove } = useApproveERC20({
     data: {
       ERC20address: challenge.pTokenAddress,
       amount: challenge.pTokenQuantity,
@@ -201,8 +209,8 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
     writeChallenge?.();
   };
 
-  const onIncreaseAllowance = () => {
-    writeIncreaseAllowance?.();
+  const onApprove = () => {
+    writeApprove?.();
   };
 
   return (
@@ -214,7 +222,7 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
             ERC20 with address <b>{challenge.pTokenAddress}</b> on your behalf{" "}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-5">
-            <Button size="md" type="button" onClick={onIncreaseAllowance}>
+            <Button size="md" type="button" onClick={onApprove}>
               Approve
             </Button>
             <Button variant="cancel" size="md" onClick={onClose}>

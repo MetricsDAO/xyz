@@ -1,5 +1,5 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
-import { BigNumber } from "ethers";
+import { utils } from "ethers";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 
 type Data = {
@@ -8,7 +8,7 @@ type Data = {
   amount: number;
 };
 
-export function useIncreaseAllowance({
+export function useApproveERC20({
   data,
   onTransactionSuccess,
   onWriteSuccess,
@@ -24,17 +24,17 @@ export function useIncreaseAllowance({
         constant: false,
         inputs: [
           { name: "spender", type: "address" },
-          { name: "addedValue", type: "uint256" },
+          { name: "value", type: "uint256" },
         ],
-        name: "increaseAllowance",
+        name: "approve",
         outputs: [{ name: "", type: "bool" }],
         payable: false,
         stateMutability: "nonpayable",
         type: "function",
       },
     ],
-    functionName: "increaseAllowance",
-    args: [data.spender, BigNumber.from(data.amount)],
+    functionName: "approve",
+    args: [data.spender, utils.parseUnits(data.amount.toString(), 18)],
   });
   const { data: transactionResultData, write } = useContractWrite({
     ...config,

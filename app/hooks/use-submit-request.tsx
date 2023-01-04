@@ -1,5 +1,5 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
-import { BigNumber } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { ChallengePrepared } from "~/domain";
@@ -14,6 +14,7 @@ export function useSubmitRequest({
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
+  console.log("useSubmitRequest", data.pTokenQuantity);
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress,
     abi: LaborMarket.abi,
@@ -21,7 +22,7 @@ export function useSubmitRequest({
     args: [
       data.pTokenAddress as `0x${string}`,
       BigNumber.from(data.pTokenId),
-      BigNumber.from(data.pTokenQuantity),
+      utils.parseUnits(data.pTokenQuantity.toString(), 18),
       BigNumber.from(unixTimestamp(data.signalExpiration)),
       BigNumber.from(unixTimestamp(data.submissionExpiration)),
       BigNumber.from(unixTimestamp(data.enforcementExpiration)),
