@@ -168,10 +168,10 @@ export default function ChallengeSubmission() {
 
 function ReviewQuestionDrawerButton({ requestId, submissionId }: { requestId: string; submissionId: string }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<100 | 75 | 50 | 25 | 0>(50);
+  const [selected, setSelected] = useState<number>(50);
 
   const { write, isLoading } = useReviewSubmission({
-    data: [requestId, submissionId, selected],
+    data: { requestId, submissionId, selected },
     onTransactionSuccess() {
       toast.dismiss("review-submission");
       toast.success("Submission Reviewed!");
