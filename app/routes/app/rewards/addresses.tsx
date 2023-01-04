@@ -13,27 +13,21 @@ import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
-import { WalletUpdateSchema, WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
+import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
 import { getUserId, requireUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import {
-  addWalletAddress,
-  deleteWalletAddress,
-  findAllWalletsForUser,
-  updateWalletAddress,
-  walletExists,
-} from "~/services/wallet.server";
+import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
 import { namedAction } from "remix-utils";
 import { useFetcher } from "@remix-run/react";
+import { isValidationError } from "~/utils/utils";
 
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
-export const updateWalletValidator = withZod(WalletUpdateSchema);
 
 type WalletWithChain = Wallet & { chain: Network };
 
@@ -46,9 +40,6 @@ export async function action({ request }: ActionArgs) {
     async create() {
       const formData = await addWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
-      if (await walletExists(formData.data.payment.address)) {
-        return validationError({ fieldErrors: { "payment.address": "Wallet already exists" }, subaction: "create" });
-      }
       const wallet = await addWalletAddress(user.id, formData.data);
       return typedjson({ wallet });
     },
@@ -194,8 +185,8 @@ function AddAddressForm({ onDone }: { onDone: () => void }) {
   const { networks } = useTypedLoaderData<typeof loader>();
   const fetcher = useFetcher<ActionResponse>();
   useEffect(() => {
-    if (fetcher.data && "wallet" in fetcher.data) {
-      onDone?.();
+    if (!isValidationError(fetcher.data)) {
+      onDone();
     }
   }, [fetcher.data, onDone]);
 
