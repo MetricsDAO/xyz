@@ -1,21 +1,21 @@
+import type { DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
+import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { z } from "zod";
-import { ValidatedSegmentedRadio } from "~/components";
+import { Error, Modal, ValidatedSegmentedRadio } from "~/components";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
-import { useClaimToReview } from "~/hooks/use-claim-to-review";
-import { findChallenge } from "~/services/challenges-service.server";
-import invariant from "tiny-invariant";
-import { toast } from "react-hot-toast";
-import type { DataFunctionArgs } from "@remix-run/node";
-import { ValidatedForm } from "remix-validated-form";
 import type { ClaimToReviewPrepared } from "~/domain";
 import { ClaimToReviewPreparedSchema } from "~/domain";
-import { useState } from "react";
+import { useClaimToReview } from "~/hooks/use-claim-to-review";
+import { findChallenge } from "~/services/challenges-service.server";
 
 const paramsSchema = z.object({ id: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -33,13 +33,17 @@ const validator = withZod(ClaimToReviewPreparedSchema);
 export default function ClaimToReview() {
   const { challenge } = useTypedLoaderData<typeof loader>();
 
-  const [formData, setFormData] = useState<ClaimToReviewPrepared>({ quantity: 0 });
+  const [modalData, setModalData] = useState<{ data?: ClaimToReviewPrepared; isOpen: boolean }>({ isOpen: false });
+
+  function closeModal() {
+    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
+  }
 
   return (
     <Container className="py-16">
       <ValidatedForm
         onSubmit={(data) => {
-          setFormData(data);
+          setModalData({ data, isOpen: true });
         }}
         validator={validator}
         className="mx-auto px-10 max-w-4xl space-y-7 mb-12"
@@ -86,6 +90,7 @@ export default function ClaimToReview() {
               { label: "100", value: "100" },
             ]}
           />
+          <Error name="quantity" />
           <p className="text-gray-500 italic mt-2">
             You're only required to review the minimum you commit to, but you can optionally review more
           </p>
@@ -94,7 +99,7 @@ export default function ClaimToReview() {
           <h2 className="text-lg font-semibold">Lock rMETRIC</h2>
           <div className="flex flex-col md:flex-row gap-2 md:items-center">
             <p>
-              You must lock <Badge>{formData.quantity * 5}</Badge> rMETRIC to claim
+              You must lock {modalData.data ? <Badge>{modalData.data?.quantity * 5}</Badge> : null} rMETRIC to claim
             </p>
             <Button variant="outline">Lock rMETRIC</Button>
           </div>
@@ -102,17 +107,22 @@ export default function ClaimToReview() {
             Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
           </p>
         </div>
-        <ConfirmTransaction ClaimToReview={formData} />
+        <div className="flex flex-wrap gap-5">
+          <Button type="submit">Claim to Review</Button>
+        </div>
       </ValidatedForm>
+      <Modal title="Claim to review?" isOpen={modalData.isOpen} onClose={closeModal}>
+        <ConfirmTransaction data={modalData.data} onClose={closeModal} />
+      </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({ ClaimToReview }: { ClaimToReview?: ClaimToReviewPrepared }) {
-  invariant(ClaimToReview, "A number of submissions to review is required"); // this should never happen but just in case
+function ConfirmTransaction({ data, onClose }: { data?: ClaimToReviewPrepared; onClose: () => void }) {
+  invariant(data, "ClaimToReviewPrepared is required"); // this should never happen but just in case
 
   const { write, isLoading } = useClaimToReview({
-    data: ClaimToReview,
+    data: data,
     onTransactionSuccess() {
       toast.dismiss("claiming-to-review");
       toast.success("Submissions Claimed!");
@@ -127,11 +137,18 @@ function ConfirmTransaction({ ClaimToReview }: { ClaimToReview?: ClaimToReviewPr
   };
 
   return (
-    <div className="flex flex-wrap gap-5">
-      <Button onClick={onCreate} loading={isLoading} type="submit">
-        Claim to Review
-      </Button>
-      <Button variant="cancel">Cancel</Button>
+    <div className="space-y-8 mt-4">
+      <p>
+        You are claiming to review <b>{data.quantity}</b> submissions
+      </p>
+      <div className="flex flex-wrap gap-5">
+        <Button loading={isLoading} onClick={onCreate}>
+          Commit
+        </Button>
+        <Button variant="cancel" onClick={onClose}>
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }
