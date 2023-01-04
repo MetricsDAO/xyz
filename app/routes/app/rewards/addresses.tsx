@@ -47,9 +47,6 @@ export async function action({ request }: ActionArgs) {
     async create() {
       const formData = await addWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
-      if (await walletExists(formData.data.payment.address)) {
-        return validationError({ fieldErrors: { "payment.address": "Wallet already exists" }, subaction: "create" });
-      }
       const wallet = await addWalletAddress(user.id, formData.data);
       return typedjson({ wallet });
     },
@@ -57,9 +54,6 @@ export async function action({ request }: ActionArgs) {
     async update() {
       const formData = await updateWalletValidator.validate(await request.formData());
       if (formData.error) return validationError(formData.error);
-      if (await walletExists(formData.data.payment.address)) {
-        return validationError({ fieldErrors: { "payment.address": "Wallet already exists" }, subaction: "update" });
-      }
       const wallet = await updateWalletAddress(user.id, formData.data);
       return typedjson({ wallet });
     },
@@ -310,10 +304,8 @@ function UpdateAddressButton({ wallet }: { wallet: WalletWithChain }) {
                       <XCircleIcon className="mr-1 text-rose-500 h-5 w-5" />
                     )}
                   </div>
-                  <div className="invisible h-0 w-0">
-                    <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
-                    <ValidatedInput type="hidden" name="payment.networkName" value={wallet.networkName} />
-                  </div>
+                  <ValidatedInput type="hidden" id="currentAddress" name="currentAddress" value={wallet.address} />
+                  <ValidatedInput type="hidden" name="payment.networkName" value={wallet.networkName} />
                   <input
                     className="border-none w-full outline-none"
                     name="payment.address"
