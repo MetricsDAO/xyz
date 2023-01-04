@@ -1,4 +1,4 @@
-import SocialIcons from "./SocialIcons";
+import SocialIcons from "./social-icons";
 import { Link } from "@remix-run/react";
 
 const links = [
@@ -28,17 +28,17 @@ export default function Footer() {
     >
       <a
         href="/app/ecosystem"
-        className="block py-3 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip"
+        className="block py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
         LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP
       </a>
 
-      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-3 backdrop-blur-sm">
+      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-4 backdrop-blur-sm">
         <Link to="/" className="flex items-center gap-x-3">
-          <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="38" />
-          <span>© {currentYear} MetricsDAO</span>
+          <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="34" />
+          <span className="text-sm">© {currentYear} MetricsDAO</span>
         </Link>
-        <menu className="flex flex-col md:flex-row items-center justify-between">{items}</menu>
+        <menu className="flex flex-col md:flex-row items-center justify-between xl:gap-x-6 text-sm">{items}</menu>
         <SocialIcons />
       </div>
     </footer>
