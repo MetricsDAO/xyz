@@ -3,11 +3,12 @@ import { json } from "@remix-run/server-runtime";
 import { LaborMarketSchema } from "~/domain";
 import { upsertLaborMarket } from "~/services/labor-market.server";
 import env from "~/env";
+import { forbidden } from "remix-utils";
 
 export const action: ActionFunction = async (data: DataFunctionArgs) => {
-if (!env.DEV_AUTO_INDEX) {
-  throw forbidden({error: "Not allowed});
-}
+  if (!env.DEV_AUTO_INDEX) {
+    throw forbidden({ error: "Not allowed" });
+  }
   const payload = await data.request.json();
   const lm = LaborMarketSchema.parse(payload);
   return json(await upsertLaborMarket(lm));
