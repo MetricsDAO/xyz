@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 
 export function fromNow(time: string | number | Date) {
   dayjs.extend(relativeTime);
@@ -15,4 +17,29 @@ export function countDown(date: Date | string) {
   }
 
   return dayjs(duration).format("h[h] m[m] s[s]");
+}
+
+/**
+ * Returns the unix timestamp (in seconds) of a date
+ * @param date
+ */
+export function unixTimestamp(date: Date): number {
+  return dayjs(date).unix();
+}
+
+/**
+ * Converts string date and time to a Date object
+ * @param date a date with format YYYY-MM-DD
+ * @param time a time with format HH:mm
+ */
+export function parseDatetime(date: string, time: string): Date {
+  return dayjs(`${date} ${time}`, "YYYY-MM-DD HH:mm", true).toDate();
+}
+
+export function validateDate(date: string) {
+  return dayjs(date, "YYYY-MM-DD", true).isValid();
+}
+
+export function validateTime(time: string) {
+  return dayjs(time, "HH:mm", true).isValid();
 }

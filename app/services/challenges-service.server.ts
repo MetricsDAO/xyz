@@ -1,5 +1,7 @@
 import type { ServiceRequest } from "@prisma/client";
-import type { ChallengeSearch } from "~/domain/challenge";
+import type { ChallengeNew, ChallengePrepared, ChallengeSearch } from "~/domain/challenge";
+import { ChallengePreparedSchema } from "~/domain/challenge";
+import { parseDatetime } from "~/utils/date";
 import { prisma } from "./prisma.server";
 
 /**
@@ -61,4 +63,26 @@ export const upsertServiceRequest = async (challenge: ServiceRequest) => {
     data: { id, title, laborMarketAddress },
   });
   return newChallenge;
+};
+
+/**
+ * Prepare a new Challenge for submission to the contract.
+ * @param {ChallengeNew} newChallenge - The ChallengeNew to prepare.
+ * @returns {ChallengePrepared} - The prepared Challenge.
+ */
+export const prepareChallenge = (newChallenge: ChallengeNew): ChallengePrepared => {
+  // TODO: upload data to ipfs
+
+  // parse for type safety
+  const preparedChallenge = ChallengePreparedSchema.parse({
+    laborMarketAddress: "0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33", // recently created labor market on Goerli https://goerli.etherscan.io/address/0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33
+    pTokenAddress: newChallenge.rewardToken,
+    pTokenQuantity: newChallenge.rewardPool,
+    pTokenId: 0, // Not used by contract. Left over appendage from when we were using ERC1155. We might switch back at some point.
+    uri: "ipfs-uri",
+    enforcementExpiration: parseDatetime(newChallenge.reviewEndDate, newChallenge.reviewEndTime),
+    submissionExpiration: parseDatetime(newChallenge.endDate, newChallenge.endTime),
+    signalExpiration: parseDatetime(newChallenge.startDate, newChallenge.startTime),
+  });
+  return preparedChallenge;
 };

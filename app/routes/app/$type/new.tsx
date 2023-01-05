@@ -86,10 +86,10 @@ function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarke
     onTransactionSuccess() {
       toast.dismiss("creating-marketplace");
       toast.success("Marketplace created!");
+      onClose();
     },
     onWriteSuccess() {
       toast.loading("Creating marketplace...", { id: "creating-marketplace" });
-      onClose();
     },
   });
 
