@@ -5,9 +5,9 @@ import { upsertLaborMarket } from "~/services/labor-market.server";
 import env from "~/env";
 
 export const action: ActionFunction = async (data: DataFunctionArgs) => {
-  if (env.DEV_AUTO_INDEX !== "enabled") {
-    return json({ error: "Not Allowed" }, { status: 403 });
-  }
+if (!env.DEV_AUTO_INDEX) {
+  throw forbidden({error: "Not allowed});
+}
   const payload = await data.request.json();
   const lm = LaborMarketSchema.parse(payload);
   return json(await upsertLaborMarket(lm));
