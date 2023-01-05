@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketPrepared } from "~/domain";
+import { createLaborMarket } from "~/utils/fetch";
 
 export function useCreateMarketplace({
   data,
@@ -63,7 +64,15 @@ export function useCreateMarketplace({
     onError(error) {
       console.log("error", error);
     },
-    onSuccess(receipt) {
+    async onSuccess(receipt) {
+      if (window.ENV.DEV_AUTO_INDEX === "enabled") {
+        createLaborMarket({
+          ...data,
+          address: receipt.logs[0]?.topics[1] as string, // The labor market created address
+          sponsorAddress: data.userAddress,
+        });
+      }
+
       onTransactionSuccess?.(receipt);
     },
   });
