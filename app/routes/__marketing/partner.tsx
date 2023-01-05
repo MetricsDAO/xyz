@@ -6,29 +6,34 @@ import Footer from "~/features/marketing-shell/footer";
 export default function Index() {
   return (
     <>
-      <div className="relative">
-        <img
-          src="/img/marketing/partner-bg-testimony.png"
-          className="absolute bottom-0 left-0 -z-10 h-screen w-screen"
-          alt=""
-        />
-        <div className="flex flex-row">
-          <aside className="hidden md:block w-1/6">
+      <div>
+        <div className="relative flex flex-row">
+          <img
+            src="/img/marketing/partner-bg-testimony.png"
+            className="absolute bottom-0 left-0 -z-10 h-screen w-screen"
+            alt=""
+          />
+          <aside className="hidden lg:block w-1/6 absolute">
+            <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">
+              <div className="w-1 h-20 mx-2.5 mt-7 relative top-0">
+                <div id="pageProgress" style={{ height: `0%` }} className="w-0.5 ml-px h-full bg-black " />
+              </div>
+            </div>
             <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 z-10">
               <a href="#top">
-                <GlobeAltIcon className="text-black h-7 w-7" />
+                <GlobeAltIcon className="text-black h-6 w-6" />
               </a>
               <a href="#why">
-                <img src="/img/circle-outline.svg" alt="" />
+                <Circle id="whyCircle" />
               </a>
               <a href="#offerings">
-                <img src="/img/circle-outline.svg" alt="" />
+                <Circle id="offeringsCircle" />
               </a>
               <a href="#testimony">
-                <img src="/img/circle-outline.svg" alt="" />
+                <Circle id="testimonyCircle" />
               </a>
               <a href="#bottom">
-                <ArrowDownCircleIcon className="text-black h-7 w-7" />
+                <ArrowDownCircleIcon className="text-black h-6 w-6" />
               </a>
             </div>
           </aside>
@@ -38,7 +43,7 @@ export default function Index() {
               className="absolute top-0 left-0 -z-10 h-screen w-screen"
               alt=""
             />
-            <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center mx-auto max-w-3xl ">
+            <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col items-center justify-center mx-auto max-w-3xl ">
               <h1 className="font-bold text-4xl md:text-6xl pt-7 text-center">Work With the Best Analyists in Web3</h1>
               <p className="text-lg md:text-2xl text-center">
                 Access the best community of Web3 analysts for on-demand analytics and tooling! Everything analysts
@@ -51,9 +56,9 @@ export default function Index() {
               className="absolute top-100 left-0 -z-10 h-screen w-screen"
               alt=""
             />
-            <section id="why" className="space-y-5 h-screen flex flex-col justify-center">
+            <section id="why" className="space-y-5 h-screen flex flex-col justify-center items-start lg:ml-10">
               <p className="text-white text-2xl">Why MetricsDAO?</p>
-              <p className="font-bold text-2xl md:text-3xl lg:text-4xl pr-24">
+              <p className="font-bold text-2xl md:text-3xl lg:text-4xl md:leading-relaxed lg:leading-relaxed max-w-6xl">
                 Incubated by Flipside Crypto and other <b className="text-white">industry leaders</b>, MetricsDAO
                 provides a home for the <b className="text-white">most talented analysts</b> to collaborate, compete,
                 and grow, while offering the necessary frameworks to efficiently deliver{" "}
@@ -62,13 +67,14 @@ export default function Index() {
               </p>
               <MarketingButton label="Get In Touch" link="/todo" variant="outline" />
             </section>
-            <section id="offerings" className="space-y-10 mx-auto pt-12 pb-10">
+            <section id="offerings" className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10">
               <h2 className="text-4xl md:text-5xl font-bold text-center">Our Core Offerings</h2>
               <MarketingButton label="Get In Touch" link="/todo" />
               <div className="flex flex-col lg:flex-row gap-5">
                 <div className="relative mx-auto">
-                  <img src="/img/marketing/partner-frame-rocket.png" className="-z-10" alt="" />
-                  <div className="absolute top-0 left-0 text-white text-base max-w-xs mx-5 pt-36 space-y-5">
+                  <img src="/img/marketing/partner-core-left.png" className="-z-10" alt="" />
+                  <div className="absolute top-0 left-0 text-white text-base max-w-xs m-5 space-y-5">
+                    <img src="/img/marketing/partner-rocket.png" alt="" className="hidden sm:block" />
                     <div className="space-y-1">
                       <p className="text-2xl font-bold">Analytics on Demand</p>
                       <p className="text-xl">Starts at $1,000</p>
@@ -78,8 +84,9 @@ export default function Index() {
                   </div>
                 </div>
                 <div className="relative mx-auto">
-                  <img src="/img/marketing/partner-frame-plant.png" className="-z-10" alt="" />
-                  <div className="absolute top-0 left-0 text-white text-base max-w-xs mx-5 pt-36 space-y-5">
+                  <img src="/img/marketing/partner-core-middle.png" className="-z-10" alt="" />
+                  <div className="absolute top-0 left-0 text-white text-base max-w-xs m-5 space-y-5">
+                    <img src="/img/marketing/partner-plant.png" alt="" className="hidden sm:block" />
                     <div className="space-y-1">
                       <p className="text-2xl font-bold">Community Growth</p>
                       <p className="text-xl">Starts at $10,000</p>
@@ -91,8 +98,9 @@ export default function Index() {
                   </div>
                 </div>
                 <div className="relative mx-auto">
-                  <img src="/img/marketing/partner-frame-butterfly.png" className="-z-10" alt="" />
-                  <div className="absolute top-0 left-0 text-white text-base max-w-xs mx-5 pt-36 space-y-5">
+                  <img src="/img/marketing/partner-core-right.png" className="-z-10" alt="" />
+                  <div className="absolute top-0 left-0 text-white text-base max-w-xs m-5 space-y-5">
+                    <img src="/img/marketing/partner-butterfly.png" alt="" className="hidden sm:block" />
                     <div className="space-y-1">
                       <p className="text-2xl font-bold">Data Readiness</p>
                       <p className="text-xl">Starts at $20,000</p>
@@ -103,9 +111,9 @@ export default function Index() {
                 </div>
               </div>
             </section>
-            <section id="testimony" className="space-y-10 py-16">
+            <section id="testimony" className="space-y-10 py-16 h-screen justify-center flex flex-col items-center">
               <img src="/img/marketing/logo-uniswap.png" alt="" className="mx-auto" />
-              <p className="text-white text-4xl max-w-3xl text-center mx-auto">
+              <p className="text-white text-2xl md:text-4xl max-w-3xl text-center mx-auto">
                 "The Uniswap Foundation empowers users through community-driven analytics and{" "}
                 <b>supports initiatives like MetricsDAO to create data-driven narratives and insights."</b>
               </p>
@@ -119,8 +127,39 @@ export default function Index() {
             </section>
           </main>
         </div>
-        <Footer variant="transparent" />
+        <Footer variant="circle" />
       </div>
     </>
   );
+}
+
+function Circle({ id }: { id: string }) {
+  return (
+    <svg id={id} width="6" height="6" viewBox="0 0 6 6" style={{ fill: "none" }} xmlns="http://www.w3.org/2000/svg">
+      <circle cx="3" cy="3" r="2.5" stroke="#252525" />
+    </svg>
+  );
+}
+
+// When the user scrolls the page, execute scrollNav
+if (typeof window !== "undefined") {
+  window.onscroll = function () {
+    scrollNav();
+  };
+}
+
+function scrollNav() {
+  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var scrolled = (winScroll / height) * 100;
+  document.getElementById("pageProgress")!.style.height = scrolled + "%";
+  scrolled > 16
+    ? (document.getElementById("whyCircle")!.style.fill = "black")
+    : (document.getElementById("whyCircle")!.style.fill = "none");
+  scrolled > 52
+    ? (document.getElementById("offeringsCircle")!.style.fill = "black")
+    : (document.getElementById("offeringsCircle")!.style.fill = "none");
+  scrolled > 88
+    ? (document.getElementById("testimonyCircle")!.style.fill = "black")
+    : (document.getElementById("testimonyCircle")!.style.fill = "none");
 }

@@ -12,7 +12,7 @@ const links = [
   { link: "/terms", label: "Terms & Privacy" },
 ];
 
-type Variant = "gradient" | "transparent";
+type Variant = "gradient" | "transparent" | "circle";
 
 export default function Footer({ variant = "gradient" }: { variant?: Variant }) {
   const items = links.map((link) => (
@@ -27,13 +27,15 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
 
   if (variant === "gradient") {
     imgUrl = "url(/img/marketing/footer-blur.png)";
+  } else if (variant === "circle") {
+    imgUrl = "url(/img/marketing/footer-circle-blur.png)";
   }
 
   return (
     <footer
       id="bottom"
       className={clsx("whitespace-nowrap", {
-        "bg-local bg-cover": variant === "gradient",
+        "bg-local bg-cover": variant === "gradient" || variant === "circle",
         "bg-none": variant === "transparent",
       })}
       style={{ backgroundImage: imgUrl }}
