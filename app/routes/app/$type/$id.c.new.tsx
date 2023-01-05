@@ -220,6 +220,7 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
     onTransactionSuccess() {
       toast.dismiss("creating-challenge");
       toast.success("Challenge created!");
+      onClose();
     },
     onWriteSuccess() {
       toast.loading("Creating challenge...", { id: "creating-challenge" });
