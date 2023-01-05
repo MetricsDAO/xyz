@@ -59,7 +59,7 @@ export default function CreateChallenge() {
   }, [actionData]);
 
   return (
-    <Container className="max-w-3xl mt-10 space-y-10">
+    <Container className="max-w-3xl my-10 space-y-10">
       <div className="space-y-3">
         <h1 className="font-semibold text-3xl">Launch Challenge</h1>
         <p className="text-lg text-cyan-500">
@@ -199,9 +199,8 @@ export default function CreateChallenge() {
 
         <div className="flex flex-row flex-wrap gap-5">
           <Button variant="primary" type="submit">
-            Launch Challenge
+            Next
           </Button>
-          <Button variant="cancel">Cancel</Button>
         </div>
       </ValidatedForm>
       <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
@@ -253,35 +252,24 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
 
   return (
     <div className="space-y-8">
-      {!isApproved && (
-        <>
-          <p className="p-5 text-sm">
-            First you must approve that your service request is allowed to transer <b>{challenge.pTokenQuantity}</b> of
-            ERC20 with address <b>{challenge.pTokenAddress}</b> on your behalf{" "}
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-5">
-            <Button size="md" type="button" onClick={onApprove}>
-              Approve
-            </Button>
-            <Button variant="cancel" size="md" onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
-        </>
-      )}
-      {isApproved && (
-        <>
-          <p>Please confirm that you would like to launch a new challenge.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-5">
-            <Button size="md" type="button" onClick={onCreateChallenge}>
-              Launch
-            </Button>
-            <Button variant="cancel" size="md" onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
-        </>
-      )}
+      <p>
+        First you must approve to transer <b>{challenge.pTokenQuantity}</b> of the ERC20 with address{" "}
+        <b>{challenge.pTokenAddress}</b> on your behalf{" "}
+      </p>
+      <div className="flex flex-col sm:flex-row justify-center gap-5">
+        <Button size="md" type="button" onClick={onApprove}>
+          Approve
+        </Button>
+      </div>
+      <p>Please confirm that you would like to launch a new challenge.</p>
+      <div className="flex flex-col sm:flex-row justify-center gap-5">
+        <Button disabled={!isApproved} size="md" type="button" onClick={onCreateChallenge}>
+          Launch
+        </Button>
+        <Button variant="cancel" size="md" onClick={onClose}>
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }

@@ -31,7 +31,7 @@ const InputTimeSchema = z.string().refine((t) => {
 });
 
 // Form input
-export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAddress: true }).extend({
+export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAddress: true, createdAt: true }).extend({
   language: z.enum(["english", "spanish"]),
   projects: z.enum(["ethereum", "solana"]),
   startDate: InputDateSchema,
