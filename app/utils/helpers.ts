@@ -58,5 +58,5 @@ export const parseTokenAmount = (amount: string) => {
  * @param str
  */
 export function removeLeadingZeros(str: string): string {
-  return str.replace(/^0x0+/, "0x");
+  return ethers.utils.hexStripZeros(str);
 }
