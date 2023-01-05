@@ -1,8 +1,9 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
-import { useContractWrite, useMutation, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { LaborMarket as LaborMarketDomain, LaborMarketPrepared } from "~/domain";
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import type { LaborMarketPrepared } from "~/domain";
+import { createLaborMarket } from "~/utils/fetch";
 
 export function useCreateMarketplace({
   data,
@@ -58,27 +59,19 @@ export function useCreateMarketplace({
     },
   });
 
-  // TEMP until we have the indexer
-  const mutation = useMutation((data: LaborMarketDomain) =>
-    fetch("/api/indexer/create-labor-market", {
-      method: "POST",
-      body: JSON.stringify(data),
-    }).then((res) => res.json())
-  );
-
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,
     onError(error) {
       console.log("error", error);
     },
     async onSuccess(receipt) {
-      // TEMP until we have the indexer
-      console.log("receipt", receipt, receipt.logs[0]?.topics[1]);
-      mutation.mutate({
-        ...data,
-        address: receipt.logs[0]?.topics[1] as string,
-        sponsorAddress: data.userAddress,
-      });
+      if (window.ENV.DEV_AUTO_INDEX === "enabled") {
+        createLaborMarket({
+          ...data,
+          address: receipt.logs[0]?.topics[1] as string, // The labor market created address
+          sponsorAddress: data.userAddress,
+        });
+      }
 
       onTransactionSuccess?.(receipt);
     },

@@ -23,7 +23,10 @@ declare global {
 
 export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
-  return typedjson({ user, ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN } });
+  return typedjson({
+    user,
+    ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN, DEV_AUTO_INDEX: env.DEV_AUTO_INDEX },
+  });
 }
 
 export const meta: MetaFunction = () => {
