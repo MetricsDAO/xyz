@@ -16,6 +16,11 @@ export const TOKEN_ICONS: Record<string, string | undefined> = {
   USDC: "/img/icons/token-icons/usdc.svg",
 };
 
+export const DEFAULT_SYMBOL: Record<string, string | undefined> = {
+  Ethereum: "ETH",
+  Solana: "SOL",
+};
+
 export const truncateAddress = (address: string) => {
   if (address.length < 10) {
     return address;

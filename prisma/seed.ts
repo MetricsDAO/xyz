@@ -23,18 +23,29 @@ async function main() {
     skipDuplicates: true,
   });
 
+  await prisma.network.createMany({
+    data: [{ name: "Ethereum" }, { name: "Solana" }],
+    skipDuplicates: true,
+  });
+
   await prisma.token.createMany({
     data: [
-      { symbol: "ETH", name: "Ethereum" },
-      { symbol: "SOL", name: "Solana" },
-      { symbol: "USDC", name: "USD Coin" },
-      { symbol: "MATIC", name: "Polygon" },
-      { symbol: "AXL", name: "Axelar" },
-      { symbol: "NEAR", name: "Near" },
-      { symbol: "FLOW", name: "Flow" },
-      { symbol: "AVAX", name: "Avalanche" },
+      {
+        name: "USD Coin",
+        networkName: "Ethereum",
+        symbol: "USDC",
+      },
+      {
+        name: "Ethereum",
+        networkName: "Ethereum",
+        symbol: "ETH",
+      },
+      {
+        name: "Solana",
+        networkName: "Solana",
+        symbol: "SOL",
+      },
     ],
-    skipDuplicates: true,
   });
 
   async function seedLaborMarkets() {
