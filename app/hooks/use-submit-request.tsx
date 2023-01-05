@@ -40,7 +40,6 @@ export function useSubmitRequest({
     },
   });
 
-  console.log("data", data);
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,
     onError(error) {
@@ -48,7 +47,6 @@ export function useSubmitRequest({
     },
     onSuccess(receipt) {
       if (window.ENV.DEV_AUTO_INDEX) {
-        console.log("DEV_AUTO_INDEX is true, creating service request", data);
         createServiceRequest(data);
       }
       onTransactionSuccess?.(receipt);

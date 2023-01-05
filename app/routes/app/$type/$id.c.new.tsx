@@ -213,8 +213,6 @@ export default function CreateChallenge() {
 function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepared; onClose: () => void }) {
   invariant(challenge, "challenge is required"); // this should never happen but just in case
 
-  const [isApproved, setIsApproved] = useState(false);
-
   const { write: writeChallenge } = useSubmitRequest({
     data: challenge,
     onTransactionSuccess() {
@@ -236,7 +234,6 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
     onTransactionSuccess() {
       toast.dismiss("approving-challenge");
       toast.success("Challenge approved!");
-      setIsApproved(true);
     },
     onWriteSuccess() {
       toast.loading("Approving challenge to spend ERC20...", { id: "approving-challenge" });
