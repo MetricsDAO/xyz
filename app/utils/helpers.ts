@@ -52,3 +52,11 @@ export const SCORE_COLOR_SECONDARY = {
 export const parseTokenAmount = (amount: string) => {
   return ethers.utils.parseUnits(amount, 18);
 };
+
+/**
+ * Removes leading zeros from an address 0x0000000000000000000000003592fd4c9e9b4b1286d4e2b400b5386a2429cca1 => 0x3592fd4C9E9B4b1286d4E2b400B5386A2429CCa1
+ * @param str
+ */
+export function removeLeadingZeros(str: string): string {
+  return str.replace(/^0x0+/, "0x");
+}

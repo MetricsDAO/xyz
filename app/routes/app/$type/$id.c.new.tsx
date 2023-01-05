@@ -24,21 +24,21 @@ import { useSubmitRequest } from "~/hooks/use-submit-request";
 import { prepareChallenge } from "~/services/challenges-service.server";
 
 const validator = withZod(ChallengeNewSchema);
-
 const paramsSchema = z.object({ id: z.string() });
-export const loader = async ({ request, params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
+
+export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const defaultValues = url.searchParams.get("fake") ? fakeChallengeNew() : undefined;
-  return typedjson({ defaultValues, laborMarketAddress: id });
+  return typedjson({ defaultValues });
 };
 
 type ActionResponse = { preparedChallenge: ChallengePrepared } | ValidationErrorResponseData;
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
+  const { id: laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
-  const preparedChallenge = await prepareChallenge(result.data);
+  const preparedChallenge = await prepareChallenge(laborMarketAddress, result.data);
   return typedjson({ preparedChallenge });
 };
 
@@ -264,7 +264,7 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepa
       </div>
       <p>Please confirm that you would like to launch a new challenge.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button disabled={!isApproved} size="md" type="button" onClick={onCreateChallenge}>
+        <Button size="md" type="button" onClick={onCreateChallenge}>
           Launch
         </Button>
         <Button variant="cancel" size="md" onClick={onClose}>

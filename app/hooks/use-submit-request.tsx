@@ -4,6 +4,7 @@ import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { ChallengePrepared } from "~/domain";
 import { unixTimestamp } from "~/utils/date";
+import { createServiceRequest } from "~/utils/fetch";
 import { parseTokenAmount } from "~/utils/helpers";
 
 export function useSubmitRequest({
@@ -19,6 +20,9 @@ export function useSubmitRequest({
     address: data.laborMarketAddress,
     abi: LaborMarket.abi,
     functionName: "submitRequest",
+    overrides: {
+      gasLimit: BigNumber.from(1000000), // TODO: What do we do here?
+    },
     args: [
       data.pTokenAddress as `0x${string}`,
       BigNumber.from(data.pTokenId),
@@ -36,12 +40,17 @@ export function useSubmitRequest({
     },
   });
 
+  console.log("data", data);
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,
     onError(error) {
       console.log("error", error);
     },
     onSuccess(receipt) {
+      if (window.ENV.DEV_AUTO_INDEX) {
+        console.log("DEV_AUTO_INDEX is true, creating service request", data);
+        createServiceRequest(data);
+      }
       onTransactionSuccess?.(receipt);
     },
   });

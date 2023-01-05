@@ -13,6 +13,10 @@ export const ChallengeSchema = z.object({
   createdAt: z.date({ description: "The date the service request was created." }),
 });
 
+const DateSchema = z.preprocess((arg) => {
+  if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+}, z.date());
+
 const TokenAmountSchema = z.string().refine((r) => {
   try {
     parseTokenAmount(r);
@@ -31,7 +35,7 @@ const InputTimeSchema = z.string().refine((t) => {
 });
 
 // Form input
-export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAddress: true, createdAt: true }).extend({
+export const ChallengeNewSchema = ChallengeSchema.pick({ title: true, description: true }).extend({
   language: z.enum(["english", "spanish"]),
   projects: z.enum(["ethereum", "solana"]),
   startDate: InputDateSchema,
@@ -44,14 +48,18 @@ export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAd
   rewardPool: TokenAmountSchema,
 });
 
-// Contract input
-export const ChallengePreparedSchema = ChallengeSchema.pick({ laborMarketAddress: true }).extend({
+// Contract input. Metadata needed for DEV_AUTO_INDEX
+export const ChallengePreparedSchema = ChallengeSchema.pick({
+  title: true,
+  description: true,
+  laborMarketAddress: true,
+}).extend({
   pTokenAddress: EthAddressSchema,
   pTokenId: z.number(),
   pTokenQuantity: TokenAmountSchema,
-  signalExpiration: z.date(),
-  submissionExpiration: z.date(),
-  enforcementExpiration: z.date(),
+  signalExpiration: DateSchema,
+  submissionExpiration: DateSchema,
+  enforcementExpiration: DateSchema,
   uri: z.string(),
 });
 
