@@ -1,52 +1,72 @@
-import { ClipboardDocumentIcon } from "@heroicons/react/24/outline";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
-import { useState } from "react";
-import { Button } from "~/components/button";
-import { Modal } from "~/components/modal";
-import { Container } from "~/components/container";
-import RewardsTab from "~/features/rewards-tab";
-import { Card } from "~/components/card";
-import { fromNow } from "~/utils/date";
-import { Header, Row, Table } from "~/components/table";
-import { CopyToClipboard } from "~/components/copy-to-clipboard";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { listTokens } from "~/services/tokens.server";
-import type { DataFunctionArgs } from "@remix-run/node";
-import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
-import { ValidatedForm } from "remix-validated-form";
+import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
+import type { Network, Wallet } from "@prisma/client";
+import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
-import { z } from "zod";
-import { EthAddressSchema, SolAddressSchema } from "~/domain/address";
+import { useCallback, useEffect, useState } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import type { ValidationErrorResponseData } from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
+import { ValidatedInput } from "~/components";
+import { Button } from "~/components/button";
+import { Card } from "~/components/card";
+import { Container } from "~/components/container";
+import { CopyToClipboard } from "~/components/copy-to-clipboard";
+import { Modal } from "~/components/modal";
+import { Header, Row, Table } from "~/components/table";
+import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
+import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
+import RewardsTab from "~/features/rewards-tab";
+import { listNetworks } from "~/services/network.server";
+import { getUserId, requireUser } from "~/services/session.server";
+import { listTokens } from "~/services/tokens.server";
+import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
+import { fromNow } from "~/utils/date";
+import { truncateAddress } from "~/utils/helpers";
+import { namedAction } from "remix-utils";
+import { useFetcher } from "@remix-run/react";
+import { isValidationError } from "~/utils/utils";
+
+export const addWalletValidator = withZod(WalletAddSchema);
+export const deleteWalletValidator = withZod(WalletDeleteSchema);
+
+type WalletWithChain = Wallet & { chain: Network };
+
+type ActionResponse = { wallet: Wallet } | ValidationErrorResponseData;
+
+export async function action({ request }: ActionArgs) {
+  const user = await requireUser(request);
+
+  return namedAction(request, {
+    async create() {
+      const formData = await addWalletValidator.validate(await request.formData());
+      if (formData.error) return validationError(formData.error);
+      const wallet = await addWalletAddress(user.id, formData.data);
+      return typedjson({ wallet });
+    },
+    async delete() {
+      const formData = await deleteWalletValidator.validate(await request.formData());
+      if (formData.error) return validationError(formData.error);
+      await deleteWalletAddress(formData.data);
+      return typedjson(null, 200);
+    },
+  });
+}
 
 export const loader = async (data: DataFunctionArgs) => {
+  const user = await getUserId(data.request);
+  const wallets = user ? await findAllWalletsForUser(user) : [];
   const tokens = await listTokens();
-  return typedjson(
-    {
-      tokens,
-    },
-    { status: 200 }
-  );
+  const networks = await listNetworks();
+  return typedjson({
+    tokens,
+    networks,
+    wallets,
+    user,
+  });
 };
 
 export default function PayoutAddresses() {
-  const wallets = [
-    {
-      address: "0xb794f5ea0ba39494ce839613fffba74279579268",
-      chain: "Ethereum",
-      user: "idk",
-      userId: 22,
-      isConnected: true,
-    },
-    {
-      address: "0xb794f5ea0ba39494ce839613cccba74279579268",
-      chain: "Ethereum",
-      user: "idk",
-      userId: 22,
-      isConnected: true,
-    },
-    { address: "0x75638945875290490238", chain: "Solana", user: "idk", userId: 22, isConnected: true },
-    { address: "0x32849854983758727987", chain: "Solana", user: "idk", userId: 22, isConnected: true },
-  ];
+  const { wallets } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -64,38 +84,28 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={10} addressesNum={wallets.length} />
-      <AddressListView wallets={wallets} />
+      <RewardsTab rewardsNum={10} addressesNum={wallets ? wallets?.length : 0} />
+      {wallets.length === 0 ? (
+        <div className="flex">
+          <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
+        </div>
+      ) : (
+        <>
+          {/* Desktop */}
+          <div className="hidden lg:block">
+            <AddressTable wallets={wallets} />
+          </div>
+          {/* Mobile */}
+          <div className="block lg:hidden">
+            <AddressCards wallets={wallets} />
+          </div>
+        </>
+      )}
     </Container>
   );
 }
 
-function AddressListView({ wallets }: { wallets: any }) {
-  if (wallets.length === 0) {
-    return (
-      <div className="flex">
-        <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {/* Desktop */}
-      <div className="hidden lg:block">
-        <AddressTable wallets={wallets} />
-      </div>
-      {/* Mobile */}
-      <div className="block lg:hidden">
-        <AddressCards wallets={wallets} />
-      </div>
-    </>
-  );
-}
-
-function AddressTable({ wallets }: { wallets: any }) {
-  const validAddress = false;
-
+function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <Table>
       <Header columns={12}>
@@ -103,28 +113,22 @@ function AddressTable({ wallets }: { wallets: any }) {
         <Header.Column span={5}>Address</Header.Column>
         <Header.Column span={2}>Last Updated</Header.Column>
       </Header>
-      {wallets.map((w: { address: string; chain: string }) => {
+      {wallets.map((wallet) => {
         return (
-          <Row columns={12} key={w.address}>
+          <Row columns={12} key={wallet.address}>
             <Row.Column span={2}>project</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
-              {validAddress ? (
-                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
-              ) : (
-                <XCircleIcon className="text-rose-500 h-5 w-5" />
-              )}
               <CopyToClipboard
                 className="text-black"
-                content={w.address}
+                content={truncateAddress(wallet.address)}
                 iconRight={<ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />}
               />
             </Row.Column>
             <Row.Column span={2} className="text-black">
-              {fromNow("1999-01-01")}{" "}
+              {fromNow(wallet.createdAt)}
             </Row.Column>
             <Row.Column span={3} className="flex flex-wrap gap-2">
-              <RemoveAddressButton />
-              <UpdateAddressButton />
+              <RemoveAddressButton wallet={wallet} />
             </Row.Column>
           </Row>
         );
@@ -133,36 +137,27 @@ function AddressTable({ wallets }: { wallets: any }) {
   );
 }
 
-function AddressCards({ wallets }: { wallets: any }) {
-  const validAddress = false;
+function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <div className="space-y-3">
-      {wallets.map((w: { address: string; chain: string }) => {
+      {wallets.map((wallet) => {
         return (
           <Card
             // On mobile, two column grid with "labels". On desktop hide the "labels".
             className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
-            key={w.address}
+            key={wallet.address}
           >
             <div className="lg:hidden">Chain/Project</div>
             <p>project</p>
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
-              {validAddress ? (
-                <CheckCircleIcon className="text-lime-500 h-5 w-5" />
-              ) : (
-                <XCircleIcon className="text-rose-500 h-5 w-5" />
-              )}
-              <p className="text-black">
-                {w.address.length > 10 ? w.address?.slice(0, 6) + "..." + w.address?.slice(-4) : w.address}
-              </p>
+              <p className="text-black">{truncateAddress(wallet.address)}</p>
               <ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />
             </div>
             <div className="lg:hidden">Last Updated</div>
-            <p className="text-black">{fromNow("1999-01-01")} </p>
+            <p className="text-black">{fromNow(wallet.createdAt)} </p>
             <div className="flex flex-wrap gap-2">
-              <RemoveAddressButton />
-              <UpdateAddressButton />
+              <RemoveAddressButton wallet={wallet} />
             </div>
           </Card>
         );
@@ -171,42 +166,60 @@ function AddressCards({ wallets }: { wallets: any }) {
   );
 }
 
-const schema = z.object({
-  payment: z.discriminatedUnion("tokenSymbol", [
-    z.object({ tokenSymbol: z.literal("ETH"), address: EthAddressSchema }),
-    z.object({ tokenSymbol: z.literal("SOL"), address: SolAddressSchema }),
-    z.object({ tokenSymbol: z.literal("MATIC"), address: EthAddressSchema }),
-  ]),
-});
-
-const validator = withZod(schema);
 function AddAddressButton() {
-  const { tokens } = useTypedLoaderData<typeof loader>();
-  const [openedAdd, setOpenedAdd] = useState(false);
-
+  const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), [setOpen]);
   return (
     <>
-      <Button className="mx-auto" onClick={() => setOpenedAdd(true)}>
+      <Button className="mx-auto" onClick={() => setOpen(true)}>
         Add Address
       </Button>
-      <Modal isOpen={openedAdd} onClose={() => setOpenedAdd(false)} title="Add an address">
-        <ValidatedForm validator={validator} className="space-y-5 mt-5">
-          <div className="pb-44 pt-8">
-            <AddPaymentAddressForm tokens={tokens} />
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedAdd(false)}>
-              Cancel
-            </Button>
-            <Button type="submit">Save</Button>
-          </div>
-        </ValidatedForm>
+      <Modal isOpen={open} onClose={close} title="Add an address" unmount>
+        <AddAddressForm onDone={close} />
       </Modal>
     </>
   );
 }
 
-function RemoveAddressButton() {
+function AddAddressForm({ onDone }: { onDone: () => void }) {
+  const { networks } = useTypedLoaderData<typeof loader>();
+  const fetcher = useFetcher<ActionResponse>();
+  useEffect(() => {
+    if (fetcher.data && !isValidationError(fetcher.data)) {
+      onDone();
+    }
+  }, [fetcher.data, onDone]);
+
+  return (
+    <ValidatedForm
+      fetcher={fetcher}
+      defaultValues={{
+        payment: {
+          networkName: "Ethereum",
+          address: "",
+        },
+      }}
+      method="post"
+      action="?/create"
+      name="create"
+      subaction="create"
+      validator={addWalletValidator}
+      className="space-y-5 mt-5"
+    >
+      <div className="pb-44 pt-8">
+        <AddPaymentAddressForm networks={networks} />
+      </div>
+      <div className="flex gap-2 justify-end">
+        <Button variant="cancel" onClick={onDone} type="button">
+          Cancel
+        </Button>
+        <Button type="submit">Save</Button>
+      </div>
+    </ValidatedForm>
+  );
+}
+
+function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
   const [openedRemove, setOpenedRemove] = useState(false);
 
   return (
@@ -214,60 +227,30 @@ function RemoveAddressButton() {
       <Button variant="cancel" onClick={() => setOpenedRemove(true)}>
         Remove
       </Button>
-      <Modal isOpen={openedRemove} onClose={() => setOpenedRemove(false)} title="Are you sure you want to remove?">
+      <Modal
+        isOpen={openedRemove}
+        onClose={() => setOpenedRemove(false)}
+        title="Are you sure you want to remove?"
+        unmount
+      >
         <div className="space-y-5 mt-5">
           <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
-            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
-            <p className="pl-2">0x381764734678365783648</p>
+            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
+              {wallet.networkName}
+            </p>
+            <p className="pl-2 overflow-clip">{wallet.address}</p>
           </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedRemove(false)}>
-              Cancel
-            </Button>
-            <Button>Remove</Button>
-          </div>
-        </div>
-      </Modal>
-    </>
-  );
-}
-
-function UpdateAddressButton() {
-  const [openedUpdate, setOpenedUpdate] = useState(false);
-
-  const validAddress = false;
-
-  return (
-    <>
-      <Button variant="primary" onClick={() => setOpenedUpdate(true)}>
-        Update
-      </Button>
-      <Modal isOpen={openedUpdate} onClose={() => setOpenedUpdate(false)} title="Update address">
-        <div className="space-y-5 mt-5">
-          <div className="space-y-2">
-            <div className="flex border-solid border rounded-md border-trueGray-200">
-              <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
-              <div className="flex items-center ml-2">
-                {validAddress ? (
-                  <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
-                ) : (
-                  <XCircleIcon className="mr-1 text-rose-500 h-5 w-5" />
-                )}
-                <input id="update" placeholder="Update address" />
-              </div>
+          <ValidatedForm method="post" action="?/delete" validator={deleteWalletValidator} className="space-y-5 mt-5">
+            <div className="invisible h-0 w-0">
+              <ValidatedInput type="hidden" id="id" name="id" value={wallet.id} />
             </div>
-            {validAddress ? (
-              <></>
-            ) : (
-              <p className="text-xs text-red-500">Please enter a valid address. If you are having issues go here</p>
-            )}
-          </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedUpdate(false)}>
-              Cancel
-            </Button>
-            <Button disabled={!validAddress}>Save</Button>
-          </div>
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="cancel" onClick={() => setOpenedRemove(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Remove</Button>
+            </div>
+          </ValidatedForm>
         </div>
       </Modal>
     </>

@@ -23,63 +23,74 @@ async function main() {
     skipDuplicates: true,
   });
 
-  await prisma.token.createMany({
-    data: [
-      { symbol: "ETH", name: "Ethereum" },
-      { symbol: "SOL", name: "Solana" },
-      { symbol: "USDC", name: "USD Coin" },
-      { symbol: "MATIC", name: "Polygon" },
-      { symbol: "AXL", name: "Axelar" },
-      { symbol: "NEAR", name: "Near" },
-      { symbol: "FLOW", name: "Flow" },
-      { symbol: "AVAX", name: "Avalanche" },
-    ],
+  await prisma.network.createMany({
+    data: [{ name: "Ethereum" }, { name: "Solana" }],
     skipDuplicates: true,
   });
 
-  async function seedLaborMarkets() {
-    const projectIds = (await prisma.project.findMany()).map((p) => p.id);
-    const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
-    // create 100 fake labor markets in prisma
-    for (let i = 0; i < 15; i++) {
-      await upsertLaborMarket(
-        fakeLaborMarket({
-          projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
-          tokenSymbols: faker.helpers.arrayElements(tokenSymbols), // pick a subset of random tokens
-        })
-      );
-    }
-  }
-
-  // create 10 fake service requests/challenges for each labor market in Prisma
-  async function seedServiceRequests(laborMarkets: LaborMarket[]) {
-    for (const laborMarket of laborMarkets) {
-      await upsertServiceRequest(fakeServiceRequest({}, laborMarket.address as string));
-    }
-  }
-
-  async function seedSubmissions(allChallenges: ServiceRequest[]) {
-    for (const challenge of allChallenges) {
-      // create 3 fake submissions for each challenge in Prisma
-      for (let i = 0; i < 3; i++) {
-        await upsertSubmission(fakeSubmission({}, challenge.id));
-      }
-    }
-  }
-
-  async function seedReviews(allSubmissions: Submission[]) {
-    for (const submission of allSubmissions) {
-      // create 3 fake reviews for each submission in Prisma
-      for (let i = 0; i < 3; i++) {
-        await upsertReview(fakeReview({}, submission.id));
-      }
-    }
-  }
+  await prisma.token.createMany({
+    data: [
+      {
+        name: "USD Coin",
+        networkName: "Ethereum",
+        symbol: "USDC",
+      },
+      {
+        name: "Ethereum",
+        networkName: "Ethereum",
+        symbol: "ETH",
+      },
+      {
+        name: "Solana",
+        networkName: "Solana",
+        symbol: "SOL",
+      },
+    ],
+  });
 
   await seedLaborMarkets();
   await seedServiceRequests(await prisma.laborMarket.findMany());
   await seedSubmissions(await prisma.serviceRequest.findMany());
   await seedReviews(await prisma.submission.findMany());
+}
+
+async function seedLaborMarkets() {
+  const projectIds = (await prisma.project.findMany()).map((p) => p.id);
+  const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
+  // create 100 fake labor markets in prisma
+  for (let i = 0; i < 15; i++) {
+    await upsertLaborMarket(
+      fakeLaborMarket({
+        projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
+        tokenSymbols: faker.helpers.arrayElements(tokenSymbols), // pick a subset of random tokens
+      })
+    );
+  }
+}
+
+// create 10 fake service requests/challenges for each labor market in Prisma
+async function seedServiceRequests(laborMarkets: LaborMarket[]) {
+  for (const laborMarket of laborMarkets) {
+    await upsertServiceRequest(fakeServiceRequest({}, laborMarket.address as string));
+  }
+}
+
+async function seedSubmissions(allChallenges: ServiceRequest[]) {
+  for (const challenge of allChallenges) {
+    // create 3 fake submissions for each challenge in Prisma
+    for (let i = 0; i < 3; i++) {
+      await upsertSubmission(fakeSubmission({}, challenge.id));
+    }
+  }
+}
+
+async function seedReviews(allSubmissions: Submission[]) {
+  for (const submission of allSubmissions) {
+    // create 3 fake reviews for each submission in Prisma
+    for (let i = 0; i < 3; i++) {
+      await upsertReview(fakeReview({}, submission.id));
+    }
+  }
 }
 
 main()

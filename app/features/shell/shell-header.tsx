@@ -6,6 +6,7 @@ import clsx from "clsx";
 import CustomConnectButton from "~/features/connect-button";
 import { LogoMark, LogoType } from "./logo";
 import { $path } from "remix-routes";
+import { useOptionalUser } from "~/hooks/use-user";
 
 const primaryLinks = [
   { link: $path("/app/ecosystem"), label: "Ecosystem" },
@@ -25,6 +26,7 @@ const userLinks = [
 ];
 
 export function AppHeader() {
+  const user = useOptionalUser();
   const items = primaryLinks.map((link) => (
     <NavLink
       key={link.link}
@@ -83,7 +85,7 @@ export function AppHeader() {
       <menu className="hidden md:flex flex-row gap-4 ml-4">{items}</menu>
 
       <div className="flex items-center space-x-4">
-        <div className="hidden md:block">{secondaryItems}</div>
+        {user ? <div className="hidden md:block">{secondaryItems}</div> : null}
         <CustomConnectButton />
       </div>
     </header>

@@ -7,31 +7,36 @@ export default function Index() {
     <>
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
+          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">
+            <div className="w-1 h-28 mx-2.5 mt-7 relative top-0">
+              <div id="pageProgress" style={{ height: `0%` }} className="w-0.5 ml-px h-full bg-black " />
+            </div>
+          </div>
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
             <a href="#top">
-              <GlobeAltIcon className="text-black h-7 w-7" />
+              <GlobeAltIcon className="text-black h-6 w-6" />
             </a>
             <a href="#mission">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle id="missionCircle" />
             </a>
             <a href="#partner">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle id="partnerCircle" />
             </a>
             <a href="#learn">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle id="learnCircle" />
             </a>
             <a href="#scaling">
-              <img src="/img/circle-outline.svg" alt="" />
+              <Circle id="scalingCircle" />
             </a>
             <a href="#bottom">
-              <ArrowDownCircleIcon className="text-black h-7 w-7" />
+              <ArrowDownCircleIcon className="text-black h-6 w-6" />
             </a>
           </div>
         </aside>
         <main className="px-8">
           <img
             src="/img/marketing/homepage-bg-top.png"
-            className="absolute top-0 left-0 -z-10 h-screen w-screen"
+            className="absolute top-0 left-0 -z-20 h-screen w-screen"
             alt=""
           />
           <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col justify-center">
@@ -45,7 +50,7 @@ export default function Index() {
           </section>
           <img
             src="/img/marketing/homepage-bg-bottom.png"
-            className="absolute top-100 left-0 -z-10 h-screen w-screen"
+            className="absolute top-100 left-0 -z-20 h-screen w-screen"
             alt=""
           />
           <div id="mission" className="space-y-5 h-screen flex flex-col justify-center">
@@ -122,6 +127,41 @@ export default function Index() {
         </main>
       </div>
     </>
+  );
+}
+
+// When the user scrolls the page, execute myFunction
+if (typeof window !== "undefined") {
+  window.onscroll = function () {
+    scrollNav();
+  };
+}
+
+function scrollNav() {
+  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var scrolled = (winScroll / height) * 100;
+  scrolled = scrolled - 0.05 * scrolled; //adjusts for header + footer
+  document.getElementById("pageProgress")!.style.height = scrolled + "%";
+  scrolled > 16
+    ? (document.getElementById("missionCircle")!.style.fill = "black")
+    : (document.getElementById("missionCircle")!.style.fill = "none");
+  scrolled > 37
+    ? (document.getElementById("partnerCircle")!.style.fill = "black")
+    : (document.getElementById("partnerCircle")!.style.fill = "none");
+  scrolled > 61
+    ? (document.getElementById("learnCircle")!.style.fill = "black")
+    : (document.getElementById("learnCircle")!.style.fill = "none");
+  scrolled > 85
+    ? (document.getElementById("scalingCircle")!.style.fill = "black")
+    : (document.getElementById("scalingCircle")!.style.fill = "none");
+}
+
+function Circle({ id }: { id: string }) {
+  return (
+    <svg id={id} width="6" height="6" viewBox="0 0 6 6" style={{ fill: "none" }} xmlns="http://www.w3.org/2000/svg">
+      <circle cx="3" cy="3" r="2.5" stroke="#252525" />
+    </svg>
   );
 }
 

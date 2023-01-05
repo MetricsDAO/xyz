@@ -12,17 +12,20 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(cuid())
-  address String   @default("")
-  wallet  Wallet[]
+  id        String   @id @default(cuid())
+  address   String   @default("")
+  createdAt DateTime @default(now())
+  wallet    Wallet[]
 }
 
 model Wallet {
-  address     String  @id @unique
-  chain       String
-  user        User    @relation(fields: [userId], references: [id])
+  id          String   @id @default(cuid())
+  address     String
   userId      String
-  isConnected Boolean
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  networkName String
+  chain       Network  @relation(fields: [networkName], references: [name])
 }
 
 model Transaction {
@@ -36,6 +39,7 @@ model Project {
   id           String        @id @default(cuid())
   slug         String        @unique
   name         String
+  createdAt    DateTime      @default(now())
   laborMarkets LaborMarket[]
 }
 
@@ -43,6 +47,8 @@ model Project {
 model Token {
   symbol       String        @id @unique
   name         String
+  networkName  String
+  chain        Network       @relation(fields: [networkName], references: [name])
   laborMarkets LaborMarket[]
 }
 
@@ -66,12 +72,14 @@ model LaborMarket {
   tokens              Token[]
   projects            Project[]
   serviceRequests     ServiceRequest[]
+  createdAt           DateTime         @default(now())
 }
 
 model ServiceRequest {
   id                 String       @id @unique
   title              String
   laborMarketAddress String
+  createdAt          DateTime     @default(now())
   laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
   submissions        Submission[]
 }
@@ -97,4 +105,10 @@ model Submission {
   score            Int
   serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
   reviews          Review[]
+}
+
+model Network {
+  name   String   @id @unique
+  Token  Token[]
+  Wallet Wallet[]
 }

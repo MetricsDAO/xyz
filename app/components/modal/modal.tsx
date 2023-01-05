@@ -2,22 +2,20 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
-// https://headlessui.com/react/dialog
-export function Modal({
-  title,
-  isOpen,
-  onClose,
-  children,
-}: {
+interface ModalProps {
   title?: string;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-}) {
+  unmount?: boolean;
+}
+
+// https://headlessui.com/react/dialog
+export function Modal({ title, isOpen, onClose, children, unmount }: ModalProps) {
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={onClose}>
+        <Dialog as="div" className="relative z-10" onClose={onClose} unmount>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

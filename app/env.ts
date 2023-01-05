@@ -5,6 +5,7 @@ const envSchema = z.object({
   SESSION_SECRET: z.string(),
   ENVIRONMENT: z.string(),
   SENTRY_DSN: z.string().optional(),
+  DEV_AUTO_INDEX: z.string().optional(),
 });
 
 export default envSchema.parse(process.env);

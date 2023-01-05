@@ -38,6 +38,7 @@ export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress:
     id: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
+    createdAt: faker.date.past(),
     laborMarketAddress: laborMarketAddress,
   };
 };
