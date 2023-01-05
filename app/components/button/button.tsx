@@ -3,7 +3,7 @@ import clsx from "clsx";
 import React from "react";
 
 const baseStyles =
-  "rounded-lg font-medium cursor-pointer inline-flex items-center justify-center transition-colors duration-200 ease-in-out whitespace-nowrap";
+  "rounded-lg font-medium cursor-pointer inline-flex items-center justify-center transition-colors duration-200 ease-in-out whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
 
 const sizeClasses = {
   sm: "h-8 px-3 text-sm",

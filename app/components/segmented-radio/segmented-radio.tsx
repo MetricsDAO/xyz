@@ -15,7 +15,7 @@ export function SegmentedRadio({
   ...props
 }: Props & { value: string; setValue: (value: string) => void }) {
   return (
-    <RadioGroup value={value} onChange={setValue}>
+    <RadioGroup value={value} onChange={setValue} name={props.name}>
       <div className="flex flex-wrap gap-x-8 gap-y-3">
         {props.options?.map((option) => (
           <RadioGroup.Option

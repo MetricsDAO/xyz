@@ -6,6 +6,7 @@ export const ChallengeSchema = z.object({
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   laborMarketAddress: EthAddressSchema,
+  createdAt: z.date({ description: "The date the service request was created." }),
 });
 
 export const ChallengeNewSchema = ChallengeSchema.omit({ id: true });
