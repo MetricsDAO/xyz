@@ -1,4 +1,3 @@
-import type { ServiceRequest } from "@prisma/client";
 import type { ChallengeNew, ChallengePrepared, ChallengeSearch } from "~/domain/challenge";
 import { ChallengePreparedSchema } from "~/domain/challenge";
 import { parseDatetime } from "~/utils/date";
@@ -57,10 +56,12 @@ export const findChallenge = async (id: string) => {
  * Creates a new challenge/serviceRequest. This is only really used by the indexer.
  * @param {Challenge} challenge - The challenge to create.
  */
-export const upsertServiceRequest = async (challenge: ServiceRequest) => {
-  const { id, title, laborMarketAddress } = challenge;
+export const upsertServiceRequest = async (challenge: ChallengePrepared) => {
   const newChallenge = await prisma.serviceRequest.create({
-    data: { id, title, laborMarketAddress },
+    data: {
+      title: challenge.title,
+      laborMarketAddress: challenge.laborMarketAddress,
+    },
   });
   return newChallenge;
 };
@@ -70,12 +71,14 @@ export const upsertServiceRequest = async (challenge: ServiceRequest) => {
  * @param {ChallengeNew} newChallenge - The ChallengeNew to prepare.
  * @returns {ChallengePrepared} - The prepared Challenge.
  */
-export const prepareChallenge = (newChallenge: ChallengeNew): ChallengePrepared => {
+export const prepareChallenge = (laborMarketAddress: string, newChallenge: ChallengeNew): ChallengePrepared => {
   // TODO: upload data to ipfs
 
   // parse for type safety
   const preparedChallenge = ChallengePreparedSchema.parse({
-    laborMarketAddress: "0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33", // recently created labor market on Goerli https://goerli.etherscan.io/address/0xf48cdadfa609f0348d9e5c14f2801be0a45e0a33
+    title: newChallenge.title,
+    description: newChallenge.description,
+    laborMarketAddress: laborMarketAddress,
     pTokenAddress: newChallenge.rewardToken,
     pTokenQuantity: newChallenge.rewardPool,
     pTokenId: 0, // Not used by contract. Left over appendage from when we were using ERC1155. We might switch back at some point.

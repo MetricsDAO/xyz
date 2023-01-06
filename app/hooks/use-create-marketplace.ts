@@ -4,6 +4,7 @@ import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, Repu
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketPrepared } from "~/domain";
 import { createLaborMarket } from "~/utils/fetch";
+import { removeLeadingZeros } from "~/utils/helpers";
 
 export function useCreateMarketplace({
   data,
@@ -65,10 +66,10 @@ export function useCreateMarketplace({
       console.log("error", error);
     },
     async onSuccess(receipt) {
-      if (window.ENV.DEV_AUTO_INDEX === "enabled") {
+      if (window.ENV.DEV_AUTO_INDEX) {
         createLaborMarket({
           ...data,
-          address: receipt.logs[0]?.topics[1] as string, // The labor market created address
+          address: removeLeadingZeros(receipt.logs[0]?.topics[1] as string), // The labor market created address
           sponsorAddress: data.userAddress,
         });
       }

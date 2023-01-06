@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { Review, Submission } from "@prisma/client";
-import type { Challenge } from "~/domain";
+import type { Challenge, ChallengePrepared } from "~/domain";
 import type { LaborMarket } from "~/domain";
 
 // This module export utlity functions to generate fake data for testing and development
@@ -33,13 +33,18 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress: string): Challenge => {
+export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress: string): ChallengePrepared => {
   return {
-    id: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
-    createdAt: faker.date.past(),
     laborMarketAddress: laborMarketAddress,
+    pTokenAddress: faker.finance.ethereumAddress(),
+    pTokenId: faker.datatype.number(),
+    pTokenQuantity: "0.0001",
+    signalExpiration: faker.date.future(),
+    submissionExpiration: faker.date.future(),
+    enforcementExpiration: faker.date.future(),
+    uri: faker.internet.url(),
   };
 };
 
