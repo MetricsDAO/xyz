@@ -2,19 +2,19 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { ClaimToReviewPrepared } from "~/domain";
+import type { ClaimToReviewContract } from "~/domain";
 
 export function useClaimToReview({
   data,
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: ClaimToReviewPrepared;
+  data: ClaimToReviewContract;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: "0xd46740251edf9f0e64f6a594960b99e242db5bd2",
+    address: data.laborMarketAddress,
     abi: LaborMarket.abi,
     functionName: "signalReview",
     args: [BigNumber.from(data.quantity)],
