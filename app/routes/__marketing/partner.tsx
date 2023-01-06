@@ -38,8 +38,8 @@ export default function Index() {
             </div>
           </aside>
           <main className="flex-1">
-            <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col items-center justify-center bg-contain bg-no-repeat bg-center bg-[url(/img/marketing/partner-bg-logos.png)]">
-              <h1 className="font-bold text-4xl md:text-6xl pt-7 text-center max-w-3xl px-8">
+            <section className="space-y-5 h-screen -mt-16 sm:pt-16 flex flex-col items-center justify-center bg-contain bg-no-repeat bg-center bg-[url('/img/marketing/partner-bg-logos-mobile.png')] sm:bg-[url('/img/marketing/partner-bg-logos.png')]">
+              <h1 className="font-bold text-4xl md:text-6xl sm:pt-7 text-center max-w-3xl px-8">
                 Work With the Best Analyists in Web3
               </h1>
               <p className="text-lg md:text-2xl text-center max-w-3xl px-8">
