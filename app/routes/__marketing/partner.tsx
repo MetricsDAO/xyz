@@ -37,26 +37,25 @@ export default function Index() {
               </a>
             </div>
           </aside>
-          <main className="pl-8 pr-12">
-            <img
-              src="/img/marketing/partner-bg-logos.png"
-              className="absolute top-0 left-0 -z-10 h-screen w-screen"
-              alt=""
-            />
-            <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col items-center justify-center mx-auto max-w-3xl ">
-              <h1 className="font-bold text-4xl md:text-6xl pt-7 text-center">Work With the Best Analyists in Web3</h1>
-              <p className="text-lg md:text-2xl text-center">
+          <main className="flex-1">
+            <section className="space-y-5 h-screen -mt-16 pt-16 flex flex-col items-center justify-center bg-contain bg-no-repeat bg-center bg-[url(/img/marketing/partner-bg-logos.png)]">
+              <h1 className="font-bold text-4xl md:text-6xl pt-7 text-center max-w-3xl px-8">
+                Work With the Best Analyists in Web3
+              </h1>
+              <p className="text-lg md:text-2xl text-center max-w-3xl px-8">
                 Access the best community of Web3 analysts for on-demand analytics and tooling! Everything analysts
                 create is peer reviewed to ensure quality and accuracy.
               </p>
-              <MarketingButton label="Explore the ecosystem" link="/ecosystem" />
+              <div className="flex flex-col items-center">
+                <MarketingButton label="Explore the ecosystem" link="/ecosystem" />
+              </div>
             </section>
             <img
               src="/img/marketing/partner-bg-why.png"
               className="absolute top-100 left-0 -z-10 h-screen w-screen"
               alt=""
             />
-            <section id="why" className="space-y-5 h-screen flex flex-col justify-center items-start lg:ml-10">
+            <section id="why" className="space-y-5 h-screen flex flex-col justify-center items-start lg:ml-10 px-8">
               <p className="text-white text-2xl">Why MetricsDAO?</p>
               <p className="font-bold text-2xl md:text-3xl lg:text-4xl md:leading-relaxed lg:leading-relaxed max-w-6xl">
                 Incubated by Flipside Crypto and other <b className="text-white">industry leaders</b>, MetricsDAO
@@ -67,7 +66,7 @@ export default function Index() {
               </p>
               <MarketingButton label="Get In Touch" link="/todo" variant="outline" />
             </section>
-            <section id="offerings" className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10">
+            <section id="offerings" className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10 px-8">
               <h2 className="text-4xl md:text-5xl font-bold text-center">Our Core Offerings</h2>
               <MarketingButton label="Get In Touch" link="/todo" />
               <div className="flex flex-col lg:flex-row gap-5">
@@ -115,7 +114,10 @@ export default function Index() {
                 </div>
               </div>
             </section>
-            <section id="testimony" className="space-y-10 py-16 h-screen justify-center flex flex-col items-center">
+            <section
+              id="testimony"
+              className="space-y-10 py-16 h-screen justify-center flex flex-col items-center px-8"
+            >
               <img src="/img/marketing/logo-uniswap.png" alt="" className="mx-auto" />
               <p className="text-white text-2xl md:text-4xl max-w-3xl text-center mx-auto">
                 "The Uniswap Foundation empowers users through community-driven analytics and{" "}

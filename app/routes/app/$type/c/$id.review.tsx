@@ -51,7 +51,7 @@ export default function ClaimToReview() {
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{`Claim to Review ${challenge.title}`}</h1>
           <p className="text-cyan-500 text-lg">
-            Claiming is an up front commitment to review and score a minumum number of submissions
+            Claiming is an up front commitment to review and score a minimum number of submissions
           </p>
           <p className="text-gray-500">
             You must temporarily lock rMETRIC to claim. If you claim and don’t complete review before the deadline, 5
