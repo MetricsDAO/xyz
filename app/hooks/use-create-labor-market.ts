@@ -2,16 +2,16 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { LaborMarketPrepared } from "~/domain";
+import type { LaborMarketContract } from "~/domain";
 import { createLaborMarket } from "~/utils/fetch";
 import { removeLeadingZeros } from "~/utils/helpers";
 
-export function useCreateMarketplace({
+export function useCreateLaborMarket({
   data,
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: LaborMarketPrepared;
+  data: LaborMarketContract;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
