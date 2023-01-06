@@ -35,10 +35,10 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
   rewardTokens: true,
 });
 
-export const LaborMarketNewSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
+export const LaborMarketFormSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
 
 // Generate a fake LaborMarketNew for testing using faker.
-export function fakeLaborMarketNew(): LaborMarketNew {
+export function fakeLaborMarketNew(): LaborMarketForm {
   return {
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),
@@ -57,7 +57,7 @@ export function fakeLaborMarketNew(): LaborMarketNew {
 }
 
 // Schema for a labor market with an IPFS CID.
-export const LaborMarketPreparedSchema = LaborMarketNewSchema.extend({
+export const LaborMarketContractSchema = LaborMarketFormSchema.extend({
   ipfsHash: z.string(),
   userAddress: EthAddressSchema,
 });
@@ -75,7 +75,7 @@ export const LaborMarketSearchSchema = z.object({
 });
 
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
-export type LaborMarketNew = z.infer<typeof LaborMarketNewSchema>;
-export type LaborMarketPrepared = z.infer<typeof LaborMarketPreparedSchema>;
+export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
+export type LaborMarketContract = z.infer<typeof LaborMarketContractSchema>;
 export type LaborMarketMeta = z.infer<typeof LaborMarketMetaSchema>;
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;

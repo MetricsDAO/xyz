@@ -17,28 +17,28 @@ import {
   Button,
   Field,
 } from "~/components";
-import type { ChallengePrepared } from "~/domain";
-import { ChallengeNewSchema, fakeChallengeNew } from "~/domain";
+import type { ServiceRequestContract } from "~/domain";
+import { ServiceRequestFormSchema, fakeServiceRequestFormData } from "~/domain";
 import { useApproveERC20 } from "~/hooks/use-approve-erc20";
 import { useSubmitRequest } from "~/hooks/use-submit-request";
-import { prepareChallenge } from "~/services/challenges-service.server";
+import { prepareServiceRequest } from "~/services/challenges-service.server";
 
-const validator = withZod(ChallengeNewSchema);
+const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ id: z.string() });
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
-  const defaultValues = url.searchParams.get("fake") ? fakeChallengeNew() : undefined;
+  const defaultValues = url.searchParams.get("fake") ? fakeServiceRequestFormData() : undefined;
   return typedjson({ defaultValues });
 };
 
-type ActionResponse = { preparedChallenge: ChallengePrepared } | ValidationErrorResponseData;
+type ActionResponse = { preparedChallenge: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   const { id: laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
-  const preparedChallenge = await prepareChallenge(laborMarketAddress, result.data);
+  const preparedChallenge = await prepareServiceRequest(laborMarketAddress, result.data);
   return typedjson({ preparedChallenge });
 };
 
@@ -46,7 +46,9 @@ export default function CreateChallenge() {
   const { defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
-  const [modalData, setModalData] = useState<{ challenge?: ChallengePrepared; isOpen: boolean }>({ isOpen: false });
+  const [modalData, setModalData] = useState<{ challenge?: ServiceRequestContract; isOpen: boolean }>({
+    isOpen: false,
+  });
 
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
@@ -74,8 +76,8 @@ export default function CreateChallenge() {
       <ValidatedForm
         method="post"
         defaultValues={{
-          ...defaultValues,
           language: "english",
+          ...defaultValues,
         }}
         validator={validator}
         className="space-y-10"
@@ -210,7 +212,7 @@ export default function CreateChallenge() {
   );
 }
 
-function ConfirmTransaction({ challenge, onClose }: { challenge?: ChallengePrepared; onClose: () => void }) {
+function ConfirmTransaction({ challenge, onClose }: { challenge?: ServiceRequestContract; onClose: () => void }) {
   invariant(challenge, "challenge is required"); // this should never happen but just in case
 
   const { write: writeChallenge } = useSubmitRequest({

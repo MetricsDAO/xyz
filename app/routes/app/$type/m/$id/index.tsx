@@ -17,14 +17,14 @@ import { ValidatedInput } from "~/components/input/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
-import { ChallengeSearchSchema } from "~/domain/challenge";
+import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
 
-const validator = withZod(ChallengeSearchSchema);
+const validator = withZod(ServiceRequestSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
-  const params = getParamsOrFail(url.searchParams, ChallengeSearchSchema);
+  const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: data.params.id };
   const challenges = await searchChallenges(paramsWithLaborMarketId);
   const totalResults = await countChallenges(paramsWithLaborMarketId);

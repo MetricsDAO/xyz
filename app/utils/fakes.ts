@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { Review, Submission } from "@prisma/client";
-import type { Challenge, ChallengePrepared } from "~/domain";
+import type { ServiceRequest, ServiceRequestContract } from "~/domain";
 import type { LaborMarket } from "~/domain";
 
 // This module export utlity functions to generate fake data for testing and development
@@ -33,7 +33,10 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress: string): ChallengePrepared => {
+export const fakeServiceRequest = (
+  data: Partial<ServiceRequest>,
+  laborMarketAddress: string
+): ServiceRequestContract => {
   return {
     title: faker.random.words(3),
     description: faker.random.words(10),
