@@ -1,8 +1,12 @@
-import { useState } from "react";
 import { Button, Modal } from "~/components";
 
-export default function WelcomeModal() {
-  const [opened, setOpened] = useState(true);
+export default function WelcomeModal({
+  opened,
+  setOpened,
+}: {
+  opened: boolean;
+  setOpened: (value: React.SetStateAction<boolean>) => void;
+}) {
   return (
     <Modal isOpen={opened} onClose={() => setOpened(false)}>
       <div className="px-8">
@@ -25,7 +29,9 @@ export default function WelcomeModal() {
             .
           </li>
         </ul>
-        <Button fullWidth={true}>Agree to Terms</Button>
+        <Button fullWidth={true} onClick={() => setOpened(false)}>
+          Agree to Terms
+        </Button>
       </div>
     </Modal>
   );
