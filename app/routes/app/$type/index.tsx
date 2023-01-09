@@ -61,9 +61,14 @@ export default function Brainstorm() {
     }
   };
 
-  if (!localStorage.noFirstVisit) {
+  if (
+    !document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("visited="))
+      ?.split("=")[1]
+  ) {
     setOpened(true);
-    localStorage.noFirstVisit = "1";
+    document.cookie = "visited=true";
   }
 
   return (
