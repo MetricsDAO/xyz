@@ -72,8 +72,8 @@ export default function ChallengeSubmission() {
             {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
           </div>
           <ReviewQuestionDrawerButton
-            requestId={submission.serviceRequestId}
-            submissionId={submission.id}
+            requestId={"0"}
+            submissionId={"0"}
             laborMarketAddress={submission.serviceRequest.laborMarketAddress}
           />
         </section>
