@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EthAddressSchema } from "./address";
 
 export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["createdAt"]).default("createdAt").describe("Sort by column."),
@@ -10,10 +11,11 @@ export const ReviewSearchSchema = z.object({
 });
 
 export const ReviewSchema = z.object({
+  laborMarketAddress: EthAddressSchema,
   score: z.number(),
   requestId: z.string(),
   submissionId: z.string(),
 });
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
-export type ReviewPrepared = z.infer<typeof ReviewSchema>;
+export type ReviewContract = z.infer<typeof ReviewSchema>;

@@ -71,7 +71,11 @@ export default function ChallengeSubmission() {
             <h1 className="text-3xl font-semibold">{submission.title}</h1>
             {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
           </div>
-          <ReviewQuestionDrawerButton requestId={submission.serviceRequestId} submissionId={submission.id} />
+          <ReviewQuestionDrawerButton
+            requestId={submission.serviceRequestId}
+            submissionId={submission.id}
+            laborMarketAddress={submission.serviceRequest.laborMarketAddress}
+          />
         </section>
         <section className="flex flex-col space-y-7 pb-24">
           <Detail className="flex flex-wrap gap-x-8 gap-y-4">
@@ -166,12 +170,20 @@ export default function ChallengeSubmission() {
   );
 }
 
-function ReviewQuestionDrawerButton({ requestId, submissionId }: { requestId: string; submissionId: string }) {
+function ReviewQuestionDrawerButton({
+  laborMarketAddress,
+  requestId,
+  submissionId,
+}: {
+  laborMarketAddress: string;
+  requestId: string;
+  submissionId: string;
+}) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number>(50);
 
   const { write, isLoading } = useReviewSubmission({
-    data: { requestId: requestId, submissionId: submissionId, score: selected },
+    data: { laborMarketAddress: laborMarketAddress, requestId: requestId, submissionId: submissionId, score: selected },
     onTransactionSuccess() {
       toast.dismiss("review-submission");
       toast.success("Submission Reviewed!");
