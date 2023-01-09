@@ -23,13 +23,11 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
 
   const currentYear = new Date().getFullYear();
 
-  var imgUrl = "";
-
-  if (variant === "gradient") {
-    imgUrl = "url(/img/marketing/footer-blur.png)";
-  } else if (variant === "circle") {
-    imgUrl = "url(/img/marketing/footer-circle-blur.png)";
-  }
+  const styles = {
+    gradient: "url(/img/marketing/footer-blur.png)",
+    circle: "url(/img/marketing/footer-circle-blur.png)",
+    transparent: "",
+  };
 
   return (
     <footer
@@ -38,7 +36,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
         "bg-local bg-cover": variant === "gradient" || variant === "circle",
         "bg-none": variant === "transparent",
       })}
-      style={{ backgroundImage: imgUrl }}
+      style={{ backgroundImage: styles[variant] }}
     >
       <a
         href="/app/ecosystem"
