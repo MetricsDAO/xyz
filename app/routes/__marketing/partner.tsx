@@ -47,7 +47,7 @@ export default function Index() {
                 create is peer reviewed to ensure quality and accuracy.
               </p>
               <div className="flex flex-col items-center">
-                <MarketingButton label="Explore the ecosystem" link="/ecosystem" />
+                <MarketingButton label="Explore the Ecosystem" link="/ecosystem" />
               </div>
             </section>
             <img
@@ -126,7 +126,7 @@ export default function Index() {
                   <b>Fede Basta</b> Uniswap Grants Program
                 </p>
               </div>
-              <MarketingButton label="Explore the ecosystem" link="/ecosystem" variant="outline" />
+              <MarketingButton label="Explore the Ecosystem" link="/ecosystem" variant="outline" />
             </section>
           </main>
         </div>
