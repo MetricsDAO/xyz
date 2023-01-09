@@ -40,7 +40,7 @@ export default function Index() {
           <main className="flex-1">
             <section className="space-y-5 h-screen -mt-16 sm:pt-16 flex flex-col items-center justify-center bg-contain bg-no-repeat bg-center bg-[url('/img/marketing/partner-bg-logos-mobile.png')] sm:bg-[url('/img/marketing/partner-bg-logos.png')]">
               <h1 className="font-bold text-4xl md:text-6xl sm:pt-7 text-center max-w-3xl px-8">
-                Work With the Best Analyists in Web3
+                Work With the Best Analysts in Web3
               </h1>
               <p className="text-lg md:text-2xl text-center max-w-3xl px-8">
                 Access the best community of Web3 analysts for on-demand analytics and tooling! Everything analysts
@@ -66,10 +66,7 @@ export default function Index() {
               </p>
               <MarketingButton label="Get In Touch" link="/todo" variant="outline" />
             </section>
-            <section
-              id="offerings"
-              className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10 px-8 lg:h-screen"
-            >
+            <section id="offerings" className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10 px-8">
               <h2 className="text-4xl md:text-5xl font-bold text-center">Our Core Offerings</h2>
               <MarketingButton label="Get In Touch" link="/todo" />
               <div className="flex flex-col lg:flex-row gap-5">
