@@ -36,11 +36,14 @@ export default function Challenge() {
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{challenge.title}</h1>
         <div className="flex flex-wrap gap-5">
-          <Button variant="cancel" size="lg" asChild>
+          <Button variant="primary" size="lg" asChild>
             <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
             <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
+          </Button>
+          <Button variant="primary" size="lg" asChild>
+            <Link to={`/app/brainstorm/c/${challenge.id}/submit`}>Submit</Link>
           </Button>
         </div>
       </header>

@@ -1,6 +1,52 @@
-import { Button, Container, Input, Textarea } from "~/components";
+import type { ActionArgs } from "@remix-run/server-runtime";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { typedjson, useTypedActionData } from "remix-typedjson";
+import type { ValidationErrorResponseData } from "remix-validated-form";
+import { ValidatedForm, validationError } from "remix-validated-form";
+import invariant from "tiny-invariant";
+import { z } from "zod";
+import { Button, Container, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
+import type { SubmissionContract } from "~/domain/submission";
+import { SubmissionFormSchema } from "~/domain/submission";
+import { useCreateSubmission } from "~/hooks/use-create-submission";
+import { findChallenge } from "~/services/challenges-service.server";
+import { prepareSubmission } from "~/services/submissions.server";
+import { isValidationError } from "~/utils/utils";
+
+const validator = withZod(SubmissionFormSchema);
+const paramsSchema = z.object({ id: z.string() });
+
+type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
+export const action = async ({ request, params }: ActionArgs) => {
+  const { id } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id);
+  invariant(challenge, "challenge must exist");
+
+  const result = await validator.validate(await request.formData());
+  if (result.error) return validationError(result.error);
+
+  const preparedSubmission = await prepareSubmission(challenge, result.data);
+  return typedjson({ preparedSubmission });
+};
 
 export default function SubmitQuestion() {
+  const actionData = useTypedActionData<ActionResponse>();
+  const [modalData, setModalData] = useState<{ data?: SubmissionContract; isOpen: boolean }>({
+    isOpen: false,
+  });
+
+  function closeModal() {
+    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
+  }
+
+  useEffect(() => {
+    if (actionData && !isValidationError(actionData)) {
+      setModalData({ data: actionData.preparedSubmission, isOpen: true });
+    }
+  }, [actionData]);
+
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -13,22 +59,39 @@ export default function SubmitQuestion() {
             Submit your best question idea. Peers will review and score your question. If you're a winner, you'll earn
             tokens and rMETRIC from the challenge reward pool!
           </p>
-          <div className="space-y-5">
-            <Input label="Question Title" placeholder="Question title" className="mt-1 w-full" />
-            <Textarea
-              placeholder="Don't assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
-              className="p-black w-full md:col-span-2"
-              rows={7}
-            />
-            <p className="italic p-gray-500">
-              Important: You can't edit this question after submitting. Double check your work for typos and ensure your
-              question is good to go.
-            </p>
-          </div>
-          <div className="flex flex-col md:flex-row gap-5 items-center">
-            <Button>Submit Question</Button>
-            <Button variant="cancel">Cancel</Button>
-          </div>
+          <ValidatedForm
+            method="post"
+            defaultValues={{
+              title: "asdas",
+              description: "adaksd",
+            }}
+            validator={validator}
+          >
+            <div className="space-y-5">
+              <ValidatedInput
+                name="title"
+                label="Question Title"
+                placeholder="Question title"
+                className="mt-1 w-full"
+              />
+              <ValidatedTextarea
+                name="description"
+                placeholder="Don't assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
+                className="p-black w-full md:col-span-2"
+                rows={7}
+              />
+              <p className="italic p-gray-500">
+                Important: You can't edit this question after submitting. Double check your work for typos and ensure
+                your question is good to go.
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row gap-5 items-center">
+              <Button type="submit">Next</Button>
+            </div>
+          </ValidatedForm>
+          <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
+            <ConfirmTransaction data={modalData.data} onClose={closeModal} />
+          </Modal>
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-sky-100 bg-opacity-5 space-y-6">
@@ -68,5 +131,39 @@ export default function SubmitQuestion() {
         </aside>
       </div>
     </Container>
+  );
+}
+
+function ConfirmTransaction({ data, onClose }: { data?: SubmissionContract; onClose: () => void }) {
+  invariant(data, "data is required"); // this should never happen but just in case
+
+  const { write, isLoading } = useCreateSubmission({
+    data,
+    onTransactionSuccess() {
+      toast.dismiss("submission-create");
+      toast.success("Submission sent!");
+      onClose();
+    },
+    onWriteSuccess() {
+      toast.loading("Submitting...", { id: "submission-create" });
+    },
+  });
+
+  const onCreate = () => {
+    write?.();
+  };
+
+  return (
+    <div className="space-y-8">
+      <p>Please confirm that you would like to make this submission.</p>
+      <div className="flex flex-col sm:flex-row justify-center gap-5">
+        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
+          Create
+        </Button>
+        <Button variant="cancel" size="md" onClick={onClose}>
+          Cancel
+        </Button>
+      </div>
+    </div>
   );
 }
