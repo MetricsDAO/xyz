@@ -2,14 +2,16 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { LaborMarketPrepared } from "~/domain";
+import type { LaborMarketContract } from "~/domain";
+import { createLaborMarket } from "~/utils/fetch";
+import { removeLeadingZeros } from "~/utils/helpers";
 
-export function useCreateMarketplace({
+export function useCreateLaborMarket({
   data,
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: LaborMarketPrepared;
+  data: LaborMarketContract;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
@@ -18,12 +20,12 @@ export function useCreateMarketplace({
     abi: LaborMarketNetwork.abi,
     functionName: "createLaborMarket",
     args: [
-      LaborMarket.address as `0x${string}`,
+      LaborMarket.address,
       data.userAddress as `0x${string}`,
       {
-        network: LaborMarketNetwork.address as `0x${string}`,
-        enforcementModule: LikertEnforcement.address as `0x${string}`,
-        paymentModule: PaymentModule.address as `0x${string}`,
+        network: LaborMarketNetwork.address,
+        enforcementModule: LikertEnforcement.address,
+        paymentModule: PaymentModule.address,
         marketUri: data.ipfsHash,
         // TODO: Uncomment this once we have a way to get the badge address and token id
         // delegateBadge:
@@ -40,7 +42,7 @@ export function useCreateMarketplace({
         delegateTokenId: BigNumber.from(1),
         maintainerBadge: "0x0d033b4307231711e437937850ebf9ff6bfeeb82",
         maintainerTokenId: BigNumber.from(1),
-        reputationModule: ReputationModule.address as `0x${string}`,
+        reputationModule: ReputationModule.address,
         reputationConfig: {
           reputationEngine: "0x305aD87b3eD2132EF1d90dF26d3081511B001650", // TODO: Manually created rep engine. Should come from labor-markets-abi in the future.
           signalStake: BigNumber.from(1), //TODO
@@ -63,7 +65,15 @@ export function useCreateMarketplace({
     onError(error) {
       console.log("error", error);
     },
-    onSuccess(receipt) {
+    async onSuccess(receipt) {
+      if (window.ENV.DEV_AUTO_INDEX) {
+        createLaborMarket({
+          ...data,
+          address: removeLeadingZeros(receipt.logs[0]?.topics[1] as string), // The labor market created address
+          sponsorAddress: data.userAddress,
+        });
+      }
+
       onTransactionSuccess?.(receipt);
     },
   });

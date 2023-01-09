@@ -5,13 +5,17 @@ import { validateDate, validateTime } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
 import { EthAddressSchema } from "./address";
 
-export const ChallengeSchema = z.object({
+export const ServiceRequestSchema = z.object({
   id: z.bigint({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   laborMarketAddress: EthAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
+
+const DateSchema = z.preprocess((arg) => {
+  if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+}, z.date());
 
 const TokenAmountSchema = z.string().refine((r) => {
   try {
@@ -30,8 +34,7 @@ const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
-// Form input
-export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAddress: true, createdAt: true }).extend({
+export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true, description: true }).extend({
   language: z.enum(["english", "spanish"]),
   projects: z.enum(["ethereum", "solana"]),
   startDate: InputDateSchema,
@@ -44,18 +47,22 @@ export const ChallengeNewSchema = ChallengeSchema.omit({ id: true, laborMarketAd
   rewardPool: TokenAmountSchema,
 });
 
-// Contract input
-export const ChallengePreparedSchema = ChallengeSchema.pick({ laborMarketAddress: true }).extend({
+export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
+  // Metadata needed for DEV_AUTO_INDEX
+  title: true,
+  description: true,
+  laborMarketAddress: true,
+}).extend({
   pTokenAddress: EthAddressSchema,
   pTokenId: z.number(),
   pTokenQuantity: TokenAmountSchema,
-  signalExpiration: z.date(),
-  submissionExpiration: z.date(),
-  enforcementExpiration: z.date(),
+  signalExpiration: DateSchema,
+  submissionExpiration: DateSchema,
+  enforcementExpiration: DateSchema,
   uri: z.string(),
 });
 
-export const ChallengeSearchSchema = z.object({
+export const ServiceRequestSearchSchema = z.object({
   page: z.number().default(1),
   laborMarket: z.string().optional(),
   q: z.string().optional(),
@@ -66,8 +73,8 @@ export const ChallengeSearchSchema = z.object({
   first: z.number().default(12),
 });
 
-// Generate a fake Challenge for testing using faker.
-export function fakeChallengeNew(): ChallengeNew {
+// Generate a fake Service Request for testing using faker.
+export function fakeServiceRequestFormData(): ServiceRequestForm {
   const startDate = faker.date.soon();
   const reviewDate = faker.date.future();
   const endDate = faker.date.between(startDate, reviewDate);
@@ -88,7 +95,7 @@ export function fakeChallengeNew(): ChallengeNew {
   };
 }
 
-export type Challenge = z.infer<typeof ChallengeSchema>;
-export type ChallengeNew = z.infer<typeof ChallengeNewSchema>;
-export type ChallengePrepared = z.infer<typeof ChallengePreparedSchema>;
-export type ChallengeSearch = z.infer<typeof ChallengeSearchSchema>;
+export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
+export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
+export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
+export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;

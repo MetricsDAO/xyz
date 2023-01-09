@@ -9,10 +9,10 @@ import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Button, Container, Modal } from "~/components";
-import type { LaborMarketNew, LaborMarketPrepared } from "~/domain";
-import { fakeLaborMarketNew, LaborMarketNewSchema } from "~/domain";
+import type { LaborMarketForm, LaborMarketContract } from "~/domain";
+import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
-import { useCreateMarketplace } from "~/hooks/use-create-marketplace";
+import { useCreateLaborMarket } from "~/hooks/use-create-labor-market";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
@@ -28,9 +28,9 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   return typedjson({ projects, tokens, defaultValues });
 };
 
-const validator = withZod(LaborMarketNewSchema);
+const validator = withZod(LaborMarketFormSchema);
 
-type ActionResponse = { preparedLaborMarket: LaborMarketPrepared } | ValidationErrorResponseData;
+type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
   const user = await getUser(request);
   invariant(user, "You must be logged in to create a marketplace");
@@ -46,7 +46,7 @@ export default function CreateMarketplace() {
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
-  const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketPrepared; isOpen: boolean }>({ isOpen: false });
+  const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketContract; isOpen: boolean }>({ isOpen: false });
 
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
@@ -61,7 +61,7 @@ export default function CreateMarketplace() {
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketNew> validator={validator} method="post" defaultValues={defaultValues}>
+        <ValidatedForm<LaborMarketForm> validator={validator} method="post" defaultValues={defaultValues}>
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
@@ -78,10 +78,10 @@ export default function CreateMarketplace() {
   );
 }
 
-function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarketPrepared; onClose: () => void }) {
+function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarketContract; onClose: () => void }) {
   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
 
-  const { write, isLoading } = useCreateMarketplace({
+  const { write, isLoading } = useCreateLaborMarket({
     data: laborMarket,
     onTransactionSuccess() {
       toast.dismiss("creating-marketplace");
