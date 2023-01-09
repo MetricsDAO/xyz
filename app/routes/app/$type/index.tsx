@@ -61,10 +61,7 @@ export default function Brainstorm() {
     }
   };
 
-  console.log(localStorage);
-
   if (!localStorage.noFirstVisit) {
-    console.log("ope");
     setOpened(true);
     localStorage.noFirstVisit = "1";
   }
