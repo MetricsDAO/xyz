@@ -66,50 +66,50 @@ export default function Index() {
               </p>
               <MarketingButton label="Get In Touch" link="/todo" variant="outline" />
             </section>
-            <section id="offerings" className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10 px-8">
+            <section
+              id="offerings"
+              className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10 px-8 lg:h-screen"
+            >
               <h2 className="text-4xl md:text-5xl font-bold text-center">Our Core Offerings</h2>
               <MarketingButton label="Get In Touch" link="/todo" />
               <div className="flex flex-col lg:flex-row gap-5">
-                <div className="relative mx-auto">
-                  <img src="/img/marketing/partner-core-left.png" className="-z-10" alt="" />
-                  <div className="absolute top-0 left-0 text-white text-base max-w-xs m-5 space-y-5">
-                    <img src="/img/marketing/partner-rocket.png" alt="" className="hidden sm:block" />
+                <div className="mx-auto">
+                  <div className="bg-[url(/img/marketing/partner-core-left.png)] bg-cover bg-no-repeat rounded-3xl text-white text-base max-w-xs px-5 pt-7 pb-16 space-y-5">
+                    <img src="/img/marketing/partner-rocket.png" alt="" />
                     <div className="space-y-1">
                       <p className="text-xl sm:text-2xl font-bold">Analytics on Demand</p>
                       <p className="text-lg sm:text-xl">Starts at $1,000</p>
                     </div>
-                    <p className="text-xs sm:text-base">
+                    <p className="text-sm sm:text-base">
                       Access on-demand blockchain analytics from our community of experts.
                     </p>
-                    <p className="text-xs sm:text-base">For any organization or project in need of Web3 analytics.</p>
+                    <p className="text-sm sm:text-base">For any organization or project in need of Web3 analytics.</p>
                   </div>
                 </div>
-                <div className="relative mx-auto">
-                  <img src="/img/marketing/partner-core-middle.png" className="-z-10" alt="" />
-                  <div className="absolute top-0 left-0 text-white text-base max-w-xs m-5 space-y-5">
-                    <img src="/img/marketing/partner-plant.png" alt="" className="hidden sm:block" />
+                <div className="mx-auto">
+                  <div className="bg-[url(/img/marketing/partner-core-middle.png)] bg-cover bg-no-repeat rounded-3xl text-white text-base max-w-xs px-5 pt-7 pb-16 space-y-5">
+                    <img src="/img/marketing/partner-plant.png" alt="" />
                     <div className="space-y-1">
-                      <p className="text-xl sm:text-2xl  font-bold">Community Growth</p>
+                      <p className="text-xl sm:text-2xl font-bold">Community Growth</p>
                       <p className="text-lg sm:text-xl">Starts at $10,000</p>
                     </div>
-                    <p className="text-xs sm:text-base">
+                    <p className="text-sm sm:text-base">
                       Onboard and grow a community of analysts to drive adoption, usage, and analytics for your project.
                     </p>
-                    <p className="text-xs sm:text-base">For any blockchain or protocol with curated data.</p>
+                    <p className="text-sm sm:text-base">For any blockchain or protocol with curated data.</p>
                   </div>
                 </div>
-                <div className="relative mx-auto">
-                  <img src="/img/marketing/partner-core-right.png" className="-z-10" alt="" />
-                  <div className="absolute top-0 left-0 text-white text-base max-w-xs m-5 space-y-5">
-                    <img src="/img/marketing/partner-butterfly.png" alt="" className="hidden sm:block" />
+                <div className="mx-auto">
+                  <div className="bg-[url(/img/marketing/partner-core-right.png)] bg-cover bg-no-repeat rounded-3xl text-white text-base max-w-xs px-5 pt-7 pb-16 space-y-5">
+                    <img src="/img/marketing/partner-butterfly.png" alt="" />
                     <div className="space-y-1">
                       <p className="text-xl sm:text-2xl font-bold">Data Readiness</p>
                       <p className="text-lg sm:text-xl">Starts at $20,000</p>
                     </div>
-                    <p className="text-xs sm:text-base">
+                    <p className="text-sm sm:text-base">
                       Unlock potential adoption, usage, and analytics for your project with community curated data.
                     </p>
-                    <p className="text-xs sm:text-base">For any blockchain or protocol in need of data curation.</p>
+                    <p className="text-sm sm:text-base">For any blockchain or protocol in need of data curation.</p>
                   </div>
                 </div>
               </div>
