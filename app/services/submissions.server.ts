@@ -38,7 +38,7 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
 export const findSubmission = async (submissionId: string) => {
   return prisma.submission.findFirst({
     where: { id: submissionId },
-    include: { serviceRequest: true, reviews: true },
+    include: { reviews: true },
   });
 };
 

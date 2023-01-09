@@ -39,12 +39,12 @@ export const countChallenges = async (params: ChallengeSearch) => {
 
 /**
  * Finds a Challenge by its ID.
- * @param {string} id - The ID of the Challenge.
+ * @param {BigInt} id - The ID of the Challenge.
  * @returns - The Challenge or null if not found.
  */
-export const findChallenge = async (id: string) => {
+export const findChallenge = async (id: BigInt) => {
   return prisma.serviceRequest.findUnique({
-    where: { id },
+    where: {},
     include: {
       submissions: true,
       laborMarket: { include: { projects: true } },

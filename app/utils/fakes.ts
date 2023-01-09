@@ -35,7 +35,7 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
 
 export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress: string): Challenge => {
   return {
-    id: faker.datatype.uuid(),
+    id: faker.datatype.bigInt(),
     title: faker.random.words(3),
     description: faker.random.words(10),
     createdAt: faker.date.past(),
@@ -43,7 +43,11 @@ export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress:
   };
 };
 
-export const fakeSubmission = (data: Partial<Submission>, serviceRequestId: string): Submission => {
+export const fakeSubmission = (
+  data: Partial<Submission>,
+  laborMarketAddress: string,
+  serviceRequestId: bigint
+): Submission => {
   return {
     id: faker.datatype.uuid(),
     title: faker.random.words(3),
@@ -51,6 +55,7 @@ export const fakeSubmission = (data: Partial<Submission>, serviceRequestId: stri
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
     scoreStatus: "Bad",
+    laborMarketAddress: laborMarketAddress,
     serviceRequestId: serviceRequestId,
   };
 };

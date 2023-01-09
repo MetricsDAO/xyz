@@ -6,7 +6,7 @@ import { parseTokenAmount } from "~/utils/helpers";
 import { EthAddressSchema } from "./address";
 
 export const ChallengeSchema = z.object({
-  id: z.string({ description: "The id of the service request." }),
+  id: z.bigint({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   laborMarketAddress: EthAddressSchema,

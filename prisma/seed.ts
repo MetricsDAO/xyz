@@ -73,7 +73,8 @@ async function main() {
     for (const challenge of allChallenges) {
       // create 3 fake submissions for each challenge in Prisma
       for (let i = 0; i < 3; i++) {
-        await upsertSubmission(fakeSubmission({}, challenge.id));
+        const submission = fakeSubmission({}, challenge.laborMarketAddress, challenge.id);
+        await upsertSubmission(submission);
       }
     }
   }
