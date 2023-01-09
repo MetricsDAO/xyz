@@ -10,9 +10,6 @@
 -- DropForeignKey
 ALTER TABLE "Submission" DROP CONSTRAINT "Submission_serviceRequestId_fkey";
 
--- DropIndex
-DROP INDEX "ServiceRequest_id_key";
-
 -- AlterTable
 ALTER TABLE "ServiceRequest" DROP CONSTRAINT "ServiceRequest_pkey",
 DROP COLUMN "id",

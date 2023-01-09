@@ -59,6 +59,7 @@ export const findChallenge = async (id: BigInt) => {
 export const upsertServiceRequest = async (challenge: ServiceRequestContract) => {
   const newChallenge = await prisma.serviceRequest.create({
     data: {
+      id: challenge.id,
       title: challenge.title,
       laborMarketAddress: challenge.laborMarketAddress,
     },

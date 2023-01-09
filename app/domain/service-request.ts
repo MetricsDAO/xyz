@@ -34,7 +34,12 @@ const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
-export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true, description: true }).extend({
+export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
+  title: true,
+  description: true,
+  id: true,
+  laborMarketAddress: true,
+}).extend({
   language: z.enum(["english", "spanish"]),
   projects: z.enum(["ethereum", "solana"]),
   startDate: InputDateSchema,
@@ -49,6 +54,7 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true,
 
 export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   // Metadata needed for DEV_AUTO_INDEX
+  id: true,
   title: true,
   description: true,
   laborMarketAddress: true,
@@ -80,6 +86,8 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   const endDate = faker.date.between(startDate, reviewDate);
 
   return {
+    id: faker.datatype.bigInt(),
+    laborMarketAddress: faker.finance.ethereumAddress(),
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),
     language: "english",
