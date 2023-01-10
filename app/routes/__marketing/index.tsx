@@ -61,7 +61,7 @@ export default function Index() {
               <b className="text-white"> on-chain participation</b> and help <b className="text-white">Web3</b>{" "}
               organizations launch, grow, and <b className="text-white">succeed.</b>
             </p>
-            <MarketingButton label="Explore the Ecosystem" link="/app/ecosystem" variant="outline" />
+            <MarketingButton label="Explore the Ecosystem" link="/app/analyze" variant="outline" />
           </div>
           <InfoSection id="partner">
             <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
@@ -84,7 +84,10 @@ export default function Index() {
                 reputation in the ecosystem. Ongoing engagements that support partners’ goals also increase analysts’
                 access to future earning opportunities.
               </p>
-              <MarketingButton label="Learn about reputation & rMETRIC" link="" />
+              <MarketingButton
+                label="Learn about reputation & rMETRIC"
+                link="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/rewards/rmetric"
+              />
             </div>
           </InfoSection>
           <InfoSection id="scaling">
@@ -122,7 +125,7 @@ export default function Index() {
                 Winners earn tokens from the partner reward pool while increasing their reputation score in the
                 MetricsDAO ecosystem.
               </p>
-              <MarketingButton label="Launch App" link="/app/ecosystem" />
+              <MarketingButton label="Launch App" link="/app/analyze" />
             </div>
           </InfoSection>
         </main>

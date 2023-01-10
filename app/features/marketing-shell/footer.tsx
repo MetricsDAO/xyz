@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react";
 import clsx from "clsx";
 
 const links = [
-  { link: "/protocol", label: "Protocol" },
+  { link: "https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/mGWNhyjPX5PDPhIGxV81/", label: "Protocol" },
   { link: "https://docs.metricsdao.xyz/", label: "Docs" },
   { link: "https://discourse.metricsdao.xyz/", label: "Governance" },
   { link: "https://blog.metricsdao.xyz/", label: "Blog" },
@@ -39,7 +39,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
       style={{ backgroundImage: styles[variant] }}
     >
       <a
-        href="/app/ecosystem"
+        href="/app/analyze"
         className="block py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
         LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP
