@@ -7,7 +7,7 @@ import { getParamsOrFail } from "remix-params-helper";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Header, Row, Table } from "~/components/table";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
@@ -23,6 +23,7 @@ import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { $path, $params } from "remix-routes";
+import WelcomeModal from "~/features/welcome-modal";
 
 const validator = withZod(LaborMarketSearchSchema);
 
@@ -50,6 +51,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 
 export default function Brainstorm() {
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
+  const [opened, setOpened] = useState(false);
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -59,102 +61,115 @@ export default function Brainstorm() {
     }
   };
 
+  if (
+    !document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("visited="))
+      ?.split("=")[1]
+  ) {
+    setOpened(true);
+    document.cookie = "visited=true";
+  }
+
   return (
-    <Container className="py-16">
-      <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
-        <main className="flex-1 space-y-3 max-w-2xl">
-          <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
-          <p className="text-lg text-cyan-500">
-            Crowdsource the best questions for crypto analysts to answer about any web3 topic
-          </p>
-          <p className="text-gray-500 text-sm">
-            Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit your
-            best question ideas or review peers' submissions to surface and reward winners
-          </p>
-        </main>
-        <aside>
-          <Button size="lg" asChild>
-            <Link to="/app/brainstorm/new">Create Marketplace</Link>
-          </Button>
-        </aside>
-      </header>
+    <>
+      <Container className="py-16">
+        <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
+          <main className="flex-1 space-y-3 max-w-2xl">
+            <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
+            <p className="text-lg text-cyan-500">
+              Crowdsource the best questions for crypto analysts to answer about any web3 topic
+            </p>
+            <p className="text-gray-500 text-sm">
+              Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit
+              your best question ideas or review peers' submissions to surface and reward winners
+            </p>
+          </main>
+          <aside>
+            <Button size="lg" asChild>
+              <Link to="/app/brainstorm/new">Create Marketplace</Link>
+            </Button>
+          </aside>
+        </header>
 
-      <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
-        Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
-      </h2>
+        <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
+          Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
+        </h2>
 
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-        <main className="flex-1">
-          <div className="space-y-5">
-            <MarketplacesListView marketplaces={marketplaces} />
-            <div className="w-fit m-auto">
-              <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
+        <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+          <main className="flex-1">
+            <div className="space-y-5">
+              <MarketplacesListView marketplaces={marketplaces} />
+              <div className="w-fit m-auto">
+                <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
 
-        <aside className="md:w-1/5">
-          <ValidatedForm
-            formRef={formRef}
-            method="get"
-            defaultValues={searchParams}
-            validator={validator}
-            onChange={handleChange}
-            className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
-          >
-            <ValidatedInput
-              placeholder="Search"
-              name="q"
-              size="sm"
-              iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-            />
-
-            <Field>
-              <Label>Sort by</Label>
-              <ValidatedSelect
-                placeholder="Select option"
-                name="sortBy"
+          <aside className="md:w-1/5">
+            <ValidatedForm
+              formRef={formRef}
+              method="get"
+              defaultValues={searchParams}
+              validator={validator}
+              onChange={handleChange}
+              className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
+            >
+              <ValidatedInput
+                placeholder="Search"
+                name="q"
                 size="sm"
-                onChange={handleChange}
-                options={[
-                  { label: "Trending", value: "trending" },
-                  { label: "Active Challenges", value: "serviceRequests" },
-                  { label: "Chain/Project", value: "project" },
-                ]}
+                iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
               />
-            </Field>
 
-            {/* <h3 className="font-semibold">Filter:</h3>
+              <Field>
+                <Label>Sort by</Label>
+                <ValidatedSelect
+                  placeholder="Select option"
+                  name="sortBy"
+                  size="sm"
+                  onChange={handleChange}
+                  options={[
+                    { label: "Trending", value: "trending" },
+                    { label: "Active Challenges", value: "serviceRequests" },
+                    { label: "Chain/Project", value: "project" },
+                  ]}
+                />
+              </Field>
+
+              {/* <h3 className="font-semibold">Filter:</h3>
             <p className="text-gray-600">I'm able to:</p>
             <Checkbox name="can" label="Launch" value="launch" />
             <Checkbox name="can" label="Submit" value="submit" />
             <Checkbox name="can" label="Review" value="review" /> */}
 
-            <Field>
-              <Label>Reward Token</Label>
-              <ValidatedCombobox
-                name="token"
-                onChange={handleChange}
-                placeholder="Select option"
-                size="sm"
-                options={tokens.map((token) => ({ label: token.name, value: token.symbol }))}
-              />
-            </Field>
+              <Field>
+                <Label>Reward Token</Label>
+                <ValidatedCombobox
+                  name="token"
+                  onChange={handleChange}
+                  placeholder="Select option"
+                  size="sm"
+                  options={tokens.map((token) => ({ label: token.name, value: token.symbol }))}
+                />
+              </Field>
 
-            <Field>
-              <Label>Chain/Project</Label>
-              <ValidatedCombobox
-                name="project"
-                size="sm"
-                onChange={handleChange}
-                placeholder="Select option"
-                options={projects.map((p) => ({ value: p.slug, label: p.name }))}
-              />
-            </Field>
-          </ValidatedForm>
-        </aside>
-      </section>
-    </Container>
+              <Field>
+                <Label>Chain/Project</Label>
+                <ValidatedCombobox
+                  name="project"
+                  size="sm"
+                  onChange={handleChange}
+                  placeholder="Select option"
+                  options={projects.map((p) => ({ value: p.slug, label: p.name }))}
+                />
+              </Field>
+            </ValidatedForm>
+          </aside>
+        </section>
+      </Container>
+      <WelcomeModal opened={opened} setOpened={setOpened} />
+    </>
   );
 }
 
