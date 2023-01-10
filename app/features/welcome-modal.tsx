@@ -1,14 +1,20 @@
+import { withZod } from "@remix-validated-form/with-zod";
+import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
 import { Button, Modal } from "~/components";
 
-export default function WelcomeModal({
-  opened,
-  setOpened,
-}: {
-  opened: boolean;
-  setOpened: (value: React.SetStateAction<boolean>) => void;
-}) {
+export const validator = withZod(
+  z.object({
+    redirectPath: z.string(),
+    agreeToTerms: z.enum(["true", "false"]).transform((v) => v === "true"),
+  })
+);
+
+export default function WelcomeModal({ opened, redirectPath }: { opened: boolean; redirectPath: string }) {
+  // force user to agree to terms
+  const noop = () => {};
   return (
-    <Modal isOpen={opened} onClose={() => setOpened(false)}>
+    <Modal isOpen={opened} onClose={noop}>
       <div className="px-8">
         <img src="/img/mdao-purple-icon.png" alt="" className="mx-auto pb-5" />
         <h3 className="font-medium text-center">Welcome to the MetricsDAO ecosystem!</h3>
@@ -29,9 +35,13 @@ export default function WelcomeModal({
             .
           </li>
         </ul>
-        <Button fullWidth={true} onClick={() => setOpened(false)}>
-          Agree to Terms
-        </Button>
+        <ValidatedForm validator={validator} action="/app" method="post">
+          <input type="hidden" name="agreeToTerms" value="true" />
+          <input type="hidden" name="redirectPath" value={redirectPath} />
+          <Button type="submit" fullWidth={true}>
+            Agree to Terms
+          </Button>
+        </ValidatedForm>
       </div>
     </Modal>
   );

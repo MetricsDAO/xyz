@@ -48,10 +48,10 @@ async function main() {
     ],
   });
 
-  await seedLaborMarkets();
-  await seedServiceRequests(await prisma.laborMarket.findMany());
-  await seedSubmissions(await prisma.serviceRequest.findMany());
-  await seedReviews(await prisma.submission.findMany());
+  // await seedLaborMarkets();
+  // await seedServiceRequests(await prisma.laborMarket.findMany());
+  // await seedSubmissions(await prisma.serviceRequest.findMany());
+  // await seedReviews(await prisma.submission.findMany());
 }
 
 async function seedLaborMarkets() {
