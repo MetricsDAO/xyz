@@ -1,10 +1,11 @@
 import { ArrowDownCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import MarketingButton from "~/components/marketing-button/marketing-button";
+import Footer from "~/features/marketing-shell/footer";
 import SocialIcons from "~/features/marketing-shell/social-icons";
 
 export default function Index() {
   return (
-    <>
+    <div>
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">
@@ -12,7 +13,7 @@ export default function Index() {
               <div id="pageProgress" style={{ height: `0%` }} className="w-0.5 ml-px h-full bg-black " />
             </div>
           </div>
-          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5">
+          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 z-10">
             <a href="#top">
               <GlobeAltIcon className="text-black h-6 w-6" />
             </a>
@@ -60,7 +61,7 @@ export default function Index() {
               <b className="text-white"> on-chain participation</b> and help <b className="text-white">Web3</b>{" "}
               organizations launch, grow, and <b className="text-white">succeed.</b>
             </p>
-            <MarketingButton label="Explore the Ecosystem" link="/app/ecosystem" variant="outline" />
+            <MarketingButton label="Explore the Ecosystem" link="/app/analyze" variant="outline" />
           </div>
           <InfoSection id="partner">
             <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
@@ -83,7 +84,10 @@ export default function Index() {
                 reputation in the ecosystem. Ongoing engagements that support partners’ goals also increase analysts’
                 access to future earning opportunities.
               </p>
-              <MarketingButton label="Learn about reputation & rMETRIC" link="" />
+              <MarketingButton
+                label="Learn about reputation & rMETRIC"
+                link="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/rewards/rmetric"
+              />
             </div>
           </InfoSection>
           <InfoSection id="scaling">
@@ -121,16 +125,17 @@ export default function Index() {
                 Winners earn tokens from the partner reward pool while increasing their reputation score in the
                 MetricsDAO ecosystem.
               </p>
-              <MarketingButton label="Launch App" link="/app/ecosystem" />
+              <MarketingButton label="Launch App" link="/app/analyze" />
             </div>
           </InfoSection>
         </main>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 
-// When the user scrolls the page, execute myFunction
+// When the user scrolls the page, execute scrollNav
 if (typeof window !== "undefined") {
   window.onscroll = function () {
     scrollNav();

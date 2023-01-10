@@ -9,7 +9,7 @@ import { $path } from "remix-routes";
 import { useOptionalUser } from "~/hooks/use-user";
 
 const primaryLinks = [
-  { link: $path("/app/ecosystem"), label: "Ecosystem" },
+  //{ link: $path("/app/ecosystem"), label: "Ecosystem" },
   { link: $path("/app/:type", { type: "brainstorm" }), label: "Brainstorm" },
   { link: $path("/app/:type", { type: "analyze" }), label: "Analyze" },
 ];
@@ -77,7 +77,7 @@ export function AppHeader() {
             </Menu.Items>
           </Transition>
         </Menu>
-        <Link className="flex flex-row items-center gap-2" to="/app/ecosystem">
+        <Link className="flex flex-row items-center gap-2" to="/app/analyze">
           <LogoMark className="h-5 w-5" /> <LogoType className="hidden md:block" />
         </Link>
       </div>

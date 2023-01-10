@@ -4,7 +4,7 @@ import { Bars3Icon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
 
 const links = [
-  { link: "/protocol", label: "Protocol" },
+  { link: "https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/mGWNhyjPX5PDPhIGxV81/", label: "Protocol" },
   { link: "https://docs.metricsdao.xyz/", label: "Docs" },
   { link: "https://discourse.metricsdao.xyz/", label: "Governance" },
   { link: "https://blog.metricsdao.xyz/", label: "Blog" },
@@ -55,7 +55,7 @@ export default function Header() {
       <menu className="hidden md:flex flex-row justify-between lg:gap-x-6">{items}</menu>
 
       <a
-        href="/app/ecosystem"
+        href="/app/analyze"
         target="_blank"
         className="bg-gradient-to-r to-green-300 from-sky-500 px-4 py-2 font-semibold rounded-lg"
       >

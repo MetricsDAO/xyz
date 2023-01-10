@@ -176,7 +176,7 @@ function ClaimButton() {
               </div>
             </div>
             <p className="text-xs">
-              To chage or update this address head to{" "}
+              To change or update this address head to{" "}
               <Link to="/app/rewards/addresses" className="text-blue-600">
                 Payout Addresses
               </Link>
