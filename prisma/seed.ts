@@ -89,7 +89,7 @@ async function seedReviews(allSubmissions: Submission[]) {
   for (const submission of allSubmissions) {
     // create 3 fake reviews for each submission in Prisma
     for (let i = 0; i < 3; i++) {
-      await upsertReview(fakeReview({}, submission.id));
+      await upsertReview(fakeReview({}, submission.serviceRequestId, submission.laborMarketAddress, submission.id));
     }
   }
 }

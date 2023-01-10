@@ -38,10 +38,10 @@ export const countChallenges = async (params: ServiceRequestSearch) => {
 
 /**
  * Finds a Challenge by its ID.
- * @param {BigInt} id - The ID of the Challenge.
+ * @param {String} id - The ID of the Challenge.
  * @returns - The Challenge or null if not found.
  */
-export const findChallenge = async (id: BigInt) => {
+export const findChallenge = async (id: String) => {
   return prisma.serviceRequest.findUnique({
     where: {},
     include: {

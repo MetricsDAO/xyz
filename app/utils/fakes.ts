@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import type { Review, Submission } from "@prisma/client";
 import type { ServiceRequest, ServiceRequestContract } from "~/domain";
 import type { LaborMarket } from "~/domain";
+import type { SubmissionIndexer } from "~/domain/submission";
 
 // This module export utlity functions to generate fake data for testing and development
 // Uses domain types from ~/domain.
@@ -38,7 +39,7 @@ export const fakeServiceRequest = (
   laborMarketAddress: string
 ): ServiceRequestContract => {
   return {
-    id: faker.datatype.bigInt(),
+    id: faker.datatype.string(),
     title: faker.random.words(3),
     description: faker.random.words(10),
     laborMarketAddress: laborMarketAddress,
@@ -53,15 +54,14 @@ export const fakeServiceRequest = (
 };
 
 export const fakeSubmission = (
-  data: Partial<Submission>,
+  data: Partial<SubmissionIndexer>,
   laborMarketAddress: string,
-  serviceRequestId: bigint
-): Submission => {
+  serviceRequestId: string
+): SubmissionIndexer => {
   return {
     id: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
-    createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
     scoreStatus: "Bad",
     laborMarketAddress: laborMarketAddress,
@@ -69,9 +69,16 @@ export const fakeSubmission = (
   };
 };
 
-export const fakeReview = (data: Partial<Review>, submissionId: string): Review => {
+export const fakeReview = (
+  data: Partial<Review>,
+  serviceRequestId: string,
+  laborMarketAddress: string,
+  submissionId: string
+): Review => {
   return {
     id: faker.datatype.uuid(),
+    serviceRequestId: serviceRequestId,
+    laborMarketAddress: laborMarketAddress,
     comment: faker.random.words(3),
     scoreStatus: "Bad",
     createdAt: faker.date.past(),

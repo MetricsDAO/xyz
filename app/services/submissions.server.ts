@@ -1,5 +1,4 @@
-import type { Submission } from "@prisma/client";
-import type { SubmissionSearch } from "~/domain/submission";
+import type { SubmissionIndexer, SubmissionSearch } from "~/domain/submission";
 import { prisma } from "./prisma.server";
 
 /**
@@ -46,13 +45,14 @@ export const findSubmission = async (submissionId: string) => {
  * Creates or updates a new submission. This is only really used by the indexer.
  * @param {Submission} submission - The submission to create.
  */
-export const upsertSubmission = async (submission: Submission) => {
-  const { id, ...data } = submission;
+export const upsertSubmission = async (submission: SubmissionIndexer) => {
+  const { serviceRequestId, laborMarketAddress, ...data } = submission;
   const newSubmission = await prisma.submission.upsert({
-    where: { id },
+    where: { id_serviceRequestId_laborMarketAddress: { id: submission.id, serviceRequestId, laborMarketAddress } },
     update: data,
     create: {
-      id,
+      serviceRequestId,
+      laborMarketAddress,
       ...data,
     },
   });

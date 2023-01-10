@@ -6,7 +6,7 @@ import { parseTokenAmount } from "~/utils/helpers";
 import { EthAddressSchema } from "./address";
 
 export const ServiceRequestSchema = z.object({
-  id: z.bigint({ description: "The id of the service request." }),
+  id: z.string({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   laborMarketAddress: EthAddressSchema,
@@ -86,7 +86,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   const endDate = faker.date.between(startDate, reviewDate);
 
   return {
-    id: faker.datatype.bigInt(),
+    id: faker.datatype.string(),
     laborMarketAddress: faker.finance.ethereumAddress(),
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),
