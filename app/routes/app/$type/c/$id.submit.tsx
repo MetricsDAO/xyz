@@ -59,14 +59,7 @@ export default function SubmitQuestion() {
             Submit your best question idea. Peers will review and score your question. If you're a winner, you'll earn
             tokens and rMETRIC from the challenge reward pool!
           </p>
-          <ValidatedForm
-            method="post"
-            defaultValues={{
-              title: "asdas",
-              description: "adaksd",
-            }}
-            validator={validator}
-          >
+          <ValidatedForm method="post" validator={validator}>
             <div className="space-y-5">
               <ValidatedInput
                 name="title"
