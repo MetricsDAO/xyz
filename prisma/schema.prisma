@@ -88,7 +88,7 @@ model Review {
   id           String     @id @unique
   submissionId String
   comment      String
-  scoreStatus  String
+  score        Int
   createdAt    DateTime   @default(now())
   creatorId    String
   submission   Submission @relation(fields: [submissionId], references: [id])
@@ -102,7 +102,7 @@ model Submission {
   creatorId        String
   title            String
   description      String
-  scoreStatus      String
+  score            Int
   serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
   reviews          Review[]
 }
