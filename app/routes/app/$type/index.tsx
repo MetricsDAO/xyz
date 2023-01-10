@@ -1,14 +1,13 @@
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Link, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { withZod } from "@remix-validated-form/with-zod";
+import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
+import { $params, $path } from "remix-routes";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
-import { withZod } from "@remix-validated-form/with-zod";
-import { useRef, useState } from "react";
-import { Header, Row, Table } from "~/components/table";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
@@ -19,11 +18,11 @@ import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
+import { Header, Row, Table } from "~/components/table";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { $path, $params } from "remix-routes";
-import WelcomeModal from "~/features/welcome-modal";
 
 const validator = withZod(LaborMarketSearchSchema);
 
@@ -51,7 +50,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 
 export default function Brainstorm() {
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
-  const [opened, setOpened] = useState(false);
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -60,16 +58,6 @@ export default function Brainstorm() {
       submit(formRef.current, { replace: true });
     }
   };
-
-  if (
-    !document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("visited="))
-      ?.split("=")[1]
-  ) {
-    setOpened(true);
-    document.cookie = "visited=true";
-  }
 
   return (
     <>
@@ -168,7 +156,6 @@ export default function Brainstorm() {
           </aside>
         </section>
       </Container>
-      <WelcomeModal opened={opened} setOpened={setOpened} />
     </>
   );
 }
