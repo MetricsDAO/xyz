@@ -182,7 +182,7 @@ function ReviewQuestionDrawerButton({
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number>(50);
 
-  const { write, isLoading } = useReviewSubmission({
+  const { write } = useReviewSubmission({
     data: { laborMarketAddress: laborMarketAddress, requestId: requestId, submissionId: submissionId, score: selected },
     onTransactionSuccess() {
       toast.dismiss("review-submission");
