@@ -63,8 +63,8 @@ export const fakeSubmission = (
     title: faker.random.words(3),
     description: faker.random.words(10),
     creatorId: faker.datatype.uuid(),
-    scoreStatus: "Bad",
     laborMarketAddress: laborMarketAddress,
+    score: 10,
     serviceRequestId: serviceRequestId,
   };
 };
@@ -80,7 +80,7 @@ export const fakeReview = (
     serviceRequestId: serviceRequestId,
     laborMarketAddress: laborMarketAddress,
     comment: faker.random.words(3),
-    scoreStatus: "Bad",
+    score: 10,
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
     submissionId: submissionId,

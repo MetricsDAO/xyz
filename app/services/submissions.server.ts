@@ -12,7 +12,7 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
       title: { search: params.q },
       description: { search: params.q },
       serviceRequestId: params.serviceRequestId,
-      scoreStatus: {
+      score: {
         in: params.score,
       },
     },

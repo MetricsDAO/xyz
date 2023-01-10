@@ -5,7 +5,7 @@ export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
   sortBy: z.enum(["title", "description", "createdAt", "reviews", "creatorId"]).default("createdAt"),
   order: z.enum(["asc", "desc"]).default("asc"),
-  score: z.enum(["Great", "Good", "Average", "Bad", "Spam"]).optional(),
+  score: z.number().optional(),
   first: z.number().default(10),
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),
@@ -24,10 +24,10 @@ export const SubmissionFormSchema = z.object({
 
 export const SubmissionIndexerSchema = z.object({
   id: z.string(),
+  score: z.number(),
   serviceRequestId: z.string(),
   laborMarketAddress: EthAddressSchema,
   creatorId: z.string(),
-  scoreStatus: z.enum(["Great", "Good", "Average", "Bad", "Spam"]),
   title: z.string(),
   description: z.string(),
 });

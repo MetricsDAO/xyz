@@ -9,7 +9,7 @@ import { prisma } from "./prisma.server";
 export const searchReviews = async (params: ReviewSearch) => {
   return prisma.review.findMany({
     where: {
-      scoreStatus: {
+      score: {
         in: params.score,
       },
       submissionId: params.submissionId,

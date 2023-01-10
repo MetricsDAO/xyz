@@ -183,7 +183,7 @@ function SubmissionsTable() {
                 <div className="flex flex-wrap gap-1">
                   {"s.title"}
                   <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({"s.scoreStatus"})</p>
+                  <p className="text-neutral-400 font-thin">({"scoreNumtoLabel(s.score)"})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
@@ -233,7 +233,7 @@ function SubmissionsCard() {
                 <div className="flex gap-1">
                   {"s.title"}
                   <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({"s.scoreStatus"})</p>
+                  <p className="text-neutral-400 font-thin">({"scoreNumToLabel(s.score)"})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />

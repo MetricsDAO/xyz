@@ -90,12 +90,12 @@ model Review {
   id                 String      @id @unique
   submissionId       String
   comment            String
-  scoreStatus        String
   createdAt          DateTime    @default(now())
   creatorId          String
   serviceRequestId   String
   laborMarketAddress String
-  Submission         Submission? @relation(fields: [submissionId, serviceRequestId, laborMarketAddress], references: [id, serviceRequestId, laborMarketAddress])
+  submission         Submission? @relation(fields: [submissionId, serviceRequestId, laborMarketAddress], references: [id, serviceRequestId, laborMarketAddress])
+  score              Int
 }
 
 // Represents an on-chain submission to a service request.
@@ -106,8 +106,8 @@ model Submission {
   creatorId          String
   title              String
   description        String
-  scoreStatus        String
   laborMarketAddress String
+  score              Int
   reviews            Review[]
   serviceRequest     ServiceRequest @relation(fields: [laborMarketAddress, serviceRequestId], references: [laborMarketAddress, id])
 
