@@ -76,12 +76,15 @@ model LaborMarket {
 }
 
 model ServiceRequest {
-  id                 String       @id @unique
+  id                 String
   title              String
   laborMarketAddress String
   createdAt          DateTime     @default(now())
   laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
   submissions        Submission[]
+
+  @@id([id, laborMarketAddress])
+  @@unique([id, laborMarketAddress])
 }
 
 model Review {
@@ -96,15 +99,16 @@ model Review {
 
 // Represents an on-chain submission to a service request.
 model Submission {
-  id               String         @id @unique
-  serviceRequestId String
-  createdAt        DateTime       @default(now())
-  creatorId        String
-  title            String
-  description      String
-  scoreStatus      String
-  serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
-  reviews          Review[]
+  id                 String         @id @unique
+  serviceRequestId   String
+  createdAt          DateTime       @default(now())
+  creatorId          String
+  title              String
+  description        String
+  scoreStatus        String
+  laborMarketAddress String
+  serviceRequest     ServiceRequest @relation(fields: [laborMarketAddress, serviceRequestId], references: [laborMarketAddress, id])
+  reviews            Review[]
 }
 
 model Network {
