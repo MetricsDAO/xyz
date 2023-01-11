@@ -22,7 +22,7 @@ export default function WelcomeModal({ opened, redirectPath }: { opened: boolean
           <li>MetricsDAO will never ask you for your private keys or seed phrase.</li>
           <li>
             This app is in beta and is subject to change and future code audits. See{" "}
-            <a href="https://docs.metricsdao.xyz/">
+            <a href="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/">
               <u className="text-blue-700">Docs</u>
             </a>{" "}
             for more.
