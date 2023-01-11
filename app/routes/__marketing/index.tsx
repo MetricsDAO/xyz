@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 import { ArrowDownCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useState } from "react";
@@ -138,11 +138,12 @@ export default function Index() {
               </div>
               <div className="pt-4 flex gap-2 mx-auto justify-center">
                 <ChevronLeftIcon
-                  className={clsx("h-6 w-6", { "hidden text-white": box === 0 })}
+                  className={clsx("h-6 w-6 cursor-pointer", { "invisible text-white": box === 0 })}
                   onClick={() => setBox(box - 1)}
                 />
+                <EllipsisHorizontalIcon className="h-6 w-6" />
                 <ChevronRightIcon
-                  className={clsx("h-6 w-6", { "hidden text-white": box === 2 })}
+                  className={clsx("h-6 w-6 cursor-pointer", { "invisible text-white": box === 2 })}
                   onClick={() => setBox(box + 1)}
                 />
               </div>
