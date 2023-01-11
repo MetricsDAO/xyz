@@ -31,20 +31,24 @@ import { SCORE_COLOR } from "~/utils/helpers";
 import { toast } from "react-hot-toast";
 import { useReviewSubmission } from "~/hooks/use-review-submission";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({
+  laborMarketAddress: z.string(),
+  submissionId: z.string(),
+});
 
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(data.params);
+  const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
+  console.log("PARAMS", laborMarketAddress, submissionId);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  params.submissionId = id;
+  params.submissionId = submissionId;
   const reviews = await searchReviews(params);
 
-  const submission = await findSubmission(id);
+  const submission = await findSubmission(laborMarketAddress, submissionId);
   if (!submission) {
-    throw notFound({ id });
+    throw notFound({ submissionId });
   }
 
   return typedjson({ submission, reviews, params }, { status: 200 });
@@ -74,7 +78,7 @@ export default function ChallengeSubmission() {
           <ReviewQuestionDrawerButton
             requestId={"0"}
             submissionId={"0"}
-            laborMarketAddress={submission.serviceRequest.laborMarketAddress}
+            laborMarketAddress={submission.laborMarketAddress}
           />
         </section>
         <section className="flex flex-col space-y-7 pb-24">
@@ -114,7 +118,7 @@ export default function ChallengeSubmission() {
                   return (
                     <Card asChild key={r.id}>
                       <Link
-                        to="/u/[uId]"
+                        to={`/app/brainstorm/m/${r.laborMarketAddress}/r/${r.id}`}
                         className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
                       >
                         <div className="flex flex-col md:flex-row items-center flex-1 gap-2">

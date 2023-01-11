@@ -19,10 +19,10 @@ import { searchSubmissions } from "~/services/submissions.server";
 const validator = withZod(SubmissionSearchSchema);
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
-  invariant(params.id, "id is required");
+  invariant(params.serviceRequestId, "id is required");
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.id });
+  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.serviceRequestId });
   return typedjson({ submissions });
 };
 
@@ -42,7 +42,12 @@ export default function ChallengeIdSubmissions() {
       <main className="min-w-[300px] w-full space-y-4">
         {submissions.map((s) => {
           return (
-            <SubmissionCard key={s.id} submission={s} score={averageScore(s.reviews)} totalReviews={s.reviews.length} />
+            <SubmissionCard
+              key={s.internalId}
+              submission={s}
+              score={averageScore(s.reviews)}
+              totalReviews={s.reviews.length}
+            />
           );
         })}
       </main>

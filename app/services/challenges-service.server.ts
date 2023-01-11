@@ -41,9 +41,9 @@ export const countChallenges = async (params: ServiceRequestSearch) => {
  * @param {String} id - The ID of the Challenge.
  * @returns - The Challenge or null if not found.
  */
-export const findChallenge = async (id: String) => {
+export const findChallenge = async (id: string, laborMarketAddress: string) => {
   return prisma.serviceRequest.findUnique({
-    where: {},
+    where: { internalId_laborMarketAddress: { internalId: id, laborMarketAddress } },
     include: {
       submissions: true,
       laborMarket: { include: { projects: true } },
@@ -59,7 +59,7 @@ export const findChallenge = async (id: String) => {
 export const upsertServiceRequest = async (challenge: ServiceRequestContract) => {
   const newChallenge = await prisma.serviceRequest.create({
     data: {
-      id: challenge.id,
+      internalId: challenge.internalId,
       title: challenge.title,
       laborMarketAddress: challenge.laborMarketAddress,
     },

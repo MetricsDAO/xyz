@@ -13,7 +13,7 @@ export function SubmissionCard({ submission, score, totalReviews }: Props) {
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={`/app/brainstorm/s/${submission.id}`}
+        to={`/app/brainstorm/m/${submission.laborMarketAddress}/s/${submission.internalId}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         <main className="space-y-2 flex-1">

@@ -17,12 +17,12 @@ import { ClaimToReviewContractSchema } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
 import { findChallenge } from "~/services/challenges-service.server";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string(), reviewId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
+  const { laborMarketAddress, serviceRequestId, reviewId } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ reviewId });
   }
 
   return typedjson({ challenge }, { status: 200 });

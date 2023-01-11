@@ -6,7 +6,7 @@ import { parseTokenAmount } from "~/utils/helpers";
 import { EthAddressSchema } from "./address";
 
 export const ServiceRequestSchema = z.object({
-  id: z.string({ description: "The id of the service request." }),
+  internalId: z.string({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   laborMarketAddress: EthAddressSchema,
@@ -35,9 +35,10 @@ const InputTimeSchema = z.string().refine((t) => {
 });
 
 export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
+  id: true,
   title: true,
   description: true,
-  id: true,
+  internalId: true,
   laborMarketAddress: true,
 }).extend({
   language: z.enum(["english", "spanish"]),
@@ -54,7 +55,7 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
 
 export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   // Metadata needed for DEV_AUTO_INDEX
-  id: true,
+  internalId: true,
   title: true,
   description: true,
   laborMarketAddress: true,
@@ -86,7 +87,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   const endDate = faker.date.between(startDate, reviewDate);
 
   return {
-    id: faker.datatype.string(),
+    internalId: faker.datatype.string(),
     laborMarketAddress: faker.finance.ethereumAddress(),
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),

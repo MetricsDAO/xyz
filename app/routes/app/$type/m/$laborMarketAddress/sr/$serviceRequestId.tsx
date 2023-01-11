@@ -15,16 +15,17 @@ import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
+  console.log("PARAMS", paramsSchema.parse(params));
+  const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   console.log({ challenge });
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ serviceRequestId });
   }
 
-  const submissionIds = challenge.submissions.map((s) => s.id);
+  const submissionIds = challenge.submissions.map((s) => s.internalId);
   const numOfReviews = await countReviews(submissionIds);
   return typedjson({ challenge, numOfReviews }, { status: 200 });
 };
@@ -37,10 +38,14 @@ export default function Challenge() {
         <h1 className="text-3xl font-semibold">{challenge.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
+            <Link to={`/app/brainstormm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/review`}>
+              Claim to Review
+            </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/claim`}>
+              Claim to Submit
+            </Link>
           </Button>
         </div>
       </header>

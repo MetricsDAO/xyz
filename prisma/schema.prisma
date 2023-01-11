@@ -76,14 +76,14 @@ model LaborMarket {
 }
 
 model ServiceRequest {
-  id                 String
+  internalId         String       @default(cuid())
   title              String
   laborMarketAddress String
   createdAt          DateTime     @default(now())
   laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
   submissions        Submission[]
 
-  @@id([id, laborMarketAddress])
+  @@id([internalId, laborMarketAddress])
 }
 
 model Review {
@@ -94,13 +94,13 @@ model Review {
   creatorId          String
   serviceRequestId   String
   laborMarketAddress String
-  submission         Submission? @relation(fields: [submissionId, serviceRequestId, laborMarketAddress], references: [id, serviceRequestId, laborMarketAddress])
+  submission         Submission? @relation(fields: [submissionId, laborMarketAddress], references: [internalId, laborMarketAddress])
   score              Int
 }
 
 // Represents an on-chain submission to a service request.
 model Submission {
-  id                 String
+  internalId         String         @default(cuid())
   serviceRequestId   String
   createdAt          DateTime       @default(now())
   creatorId          String
@@ -109,9 +109,9 @@ model Submission {
   laborMarketAddress String
   score              Int
   reviews            Review[]
-  serviceRequest     ServiceRequest @relation(fields: [laborMarketAddress, serviceRequestId], references: [laborMarketAddress, id])
+  serviceRequest     ServiceRequest @relation(fields: [laborMarketAddress, serviceRequestId], references: [laborMarketAddress, internalId])
 
-  @@id([id, serviceRequestId, laborMarketAddress])
+  @@id([internalId, laborMarketAddress])
 }
 
 model Network {

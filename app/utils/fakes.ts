@@ -39,7 +39,7 @@ export const fakeServiceRequest = (
   laborMarketAddress: string
 ): ServiceRequestContract => {
   return {
-    id: faker.datatype.string(),
+    internalId: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
     laborMarketAddress: laborMarketAddress,
@@ -59,7 +59,7 @@ export const fakeSubmission = (
   serviceRequestId: string
 ): SubmissionIndexer => {
   return {
-    id: faker.datatype.uuid(),
+    internalId: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
     creatorId: faker.datatype.uuid(),

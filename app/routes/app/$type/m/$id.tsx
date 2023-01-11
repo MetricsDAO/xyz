@@ -36,7 +36,7 @@ export default function Marketplace() {
           <h1 className="text-3xl font-semibold">{laborMarket?.title} </h1>
           <div className="flex flex-wrap gap-5">
             <Button asChild size="lg">
-              <Link to={`/app/brainstorm/${laborMarket?.address}/c/new`}>Launch Challenge</Link>
+              <Link to={`/app/brainstorm/${laborMarket?.address}/sr/new`}>Launch Challenge</Link>
             </Button>
           </div>
         </section>

@@ -148,9 +148,10 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
         <Header.Column>Review Deadline</Header.Column>
       </Header>
       {challenges.map((c) => {
+        console.log("WHY IS CHALLENGE ID WHACK", c.internalId);
         return (
-          <Row asChild columns={6} key={c.id}>
-            <Link to={`/app/brainstorm/c/${c.id}`} className="text-sm font-medium">
+          <Row asChild columns={6} key={c.internalId}>
+            <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`} className="text-sm font-medium">
               <Row.Column span={2}>{c.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
@@ -185,8 +186,11 @@ function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTablePr
     <div className="space-y-4">
       {challenges.map((c) => {
         return (
-          <Card asChild key={c.id}>
-            <Link to={`/app/brainstorm/c/${c.id}`} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5">
+          <Card asChild key={c.internalId}>
+            <Link
+              to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`}
+              className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
+            >
               <div>Challenges</div>
               <div className="text-sm font-medium">{c.title}</div>
 

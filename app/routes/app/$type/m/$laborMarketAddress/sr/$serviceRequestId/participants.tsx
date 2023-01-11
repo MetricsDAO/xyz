@@ -4,7 +4,7 @@ import type { findChallenge } from "~/services/challenges-service.server";
 import { fromNow } from "~/utils/date";
 
 export default function ChallengeIdParticipants() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/c/$id");
+  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/sr/$id");
   if (!data) {
     throw new Error("ChallengeIdParticpants must be rendered under a ChallengeId route");
   }
@@ -20,7 +20,7 @@ export default function ChallengeIdParticipants() {
         <main className="w-full border-spacing-4 border-separate space-y-4">
           {challenge?.submissions.map((s) => {
             return (
-              <Card asChild className="px-6 py-4" key={s.id}>
+              <Card asChild className="px-6 py-4" key={s.internalId}>
                 <div className="flex justify-between items-center">
                   <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>

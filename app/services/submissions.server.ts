@@ -12,9 +12,6 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
       title: { search: params.q },
       description: { search: params.q },
       serviceRequestId: params.serviceRequestId,
-      score: {
-        in: params.score,
-      },
     },
     orderBy: {
       [params.sortBy]:
@@ -34,9 +31,9 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
  * @param {string} submissionId - The ID of the submission to find.
  * @returns {Promise<Submission | null>} - The submission or null if not found.
  */
-export const findSubmission = async (submissionId: string) => {
-  return prisma.submission.findFirst({
-    where: { id: submissionId },
+export const findSubmission = async (laborMarketAddress: string, submissionId: string) => {
+  return prisma.submission.findUnique({
+    where: { internalId_laborMarketAddress: { internalId: submissionId, laborMarketAddress: laborMarketAddress } },
     include: { reviews: true },
   });
 };
@@ -48,7 +45,7 @@ export const findSubmission = async (submissionId: string) => {
 export const upsertSubmission = async (submission: SubmissionIndexer) => {
   const { serviceRequestId, laborMarketAddress, ...data } = submission;
   const newSubmission = await prisma.submission.upsert({
-    where: { id_serviceRequestId_laborMarketAddress: { id: submission.id, serviceRequestId, laborMarketAddress } },
+    where: { internalId_laborMarketAddress: { internalId: submission.internalId, laborMarketAddress } },
     update: data,
     create: {
       serviceRequestId,

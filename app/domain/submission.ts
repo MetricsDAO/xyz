@@ -23,7 +23,7 @@ export const SubmissionFormSchema = z.object({
 });
 
 export const SubmissionIndexerSchema = z.object({
-  id: z.string(),
+  internalId: z.string(),
   score: z.number(),
   serviceRequestId: z.string(),
   laborMarketAddress: EthAddressSchema,
