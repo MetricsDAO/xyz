@@ -1,40 +1,53 @@
-import { createMachine } from "xstate";
-import type { LaborMarketForm } from "~/domain";
+import toast from "react-hot-toast";
+import { assign, createMachine } from "xstate";
+import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 
 export const blockchainMachine = createMachine(
   {
     id: "chain-write",
     initial: "idle",
     context: {
-      form: {} as LaborMarketForm,
+      formData: undefined,
+      contractData: undefined,
     },
     schema: {
-      context: {} as { form: LaborMarketForm },
-      events: {} as { type: "UPLOAD_TO_IPFS"; data: any } | { type: "TRANSACTION_READY" },
+      context: {} as { formData?: LaborMarketForm; contractData?: LaborMarketContract },
+      events: {} as
+        | { type: "TRANSACTION_PREPARE"; data: LaborMarketForm }
+        | { type: "TRANSACTION_READY"; data: LaborMarketContract }
+        | { type: "TRANSACTION_CANCEL" }
+        | { type: "TRANSACTION_WRITE" }
+        | { type: "TRANSACTION_SUCCESS" },
     },
     predictableActionArguments: true,
     states: {
       idle: {
         on: {
-          UPLOAD_TO_IPFS: { target: "ipfsUpload" },
+          TRANSACTION_PREPARE: { target: "transactionPrepare" },
           TRANSACTION_READY: { target: "transactionReady" }, // Uploading to IPFS is optional
         },
       },
-      ipfsUpload: {
+      transactionPrepare: {
         initial: "loading",
         invoke: {
-          id: "upload-to-ipfs",
+          id: "transaction-prepare",
           src: (context, event) => {
-            if (event.type !== "UPLOAD_TO_IPFS") {
+            if (event.type !== "TRANSACTION_PREPARE") {
               throw Error("Invalid event type");
             }
-            return ipfsUpload(event.data);
+            return fetch(event.data);
           },
           onDone: {
             target: "transactionReady",
+            actions: assign({
+              contractData: (context, event) => {
+                console.log("event", event);
+                return event.data;
+              },
+            }),
           },
           onError: {
-            target: "ipfsUpload.failure",
+            target: "transactionPrepare.failure",
           },
         },
         states: {
@@ -42,9 +55,20 @@ export const blockchainMachine = createMachine(
           failure: {},
         },
       },
-      transactionReady: {},
+      transactionReady: {
+        entry(context, event, meta) {
+          console.log("transactionReady", context.contractData);
+        },
+        on: {
+          TRANSACTION_CANCEL: { target: "idle" }, //start over
+          TRANSACTION_WRITE: { target: "transactionWrite" },
+        },
+      },
       transactionWrite: {
         entry: "notifyTransactionWrite",
+        on: {
+          TRANSACTION_SUCCESS: { target: "transactionComplete" },
+        },
       },
       transactionComplete: {
         entry: "notifyTransactionSuccess",
@@ -54,25 +78,25 @@ export const blockchainMachine = createMachine(
   {
     actions: {
       notifyTransactionWrite: () => {
-        console.log("notifyTransactionWrite");
+        toast.loading("Creating marketplace...", { id: "creating-marketplace" });
       },
       notifyTransactionSuccess: () => {
-        console.log("notifyTransactionSuccess");
+        toast.dismiss("creating-marketplace");
+        toast.success("Marketplace created!");
       },
     },
   }
 );
 
-const ipfsUpload = (data: any) => {
+// Prepare
+const fetch = (data: LaborMarketForm): Promise<LaborMarketContract> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (data.foo === "bar") {
-        resolve({
-          success: true,
-        });
-      } else {
-        reject({ message: "error" });
-      }
+      resolve({
+        ...data,
+        userAddress: "0x7A9260b97113B51aDf233d2fb3F006F09a329654",
+        ipfsHash: "testing-hash",
+      });
     }, 2000);
   });
 };

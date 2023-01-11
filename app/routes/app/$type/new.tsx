@@ -17,6 +17,8 @@ import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
+import { blockchainMachine } from "~/utils/machine";
+import { useMachine } from "@xstate/react";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -30,67 +32,88 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
 const validator = withZod(LaborMarketFormSchema);
 
-type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
-export const action = async ({ request }: ActionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
-  const result = await validator.validate(await request.formData());
-  if (result.error) return validationError(result.error);
+// type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
+// export const action = async ({ request }: ActionArgs) => {
+//   const user = await getUser(request);
+//   invariant(user, "You must be logged in to create a marketplace");
+//   const result = await validator.validate(await request.formData());
+//   if (result.error) return validationError(result.error);
 
-  const preparedLaborMarket = await prepareLaborMarket(result.data, user);
-  return typedjson({ preparedLaborMarket });
-};
+//   const preparedLaborMarket = await prepareLaborMarket(result.data, user);
+//   return typedjson({ preparedLaborMarket });
+// };
 
 export default function CreateMarketplace() {
-  const transition = useTransition();
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<ActionResponse>();
 
-  const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketContract; isOpen: boolean }>({ isOpen: false });
+  const [state, send] = useMachine(blockchainMachine);
 
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
-  }
+  const isUploadingToIpfs = state.matches("transactionPrepare.loading");
+  const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
 
-  useEffect(() => {
-    if (actionData && "preparedLaborMarket" in actionData) {
-      setModalData({ laborMarket: actionData.preparedLaborMarket, isOpen: true });
-    }
-  }, [actionData]);
+  console.log("state", state.value);
+
+  const closeModal = () => {
+    send({ type: "TRANSACTION_CANCEL" });
+  };
+
+  const onTransactionSuccess = () => {
+    send({ type: "TRANSACTION_SUCCESS" });
+  };
+
+  const onWriteSuccess = () => {
+    send({ type: "TRANSACTION_WRITE" });
+  };
 
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketForm> validator={validator} method="post" defaultValues={defaultValues}>
+        <ValidatedForm<LaborMarketForm>
+          validator={validator}
+          defaultValues={defaultValues}
+          onSubmit={(data, event) => {
+            event.preventDefault();
+            send({ type: "TRANSACTION_PREPARE", data });
+          }}
+        >
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">
-              {transition.state === "submitting" ? "Loading..." : "Next"}
+              {isUploadingToIpfs ? "Loading..." : "Next"}
             </Button>
           </div>
         </ValidatedForm>
       </div>
-      <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction laborMarket={modalData.laborMarket} onClose={closeModal} />
+      <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
+        <ConfirmTransaction
+          data={state.context.contractData}
+          onClose={closeModal}
+          onTransactionSuccess={onTransactionSuccess}
+          onWriteSuccess={onWriteSuccess}
+        />
       </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarketContract; onClose: () => void }) {
-  invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
+function ConfirmTransaction({
+  data,
+  onClose,
+  onTransactionSuccess,
+  onWriteSuccess,
+}: {
+  data?: LaborMarketContract;
+  onClose: () => void;
+  onTransactionSuccess?: () => void;
+  onWriteSuccess?: () => void;
+}) {
+  invariant(data, "data is required"); // this should never happen but just in case
 
   const { write, isLoading } = useCreateLaborMarket({
-    data: laborMarket,
-    onTransactionSuccess() {
-      toast.dismiss("creating-marketplace");
-      toast.success("Marketplace created!");
-      onClose();
-    },
-    onWriteSuccess() {
-      toast.loading("Creating marketplace...", { id: "creating-marketplace" });
-    },
+    data,
+    onTransactionSuccess,
+    onWriteSuccess,
   });
 
   const onCreate = () => {
