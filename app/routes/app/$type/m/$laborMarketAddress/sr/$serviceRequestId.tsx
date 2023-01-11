@@ -47,6 +47,9 @@ export default function Challenge() {
               Claim to Submit
             </Link>
           </Button>
+          <Button variant="primary" size="lg" asChild>
+            <Link to={`/app/brainstorm/c/${challenge.internalId}/submit`}>Submit</Link>
+          </Button>
         </div>
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
