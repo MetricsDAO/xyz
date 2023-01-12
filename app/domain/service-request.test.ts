@@ -4,7 +4,8 @@ import { ServiceRequestFormSchema } from "./service-request";
 describe("ServiceRequestFormSchema", () => {
   test("base test", () => {
     const sr = {
-      id: faker.datatype.string(),
+      internalId: faker.datatype.string(),
+      laborMarketAddress: faker.finance.ethereumAddress(),
       title: "Test",
       description: "Test",
       language: "english",
