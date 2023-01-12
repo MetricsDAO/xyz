@@ -17,3 +17,12 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "5435:5432"
+
+  # app:
+  #   build: .
+  #   ports:
+  #     - "8000:3000"
+  #   environment:
+  #     - DATABASE_URL=postgres://user:pass@db:5432/mdao
+  #     - SESSION_SECRET=secret
+  #     - ENVIRONMENT=production
