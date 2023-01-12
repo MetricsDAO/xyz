@@ -2,8 +2,9 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { ChallengePrepared } from "~/domain";
+import type { ServiceRequestContract } from "~/domain";
 import { unixTimestamp } from "~/utils/date";
+import { createServiceRequest } from "~/utils/fetch";
 import { parseTokenAmount } from "~/utils/helpers";
 
 export function useSubmitRequest({
@@ -11,7 +12,7 @@ export function useSubmitRequest({
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: ChallengePrepared;
+  data: ServiceRequestContract;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
@@ -19,6 +20,9 @@ export function useSubmitRequest({
     address: data.laborMarketAddress,
     abi: LaborMarket.abi,
     functionName: "submitRequest",
+    overrides: {
+      gasLimit: BigNumber.from(1000000), // TODO: What do we do here?
+    },
     args: [
       data.pTokenAddress as `0x${string}`,
       BigNumber.from(data.pTokenId),
@@ -42,6 +46,9 @@ export function useSubmitRequest({
       console.log("error", error);
     },
     onSuccess(receipt) {
+      if (window.ENV.DEV_AUTO_INDEX) {
+        createServiceRequest(data);
+      }
       onTransactionSuccess?.(receipt);
     },
   });

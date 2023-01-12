@@ -6,12 +6,12 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { ChallengeSearchSchema } from "~/domain/challenge";
+import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { findLaborMarket } from "~/services/labor-market.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
-  const params = getParamsOrFail(url.searchParams, ChallengeSearchSchema);
+  const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
 
   if (params.laborMarket == undefined) {
     params.laborMarket = data.params.id;

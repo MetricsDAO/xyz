@@ -1,5 +1,7 @@
 import type { Submission } from "@prisma/client";
-import type { SubmissionSearch } from "~/domain/submission";
+import type { ServiceRequest } from "~/domain";
+import type { SubmissionContract, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import { SubmissionContractSchema } from "~/domain/submission";
 import { prisma } from "./prisma.server";
 
 /**
@@ -13,7 +15,7 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
       title: { search: params.q },
       description: { search: params.q },
       serviceRequestId: params.serviceRequestId,
-      scoreStatus: {
+      score: {
         in: params.score,
       },
     },
@@ -57,4 +59,25 @@ export const upsertSubmission = async (submission: Submission) => {
     },
   });
   return newSubmission;
+};
+
+/**
+ * Prepare a new Submission for writing to chain
+ * @param {string} laborMarketAddress - The labor market address the submission belongs to
+ * @param {ServiceRequest} form - the service request the submission is being submitted for
+ * @returns {SubmissionContract} - The prepared submission
+ */
+export const prepareSubmission = (
+  serviceRequest: Pick<ServiceRequest, "laborMarketAddress">,
+  form: SubmissionForm
+): SubmissionContract => {
+  // TODO: upload data to ipfs
+
+  // parse for type safety
+  const contractData = SubmissionContractSchema.parse({
+    laborMarketAddress: serviceRequest.laborMarketAddress,
+    serviceRequestId: 1, // TODO should come from db
+    uri: "ipfs-uri",
+  });
+  return contractData;
 };

@@ -12,8 +12,8 @@ import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
-import type { ClaimToReviewPrepared } from "~/domain";
-import { ClaimToReviewPreparedSchema } from "~/domain";
+import type { ClaimToReviewContract } from "~/domain";
+import { ClaimToReviewContractSchema } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
 import { findChallenge } from "~/services/challenges-service.server";
 
@@ -28,12 +28,12 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   return typedjson({ challenge }, { status: 200 });
 };
 
-const validator = withZod(ClaimToReviewPreparedSchema);
+const validator = withZod(ClaimToReviewContractSchema);
 
 export default function ClaimToReview() {
   const { challenge } = useTypedLoaderData<typeof loader>();
 
-  const [modalData, setModalData] = useState<{ data?: ClaimToReviewPrepared; isOpen: boolean }>({ isOpen: false });
+  const [modalData, setModalData] = useState<{ data?: ClaimToReviewContract; isOpen: boolean }>({ isOpen: false });
 
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
@@ -48,10 +48,11 @@ export default function ClaimToReview() {
         validator={validator}
         className="mx-auto px-10 max-w-4xl space-y-7 mb-12"
       >
+        <input type="hidden" name="laborMarketAddress" value={challenge.laborMarketAddress} />
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{`Claim to Review ${challenge.title}`}</h1>
           <p className="text-cyan-500 text-lg">
-            Claiming is an up front commitment to review and score a minumum number of submissions
+            Claiming is an up front commitment to review and score a minimum number of submissions
           </p>
           <p className="text-gray-500">
             You must temporarily lock rMETRIC to claim. If you claim and don’t complete review before the deadline, 5
@@ -118,8 +119,8 @@ export default function ClaimToReview() {
   );
 }
 
-function ConfirmTransaction({ data, onClose }: { data?: ClaimToReviewPrepared; onClose: () => void }) {
-  invariant(data, "ClaimToReviewPrepared is required"); // this should never happen but just in case
+function ConfirmTransaction({ data, onClose }: { data?: ClaimToReviewContract; onClose: () => void }) {
+  invariant(data, "data is required"); // this should never happen but just in case
 
   const { write, isLoading } = useClaimToReview({
     data: data,

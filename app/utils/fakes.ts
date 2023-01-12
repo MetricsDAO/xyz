@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { Review, Submission } from "@prisma/client";
-import type { Challenge } from "~/domain";
+import type { ServiceRequest, ServiceRequestContract } from "~/domain";
 import type { LaborMarket } from "~/domain";
 
 // This module export utlity functions to generate fake data for testing and development
@@ -33,13 +33,21 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeServiceRequest = (data: Partial<Challenge>, laborMarketAddress: string): Challenge => {
+export const fakeServiceRequest = (
+  data: Partial<ServiceRequest>,
+  laborMarketAddress: string
+): ServiceRequestContract => {
   return {
-    id: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
-    createdAt: faker.date.past(),
     laborMarketAddress: laborMarketAddress,
+    pTokenAddress: faker.finance.ethereumAddress(),
+    pTokenId: faker.datatype.number(),
+    pTokenQuantity: "0.0001",
+    signalExpiration: faker.date.future(),
+    submissionExpiration: faker.date.future(),
+    enforcementExpiration: faker.date.future(),
+    uri: faker.internet.url(),
   };
 };
 
@@ -50,7 +58,7 @@ export const fakeSubmission = (data: Partial<Submission>, serviceRequestId: stri
     description: faker.random.words(10),
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
-    scoreStatus: "Bad",
+    score: 10,
     serviceRequestId: serviceRequestId,
   };
 };
@@ -59,7 +67,7 @@ export const fakeReview = (data: Partial<Review>, submissionId: string): Review 
   return {
     id: faker.datatype.uuid(),
     comment: faker.random.words(3),
-    scoreStatus: "Bad",
+    score: 10,
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
     submissionId: submissionId,

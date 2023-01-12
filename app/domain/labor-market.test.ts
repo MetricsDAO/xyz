@@ -1,10 +1,10 @@
 import { faker } from "@faker-js/faker";
-import type { LaborMarketNew } from "./labor-market";
-import { LaborMarketNewSchema } from "./labor-market";
+import type { LaborMarketForm } from "./labor-market";
+import { LaborMarketFormSchema } from "./labor-market";
 
-describe("LaborMarketNewSchema", () => {
+describe("LaborMarketFormSchema", () => {
   test("launchAccess 'delegates' requires badger props", () => {
-    const laborMarket: LaborMarketNew = {
+    const laborMarket: LaborMarketForm = {
       title: "Test",
       description: "Test",
       type: "brainstorm",
@@ -20,14 +20,14 @@ describe("LaborMarketNewSchema", () => {
         access: "delegates",
       },
     };
-    const result = LaborMarketNewSchema.safeParse(laborMarket);
+    const result = LaborMarketFormSchema.safeParse(laborMarket);
     expect(result.success).toBe(false);
     assert(result.success === false);
     expect(result.error.issues.length).toEqual(2);
   });
 
   test("launchAccess 'delegates' with valid badger props", () => {
-    const validLaborMarket: LaborMarketNew = {
+    const validLaborMarket: LaborMarketForm = {
       title: "Test",
       description: "Test",
       type: "brainstorm",
@@ -44,7 +44,7 @@ describe("LaborMarketNewSchema", () => {
         badgerTokenId: "1",
       },
     };
-    const result = LaborMarketNewSchema.safeParse(validLaborMarket);
+    const result = LaborMarketFormSchema.safeParse(validLaborMarket);
     expect(result.success).toBe(true);
   });
 });

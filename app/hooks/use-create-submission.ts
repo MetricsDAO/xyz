@@ -2,22 +2,22 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import type { ClaimToReviewContract } from "~/domain";
+import type { SubmissionContract } from "~/domain/submission";
 
-export function useClaimToReview({
+export function useCreateSubmission({
   data,
   onTransactionSuccess,
   onWriteSuccess,
 }: {
-  data: ClaimToReviewContract;
+  data: SubmissionContract;
   onWriteSuccess?: () => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress,
     abi: LaborMarket.abi,
-    functionName: "signalReview",
-    args: [BigNumber.from(data.quantity)],
+    functionName: "provide",
+    args: [BigNumber.from(data.serviceRequestId), data.uri],
   });
 
   const { data: transactionResultData, write } = useContractWrite({
@@ -30,7 +30,7 @@ export function useClaimToReview({
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,
     onError(error) {
-      console.log("error", error);
+      console.error(error);
     },
     onSuccess(receipt) {
       onTransactionSuccess?.(receipt);

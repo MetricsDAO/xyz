@@ -23,7 +23,7 @@ export default function MarketingButton({
       <div
         className={clsx("rounded-lg h-10 px-4 flex items-center", {
           "text-white bg-sky-500": variant === "primary",
-          "text-sky-500 bg-white": variant === "outline",
+          "text-black bg-white": variant === "outline",
         })}
       >
         <p>{label}</p>
