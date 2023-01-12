@@ -117,10 +117,7 @@ export default function ChallengeSubmission() {
                 {reviews.map((r) => {
                   return (
                     <Card asChild key={r.id}>
-                      <Link
-                        to={`/app/brainstorm/m/${r.laborMarketAddress}/r/${r.id}`}
-                        className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
-                      >
+                      <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
                         <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                           <div
                             className={clsx(
@@ -137,7 +134,7 @@ export default function ChallengeSubmission() {
                           </Badge>
                         </div>
                         <p>{fromNow(r.createdAt)}</p>
-                      </Link>
+                      </div>
                     </Card>
                   );
                 })}

@@ -1,5 +1,5 @@
 import type { ServiceRequest } from "~/domain";
-import type { SubmissionContract, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import type { SubmissionContract, SubmissionForm, SubmissionIndexer, SubmissionSearch } from "~/domain/submission";
 import { SubmissionContractSchema } from "~/domain/submission";
 import { prisma } from "./prisma.server";
 

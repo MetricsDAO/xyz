@@ -16,12 +16,12 @@ import { prepareSubmission } from "~/services/submissions.server";
 import { isValidationError } from "~/utils/utils";
 
 const validator = withZod(SubmissionFormSchema);
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), id: z.string() });
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
+  const { id, laborMarketAddress } = paramsSchema.parse(params);
+  const challenge = await findChallenge(id, laborMarketAddress);
   invariant(challenge, "challenge must exist");
 
   const result = await validator.validate(await request.formData());
