@@ -10,6 +10,9 @@ const SocialIcons = () => {
       <a href="https://github.com/MetricsDAO/">
         <img src="/img/github-icon.svg" alt="" />
       </a>
+      <a href="https://www.linkedin.com/company/metricsdao/about/">
+        <img src="/img/linkedin-icon.svg" alt="" />
+      </a>
     </div>
   );
 };
