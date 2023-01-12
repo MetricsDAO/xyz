@@ -7,13 +7,13 @@ ENV NODE_ENV production
 # Install openssl for Prisma
 RUN apt-get update && apt-get install -y openssl git python3 build-essential
 
-# Install all node_modules, including dev dependencies
 FROM base
 
 WORKDIR /myapp
 
 ADD package.json ./
 ADD yarn.lock ./
+# Install all node_modules, including dev dependencies
 RUN yarn install --production=false --frozen-lockfile
 
 ADD prisma .
