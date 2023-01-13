@@ -1,15 +1,15 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { useMachine } from "@xstate/react";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Button, Container, Modal } from "~/components";
-import type { LaborMarketForm, LaborMarketContract } from "~/domain";
+import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { useCreateLaborMarket } from "~/hooks/use-create-labor-market";
@@ -18,7 +18,7 @@ import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { blockchainMachine } from "~/utils/machine";
-import { useMachine } from "@xstate/react";
+import { isValidationError } from "~/utils/utils";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -32,26 +32,46 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
 const validator = withZod(LaborMarketFormSchema);
 
-// type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
-// export const action = async ({ request }: ActionArgs) => {
-//   const user = await getUser(request);
-//   invariant(user, "You must be logged in to create a marketplace");
-//   const result = await validator.validate(await request.formData());
-//   if (result.error) return validationError(result.error);
+type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
+export const action = async ({ request }: ActionArgs) => {
+  const user = await getUser(request);
+  invariant(user, "You must be logged in to create a marketplace");
+  const result = await validator.validate(await request.formData());
+  if (result.error) return validationError(result.error);
 
-//   const preparedLaborMarket = await prepareLaborMarket(result.data, user);
-//   return typedjson({ preparedLaborMarket });
-// };
+  const preparedLaborMarket = await prepareLaborMarket(result.data, user);
+  return typedjson({ preparedLaborMarket });
+};
 
 export default function CreateMarketplace() {
+  const [state, send] = useMachine(blockchainMachine, {
+    actions: {
+      notifyTransactionWrite: () => {
+        toast.loading("Creating marketplace...", { id: "creating-marketplace" });
+      },
+      notifyTransactionSuccess: () => {
+        toast.dismiss("creating-marketplace");
+        toast.success("Marketplace created!");
+      },
+      notifyTransactionPrepareFailure: () => {
+        toast.error("Failed to validate marketplace. Possibly error uplading to IPFS.");
+      },
+    },
+  });
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
+  const actionData = useTypedActionData<ActionResponse>();
 
-  const [state, send] = useMachine(blockchainMachine);
+  useEffect(() => {
+    if (actionData && !isValidationError(actionData)) {
+      console.log("actionData.preparedLaborMarket", actionData.preparedLaborMarket);
+      send({ type: "TRANSACTION_READY", data: actionData.preparedLaborMarket });
+    }
+  }, [actionData, send]);
 
   const isUploadingToIpfs = state.matches("transactionPrepare.loading");
   const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
 
-  console.log("state", state.value);
+  console.log("state", state.value, state.context);
 
   const closeModal = () => {
     send({ type: "TRANSACTION_CANCEL" });
@@ -70,10 +90,10 @@ export default function CreateMarketplace() {
       <div className="max-w-2xl mx-auto">
         <ValidatedForm<LaborMarketForm>
           validator={validator}
+          method="post"
           defaultValues={defaultValues}
           onSubmit={(data, event) => {
-            event.preventDefault();
-            send({ type: "TRANSACTION_PREPARE", data });
+            send({ type: "TRANSACTION_PREPARE" });
           }}
         >
           <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
