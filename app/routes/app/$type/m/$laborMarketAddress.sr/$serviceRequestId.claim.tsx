@@ -14,12 +14,12 @@ import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
 import toast from "react-hot-toast";
 import { Modal } from "~/components";
 
-const paramsSchema = z.object({ laborMarketAddress: z.string(), id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id, laborMarketAddress } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id, laborMarketAddress);
+  const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ id: serviceRequestId });
   }
 
   return typedjson({ challenge }, { status: 200 });

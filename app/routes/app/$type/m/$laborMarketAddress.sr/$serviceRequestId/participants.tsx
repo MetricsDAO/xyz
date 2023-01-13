@@ -3,10 +3,12 @@ import { Badge, Card, UserBadge } from "~/components";
 import type { findChallenge } from "~/services/challenges-service.server";
 import { fromNow } from "~/utils/date";
 
-export default function ChallengeIdParticipants() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/sr/$id");
+export default function ServiceIdParticipants() {
+  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>(
+    "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
+  );
   if (!data) {
-    throw new Error("ChallengeIdParticpants must be rendered under a ChallengeId route");
+    throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");
   }
   const { challenge } = data;
 

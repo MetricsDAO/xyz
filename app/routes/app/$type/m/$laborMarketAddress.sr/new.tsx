@@ -24,7 +24,7 @@ import { useSubmitRequest } from "~/hooks/use-submit-request";
 import { prepareServiceRequest } from "~/services/challenges-service.server";
 
 const validator = withZod(ServiceRequestFormSchema);
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string() });
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -35,7 +35,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 type ActionResponse = { preparedChallenge: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
-  const { id: laborMarketAddress } = paramsSchema.parse(params);
+  const { laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
   const preparedChallenge = await prepareServiceRequest(laborMarketAddress, result.data);

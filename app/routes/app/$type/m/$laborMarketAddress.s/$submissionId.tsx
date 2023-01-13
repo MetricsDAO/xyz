@@ -1,7 +1,8 @@
-import { Link, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import clsx from "clsx";
 import { useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -24,12 +25,11 @@ import {
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
 import { ReviewSearchSchema } from "~/domain/review";
+import { useReviewSubmission } from "~/hooks/use-review-submission";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
 import { SCORE_COLOR } from "~/utils/helpers";
-import { toast } from "react-hot-toast";
-import { useReviewSubmission } from "~/hooks/use-review-submission";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
@@ -40,7 +40,6 @@ const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
-  console.log("PARAMS", laborMarketAddress, submissionId);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   params.submissionId = submissionId;

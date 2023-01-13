@@ -17,10 +17,8 @@ import { RewardBadge } from "~/components/reward-badge";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  console.log("PARAMS", paramsSchema.parse(params));
   const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
   const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
-  console.log({ challenge });
   if (!challenge) {
     throw notFound({ serviceRequestId });
   }
@@ -38,7 +36,7 @@ export default function Challenge() {
         <h1 className="text-3xl font-semibold">{challenge.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstormm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/review`}>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/review`}>
               Claim to Review
             </Link>
           </Button>
@@ -48,7 +46,9 @@ export default function Challenge() {
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.internalId}/submit`}>Submit</Link>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/submit`}>
+              Submit
+            </Link>
           </Button>
         </div>
       </header>

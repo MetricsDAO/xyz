@@ -94,6 +94,7 @@ export const links: LinksFunction = () => {
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {
+  console.error("error", error);
   return (
     <html lang="en">
       <head>
