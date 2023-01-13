@@ -194,7 +194,10 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {marketplaces.map((m) => {
         return (
           <Row asChild columns={6} key={m.address}>
-            <Link to={$path("/app/:type/m/:id", { type: m.type, id: m.address })} className="text-sm font-medium">
+            <Link
+              to={$path("/app/:type/m/:laborMarketAddress", { type: m.type, laborMarketAddress: m.address })}
+              className="text-sm font-medium"
+            >
               <Row.Column span={2}>{m.title}</Row.Column>
               <Row.Column>
                 <div className="flex items-center gap-2 flex-wrap">
