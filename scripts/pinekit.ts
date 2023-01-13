@@ -28,6 +28,16 @@ export class Pinekit {
     return await res.json();
   }
 
+  async listTracers() {
+    const res = await this.#request("/tracers", { method: "get" });
+    return await res.json();
+  }
+
+  async startTracer({ namespace, version }: { namespace: string; version: string }) {
+    const res = await this.#request(`/tracers/${namespace}/versions/${version}/start`, { method: "post" });
+    return await res.json();
+  }
+
   #request(path: string, options: RequestInit) {
     return fetch(`https://pine.lab3547.xyz/api${path}`, {
       ...options,

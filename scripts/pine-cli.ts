@@ -40,4 +40,22 @@ program
     console.log({ res });
   });
 
+program
+  .command("list-tracers")
+  .description("List all tracers")
+  .action(async () => {
+    const res = await pine.listTracers();
+    console.log(res.data);
+  });
+
+program
+  .command("start-tracer")
+  .argument("<namespace>", "Namespace of the tracer")
+  .argument("<version>", "Version of the tracer")
+  .description("Start a tracer")
+  .action(async (namespace, version) => {
+    const res = await pine.startTracer({ namespace, version });
+    console.log(res);
+  });
+
 program.parse();
