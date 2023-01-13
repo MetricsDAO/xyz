@@ -148,7 +148,6 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
         <Header.Column>Review Deadline</Header.Column>
       </Header>
       {challenges.map((c) => {
-        console.log("WHY IS CHALLENGE ID WHACK", c.internalId);
         return (
           <Row asChild columns={6} key={c.internalId}>
             <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`} className="text-sm font-medium">
