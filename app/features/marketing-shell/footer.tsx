@@ -43,33 +43,19 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
         href="/app/analyze"
         className="group flex flex-row items-center py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
-        <p>LAUNCH APP</p> <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
-        <img
-          src="/img/marketing/footer-rocket.png"
-          alt=""
-          className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_500ms_linear_1]"
-        />
-        <p>LAUNCH APP</p>
-        <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
-        <img
-          src="/img/marketing/footer-rocket.png"
-          alt=""
-          className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_500ms_linear_1]"
-        />
-        <p>LAUNCH APP</p>
-        <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
-        <img
-          src="/img/marketing/footer-rocket.png"
-          alt=""
-          className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_500ms_linear_1]"
-        />
-        <p>LAUNCH APP</p>
-        <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
-        <img
-          src="/img/marketing/footer-rocket.png"
-          alt=""
-          className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_500ms_linear_1]"
-        />
+        {[1, 2, 3, 4].map(() => {
+          return (
+            <>
+              <p>LAUNCH APP</p>
+              <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
+              <img
+                src="/img/marketing/footer-rocket.png"
+                alt=""
+                className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_400ms_linear_1]"
+              />
+            </>
+          );
+        })}
         <p>LAUNCH APP</p>
       </a>
 
