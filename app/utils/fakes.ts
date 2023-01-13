@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
-import type { Review, Submission } from "@prisma/client";
-import type { ServiceRequest, ServiceRequestContract } from "~/domain";
+import type { Review } from "@prisma/client";
+import type { ServiceRequest, ServiceRequestContract, ServiceRequestIndexer } from "~/domain";
 import type { LaborMarket } from "~/domain";
 import type { SubmissionIndexer } from "~/domain/submission";
 
@@ -37,19 +37,21 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
 export const fakeServiceRequest = (
   data: Partial<ServiceRequest>,
   laborMarketAddress: string
-): ServiceRequestContract => {
+): ServiceRequestIndexer => {
   return {
-    internalId: faker.datatype.uuid(),
+    id: faker.datatype.uuid(),
+    contractId: faker.datatype.uuid(),
     title: faker.random.words(3),
     description: faker.random.words(10),
     laborMarketAddress: laborMarketAddress,
     pTokenAddress: faker.finance.ethereumAddress(),
     pTokenId: faker.datatype.number(),
-    pTokenQuantity: "0.0001",
+    pTokenQuantity: faker.datatype.number(),
     signalExpiration: faker.date.future(),
     submissionExpiration: faker.date.future(),
     enforcementExpiration: faker.date.future(),
     uri: faker.internet.url(),
+    createdAt: faker.date.past(),
   };
 };
 
@@ -59,13 +61,14 @@ export const fakeSubmission = (
   serviceRequestId: string
 ): SubmissionIndexer => {
   return {
-    internalId: faker.datatype.uuid(),
+    id: faker.datatype.uuid(),
+    contractId: faker.datatype.uuid(),
+    serviceRequestId: serviceRequestId,
     title: faker.random.words(3),
     description: faker.random.words(10),
     creatorId: faker.datatype.uuid(),
     laborMarketAddress: laborMarketAddress,
     score: 10,
-    serviceRequestId: serviceRequestId,
   };
 };
 
@@ -77,6 +80,7 @@ export const fakeReview = (
 ): Review => {
   return {
     id: faker.datatype.uuid(),
+    contractId: faker.datatype.uuid(),
     serviceRequestId: serviceRequestId,
     laborMarketAddress: laborMarketAddress,
     comment: faker.random.words(3),

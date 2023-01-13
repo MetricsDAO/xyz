@@ -33,21 +33,21 @@ import { SCORE_COLOR } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
-  submissionId: z.string(),
+  contractId: z.string(),
 });
 
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
-  const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
+  const { laborMarketAddress, contractId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  params.submissionId = submissionId;
+  params.submissionId = contractId;
   const reviews = await searchReviews(params);
 
-  const submission = await findSubmission(laborMarketAddress, submissionId);
+  const submission = await findSubmission(laborMarketAddress, contractId);
   if (!submission) {
-    throw notFound({ submissionId });
+    throw notFound({ contractId });
   }
 
   return typedjson({ submission, reviews, params }, { status: 200 });

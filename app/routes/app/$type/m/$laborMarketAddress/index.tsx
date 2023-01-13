@@ -149,8 +149,8 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       </Header>
       {challenges.map((c) => {
         return (
-          <Row asChild columns={6} key={c.internalId}>
-            <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`} className="text-sm font-medium">
+          <Row asChild columns={6} key={c.contractId}>
+            <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.contractId}`} className="text-sm font-medium">
               <Row.Column span={2}>{c.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
@@ -185,9 +185,9 @@ function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTablePr
     <div className="space-y-4">
       {challenges.map((c) => {
         return (
-          <Card asChild key={c.internalId}>
+          <Card asChild key={c.contractId}>
             <Link
-              to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`}
+              to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.contractId}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>

@@ -22,7 +22,7 @@ export default function ServiceIdParticipants() {
         <main className="w-full border-spacing-4 border-separate space-y-4">
           {challenge?.submissions.map((s) => {
             return (
-              <Card asChild className="px-6 py-4" key={s.internalId}>
+              <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">
                   <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>

@@ -43,7 +43,7 @@ export default function ChallengeIdSubmissions() {
         {submissions.map((s) => {
           return (
             <SubmissionCard
-              key={s.internalId}
+              key={s.contractId}
               submission={s}
               score={averageScore(s.reviews)}
               totalReviews={s.reviews.length}

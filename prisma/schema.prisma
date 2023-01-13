@@ -76,31 +76,34 @@ model LaborMarket {
 }
 
 model ServiceRequest {
-  internalId         String       @default(cuid())
+  id                 String       @id @default(cuid())
+  contractId         String       @unique @default(cuid())
   title              String
   laborMarketAddress String
   createdAt          DateTime     @default(now())
   laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
   submissions        Submission[]
 
-  @@id([internalId, laborMarketAddress])
+  @@unique([contractId, laborMarketAddress])
 }
 
 model Review {
-  id                 String      @id @unique
+  id                 String      @id @default(cuid())
+  contractId         String      @unique @default(cuid())
   submissionId       String
   comment            String
   createdAt          DateTime    @default(now())
   creatorId          String
   serviceRequestId   String
   laborMarketAddress String
-  submission         Submission? @relation(fields: [submissionId, laborMarketAddress], references: [internalId, laborMarketAddress])
+  submission         Submission? @relation(fields: [submissionId, laborMarketAddress], references: [contractId, laborMarketAddress])
   score              Int
 }
 
 // Represents an on-chain submission to a service request.
 model Submission {
-  internalId         String         @default(cuid())
+  id                 String         @id @default(cuid())
+  contractId         String         @unique @default(cuid())
   serviceRequestId   String
   createdAt          DateTime       @default(now())
   creatorId          String
@@ -109,9 +112,9 @@ model Submission {
   laborMarketAddress String
   score              Int
   reviews            Review[]
-  serviceRequest     ServiceRequest @relation(fields: [laborMarketAddress, serviceRequestId], references: [laborMarketAddress, internalId])
+  serviceRequest     ServiceRequest @relation(fields: [laborMarketAddress, serviceRequestId], references: [laborMarketAddress, contractId])
 
-  @@id([internalId, laborMarketAddress])
+  @@unique([contractId, laborMarketAddress])
 }
 
 model Network {

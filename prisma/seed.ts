@@ -79,7 +79,7 @@ async function seedSubmissions(allChallenges: ServiceRequest[]) {
   for (const challenge of allChallenges) {
     // create 3 fake submissions for each challenge in Prisma
     for (let i = 0; i < 3; i++) {
-      const submission = fakeSubmission({}, challenge.laborMarketAddress, challenge.internalId);
+      const submission = fakeSubmission({}, challenge.laborMarketAddress, challenge.contractId);
       await upsertSubmission(submission);
     }
   }
@@ -90,7 +90,7 @@ async function seedReviews(allSubmissions: Submission[]) {
     // create 3 fake reviews for each submission in Prisma
     for (let i = 0; i < 3; i++) {
       await upsertReview(
-        fakeReview({}, submission.serviceRequestId, submission.laborMarketAddress, submission.internalId)
+        fakeReview({}, submission.serviceRequestId, submission.laborMarketAddress, submission.contractId)
       );
     }
   }
