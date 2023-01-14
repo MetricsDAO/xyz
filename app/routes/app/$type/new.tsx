@@ -12,7 +12,7 @@ import { Button, Container, Modal } from "~/components";
 import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
-import { useCreateLaborMarket } from "~/hooks/use-create-labor-market";
+import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
@@ -57,7 +57,7 @@ export default function CreateMarketplace() {
         toast.success("Marketplace created!");
       },
       notifyTransactionPrepareFailure: () => {
-        toast.error("Failed to validate marketplace. Possibly error uplading to IPFS.");
+        toast.error("Failed to validate marketplace. Possible error uplading to IPFS.");
       },
     },
   });
@@ -72,7 +72,8 @@ export default function CreateMarketplace() {
     }
   }, [actionData, send]);
 
-  console.log("state", state.value, state.context);
+  // Debug
+  // console.log("state", state.value, state.context);
 
   const closeModal = () => {
     send({ type: "TRANSACTION_CANCEL" });
@@ -106,52 +107,23 @@ export default function CreateMarketplace() {
           </div>
         </ValidatedForm>
       </div>
-      <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
-        <ConfirmTransaction
-          data={state.context.contractData}
-          onClose={closeModal}
-          onTransactionSuccess={onTransactionSuccess}
-          onWriteSuccess={onWriteSuccess}
-        />
-      </Modal>
+      {state.context.contractData && (
+        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
+          <div className="space-y-8">
+            <p>Please confirm that you would like to create a new marketplace.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              <CreateLaborMarketWeb3Button
+                data={state.context.contractData}
+                onTransactionSuccess={onTransactionSuccess}
+                onWriteSuccess={onWriteSuccess}
+              />
+              <Button variant="cancel" size="md" onClick={closeModal}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </Container>
-  );
-}
-
-function ConfirmTransaction({
-  data,
-  onClose,
-  onTransactionSuccess,
-  onWriteSuccess,
-}: {
-  data?: LaborMarketContract;
-  onClose: () => void;
-  onTransactionSuccess?: () => void;
-  onWriteSuccess?: (hash: `0x${string}`) => void;
-}) {
-  invariant(data, "data is required"); // this should never happen but just in case
-
-  const { write, isLoading } = useCreateLaborMarket({
-    data,
-    onTransactionSuccess,
-    onWriteSuccess,
-  });
-
-  const onCreate = () => {
-    write?.();
-  };
-
-  return (
-    <div className="space-y-8">
-      <p>Please confirm that you would like to create a new marketplace.</p>
-      <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
-          Create
-        </Button>
-        <Button variant="cancel" size="md" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
   );
 }
