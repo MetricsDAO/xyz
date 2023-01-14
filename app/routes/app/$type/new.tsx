@@ -17,7 +17,7 @@ import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { blockchainMachine } from "~/utils/machine";
+import { createChainTransactionMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
@@ -44,7 +44,9 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function CreateMarketplace() {
-  const [state, send] = useMachine(blockchainMachine, {
+  const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
+  const actionData = useTypedActionData<ActionResponse>();
+  const [state, send] = useMachine(createChainTransactionMachine<LaborMarketContract>(), {
     actions: {
       notifyTransactionWrite: () => {
         toast.loading("Creating marketplace...", { id: "creating-marketplace" });
@@ -58,18 +60,16 @@ export default function CreateMarketplace() {
       },
     },
   });
-  const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<ActionResponse>();
-
-  useEffect(() => {
-    if (actionData && !isValidationError(actionData)) {
-      console.log("actionData.preparedLaborMarket", actionData.preparedLaborMarket);
-      send({ type: "TRANSACTION_READY", data: actionData.preparedLaborMarket });
-    }
-  }, [actionData, send]);
 
   const isUploadingToIpfs = state.matches("transactionPrepare.loading");
   const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
+
+  // If action succeeds the transaction is ready to be written to the blockchain
+  useEffect(() => {
+    if (actionData && !isValidationError(actionData)) {
+      send({ type: "TRANSACTION_READY", data: actionData.preparedLaborMarket });
+    }
+  }, [actionData, send]);
 
   console.log("state", state.value, state.context);
 
