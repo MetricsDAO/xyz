@@ -48,7 +48,8 @@ export default function CreateMarketplace() {
   const actionData = useTypedActionData<ActionResponse>();
   const [state, send] = useMachine(createChainTransactionMachine<LaborMarketContract>(), {
     actions: {
-      notifyTransactionWrite: () => {
+      notifyTransactionWrite: (context) => {
+        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
         toast.loading("Creating marketplace...", { id: "creating-marketplace" });
       },
       notifyTransactionSuccess: () => {
@@ -81,8 +82,8 @@ export default function CreateMarketplace() {
     send({ type: "TRANSACTION_SUCCESS" });
   };
 
-  const onWriteSuccess = () => {
-    send({ type: "TRANSACTION_WRITE" });
+  const onWriteSuccess = (transactionHash: `0x${string}`) => {
+    send({ type: "TRANSACTION_WRITE", transactionHash });
   };
 
   return (
@@ -126,7 +127,7 @@ function ConfirmTransaction({
   data?: LaborMarketContract;
   onClose: () => void;
   onTransactionSuccess?: () => void;
-  onWriteSuccess?: () => void;
+  onWriteSuccess?: (hash: `0x${string}`) => void;
 }) {
   invariant(data, "data is required"); // this should never happen but just in case
 

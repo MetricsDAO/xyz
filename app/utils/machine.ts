@@ -8,14 +8,15 @@ export const createChainTransactionMachine = <T>() => {
       initial: "idle",
       context: {
         contractData: undefined,
+        transactionHash: undefined,
       },
       schema: {
-        context: {} as { contractData?: T },
+        context: {} as { contractData?: T; transactionHash?: string },
         events: {} as
           | { type: "TRANSACTION_PREPARE" }
           | { type: "TRANSACTION_READY"; data: T }
           | { type: "TRANSACTION_CANCEL" }
-          | { type: "TRANSACTION_WRITE" }
+          | { type: "TRANSACTION_WRITE"; transactionHash: string }
           | { type: "TRANSACTION_SUCCESS" },
       },
       states: {
@@ -42,7 +43,7 @@ export const createChainTransactionMachine = <T>() => {
         transactionReady: {
           on: {
             TRANSACTION_CANCEL: { target: "idle" }, //start over
-            TRANSACTION_WRITE: { target: "transactionWrite" },
+            TRANSACTION_WRITE: { target: "transactionWrite", actions: "setTransactionHash" },
           },
         },
         transactionWrite: {
@@ -64,6 +65,14 @@ export const createChainTransactionMachine = <T>() => {
               return event.data;
             }
             return context.contractData;
+          },
+        }),
+        setTransactionHash: assign({
+          transactionHash: (context, event) => {
+            if (event.type === "TRANSACTION_WRITE") {
+              return event.transactionHash;
+            }
+            return context.transactionHash;
           },
         }),
       },

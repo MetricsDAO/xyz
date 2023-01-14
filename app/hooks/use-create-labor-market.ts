@@ -12,7 +12,7 @@ export function useCreateLaborMarket({
   onWriteSuccess,
 }: {
   data: LaborMarketContract;
-  onWriteSuccess?: () => void;
+  onWriteSuccess?: (hash: `0x${string}`) => void;
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
@@ -56,7 +56,7 @@ export function useCreateLaborMarket({
   const { data: transactionResultData, write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      onWriteSuccess?.();
+      onWriteSuccess?.(result.hash);
     },
   });
 
