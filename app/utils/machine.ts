@@ -17,6 +17,9 @@ type Context<ContractData> = {
 export const createBlockchainTransactionStateMachine = <T>() => {
   return createMachine(
     {
+      // tsTypes is auto-generated with xstate VSCODE extension
+      // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+      tsTypes: {} as import("./machine.typegen").Typegen0,
       predictableActionArguments: true, //recommended
       id: "chain-write",
       initial: "idle",
@@ -45,9 +48,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           },
           states: {
             loading: {},
-            failure: {
-              entry: "notifyTransactionPrepareFailure",
-            },
+            failure: {},
           },
         },
         transactionReady: {
@@ -71,26 +72,17 @@ export const createBlockchainTransactionStateMachine = <T>() => {
       actions: {
         setContractData: assign({
           contractData: (context, event) => {
-            if (event.type === "TRANSACTION_READY") {
-              return event.data;
-            }
-            return context.contractData;
+            return event.data;
           },
         }),
         setTransactionHash: assign({
           transactionHash: (context, event) => {
-            if (event.type === "TRANSACTION_WRITE") {
-              return event.transactionHash;
-            }
-            return context.transactionHash;
+            return event.transactionHash;
           },
         }),
         setTransactionReceipt: assign({
           transactionReceipt: (context, event) => {
-            if (event.type === "TRANSACTION_SUCCESS") {
-              return event.transactionReceipt;
-            }
-            return context.transactionReceipt;
+            return event.transactionReceipt;
           },
         }),
       },

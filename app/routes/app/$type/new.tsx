@@ -72,9 +72,6 @@ export default function CreateMarketplace() {
           });
         }
       },
-      notifyTransactionPrepareFailure: () => {
-        toast.error("Failed to validate marketplace. Possible error uplading to IPFS.");
-      },
     },
   });
 
