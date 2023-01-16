@@ -1,3 +1,4 @@
+import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { assign, createMachine } from "xstate";
 
 export const createChainTransactionMachine = <T>() => {
@@ -9,15 +10,16 @@ export const createChainTransactionMachine = <T>() => {
       context: {
         contractData: undefined,
         transactionHash: undefined,
+        transactionReceipt: undefined,
       },
       schema: {
-        context: {} as { contractData?: T; transactionHash?: string },
+        context: {} as { contractData?: T; transactionHash?: string; transactionReceipt?: TransactionReceipt },
         events: {} as
           | { type: "TRANSACTION_PREPARE" }
           | { type: "TRANSACTION_READY"; data: T }
           | { type: "TRANSACTION_CANCEL" }
           | { type: "TRANSACTION_WRITE"; transactionHash: string }
-          | { type: "TRANSACTION_SUCCESS" },
+          | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt },
       },
       states: {
         idle: {
@@ -49,7 +51,7 @@ export const createChainTransactionMachine = <T>() => {
         transactionWrite: {
           entry: "notifyTransactionWrite",
           on: {
-            TRANSACTION_SUCCESS: { target: "transactionComplete" },
+            TRANSACTION_SUCCESS: { target: "transactionComplete", actions: "setTransactionReceipt" },
           },
         },
         transactionComplete: {
@@ -73,6 +75,14 @@ export const createChainTransactionMachine = <T>() => {
               return event.transactionHash;
             }
             return context.transactionHash;
+          },
+        }),
+        setTransactionReceipt: assign({
+          transactionReceipt: (context, event) => {
+            if (event.type === "TRANSACTION_SUCCESS") {
+              return event.transactionReceipt;
+            }
+            return context.transactionReceipt;
           },
         }),
       },

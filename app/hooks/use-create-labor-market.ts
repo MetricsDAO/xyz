@@ -3,8 +3,6 @@ import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
-import { createLaborMarket } from "~/utils/fetch";
-import { removeLeadingZeros } from "~/utils/helpers";
 
 export function useCreateLaborMarket({
   data,
@@ -63,17 +61,9 @@ export function useCreateLaborMarket({
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: transactionResultData?.hash,
     onError(error) {
-      console.log("error", error);
+      console.error(error);
     },
     async onSuccess(receipt) {
-      if (window.ENV.DEV_AUTO_INDEX) {
-        createLaborMarket({
-          ...data,
-          address: removeLeadingZeros(receipt.logs[0]?.topics[1] as string), // The labor market created address
-          sponsorAddress: data.userAddress,
-        });
-      }
-
       onTransactionSuccess?.(receipt);
     },
   });

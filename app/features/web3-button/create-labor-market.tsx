@@ -1,6 +1,7 @@
 import { Button } from "~/components";
 import type { LaborMarketContract } from "~/domain";
 import { useCreateLaborMarket } from "~/hooks/use-create-labor-market";
+import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 
 export function CreateLaborMarketWeb3Button({
   data,
@@ -8,7 +9,7 @@ export function CreateLaborMarketWeb3Button({
   onWriteSuccess,
 }: {
   data: LaborMarketContract;
-  onTransactionSuccess?: () => void;
+  onTransactionSuccess?: (receipt: TransactionReceipt) => void;
   onWriteSuccess?: (hash: `0x${string}`) => void;
 }) {
   const { write } = useCreateLaborMarket({

@@ -19,6 +19,9 @@ import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { createChainTransactionMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
+import type { TransactionReceipt } from "@ethersproject/abstract-provider";
+import { createLaborMarket } from "~/utils/fetch";
+import { removeLeadingZeros } from "~/utils/helpers";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -52,9 +55,21 @@ export default function CreateMarketplace() {
         // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
         toast.loading("Creating marketplace...", { id: "creating-marketplace" });
       },
-      notifyTransactionSuccess: () => {
+      notifyTransactionSuccess: (context) => {
         toast.dismiss("creating-marketplace");
         toast.success("Marketplace created!");
+
+        // Create marketplace in the database as a dx side-effect
+        if (window.ENV.DEV_AUTO_INDEX) {
+          invariant(context.contractData, "Contract data is required");
+          invariant(context.transactionReceipt, "Transaction receipt is required");
+          // fire and forget
+          createLaborMarket({
+            ...context.contractData,
+            address: removeLeadingZeros(context.transactionReceipt.logs[0]?.topics[1] as string), // The labor market created address
+            sponsorAddress: context.contractData.userAddress,
+          });
+        }
       },
       notifyTransactionPrepareFailure: () => {
         toast.error("Failed to validate marketplace. Possible error uplading to IPFS.");
@@ -79,8 +94,8 @@ export default function CreateMarketplace() {
     send({ type: "TRANSACTION_CANCEL" });
   };
 
-  const onTransactionSuccess = () => {
-    send({ type: "TRANSACTION_SUCCESS" });
+  const onTransactionSuccess = (transactionReceipt: TransactionReceipt) => {
+    send({ type: "TRANSACTION_SUCCESS", transactionReceipt });
   };
 
   const onWriteSuccess = (transactionHash: `0x${string}`) => {
