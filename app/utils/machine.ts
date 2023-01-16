@@ -1,7 +1,7 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { assign, createMachine } from "xstate";
 
-export const createChainTransactionMachine = <T>() => {
+export const createBlockchainTransactionStateMachine = <T>() => {
   return createMachine(
     {
       predictableActionArguments: true, //recommended

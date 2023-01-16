@@ -17,7 +17,7 @@ import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { createChainTransactionMachine } from "~/utils/machine";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { createLaborMarket } from "~/utils/fetch";
@@ -49,7 +49,7 @@ export const action = async ({ request }: ActionArgs) => {
 export default function CreateMarketplace() {
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
-  const [state, send] = useMachine(createChainTransactionMachine<LaborMarketContract>(), {
+  const [state, send] = useMachine(createBlockchainTransactionStateMachine<LaborMarketContract>(), {
     actions: {
       notifyTransactionWrite: (context) => {
         // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
