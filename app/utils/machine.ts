@@ -1,6 +1,19 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { assign, createMachine } from "xstate";
 
+type Events<ContractData> =
+  | { type: "TRANSACTION_PREPARE" }
+  | { type: "TRANSACTION_READY"; data: ContractData }
+  | { type: "TRANSACTION_CANCEL" }
+  | { type: "TRANSACTION_WRITE"; transactionHash: string }
+  | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt };
+
+type Context<ContractData> = {
+  contractData?: ContractData;
+  transactionHash?: string;
+  transactionReceipt?: TransactionReceipt;
+};
+
 export const createBlockchainTransactionStateMachine = <T>() => {
   return createMachine(
     {
@@ -13,13 +26,8 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         transactionReceipt: undefined,
       },
       schema: {
-        context: {} as { contractData?: T; transactionHash?: string; transactionReceipt?: TransactionReceipt },
-        events: {} as
-          | { type: "TRANSACTION_PREPARE" }
-          | { type: "TRANSACTION_READY"; data: T }
-          | { type: "TRANSACTION_CANCEL" }
-          | { type: "TRANSACTION_WRITE"; transactionHash: string }
-          | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt },
+        context: {} as Context<T>,
+        events: {} as Events<T>,
       },
       states: {
         idle: {
