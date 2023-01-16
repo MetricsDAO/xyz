@@ -55,10 +55,11 @@ export default function CreateMarketplace() {
         // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
         toast.loading("Creating marketplace...", { id: "creating-marketplace" });
       },
-      notifyTransactionSuccess: (context) => {
+      notifyTransactionSuccess: () => {
         toast.dismiss("creating-marketplace");
         toast.success("Marketplace created!");
-
+      },
+      devAutoIndex: (context) => {
         // Create marketplace in the database as a dx side-effect
         if (window.ENV.DEV_AUTO_INDEX) {
           invariant(context.contractData, "Contract data is required");

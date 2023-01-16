@@ -55,7 +55,7 @@ export const createChainTransactionMachine = <T>() => {
           },
         },
         transactionComplete: {
-          entry: "notifyTransactionSuccess",
+          entry: ["notifyTransactionSuccess", "devAutoIndex"],
         },
       },
     },
