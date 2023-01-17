@@ -5,11 +5,10 @@ import { fromNow } from "~/utils/date";
 
 type Props = {
   submission: Submission;
-  score: number;
   totalReviews: number;
 };
 
-export function SubmissionCard({ submission, score, totalReviews }: Props) {
+export function SubmissionCard({ submission, totalReviews }: Props) {
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
@@ -21,7 +20,7 @@ export function SubmissionCard({ submission, score, totalReviews }: Props) {
           <section className="text-gray-900">{submission.description}</section>
         </main>
         <div className="flex flex-col items-center gap-2">
-          <Score score={score} />
+          <Score score={submission.score} />
           <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>
         </div>
       </Link>

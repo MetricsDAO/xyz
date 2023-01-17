@@ -54,7 +54,7 @@ export default function Challenge() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+          {/*<UserBadge url="u/id" address={challenge.laborMarket.sponsorAddress} balance={200} />*/}
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
@@ -80,7 +80,7 @@ export default function Challenge() {
         </DetailItem>
       </Detail>
 
-      <article className="text-zinc-500 text-sm space-y-4 mb-20 w-full md:w-2/3">
+      <article className="text-gray-500 text-sm mb-20 max-w-2xl">
         <p>
           What's the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What's
           the challenge What web3 topic do you want to crowdsource potential analytics questions

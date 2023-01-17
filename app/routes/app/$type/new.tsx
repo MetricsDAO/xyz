@@ -62,7 +62,7 @@ export default function CreateMarketplace() {
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
         <ValidatedForm<LaborMarketForm> validator={validator} method="post" defaultValues={defaultValues}>
-          <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
+          <h1 className="text-3xl font-semibold antialiased">Create a Brainstorm Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">

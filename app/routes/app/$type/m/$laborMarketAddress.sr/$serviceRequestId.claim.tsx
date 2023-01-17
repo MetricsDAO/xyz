@@ -35,18 +35,18 @@ export default function ClaimToSubmit() {
   }
 
   return (
-    <Container className="max-w-4xl space-y-7 mb-12 mt-6">
+    <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {challenge.title}</h1>
-        <h2 className="text-xl text-cyan-500">Claiming is an up front commitment to submit at least one submission</h2>
-        <p className="text-gray-500">
+        <h2 className="text-lg text-cyan-500">Claiming is an up front commitment to submit at least one submission</h2>
+        <p className="text-gray-500 text-sm">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked
           rMETRIC will be slashed.
         </p>
       </div>
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">How Claiming to Submit Works</h3>
-        <ul className="list-disc list-inside text-gray-500 space-y-1">
+        <h3 className="font-semibold">How Claiming to Submit Works</h3>
+        <ul className="list-disc list-inside text-gray-500 space-y-1 text-sm">
           <li>Commit to entering at least one submission by locking rMETRIC against this challenge</li>
           <li>Enter at least one submission before the submission deadline</li>
           <li>If you submit before the deadline, your rMETRIC will be unlocked</li>
@@ -56,24 +56,24 @@ export default function ClaimToSubmit() {
       <div className="flex">
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Claim to Submit Deadline</h2>
+            <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
             <CountdownCard start={"2023-01-25"} />
           </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Submission Deadline</h2>
+            <h2 className="font-semibold pr-16">Submission Deadline</h2>
             <CountdownCard start={"2022-11-25"} />
           </div>
         </div>
       </div>
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">Lock rMETRIC</h2>
+        <h2 className="font-semibold">Lock rMETRIC</h2>
         <div className="flex flex-col md:flex-row gap-2 md:items-center">
-          <p>
+          <p className="text-sm">
             You must lock <Badge>50</Badge> rMETRIC to claim
           </p>
           <Button variant="outline">Lock rMETRIC</Button>
         </div>
-        <p className="mt-2 text-gray-500 italic">
+        <p className="mt-2 text-gray-500 italic text-sm">
           Important: If you don't submit before the deadline, all 50 of your locked rMETRIC will be slashed.
         </p>
       </div>

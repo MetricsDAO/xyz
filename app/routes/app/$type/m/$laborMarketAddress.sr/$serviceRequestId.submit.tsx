@@ -7,7 +7,7 @@ import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { Button, Container, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
+import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
 import { useCreateSubmission } from "~/hooks/use-create-submission";
@@ -51,34 +51,43 @@ export default function SubmitQuestion() {
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
         <main className="lg:max-w-xl space-y-7">
-          <h1 className="text-3xl font-semibold">Submit Question</h1>
-          <h2 className="text-lg text-cyan-500">
-            Brainstorm the best question for crypto analysts to answer about Challenge title
-          </h2>
-          <p className="text-gray-500">
-            Submit your best question idea. Peers will review and score your question. If you're a winner, you'll earn
-            tokens and rMETRIC from the challenge reward pool!
-          </p>
+          <div className="space-y-3">
+            <h1 className="text-3xl font-semibold">Submit Your Idea</h1>
+            <h2 className="text-lg text-cyan-500">What would you like Web3 analysts to address?</h2>
+            <p className="text-gray-500 text-sm">
+              Submit your idea. Peer reviewers will score your submission. If you’re a winner, you’ll earn tokens and
+              rMETRIC from the challenge reward pool!
+            </p>
+          </div>
           <ValidatedForm method="post" validator={validator}>
-            <div className="space-y-5">
-              <ValidatedInput
-                name="title"
-                label="Question Title"
-                placeholder="Question title"
-                className="mt-1 w-full"
-              />
-              <ValidatedTextarea
-                name="description"
-                placeholder="Don't assume we will “know what you mean.” Be specific. Define metrics. Specify time boundaries."
-                className="p-black w-full md:col-span-2"
-                rows={7}
-              />
-              <p className="italic p-gray-500">
-                Important: You can't edit this question after submitting. Double check your work for typos and ensure
-                your question is good to go.
-              </p>
-            </div>
-            <div className="flex flex-col md:flex-row gap-5 items-center">
+            <div className="space-y-10">
+              <section className="space-y-3">
+                <h2 className="font-bold">Submission Title</h2>
+                <Field>
+                  <ValidatedInput name="title" placeholder="Submission Title" className="w-full" />
+                </Field>
+              </section>
+              <section className="space-y-3">
+                <h2 className="font-bold">What would you like Web3 analysts to address?</h2>
+                <Field>
+                  <ValidatedTextarea
+                    name="description"
+                    rows={7}
+                    placeholder="Enter an idea for something Web3 analysts should address. 
+
+                    Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
+                  />
+                </Field>
+                <p className="italic text-gray-500 text-sm">
+                  Important: You can’t edit this submission after submitting. Double check your work for typos and
+                  ensure your idea is good to go.{" "}
+                  <i className="text-blue-600">
+                    <a href="https://docs.metricsdao.xyz/metricsdao/code-of-conduct#plagiarism-17">
+                      Plagiarism Code of Conduct.
+                    </a>
+                  </i>
+                </p>
+              </section>
               <Button type="submit">Next</Button>
             </div>
           </ValidatedForm>
@@ -87,7 +96,7 @@ export default function SubmitQuestion() {
           </Modal>
         </main>
         <aside className="lg:basis-1/3 ">
-          <div className="rounded-lg border-2 p-5 bg-sky-100 bg-opacity-5 space-y-6">
+          <div className="rounded-lg border-2 p-5 bg-sky-100 bg-opacity-5 space-y-6 text-sm">
             <p className="font-bold">Be specific:</p>
             <div className="text-gray-500 space-y-3">
               <p>"How many people actively use Sushi?"</p>
@@ -151,7 +160,7 @@ function ConfirmTransaction({ data, onClose }: { data?: SubmissionContract; onCl
       <p>Please confirm that you would like to make this submission.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
         <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
-          Create
+          Submit Idea
         </Button>
         <Button variant="cancel" size="md" onClick={onClose}>
           Cancel
