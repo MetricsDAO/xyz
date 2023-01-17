@@ -45,14 +45,14 @@ export function fakeLaborMarketNew(): LaborMarketForm {
     type: "brainstorm",
     launch: {
       access: "delegates",
-      badgerAddress: "0x9D2D6c0D2563E4540046279054774e165e85eE1F",
-      badgerTokenId: "0",
+      badgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
+      badgerTokenId: "1",
     },
     rewardCurveAddress: faker.finance.ethereumAddress(),
     submitRepMin: faker.datatype.number(100),
     submitRepMax: faker.datatype.number(100),
-    reviewBadgerAddress: "0x9D2D6c0D2563E4540046279054774e165e85eE1F",
-    reviewBadgerTokenId: "1",
+    reviewBadgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
+    reviewBadgerTokenId: "0",
     tokenSymbols: ["ETH"],
     projectIds: [],
   };
