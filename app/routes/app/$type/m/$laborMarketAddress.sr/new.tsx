@@ -20,8 +20,8 @@ import {
 import type { ServiceRequestContract } from "~/domain";
 import { ServiceRequestFormSchema, fakeServiceRequestFormData } from "~/domain";
 import { useApproveERC20 } from "~/hooks/use-approve-erc20";
-import { useSubmitRequest } from "~/hooks/use-submit-request";
-import { prepareServiceRequest } from "~/services/challenges-service.server";
+import { useCreateServiceRequest } from "~/hooks/use-create-service-request";
+import { prepareServiceRequest } from "~/services/service-request.server";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
@@ -32,21 +32,21 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   return typedjson({ defaultValues });
 };
 
-type ActionResponse = { preparedChallenge: ServiceRequestContract } | ValidationErrorResponseData;
+type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   const { laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
-  const preparedChallenge = await prepareServiceRequest(laborMarketAddress, result.data);
-  return typedjson({ preparedChallenge });
+  const preparedServiceRequest = await prepareServiceRequest(laborMarketAddress, result.data);
+  return typedjson({ preparedServiceRequest });
 };
 
-export default function CreateChallenge() {
+export default function CreateServiceRequest() {
   const { defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
-  const [modalData, setModalData] = useState<{ challenge?: ServiceRequestContract; isOpen: boolean }>({
+  const [modalData, setModalData] = useState<{ serviceRequest?: ServiceRequestContract; isOpen: boolean }>({
     isOpen: false,
   });
 
@@ -55,8 +55,8 @@ export default function CreateChallenge() {
   }
 
   useEffect(() => {
-    if (actionData && "preparedChallenge" in actionData) {
-      setModalData({ challenge: actionData.preparedChallenge, isOpen: true });
+    if (actionData && "preparedServiceRequest" in actionData) {
+      setModalData({ serviceRequest: actionData.preparedServiceRequest, isOpen: true });
     }
   }, [actionData]);
 
@@ -205,17 +205,23 @@ export default function CreateChallenge() {
         </Button>
       </ValidatedForm>
       <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction challenge={modalData.challenge} onClose={closeModal} />
+        <ConfirmTransaction serviceRequest={modalData.serviceRequest} onClose={closeModal} />
       </Modal>
     </Container>
   );
 }
 
-function ConfirmTransaction({ challenge, onClose }: { challenge?: ServiceRequestContract; onClose: () => void }) {
-  invariant(challenge, "challenge is required"); // this should never happen but just in case
+function ConfirmTransaction({
+  serviceRequest,
+  onClose,
+}: {
+  serviceRequest?: ServiceRequestContract;
+  onClose: () => void;
+}) {
+  invariant(serviceRequest, "serviceRequest is required"); // this should never happen but just in case
 
-  const { write: writeChallenge } = useSubmitRequest({
-    data: challenge,
+  const { write: writeServiceRequest } = useCreateServiceRequest({
+    data: serviceRequest,
     onTransactionSuccess() {
       toast.dismiss("creating-challenge");
       toast.success("Challenge created!");
@@ -228,9 +234,9 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ServiceRequest
 
   const { write: writeApprove } = useApproveERC20({
     data: {
-      ERC20address: challenge.pTokenAddress,
-      amount: challenge.pTokenQuantity,
-      spender: challenge.laborMarketAddress as `0x${string}`,
+      ERC20address: serviceRequest.pTokenAddress,
+      amount: serviceRequest.pTokenQuantity,
+      spender: serviceRequest.laborMarketAddress as `0x${string}`,
     },
     onTransactionSuccess() {
       toast.dismiss("approving-challenge");
@@ -241,8 +247,8 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ServiceRequest
     },
   });
 
-  const onCreateChallenge = () => {
-    writeChallenge?.();
+  const onLaunch = () => {
+    writeServiceRequest?.();
   };
 
   const onApprove = () => {
@@ -252,8 +258,8 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ServiceRequest
   return (
     <div className="space-y-8">
       <p>
-        First you must approve to transer <b>{challenge.pTokenQuantity}</b> of the ERC20 with address{" "}
-        <b>{challenge.pTokenAddress}</b> on your behalf{" "}
+        First you must approve to transer <b>{serviceRequest.pTokenQuantity}</b> of the ERC20 with address{" "}
+        <b>{serviceRequest.pTokenAddress}</b> on your behalf{" "}
       </p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
         <Button size="md" type="button" onClick={onApprove}>
@@ -262,7 +268,7 @@ function ConfirmTransaction({ challenge, onClose }: { challenge?: ServiceRequest
       </div>
       <p>Please confirm that you would like to launch a new challenge.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={onCreateChallenge}>
+        <Button size="md" type="button" onClick={onLaunch}>
           Launch
         </Button>
         <Button variant="cancel" size="md" onClick={onClose}>
