@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import type { Review } from "@prisma/client";
-import type { ServiceRequest, ServiceRequestContract, ServiceRequestIndexer } from "~/domain";
+import type { ServiceRequest, ServiceRequestIndexer } from "~/domain";
 import type { LaborMarket } from "~/domain";
 import type { SubmissionIndexer } from "~/domain/submission";
 
@@ -14,7 +14,7 @@ import type { SubmissionIndexer } from "~/domain/submission";
 export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   return {
     address: faker.finance.ethereumAddress(),
-    title: faker.random.words(3),
+    title: `Labor Market - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     type: faker.helpers.arrayElement(["brainstorm", "analyze"]) as "brainstorm" | "analyze",
     rewardCurveAddress: faker.finance.ethereumAddress(),
@@ -34,16 +34,13 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeServiceRequest = (
-  data: Partial<ServiceRequest>,
-  laborMarketAddress: string
-): ServiceRequestIndexer => {
+export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestIndexer => {
   return {
     id: faker.datatype.uuid(),
     contractId: faker.datatype.uuid(),
-    title: faker.random.words(3),
+    title: `Service Request - ${faker.random.words(3)}`,
     description: faker.random.words(10),
-    laborMarketAddress: laborMarketAddress,
+    laborMarketAddress: faker.finance.ethereumAddress(),
     pTokenAddress: faker.finance.ethereumAddress(),
     pTokenId: faker.datatype.number(),
     pTokenQuantity: faker.datatype.number(),
@@ -52,42 +49,36 @@ export const fakeServiceRequest = (
     enforcementExpiration: faker.date.future(),
     uri: faker.internet.url(),
     createdAt: faker.date.past(),
+    ...data,
   };
 };
 
-export const fakeSubmission = (
-  data: Partial<SubmissionIndexer>,
-  laborMarketAddress: string,
-  serviceRequestId: string
-): SubmissionIndexer => {
+export const fakeSubmission = (data: Partial<SubmissionIndexer>): SubmissionIndexer => {
   return {
     id: faker.datatype.uuid(),
     contractId: faker.datatype.uuid(),
-    serviceRequestId: serviceRequestId,
-    title: faker.random.words(3),
+    serviceRequestId: faker.datatype.uuid(),
+    title: `Submission - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     creatorId: faker.datatype.uuid(),
-    laborMarketAddress: laborMarketAddress,
+    laborMarketAddress: faker.finance.ethereumAddress(),
     score: 10,
+    ...data,
   };
 };
 
-export const fakeReview = (
-  data: Partial<Review>,
-  serviceRequestId: string,
-  laborMarketAddress: string,
-  submissionId: string
-): Review => {
+export const fakeReview = (data: Partial<Review>): Review => {
   return {
     id: faker.datatype.uuid(),
     contractId: faker.datatype.uuid(),
-    serviceRequestId: serviceRequestId,
-    laborMarketAddress: laborMarketAddress,
+    serviceRequestId: faker.datatype.uuid(),
+    laborMarketAddress: faker.finance.ethereumAddress(),
     comment: faker.random.words(3),
     score: 10,
     createdAt: faker.date.past(),
     creatorId: faker.datatype.uuid(),
-    submissionId: submissionId,
+    submissionId: faker.datatype.uuid(),
+    ...data,
   };
 };
 

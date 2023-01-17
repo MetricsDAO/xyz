@@ -6,6 +6,7 @@ import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
 import { ProjectAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
@@ -22,10 +23,12 @@ import { countChallenges, searchChallenges } from "~/services/challenges-service
 
 const validator = withZod(ServiceRequestSearchSchema);
 
+const paramsSchema = z.object({ laborMarketAddress: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
+  const { laborMarketAddress } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
-  const paramsWithLaborMarketId = { ...params, laborMarket: data.params.id };
+  const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
   const challenges = await searchChallenges(paramsWithLaborMarketId);
   const totalResults = await countChallenges(paramsWithLaborMarketId);
   return typedjson({ challenges, totalResults, params });
