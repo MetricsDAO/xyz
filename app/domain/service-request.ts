@@ -62,17 +62,6 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   uri: z.string(),
 });
 
-export const ServiceRequestSearchSchema = z.object({
-  page: z.number().default(1),
-  laborMarket: z.string().optional(),
-  q: z.string().optional(),
-  sortBy: z.enum(["title"]).default("title"),
-  order: z.enum(["asc", "desc"]).default("desc"),
-  token: z.string().optional(),
-  project: z.string().optional(),
-  first: z.number().default(12),
-});
-
 // Generate a fake Service Request for testing using faker.
 export function fakeServiceRequestFormData(): ServiceRequestForm {
   const startDate = faker.date.soon();
@@ -95,7 +84,35 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   };
 }
 
+export const ServiceRequestSearchSchema = z.object({
+  page: z.number().default(1),
+  laborMarket: z.string().optional(),
+  q: z.string().optional(),
+  sortBy: z.enum(["title"]).default("title"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  token: z.string().optional(),
+  project: z.string().optional(),
+  first: z.number().default(12),
+});
+
+export const ServiceRequestIndexerSchema = z.object({
+  id: z.string({ description: "The id of the service request." }),
+  contractId: z.string({ description: "The id of the service request." }),
+  title: z.string({ description: "The title of the service request." }).min(1, "Required"),
+  description: z.string({ description: "The description of the service request." }).min(1, "Required"),
+  laborMarketAddress: EthAddressSchema,
+  createdAt: z.date({ description: "The date the service request was created." }),
+  pTokenAddress: EthAddressSchema,
+  pTokenId: z.number(),
+  pTokenQuantity: z.number(),
+  signalExpiration: z.date(),
+  submissionExpiration: z.date(),
+  enforcementExpiration: z.date(),
+  uri: z.string(),
+});
+
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
+export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;

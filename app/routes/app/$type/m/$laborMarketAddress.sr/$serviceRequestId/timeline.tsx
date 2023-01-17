@@ -2,10 +2,12 @@ import { useRouteData } from "remix-utils";
 import { CountdownCard } from "~/components/countdown-card";
 import type { findChallenge } from "~/services/challenges-service.server";
 
-export default function ChallengeIdPrereqs() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/c/$id");
+export default function ServiceIdTimeline() {
+  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>(
+    "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
+  );
   if (!data) {
-    throw new Error("ChallengeIdPrereqs must be rendered under a ChallengeId route");
+    throw new Error("ServiceIdTimeline must be rendered under a ServiceId route");
   }
   // const { challenge } = data;
 

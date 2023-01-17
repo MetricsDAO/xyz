@@ -1,6 +1,5 @@
-import type { Submission } from "@prisma/client";
 import type { ServiceRequest } from "~/domain";
-import type { SubmissionContract, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import type { SubmissionContract, SubmissionForm, SubmissionIndexer, SubmissionSearch } from "~/domain/submission";
 import { SubmissionContractSchema } from "~/domain/submission";
 import { prisma } from "./prisma.server";
 
@@ -15,9 +14,6 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
       title: { search: params.q },
       description: { search: params.q },
       serviceRequestId: params.serviceRequestId,
-      score: {
-        in: params.score,
-      },
     },
     orderBy: {
       [params.sortBy]:
@@ -34,13 +30,13 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
 
 /**
  * Finds a submission by its id.
- * @param {string} submissionId - The ID of the submission to find.
+ * @param {string} contractId - The ID of the submission to find.
  * @returns {Promise<Submission | null>} - The submission or null if not found.
  */
-export const findSubmission = async (submissionId: string) => {
-  return prisma.submission.findFirst({
-    where: { id: submissionId },
-    include: { serviceRequest: true, reviews: true },
+export const findSubmission = async (laborMarketAddress: string, contractId: string) => {
+  return prisma.submission.findUnique({
+    where: { contractId_laborMarketAddress: { contractId, laborMarketAddress } },
+    include: { reviews: true, serviceRequest: true },
   });
 };
 
@@ -48,13 +44,14 @@ export const findSubmission = async (submissionId: string) => {
  * Creates or updates a new submission. This is only really used by the indexer.
  * @param {Submission} submission - The submission to create.
  */
-export const upsertSubmission = async (submission: Submission) => {
-  const { id, ...data } = submission;
+export const upsertSubmission = async (submission: SubmissionIndexer) => {
+  const { serviceRequestId, laborMarketAddress, ...data } = submission;
   const newSubmission = await prisma.submission.upsert({
-    where: { id },
+    where: { contractId_laborMarketAddress: { contractId: submission.contractId, laborMarketAddress } },
     update: data,
     create: {
-      id,
+      serviceRequestId,
+      laborMarketAddress,
       ...data,
     },
   });

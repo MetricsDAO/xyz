@@ -15,16 +15,15 @@ import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
-  console.log({ challenge });
+  const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ serviceRequestId });
   }
 
-  const submissionIds = challenge.submissions.map((s) => s.id);
+  const submissionIds = challenge.submissions.map((s) => s.contractId);
   const numOfReviews = await countReviews(submissionIds);
   return typedjson({ challenge, numOfReviews }, { status: 200 });
 };
@@ -36,14 +35,20 @@ export default function Challenge() {
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{challenge.title}</h1>
         <div className="flex flex-wrap gap-5">
-          <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
+          <Button variant="cancel" size="lg" asChild>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/review`}>
+              Claim to Review
+            </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/claim`}>
+              Claim to Submit
+            </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/submit`}>Submit</Link>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/submit`}>
+              Submit
+            </Link>
           </Button>
         </div>
       </header>

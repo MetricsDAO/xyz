@@ -1,26 +1,25 @@
 import { Link, Outlet } from "@remix-run/react";
-import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { findLaborMarket } from "~/services/labor-market.server";
 
 export const loader = async (data: DataFunctionArgs) => {
-  const url = new URL(data.request.url);
-  const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
+  // TODO: Refactor
+  // const url = new URL(data.request.url);
+  // const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
 
-  if (params.laborMarket == undefined) {
-    params.laborMarket = data.params.id;
-  }
+  // if (params.laborMarket == undefined) {
+  //   params.laborMarket = data.params.laborMarketAddress;
+  // }
 
   let laborMarket = undefined;
 
-  if (data.params.id != undefined) {
-    laborMarket = await findLaborMarket(data.params.id);
+  if (data.params.laborMarketAddress != undefined) {
+    laborMarket = await findLaborMarket(data.params.laborMarketAddress);
   }
 
   return typedjson({ laborMarket });
@@ -36,7 +35,7 @@ export default function Marketplace() {
           <h1 className="text-3xl font-semibold">{laborMarket?.title} </h1>
           <div className="flex flex-wrap gap-5">
             <Button asChild size="lg">
-              <Link to={`/app/brainstorm/${laborMarket?.address}/c/new`}>Launch Challenge</Link>
+              <Link to={`/app/brainstorm/m/${laborMarket?.address}/sr/new`}>Launch Challenge</Link>
             </Button>
           </div>
         </section>

@@ -7,19 +7,32 @@ import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { Button } from "~/components/button";
 import { Badge } from "~/components/badge";
+import type { ClaimToSubmitPrepared } from "~/domain";
+import { useState } from "react";
+import invariant from "tiny-invariant";
+import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
+import toast from "react-hot-toast";
+import { Modal } from "~/components";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
+  const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ id: serviceRequestId });
   }
 
   return typedjson({ challenge }, { status: 200 });
 };
+
 export default function ClaimToSubmit() {
   const { challenge } = useTypedLoaderData<typeof loader>();
+
+  const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
+
+  function closeModal() {
+    setModalData((challenge) => ({ challenge, isOpen: false }));
+  }
 
   return (
     <Container className="max-w-4xl space-y-7 mb-12 mt-6">
@@ -65,9 +78,52 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <Button>Claim to Submit</Button>
+        <Button
+          onClick={() => {
+            setModalData({ isOpen: true, data: { serviceRequestId: 1 } });
+          }}
+        >
+          Claim to Submit
+        </Button>
         <Button variant="cancel">Cancel</Button>
       </div>
+      <div className="invisible"></div>
+      <Modal title="Claim to submit?" isOpen={modalData.isOpen} onClose={closeModal}>
+        <ConfirmTransaction data={modalData.data} onClose={closeModal} />
+      </Modal>
     </Container>
+  );
+}
+
+function ConfirmTransaction({ data, onClose }: { data?: ClaimToSubmitPrepared; onClose: () => void }) {
+  invariant(data, "ClaimToSubmitPrepared is required"); // this should never happen but just in case
+
+  const { write, isLoading } = useClaimToSubmit({
+    data: data,
+    onTransactionSuccess() {
+      toast.dismiss("claiming-to-submit");
+      toast.success("Challenge Claimed!");
+    },
+    onWriteSuccess() {
+      toast.loading("Claiming challenge to submit...", { id: "claiming-to-submit" });
+    },
+  });
+
+  const onCreate = () => {
+    write?.();
+  };
+
+  return (
+    <div className="space-y-8 mt-4">
+      <p>Are you sure you want to claim a submission for this challenge?</p>
+      <div className="flex flex-wrap gap-5">
+        <Button loading={isLoading} onClick={onCreate}>
+          Claim
+        </Button>
+        <Button variant="cancel" onClick={onClose}>
+          Cancel
+        </Button>
+      </div>
+    </div>
   );
 }

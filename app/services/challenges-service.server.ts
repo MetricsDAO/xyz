@@ -1,4 +1,9 @@
-import type { ServiceRequestForm, ServiceRequestContract, ServiceRequestSearch } from "~/domain/service-request";
+import type {
+  ServiceRequestForm,
+  ServiceRequestContract,
+  ServiceRequestSearch,
+  ServiceRequestIndexer,
+} from "~/domain/service-request";
 import { ServiceRequestContractSchema } from "~/domain/service-request";
 import { parseDatetime } from "~/utils/date";
 import { prisma } from "./prisma.server";
@@ -38,12 +43,12 @@ export const countChallenges = async (params: ServiceRequestSearch) => {
 
 /**
  * Finds a Challenge by its ID.
- * @param {string} id - The ID of the Challenge.
+ * @param {String} id - The ID of the Challenge.
  * @returns - The Challenge or null if not found.
  */
-export const findChallenge = async (id: string) => {
+export const findChallenge = async (id: string, laborMarketAddress: string) => {
   return prisma.serviceRequest.findUnique({
-    where: { id },
+    where: { contractId_laborMarketAddress: { contractId: id, laborMarketAddress } },
     include: {
       submissions: true,
       laborMarket: { include: { projects: true } },
@@ -56,9 +61,11 @@ export const findChallenge = async (id: string) => {
  * Creates a new challenge/serviceRequest. This is only really used by the indexer.
  * @param {Challenge} challenge - The challenge to create.
  */
-export const upsertServiceRequest = async (challenge: ServiceRequestContract) => {
+export const upsertServiceRequest = async (challenge: ServiceRequestIndexer) => {
   const newChallenge = await prisma.serviceRequest.create({
     data: {
+      id: challenge.id,
+      contractId: challenge.contractId,
       title: challenge.title,
       laborMarketAddress: challenge.laborMarketAddress,
     },
