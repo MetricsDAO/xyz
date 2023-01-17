@@ -64,7 +64,6 @@ export const findChallenge = async (id: string, laborMarketAddress: string) => {
 export const upsertServiceRequest = async (challenge: ServiceRequestIndexer) => {
   const newChallenge = await prisma.serviceRequest.create({
     data: {
-      id: challenge.id,
       contractId: challenge.contractId,
       title: challenge.title,
       laborMarketAddress: challenge.laborMarketAddress,
@@ -89,7 +88,6 @@ export const prepareServiceRequest = (laborMarketAddress: string, form: ServiceR
     description: form.description,
     pTokenAddress: form.rewardToken,
     pTokenQuantity: form.rewardPool,
-    pTokenId: 0, // Not used by contract. Left over appendage from when we were using ERC1155. We might switch back at some point.
     uri: "ipfs-uri",
     enforcementExpiration: parseDatetime(form.reviewEndDate, form.reviewEndTime),
     submissionExpiration: parseDatetime(form.endDate, form.endTime),
