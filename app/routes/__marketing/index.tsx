@@ -1,9 +1,14 @@
+import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 import { ArrowDownCircleIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
+import { useState } from "react";
 import MarketingButton from "~/components/marketing-button/marketing-button";
 import Footer from "~/features/marketing-shell/footer";
 import SocialIcons from "~/features/marketing-shell/social-icons";
 
 export default function Index() {
+  const [box, setBox] = useState(0);
+
   return (
     <div>
       <div className="flex flex-row">
@@ -91,33 +96,58 @@ export default function Index() {
             </div>
           </InfoSection>
           <InfoSection id="scaling">
-            {/*<div
-              className="rounded-3xl bg-auto bg-no-repeat p-10 space-y-3 w-min h-min mx-auto md:order-2"
-              style={{ backgroundImage: "url(/img/home-scroll-bg.svg)" }}
-            >
-              <img src="/img/eye.png" alt="" />
-              <p className="text-3xl font-bold text-white pt-2">Analyze</p>
-              <p className="text-white text-lg w-80">
-                Source professional dashboards and tools that answer critical questions or solve complex problems.
-                Analytics challenges can originate directly from partner requests or community brainstorms.
-              </p>
-              <div className="space-y-3">
-                <img src="/img/lightbulb.png" alt="" />
+            <div className="md:order-2">
+              <div
+                className={clsx("py-10 px-12 space-y-3 mx-auto max-w-md", {
+                  "hidden text-white": box != 0,
+                  "bg-[url(/img/marketing/home-scroll-bg.svg)] rounded-3xl bg-cover bg-no-repeat block": box === 0,
+                })}
+              >
+                <img src="/img/marketing/eye.png" alt="" />
+                <p className="text-3xl font-bold text-white pt-3">Analyze</p>
+                <p className="text-white text-lg">
+                  Source professional dashboards and tools that answer critical questions or solve complex problems.
+                  Analytics challenges can originate directly from partner requests or community brainstorms.
+                </p>
+              </div>
+              <div
+                className={clsx("py-10 px-12 space-y-3 mx-auto max-w-md", {
+                  "hidden text-white": box != 1,
+                  "bg-[url(/img/marketing/home-scroll-bg.svg)] rounded-3xl bg-cover bg-no-repeat block ": box === 1,
+                })}
+              >
+                <img src="/img/marketing/brain.png" alt="" />
                 <p className="text-3xl font-bold text-white pt-2">Brainstorm</p>
-                <p className="text-white text-lg max-w-sm">
+                <p className="text-white text-lg">
                   Optionally source and prioritize the best questions for analysts to answer. Community question
                   brainstorms generally focus around a partner’s project or a timely Web3 topic or event.
                 </p>
               </div>
-              <div className="space-y-3">
-                <img src="/img/person-check.png" alt="" />
+              <div
+                className={clsx("py-10 px-12 space-y-3 mx-auto max-w-md", {
+                  "hidden text-white": box != 2,
+                  "bg-[url(/img/marketing/home-scroll-bg.svg)] rounded-3xl bg-cover bg-no-repeat block ": box === 2,
+                })}
+              >
+                <img src="/img/marketing/owl.png" alt="" />
                 <p className="text-3xl font-bold text-white pt-2">Peer Review</p>
-                <p className="text-white text-lg max-w-sm">
+                <p className="text-white text-lg">
                   To effectively fulfill our partners’ requests, qualified reviewers are incentivized to enforce
                   submission quality and help reward the best work for every challenge.
                 </p>
-                </div>
-            </div>*/}
+              </div>
+              <div className="pt-4 flex gap-2 mx-auto justify-center">
+                <ChevronLeftIcon
+                  className={clsx("h-6 w-6 cursor-pointer", { "invisible text-white": box === 0 })}
+                  onClick={() => setBox(box - 1)}
+                />
+                <EllipsisHorizontalIcon className="h-6 w-6" />
+                <ChevronRightIcon
+                  className={clsx("h-6 w-6 cursor-pointer", { "invisible text-white": box === 2 })}
+                  onClick={() => setBox(box + 1)}
+                />
+              </div>
+            </div>
             <div className="max-w-lg space-y-10 mx-auto md:m-0">
               <h2 className="text-4xl md:text-5xl font-bold">Scaling on-demand analytics with a decentralized app</h2>
               <p className="text-stone-500 text-lg">

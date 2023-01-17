@@ -1,4 +1,4 @@
-import type { ServiceRequestContract, LaborMarket } from "~/domain";
+import type { LaborMarket, ServiceRequestIndexer } from "~/domain";
 
 export function createLaborMarket(data: LaborMarket) {
   fetch("/api/indexer/create-labor-market", {
@@ -7,7 +7,7 @@ export function createLaborMarket(data: LaborMarket) {
   });
 }
 
-export function createServiceRequest(data: ServiceRequestContract) {
+export function createServiceRequest(data: ServiceRequestIndexer) {
   fetch("/api/indexer/create-service-request", {
     method: "POST",
     body: JSON.stringify(data),

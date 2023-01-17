@@ -111,7 +111,7 @@ export default function CreateMarketplace() {
             send({ type: "TRANSACTION_PREPARE" });
           }}
         >
-          <h1 className="text-3xl font-semibold antialiased">Create Challenge Marketplace</h1>
+          <h1 className="text-3xl font-semibold antialiased">Create a Brainstorm Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">

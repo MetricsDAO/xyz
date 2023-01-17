@@ -15,16 +15,15 @@ import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
-  console.log({ challenge });
+  const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ serviceRequestId });
   }
 
-  const submissionIds = challenge.submissions.map((s) => s.id);
+  const submissionIds = challenge.submissions.map((s) => s.contractId);
   const numOfReviews = await countReviews(submissionIds);
   return typedjson({ challenge, numOfReviews }, { status: 200 });
 };
@@ -37,16 +36,25 @@ export default function Challenge() {
         <h1 className="text-3xl font-semibold">{challenge.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/review`}>Claim to Review</Link>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/review`}>
+              Claim to Review
+            </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/c/${challenge.id}/claim`}>Claim to Submit</Link>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/claim`}>
+              Claim to Submit
+            </Link>
+          </Button>
+          <Button variant="primary" size="lg" asChild>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/submit`}>
+              Submit
+            </Link>
           </Button>
         </div>
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+          {/*<UserBadge url="u/id" address={challenge.laborMarket.sponsorAddress} balance={200} />*/}
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
@@ -72,7 +80,7 @@ export default function Challenge() {
         </DetailItem>
       </Detail>
 
-      <article className="text-zinc-500 text-sm space-y-4 mb-20 w-full md:w-2/3">
+      <article className="text-gray-500 text-sm mb-20 max-w-2xl">
         <p>
           What's the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What's
           the challenge What web3 topic do you want to crowdsource potential analytics questions

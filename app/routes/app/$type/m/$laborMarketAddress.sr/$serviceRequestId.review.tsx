@@ -17,12 +17,12 @@ import { ClaimToReviewContractSchema } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
 import { findChallenge } from "~/services/challenges-service.server";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(params);
-  const challenge = await findChallenge(id);
+  const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
+  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
   if (!challenge) {
-    throw notFound({ id });
+    throw notFound({ serviceRequestId });
   }
 
   return typedjson({ challenge }, { status: 200 });
@@ -54,15 +54,15 @@ export default function ClaimToReview() {
           <p className="text-cyan-500 text-lg">
             Claiming is an up front commitment to review and score a minimum number of submissions
           </p>
-          <p className="text-gray-500">
+          <p className="text-gray-500 text-sm">
             You must temporarily lock rMETRIC to claim. If you claim and don’t complete review before the deadline, 5
             rMETRIC will be slashed for each submission you fail to review.
           </p>
         </div>
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">How Claiming to Review Works</h2>
+          <h2 className="font-semibold">How Claiming to Review Works</h2>
 
-          <ul className="list-disc list-inside text-gray-500 space-y-1">
+          <ul className="list-disc list-inside text-gray-500 space-y-1 text-sm">
             <li>Commit to reviewing a minimum number of submissions by locking rMETRIC against this challenge</li>
             <li>Review the minimum number of submissions you committed to before the review deadline</li>
             <li>If you complete review before the deadline, your rMETRIC will be unlocked</li>
@@ -71,16 +71,16 @@ export default function ClaimToReview() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Claim to Review Deadline</h2>
+            <h2 className="font-semibold">Claim to Review Deadline</h2>
             <CountdownCard start={"2022-11-25"} />
           </div>
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Review Deadline</h2>
+            <h2 className="font-semibold">Review Deadline</h2>
             <CountdownCard start={"2022-12-25"} />
           </div>
         </div>
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">How many submissions do you commit to reviewing at a minimum?</h2>
+          <h2 className="font-semibold">How many submissions do you commit to reviewing at a minimum?</h2>
           <ValidatedSegmentedRadio
             name="quantity"
             options={[
@@ -92,19 +92,19 @@ export default function ClaimToReview() {
             ]}
           />
           <Error name="quantity" />
-          <p className="text-gray-500 italic mt-2">
+          <p className="text-gray-500 italic mt-2 text-sm">
             You're only required to review the minimum you commit to, but you can optionally review more
           </p>
         </div>
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Lock rMETRIC</h2>
+          <h2 className="font-semibold">Lock rMETRIC</h2>
           <div className="flex flex-col md:flex-row gap-2 md:items-center">
-            <p>
+            <p className="text-sm">
               You must lock {modalData.data ? <Badge>{modalData.data?.quantity * 5}</Badge> : null} rMETRIC to claim
             </p>
             <Button variant="outline">Lock rMETRIC</Button>
           </div>
-          <p className="mt-2 text-gray-500 italic">
+          <p className="mt-2 text-gray-500 italic text-sm">
             Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
           </p>
         </div>

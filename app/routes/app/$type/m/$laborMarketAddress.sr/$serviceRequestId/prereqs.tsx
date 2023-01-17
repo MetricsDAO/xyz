@@ -5,10 +5,12 @@ import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
 import type { findChallenge } from "~/services/challenges-service.server";
 
-export default function ChallengeIdPrereqs() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>("routes/app/$type/c/$id");
+export default function ServiceIdPrereqs() {
+  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>(
+    "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
+  );
   if (!data) {
-    throw new Error("ChallengeIdPrereqs must be rendered under a ChallengeId route");
+    throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");
   }
   const { challenge } = data;
 

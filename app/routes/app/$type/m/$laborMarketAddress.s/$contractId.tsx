@@ -1,7 +1,8 @@
-import { Link, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import clsx from "clsx";
 import { useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -24,27 +25,29 @@ import {
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
 import { ReviewSearchSchema } from "~/domain/review";
+import { useReviewSubmission } from "~/hooks/use-review-submission";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
 import { SCORE_COLOR } from "~/utils/helpers";
-import { toast } from "react-hot-toast";
-import { useReviewSubmission } from "~/hooks/use-review-submission";
 
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({
+  laborMarketAddress: z.string(),
+  contractId: z.string(),
+});
 
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
-  const { id } = paramsSchema.parse(data.params);
+  const { laborMarketAddress, contractId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  params.submissionId = id;
+  params.submissionId = contractId;
   const reviews = await searchReviews(params);
 
-  const submission = await findSubmission(id);
+  const submission = await findSubmission(laborMarketAddress, contractId);
   if (!submission) {
-    throw notFound({ id });
+    throw notFound({ contractId });
   }
 
   return typedjson({ submission, reviews, params }, { status: 200 });
@@ -74,7 +77,7 @@ export default function ChallengeSubmission() {
           <ReviewQuestionDrawerButton
             requestId={"0"}
             submissionId={"0"}
-            laborMarketAddress={submission.serviceRequest.laborMarketAddress}
+            laborMarketAddress={submission.laborMarketAddress}
           />
         </section>
         <section className="flex flex-col space-y-7 pb-24">
@@ -86,7 +89,7 @@ export default function ChallengeSubmission() {
               <Badge>{fromNow(submission.createdAt.toString())}</Badge>
             </DetailItem>
             <DetailItem title="Overall Score">
-              <ScoreBadge score={10} />
+              <ScoreBadge score={submission.score} />
             </DetailItem>
             <DetailItem title="Reviews">
               <Badge>{reviews.length}</Badge>
@@ -97,12 +100,7 @@ export default function ChallengeSubmission() {
               </DetailItem>
             )}
           </Detail>
-          <p className="text-gray-500 max-w-2xl">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
-            pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit
-            fermentum, consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus, ligula
-            commodo aliquet velit massa. Lacinia lacus amet massa
-          </p>
+          <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
         </section>
         <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
@@ -113,10 +111,7 @@ export default function ChallengeSubmission() {
                 {reviews.map((r) => {
                   return (
                     <Card asChild key={r.id}>
-                      <Link
-                        to="/u/[uId]"
-                        className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between"
-                      >
+                      <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
                         <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                           <div
                             className={clsx(
@@ -133,7 +128,7 @@ export default function ChallengeSubmission() {
                           </Badge>
                         </div>
                         <p>{fromNow(r.createdAt)}</p>
-                      </Link>
+                      </div>
                     </Card>
                   );
                 })}
@@ -146,7 +141,7 @@ export default function ChallengeSubmission() {
                 defaultValues={params}
                 validator={validator}
                 onChange={handleChange}
-                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
               >
                 {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
                 <ValidatedSelect
@@ -200,12 +195,12 @@ function ReviewQuestionDrawerButton({
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Review Question</Button>
+      <Button onClick={() => setOpen(true)}>Review & Score</Button>
       <Drawer open={open} onClose={() => setOpen(false)}>
         <div className="flex flex-col mx-auto space-y-10 px-2">
           <div className="space-y-3">
-            <p className="text-3xl font-semibold">Review Question</p>
-            <p className="italic text-gray-500">
+            <p className="text-3xl font-semibold">Review & Score</p>
+            <p className="italic text-gray-500 text-sm">
               Important: You can't edit this score after submitting. Double check your score and ensure it's good to go
             </p>
           </div>

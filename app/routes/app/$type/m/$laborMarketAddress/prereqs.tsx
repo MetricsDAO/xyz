@@ -5,7 +5,9 @@ import { Card } from "~/components/card";
 import type { findLaborMarket } from "~/services/labor-market.server";
 
 export default function MarketplaceIdPrerequesites() {
-  const data = useRouteData<{ laborMarket: Awaited<ReturnType<typeof findLaborMarket>> }>("routes/app/$type/m/$id");
+  const data = useRouteData<{ laborMarket: Awaited<ReturnType<typeof findLaborMarket>> }>(
+    "routes/app/$type/m/$laborMarketAddress"
+  );
   if (!data) {
     throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");
   }

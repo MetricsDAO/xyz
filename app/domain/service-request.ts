@@ -54,23 +54,11 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   laborMarketAddress: true,
 }).extend({
   pTokenAddress: EthAddressSchema,
-  pTokenId: z.number(),
   pTokenQuantity: TokenAmountSchema,
   signalExpiration: DateSchema,
   submissionExpiration: DateSchema,
   enforcementExpiration: DateSchema,
   uri: z.string(),
-});
-
-export const ServiceRequestSearchSchema = z.object({
-  page: z.number().default(1),
-  laborMarket: z.string().optional(),
-  q: z.string().optional(),
-  sortBy: z.enum(["title"]).default("title"),
-  order: z.enum(["asc", "desc"]).default("desc"),
-  token: z.string().optional(),
-  project: z.string().optional(),
-  first: z.number().default(12),
 });
 
 // Generate a fake Service Request for testing using faker.
@@ -90,12 +78,28 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     endTime: dayjs(endDate).format("HH:mm"),
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
-    rewardToken: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc",
+    rewardToken: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
     rewardPool: "0.000000000000000001",
   };
 }
+
+export const ServiceRequestSearchSchema = z.object({
+  page: z.number().default(1),
+  laborMarket: z.string().optional(),
+  q: z.string().optional(),
+  sortBy: z.enum(["title"]).default("title"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  token: z.string().optional(),
+  project: z.string().optional(),
+  first: z.number().default(12),
+});
+
+export const ServiceRequestIndexerSchema = ServiceRequestContractSchema.extend({
+  contractId: z.string(),
+});
 
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
+export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;

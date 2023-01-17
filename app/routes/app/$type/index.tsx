@@ -63,13 +63,14 @@ export default function Brainstorm() {
     <Container className="py-16">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
         <main className="flex-1 space-y-3 max-w-2xl">
-          <h1 className="text-3xl font-semibold">Challenge Marketplaces</h1>
+          <h1 className="text-3xl font-semibold">Brainstorm Marketplaces</h1>
           <p className="text-lg text-cyan-500">
-            Crowdsource the best questions for crypto analysts to answer about any web3 topic
+            Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
           </p>
           <p className="text-gray-500 text-sm">
-            Jump into challenge marketplaces to launch or discover brainstorm challenges. Join challenges to submit your
-            best question ideas or review peers' submissions to surface and reward winners
+            Explore Brainstorm marketplaces to launch or discover challenges. Claim challenges to submit your best
+            ideas, or peer review others’ to surface and reward the most relevant ideas. Outputs of a Brainstorm can
+            prompt Analytics challenges.
           </p>
         </main>
         <aside>
@@ -80,7 +81,7 @@ export default function Brainstorm() {
       </header>
 
       <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
-        Challenge Marketplaces <span className="text-gray-400">({totalResults})</span>
+        Brainstorm Marketplaces <span className="text-gray-400">({totalResults})</span>
       </h2>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -185,7 +186,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={2}>Challenge Marketplaces</Header.Column>
+        <Header.Column span={2}>Brainstorm Marketplace</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Challenge Pool Totals</Header.Column>
         <Header.Column>Avg. Challenge Pool</Header.Column>
@@ -194,7 +195,10 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
       {marketplaces.map((m) => {
         return (
           <Row asChild columns={6} key={m.address}>
-            <Link to={$path("/app/:type/m/:id", { type: m.type, id: m.address })} className="text-sm font-medium">
+            <Link
+              to={$path("/app/:type/m/:laborMarketAddress", { type: m.type, laborMarketAddress: m.address })}
+              className="text-sm font-medium"
+            >
               <Row.Column span={2}>{m.title}</Row.Column>
               <Row.Column>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -241,7 +245,7 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
                 to={`/app/brainstorm/m/${m.address}`}
                 className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
-                <div>Challenge Marketplaces</div>
+                <div>Brainstorm Marketplace</div>
                 <div className="text-sm font-medium">{m.title}</div>
 
                 <div>Chain/Project</div>

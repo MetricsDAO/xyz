@@ -5,15 +5,14 @@ import { fromNow } from "~/utils/date";
 
 type Props = {
   submission: Submission;
-  score: number;
   totalReviews: number;
 };
 
-export function SubmissionCard({ submission, score, totalReviews }: Props) {
+export function SubmissionCard({ submission, totalReviews }: Props) {
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={`/app/brainstorm/s/${submission.id}`}
+        to={`/app/brainstorm/m/${submission.laborMarketAddress}/s/${submission.contractId}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         <main className="space-y-2 flex-1">
@@ -21,7 +20,7 @@ export function SubmissionCard({ submission, score, totalReviews }: Props) {
           <section className="text-gray-900">{submission.description}</section>
         </main>
         <div className="flex flex-col items-center gap-2">
-          <Score score={score} />
+          <Score score={submission.score} />
           <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>
         </div>
       </Link>

@@ -24,7 +24,7 @@ import { useSubmitRequest } from "~/hooks/use-submit-request";
 import { prepareServiceRequest } from "~/services/challenges-service.server";
 
 const validator = withZod(ServiceRequestFormSchema);
-const paramsSchema = z.object({ id: z.string() });
+const paramsSchema = z.object({ laborMarketAddress: z.string() });
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -35,7 +35,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 type ActionResponse = { preparedChallenge: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
-  const { id: laborMarketAddress } = paramsSchema.parse(params);
+  const { laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
   const preparedChallenge = await prepareServiceRequest(laborMarketAddress, result.data);
@@ -63,13 +63,13 @@ export default function CreateChallenge() {
   return (
     <Container className="max-w-3xl my-10 space-y-10">
       <div className="space-y-3">
-        <h1 className="font-semibold text-3xl">Launch Challenge</h1>
+        <h1 className="font-semibold text-3xl">Launch a Brainstorm Challenge</h1>
         <p className="text-lg text-cyan-500">
-          Reward peers to crowdsource the best questions for blockchain analysts to answer about any web3 topic
+          Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
         </p>
-        <p>
-          Crowdsource the best questions for crypto analysts to answer about an important or timely challenge. Create
-          and incentivize a question brainstorm for any web3 challenge to get started.
+        <p className="text-sm text-gray-500">
+          You fund and launch a Brainstorm challenge. The community submits ideas. Peer reviewers score and surface the
+          best ideas. Winners earn tokens from your reward pool!
         </p>
       </div>
 
@@ -90,11 +90,14 @@ export default function CreateChallenge() {
           </Field>
         </section>
         <section className="space-y-3">
-          <h2 className="font-bold">What do you want to source questions about?</h2>
+          <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
           <Field>
             <ValidatedTextarea
               name="description"
-              placeholder="Crowdsource the best questions for blockchain analysts to answer about any web3 topic."
+              rows={7}
+              placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
+
+              Example: What are the most important questions to answer about user behavior on Ethereum?"
             />
             <Error name="description" />
           </Field>
@@ -179,9 +182,7 @@ export default function CreateChallenge() {
                 <ValidatedSelect
                   name="rewardToken"
                   placeholder="Token"
-                  options={[
-                    { label: "FAU", value: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc" }, // FAU token https://erc20faucet.com/
-                  ]}
+                  options={[{ label: "DAI", value: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063" }]}
                 />
                 <Error name="rewardToken" />
               </Field>
@@ -199,11 +200,9 @@ export default function CreateChallenge() {
           </p>
         </section>
 
-        <div className="flex flex-row flex-wrap gap-5">
-          <Button variant="primary" type="submit">
-            Next
-          </Button>
-        </div>
+        <Button variant="primary" type="submit">
+          Next
+        </Button>
       </ValidatedForm>
       <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
         <ConfirmTransaction challenge={modalData.challenge} onClose={closeModal} />

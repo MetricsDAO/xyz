@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import type { Review } from "@prisma/client";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -19,10 +18,10 @@ import { searchSubmissions } from "~/services/submissions.server";
 const validator = withZod(SubmissionSearchSchema);
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
-  invariant(params.id, "id is required");
+  invariant(params.serviceRequestId, "id is required");
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.id });
+  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.serviceRequestId });
   return typedjson({ submissions });
 };
 
@@ -41,9 +40,7 @@ export default function ChallengeIdSubmissions() {
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
         {submissions.map((s) => {
-          return (
-            <SubmissionCard key={s.id} submission={s} score={averageScore(s.reviews)} totalReviews={s.reviews.length} />
-          );
+          return <SubmissionCard key={s.contractId} submission={s} totalReviews={s.reviews.length} />;
         })}
       </main>
 
@@ -87,9 +84,4 @@ export default function ChallengeIdSubmissions() {
       </aside>
     </section>
   );
-}
-
-function averageScore(reviews: Review[]) {
-  const score = reviews.reduce((sum, r) => sum + r.score, 0);
-  return score / reviews.length;
 }
