@@ -7,7 +7,15 @@ import { createBlockchainTransactionStateMachine } from "./machine";
 
 describe("test chain transaction machine", async () => {
   test("happy path", async () => {
-    const service = interpret(createBlockchainTransactionStateMachine<LaborMarketContract>());
+    const service = interpret(
+      createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
+        actions: {
+          notifyTransactionWrite: vi.fn(),
+          notifyTransactionSuccess: vi.fn(),
+          devAutoIndex: vi.fn(),
+        },
+      })
+    );
     const { laborMarketContract, transactionHash, transactionReceipt } = fakes();
 
     service.start();
@@ -26,12 +34,12 @@ describe("test chain transaction machine", async () => {
     service.send({ type: "TRANSACTION_WRITE", transactionHash: transactionHash });
     expect(service.getSnapshot().value).toEqual("transactionWrite");
     expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
-    expect(service.getSnapshot().actions).toContainEqual({ type: "notifyTransactionWrite" });
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWrite")?.exec).toHaveBeenCalled();
 
     service.send({ type: "TRANSACTION_SUCCESS", transactionReceipt });
     expect(service.getSnapshot().value).toEqual("transactionComplete");
     expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
-    expect(service.getSnapshot().actions).toContainEqual({ type: "notifyTransactionSuccess" });
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
   });
 });
 
