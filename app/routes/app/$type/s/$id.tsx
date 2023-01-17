@@ -146,7 +146,7 @@ export default function ChallengeSubmission() {
                 defaultValues={params}
                 validator={validator}
                 onChange={handleChange}
-                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
               >
                 {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
                 <ValidatedSelect
