@@ -1,16 +1,16 @@
 import { useRouteData } from "remix-utils";
 import { Badge, Card, UserBadge } from "~/components";
-import type { findChallenge } from "~/services/challenges-service.server";
+import type { findServiceRequest } from "~/services/service-request.server";
 import { fromNow } from "~/utils/date";
 
 export default function ServiceIdParticipants() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>(
+  const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
     "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
   );
   if (!data) {
     throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");
   }
-  const { challenge } = data;
+  const { serviceRequest } = data;
 
   return (
     <section className="space-y-7">
@@ -20,7 +20,7 @@ export default function ServiceIdParticipants() {
 
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="w-full border-spacing-4 border-separate space-y-4">
-          {challenge?.submissions.map((s) => {
+          {serviceRequest?.submissions.map((s) => {
             return (
               <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">

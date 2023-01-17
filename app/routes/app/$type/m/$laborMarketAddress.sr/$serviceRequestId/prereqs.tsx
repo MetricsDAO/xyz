@@ -3,16 +3,16 @@ import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
-import type { findChallenge } from "~/services/challenges-service.server";
+import type { findServiceRequest } from "~/services/service-request.server";
 
 export default function ServiceIdPrereqs() {
-  const data = useRouteData<{ challenge: Awaited<ReturnType<typeof findChallenge>> }>(
+  const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
     "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
   );
   if (!data) {
     throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");
   }
-  const { challenge } = data;
+  const { serviceRequest } = data;
 
   return (
     <section>
@@ -25,10 +25,10 @@ export default function ServiceIdPrereqs() {
           <h3 className="font-medium mb-4">You must hold this much rMETRIC to enter submissions for this challenge</h3>
           <Detail>
             <DetailItem title="Min Balance">
-              <Badge>{challenge?.laborMarket.submitRepMin} rMETRIC</Badge>
+              <Badge>{serviceRequest?.laborMarket.submitRepMin} rMETRIC</Badge>
             </DetailItem>
             <DetailItem title="Max Balance">
-              <Badge>{challenge?.laborMarket.submitRepMax} rMETRIC</Badge>
+              <Badge>{serviceRequest?.laborMarket.submitRepMax} rMETRIC</Badge>
             </DetailItem>
           </Detail>
         </Card>
@@ -41,7 +41,7 @@ export default function ServiceIdPrereqs() {
             <DetailItem title="MDAO S4 Reviewer Badge">
               <Badge className="pl-2 flex space-x-1">
                 <Avatar />
-                <span>{challenge?.laborMarket.reviewBadgerAddress}</span>
+                <span>{serviceRequest?.laborMarket.reviewBadgerAddress}</span>
               </Badge>
             </DetailItem>
           </Detail>

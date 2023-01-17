@@ -9,10 +9,10 @@ import { parseDatetime } from "~/utils/date";
 import { prisma } from "./prisma.server";
 
 /**
- * Returns an array of Challenges for a given ChallengeSearch.
+ * Returns an array of Service Requests for a given ServiceRequestSearch.
  * @param {ServiceRequestSearch} params - The search parameters.
  */
-export const searchChallenges = async (params: ServiceRequestSearch) => {
+export const searchServiceRequests = async (params: ServiceRequestSearch) => {
   return prisma.serviceRequest.findMany({
     include: { submissions: true, laborMarket: { include: { projects: true } } },
     where: {
@@ -28,11 +28,11 @@ export const searchChallenges = async (params: ServiceRequestSearch) => {
 };
 
 /**
- * Counts the number of Challenges that match a given ChallengeSearch.
+ * Counts the number of Service Requests that match a given ServiceRequestSearch.
  * @param {ServiceRequestSearch} params - The search parameters.
- * @returns {number} - The number of Challenges that match the search.
+ * @returns {number} - The number of Service Requests that match the search.
  */
-export const countChallenges = async (params: ServiceRequestSearch) => {
+export const countServiceRequests = async (params: ServiceRequestSearch) => {
   return prisma.serviceRequest.count({
     where: {
       title: { search: params.q },
@@ -42,11 +42,11 @@ export const countChallenges = async (params: ServiceRequestSearch) => {
 };
 
 /**
- * Finds a Challenge by its ID.
+ * Finds a ServiceRequest by its ID.
  * @param {String} id - The ID of the Challenge.
- * @returns - The Challenge or null if not found.
+ * @returns - The ServiceRequest or null if not found.
  */
-export const findChallenge = async (id: string, laborMarketAddress: string) => {
+export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
   return prisma.serviceRequest.findUnique({
     where: { contractId_laborMarketAddress: { contractId: id, laborMarketAddress } },
     include: {
@@ -58,15 +58,15 @@ export const findChallenge = async (id: string, laborMarketAddress: string) => {
 };
 
 /**
- * Creates a new challenge/serviceRequest. This is only really used by the indexer.
- * @param {Challenge} challenge - The challenge to create.
+ * Creates a new ServiceRequest. This is only really used by the indexer.
+ * @param {ServiceRequestIndexer} data - The service request data
  */
-export const upsertServiceRequest = async (challenge: ServiceRequestIndexer) => {
+export const upsertServiceRequest = async (data: ServiceRequestIndexer) => {
   const newChallenge = await prisma.serviceRequest.create({
     data: {
-      contractId: challenge.contractId,
-      title: challenge.title,
-      laborMarketAddress: challenge.laborMarketAddress,
+      contractId: data.contractId,
+      title: data.title,
+      laborMarketAddress: data.laborMarketAddress,
     },
   });
   return newChallenge;

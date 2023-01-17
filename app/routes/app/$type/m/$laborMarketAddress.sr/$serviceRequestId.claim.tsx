@@ -2,7 +2,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
-import { findChallenge } from "~/services/challenges-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { Button } from "~/components/button";
@@ -17,27 +17,27 @@ import { Modal } from "~/components";
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
-  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
-  if (!challenge) {
+  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  if (!serviceRequest) {
     throw notFound({ id: serviceRequestId });
   }
 
-  return typedjson({ challenge }, { status: 200 });
+  return typedjson({ serviceRequest }, { status: 200 });
 };
 
 export default function ClaimToSubmit() {
-  const { challenge } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest } = useTypedLoaderData<typeof loader>();
 
   const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
 
   function closeModal() {
-    setModalData((challenge) => ({ challenge, isOpen: false }));
+    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
   }
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">Claim to Submit on {challenge.title}</h1>
+        <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
         <h2 className="text-lg text-cyan-500">Claiming is an up front commitment to submit at least one submission</h2>
         <p className="text-gray-500 text-sm">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked

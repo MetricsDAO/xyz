@@ -1,9 +1,8 @@
 import { Link, Outlet } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
-import { UserBadge } from "~/components/user-badge";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
-import { findChallenge } from "~/services/challenges-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
@@ -18,35 +17,35 @@ import { RewardBadge } from "~/components/reward-badge";
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
-  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
-  if (!challenge) {
+  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  if (!serviceRequest) {
     throw notFound({ serviceRequestId });
   }
 
-  const submissionIds = challenge.submissions.map((s) => s.contractId);
+  const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = await countReviews(submissionIds);
-  return typedjson({ challenge, numOfReviews }, { status: 200 });
+  return typedjson({ serviceRequest, numOfReviews }, { status: 200 });
 };
 
-export default function Challenge() {
-  const { challenge, numOfReviews } = useTypedLoaderData<typeof loader>();
+export default function ServiceRequest() {
+  const { serviceRequest, numOfReviews } = useTypedLoaderData<typeof loader>();
   return (
     <Container className="py-16">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
-        <h1 className="text-3xl font-semibold">{challenge.title}</h1>
+        <h1 className="text-3xl font-semibold">{serviceRequest.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/review`}>
+            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/review`}>
               Claim to Review
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/claim`}>
+            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/claim`}>
               Claim to Submit
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/submit`}>
+            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/submit`}>
               Submit
             </Link>
           </Button>
@@ -58,7 +57,7 @@ export default function Challenge() {
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
-            {challenge.laborMarket.projects.map((p) => (
+            {serviceRequest.laborMarket.projects.map((p) => (
               <Badge key={p.slug} className="pl-2">
                 <ProjectAvatar project={p} />
                 <span className="mx-1">{p.name}</span>
@@ -70,7 +69,7 @@ export default function Challenge() {
           <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
         </DetailItem>
         <DetailItem title="Submissions">
-          <Badge className="px-4 min-w-full">{challenge._count.submissions}</Badge>
+          <Badge className="px-4 min-w-full">{serviceRequest._count.submissions}</Badge>
         </DetailItem>
         <DetailItem title="Reviews">
           <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
@@ -89,7 +88,7 @@ export default function Challenge() {
 
       <TabNav className="mb-8">
         <TabNavLink to="" end>
-          Submissions <span className="text-gray-400">({challenge._count.submissions})</span>
+          Submissions <span className="text-gray-400">({serviceRequest._count.submissions})</span>
         </TabNavLink>
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>

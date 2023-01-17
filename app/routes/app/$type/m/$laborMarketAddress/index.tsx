@@ -19,7 +19,7 @@ import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
-import { countChallenges, searchChallenges } from "~/services/challenges-service.server";
+import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -29,19 +29,19 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
-  const challenges = await searchChallenges(paramsWithLaborMarketId);
-  const totalResults = await countChallenges(paramsWithLaborMarketId);
-  return typedjson({ challenges, totalResults, params });
+  const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
+  const totalResults = await countServiceRequests(paramsWithLaborMarketId);
+  return typedjson({ serviceRequests, totalResults, params });
 };
 
 export default function MarketplaceIdChallenges() {
-  const { totalResults, params, challenges } = useTypedLoaderData<typeof loader>();
+  const { totalResults, params, serviceRequests } = useTypedLoaderData<typeof loader>();
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <ChallengesListView challenges={challenges} />
+          <ChallengesListView serviceRequests={serviceRequests} />
           <div className="w-fit m-auto">
             <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
@@ -137,10 +137,10 @@ function SearchAndFilter() {
 }
 
 type MarketplaceChallengesTableProps = {
-  challenges: UseDataFunctionReturn<typeof loader>["challenges"];
+  serviceRequests: UseDataFunctionReturn<typeof loader>["serviceRequests"];
 };
 
-function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableProps) {
+function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
   return (
     <Table>
       <Header columns={6} className="mb-2">
@@ -150,15 +150,15 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
         <Header.Column>Submit Deadline</Header.Column>
         <Header.Column>Review Deadline</Header.Column>
       </Header>
-      {challenges.map((c) => {
+      {serviceRequests.map((sr) => {
         return (
-          <Row asChild columns={6} key={c.contractId}>
-            <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.contractId}`} className="text-sm font-medium">
-              <Row.Column span={2}>{c.title}</Row.Column>
+          <Row asChild columns={6} key={sr.contractId}>
+            <Link to={`/app/brainstorm/m/${sr.laborMarketAddress}/sr/${sr.contractId}`} className="text-sm font-medium">
+              <Row.Column span={2}>{sr.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
                   <div>
-                    {c.laborMarket.projects?.map((p) => (
+                    {sr.laborMarket.projects?.map((p) => (
                       <Badge key={p.slug} className="pl-2">
                         <ProjectAvatar project={p} />
                         <span className="mx-1">{p.name}</span>
@@ -183,23 +183,23 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
   );
 }
 
-function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTableProps) {
+function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTableProps) {
   return (
     <div className="space-y-4">
-      {challenges.map((c) => {
+      {serviceRequests.map((sr) => {
         return (
-          <Card asChild key={c.contractId}>
+          <Card asChild key={sr.contractId}>
             <Link
-              to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.contractId}`}
+              to={`/app/brainstorm/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>
-              <div className="text-sm font-medium">{c.title}</div>
+              <div className="text-sm font-medium">{sr.title}</div>
 
               <div>Chain/Project</div>
               <div className="flex">
                 <div>
-                  {c.laborMarket.projects?.map((p) => (
+                  {sr.laborMarket.projects?.map((p) => (
                     <Badge key={p.slug} className="pl-2">
                       <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
@@ -226,8 +226,8 @@ function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTablePr
   );
 }
 
-function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
-  if (challenges.length === 0) {
+function ChallengesListView({ serviceRequests }: MarketplaceChallengesTableProps) {
+  if (serviceRequests.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
   }
 
@@ -235,11 +235,11 @@ function ChallengesListView({ challenges }: MarketplaceChallengesTableProps) {
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <MarketplacesChallengesTable challenges={challenges} />
+        <MarketplacesChallengesTable serviceRequests={serviceRequests} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <MarketplacesChallengesCard challenges={challenges} />
+        <MarketplacesChallengesCard serviceRequests={serviceRequests} />
       </div>
     </>
   );

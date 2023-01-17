@@ -11,7 +11,7 @@ import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } fr
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
 import { useCreateSubmission } from "~/hooks/use-create-submission";
-import { findChallenge } from "~/services/challenges-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { isValidationError } from "~/utils/utils";
 
@@ -21,13 +21,13 @@ const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
-  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
-  invariant(challenge, "challenge must exist");
+  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  invariant(serviceRequest, "service request must exist");
 
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedSubmission = await prepareSubmission(challenge, result.data);
+  const preparedSubmission = await prepareSubmission(serviceRequest, result.data);
   return typedjson({ preparedSubmission });
 };
 

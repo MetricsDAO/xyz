@@ -2,7 +2,7 @@ import { upsertLaborMarket } from "~/services/labor-market.server";
 import { fakeLaborMarket, fakeReview, fakeServiceRequest, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
-import { upsertServiceRequest } from "~/services/challenges-service.server";
+import { upsertServiceRequest } from "~/services/service-request.server";
 import { upsertSubmission } from "~/services/submissions.server";
 import type { LaborMarket, ServiceRequest, Submission } from "@prisma/client";
 import { upsertReview } from "~/services/review-service.server";
