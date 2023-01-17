@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
-import type { Web3Hook } from "~/domain/web3";
+import type { Web3Hook } from "~/features/web3-button/types";
 
 export function useCreateLaborMarket({ data, onTransactionSuccess, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
