@@ -30,13 +30,13 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
 
 /**
  * Finds a submission by its id.
- * @param {string} submissionId - The ID of the submission to find.
+ * @param {string} contractId - The ID of the submission to find.
  * @returns {Promise<Submission | null>} - The submission or null if not found.
  */
-export const findSubmission = async (laborMarketAddress: string, submissionId: string) => {
+export const findSubmission = async (laborMarketAddress: string, contractId: string) => {
   return prisma.submission.findUnique({
-    where: { internalId_laborMarketAddress: { internalId: submissionId, laborMarketAddress: laborMarketAddress } },
-    include: { reviews: true },
+    where: { contractId_laborMarketAddress: { contractId, laborMarketAddress } },
+    include: { reviews: true, serviceRequest: true },
   });
 };
 
@@ -47,7 +47,7 @@ export const findSubmission = async (laborMarketAddress: string, submissionId: s
 export const upsertSubmission = async (submission: SubmissionIndexer) => {
   const { serviceRequestId, laborMarketAddress, ...data } = submission;
   const newSubmission = await prisma.submission.upsert({
-    where: { internalId_laborMarketAddress: { internalId: submission.internalId, laborMarketAddress } },
+    where: { contractId_laborMarketAddress: { contractId: submission.contractId, laborMarketAddress } },
     update: data,
     create: {
       serviceRequestId,

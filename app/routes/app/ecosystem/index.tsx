@@ -177,8 +177,8 @@ function SubmissionsTable() {
       </Header>
       {[1, 2, 3, 4].map((s) => {
         return (
-          <Row asChild columns={12} key={"s.id"}>
-            <Link to={`/app/brainstorm/sr/s.id`} className="text-sm text-stone-500">
+          <Row asChild columns={12} key={"s.contractId"}>
+            <Link to={`/app/brainstorm/sr/s.contractId`} className="text-sm text-stone-500">
               <Row.Column span={3}>
                 <div className="flex flex-wrap gap-1">
                   {"s.title"}
@@ -224,9 +224,9 @@ function SubmissionsCard() {
     <div className="space-y-4">
       {[1, 2, 3, 4].map((s) => {
         return (
-          <Card asChild key={"s.id"}>
+          <Card asChild key={"s.contractId"}>
             <Link
-              to={`/app/brainstorm/sr/s.id`}
+              to={`/app/brainstorm/sr/s.contractId`}
               className="text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div className="col-span-2">

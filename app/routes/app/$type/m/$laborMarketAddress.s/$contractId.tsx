@@ -33,21 +33,21 @@ import { SCORE_COLOR } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
-  submissionId: z.string(),
+  contractId: z.string(),
 });
 
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
-  const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
+  const { laborMarketAddress, contractId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  params.submissionId = submissionId;
+  params.submissionId = contractId;
   const reviews = await searchReviews(params);
 
-  const submission = await findSubmission(laborMarketAddress, submissionId);
+  const submission = await findSubmission(laborMarketAddress, contractId);
   if (!submission) {
-    throw notFound({ submissionId });
+    throw notFound({ contractId });
   }
 
   return typedjson({ submission, reviews, params }, { status: 200 });
@@ -141,7 +141,7 @@ export default function ChallengeSubmission() {
                 defaultValues={params}
                 validator={validator}
                 onChange={handleChange}
-                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-brand-400 bg-opacity-5 text-sm"
+                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
               >
                 {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
                 <ValidatedSelect

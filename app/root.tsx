@@ -9,7 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import env from "./env";
 import { Blurs } from "./features/shell";
-import { Error } from "./components/error-boundary";
+import { Error as ErrorBoundary } from "./components/error-boundary";
 import { withSentry } from "@sentry/remix";
 
 // add types for window.ENV
@@ -93,24 +93,23 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error("error", error);
-  return (
-    <html lang="en">
-      <head>
-        <title>Oh no...</title>
-        <Links />
-      </head>
-      <body>
-        <div className="w-screen h-screen flex items-center justify-center">
-          <Blurs />
-          <Error error={error} />
-        </div>
-        <Scripts />
-      </body>
-    </html>
-  );
-}
+// export function ErrorBoundary({ error }: { error: Error }) {
+//   return (
+//     <html lang="en">
+//       <head>
+//         <title>Oh no...</title>
+//         <Links />
+//       </head>
+//       <body>
+//         <div className="w-screen h-screen flex items-center justify-center">
+//           <Blurs />
+//           <Error error={error} />
+//         </div>
+//         <Scripts />
+//       </body>
+//     </html>
+//   );
+// }
 
 function App() {
   const { user, ENV } = useTypedLoaderData<typeof loader>();
@@ -152,4 +151,13 @@ function App() {
   );
 }
 
-export default withSentry(App);
+export default withSentry(App, {
+  errorBoundaryOptions: {
+    fallback: ({ error }) => (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <Blurs />
+        <ErrorBoundary error={error} />
+      </div>
+    ),
+  },
+});

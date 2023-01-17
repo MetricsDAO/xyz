@@ -6,6 +6,7 @@ import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
 import { ProjectAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
@@ -22,10 +23,12 @@ import { countChallenges, searchChallenges } from "~/services/challenges-service
 
 const validator = withZod(ServiceRequestSearchSchema);
 
+const paramsSchema = z.object({ laborMarketAddress: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
+  const { laborMarketAddress } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
-  const paramsWithLaborMarketId = { ...params, laborMarket: data.params.id };
+  const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
   const challenges = await searchChallenges(paramsWithLaborMarketId);
   const totalResults = await countChallenges(paramsWithLaborMarketId);
   return typedjson({ challenges, totalResults, params });
@@ -149,8 +152,8 @@ function MarketplacesChallengesTable({ challenges }: MarketplaceChallengesTableP
       </Header>
       {challenges.map((c) => {
         return (
-          <Row asChild columns={6} key={c.internalId}>
-            <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`} className="text-sm font-medium">
+          <Row asChild columns={6} key={c.contractId}>
+            <Link to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.contractId}`} className="text-sm font-medium">
               <Row.Column span={2}>{c.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
@@ -185,9 +188,9 @@ function MarketplacesChallengesCard({ challenges }: MarketplaceChallengesTablePr
     <div className="space-y-4">
       {challenges.map((c) => {
         return (
-          <Card asChild key={c.internalId}>
+          <Card asChild key={c.contractId}>
             <Link
-              to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.internalId}`}
+              to={`/app/brainstorm/m/${c.laborMarketAddress}/sr/${c.contractId}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>

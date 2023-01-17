@@ -23,7 +23,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     throw notFound({ serviceRequestId });
   }
 
-  const submissionIds = challenge.submissions.map((s) => s.internalId);
+  const submissionIds = challenge.submissions.map((s) => s.contractId);
   const numOfReviews = await countReviews(submissionIds);
   return typedjson({ challenge, numOfReviews }, { status: 200 });
 };
@@ -36,17 +36,17 @@ export default function Challenge() {
         <h1 className="text-3xl font-semibold">{challenge.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/review`}>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/review`}>
               Claim to Review
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/claim`}>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/claim`}>
               Claim to Submit
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.internalId}/submit`}>
+            <Link to={`/app/brainstorm/m/${challenge.laborMarketAddress}/sr/${challenge.contractId}/submit`}>
               Submit
             </Link>
           </Button>
