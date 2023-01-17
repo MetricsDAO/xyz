@@ -1,18 +1,10 @@
-import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
+import type { Web3Hook } from "~/domain/web3";
 
-export function useCreateLaborMarket({
-  data,
-  onTransactionSuccess,
-  onWriteSuccess,
-}: {
-  data: LaborMarketContract;
-  onWriteSuccess?: (hash: `0x${string}`) => void;
-  onTransactionSuccess?: (data: TransactionReceipt) => void;
-}) {
+export function useCreateLaborMarket({ data, onTransactionSuccess, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,
     abi: LaborMarketNetwork.abi,
