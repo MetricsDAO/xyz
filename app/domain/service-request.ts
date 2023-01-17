@@ -54,7 +54,6 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   laborMarketAddress: true,
 }).extend({
   pTokenAddress: EthAddressSchema,
-  pTokenId: z.number(),
   pTokenQuantity: TokenAmountSchema,
   signalExpiration: DateSchema,
   submissionExpiration: DateSchema,
@@ -79,7 +78,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     endTime: dayjs(endDate).format("HH:mm"),
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
-    rewardToken: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc",
+    rewardToken: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
     rewardPool: "0.000000000000000001",
   };
 }
@@ -95,20 +94,8 @@ export const ServiceRequestSearchSchema = z.object({
   first: z.number().default(12),
 });
 
-export const ServiceRequestIndexerSchema = z.object({
-  id: z.string({ description: "The id of the service request." }),
-  contractId: z.string({ description: "The id of the service request." }),
-  title: z.string({ description: "The title of the service request." }).min(1, "Required"),
-  description: z.string({ description: "The description of the service request." }).min(1, "Required"),
-  laborMarketAddress: EthAddressSchema,
-  createdAt: z.date({ description: "The date the service request was created." }),
-  pTokenAddress: EthAddressSchema,
-  pTokenId: z.number(),
-  pTokenQuantity: z.number(),
-  signalExpiration: z.date(),
-  submissionExpiration: z.date(),
-  enforcementExpiration: z.date(),
-  uri: z.string(),
+export const ServiceRequestIndexerSchema = ServiceRequestContractSchema.extend({
+  contractId: z.string(),
 });
 
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;

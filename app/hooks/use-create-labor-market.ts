@@ -1,6 +1,13 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
-import { LaborMarket, LaborMarketNetwork, LikertEnforcement, PaymentModule, ReputationModule } from "labor-markets-abi";
+import {
+  LaborMarket,
+  LaborMarketNetwork,
+  LikertEnforcement,
+  PaymentModule,
+  ReputationModule,
+  ReputationEngine,
+} from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import { createLaborMarket } from "~/utils/fetch";
@@ -27,27 +34,19 @@ export function useCreateLaborMarket({
         enforcementModule: LikertEnforcement.address,
         paymentModule: PaymentModule.address,
         marketUri: data.ipfsHash,
-        // TODO: Uncomment this once we have a way to get the badge address and token id
-        // delegateBadge:
-        //   data.launch.access === "delegates"
-        //     ? (data.launch.badgerAddress as `0x${string}`)
-        //     : (data.reviewBadgerAddress as `0x${string}`), //TODO: reviewers as delegates should not be the "anyone" case
-        // delegateTokenId:
-        //   data.launch.access === "delegates"
-        //     ? BigNumber.from(data.launch.badgerTokenId)
-        //     : BigNumber.from(data.reviewBadgerTokenId), //TODO: reviewers as delegates should not be the "anyone" case
-        // maintainerBadge: data.reviewBadgerAddress as `0x${string}`,
-        // maintainerTokenId: BigNumber.from(data.reviewBadgerTokenId),
-        delegateBadge: "0x0d033b4307231711e437937850ebf9ff6bfeeb82",
-        delegateTokenId: BigNumber.from(1),
-        maintainerBadge: "0x0d033b4307231711e437937850ebf9ff6bfeeb82",
-        maintainerTokenId: BigNumber.from(1),
+        delegateBadge:
+          data.launch.access === "delegates"
+            ? (data.launch.badgerAddress as `0x${string}`)
+            : "0x9D2D6c0D2563E4540046279054774e165e85eE1F", // hardcoded to a Badger address
+        delegateTokenId: BigNumber.from(data.launch.access === "delegates" ? data.launch.badgerTokenId : 0),
+        maintainerBadge: data.reviewBadgerAddress as `0x${string}`,
+        maintainerTokenId: BigNumber.from(data.reviewBadgerTokenId),
         reputationModule: ReputationModule.address,
         reputationConfig: {
-          reputationEngine: "0x305aD87b3eD2132EF1d90dF26d3081511B001650", // TODO: Manually created rep engine. Should come from labor-markets-abi in the future.
-          signalStake: BigNumber.from(1), //TODO
-          providerThreshold: BigNumber.from(1), //TODO
-          maintainerThreshold: BigNumber.from(data.submitRepMin), //TODO
+          reputationEngine: ReputationEngine.address,
+          signalStake: BigNumber.from(1),
+          submitMin: BigNumber.from(data.submitRepMin),
+          submitMax: BigNumber.from(data.submitRepMax),
         },
       },
     ],

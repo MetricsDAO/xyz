@@ -182,9 +182,7 @@ export default function CreateChallenge() {
                 <ValidatedSelect
                   name="rewardToken"
                   placeholder="Token"
-                  options={[
-                    { label: "FAU", value: "0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc" }, // FAU token https://erc20faucet.com/
-                  ]}
+                  options={[{ label: "DAI", value: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063" }]}
                 />
                 <Error name="rewardToken" />
               </Field>

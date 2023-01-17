@@ -25,7 +25,6 @@ export function useSubmitRequest({
     },
     args: [
       data.pTokenAddress as `0x${string}`,
-      BigNumber.from(data.pTokenId),
       parseTokenAmount(data.pTokenQuantity),
       BigNumber.from(unixTimestamp(data.signalExpiration)),
       BigNumber.from(unixTimestamp(data.submissionExpiration)),
@@ -47,7 +46,11 @@ export function useSubmitRequest({
     },
     onSuccess(receipt) {
       if (window.ENV.DEV_AUTO_INDEX) {
-        createServiceRequest(data);
+        console.log("DEV_AUTO_INDEX is enabled, creating service request", receipt, data);
+        createServiceRequest({
+          ...data,
+          contractId: "1", // hardcoding to 1 for now. Doesn't seem to be a way to get this out of the receipt
+        });
       }
       onTransactionSuccess?.(receipt);
     },
