@@ -176,7 +176,7 @@ function scrollNav() {
   var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
   var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   var scrolled = (winScroll / height) * 100;
-  scrolled = scrolled - 0.05 * scrolled; //adjusts for header + footer
+  scrolled = Math.min(scrolled - 0.05 * scrolled, 86);
   document.getElementById("pageProgress")!.style.height = scrolled + "%";
   scrolled > 16
     ? (document.getElementById("missionCircle")!.style.fill = "black")
