@@ -1,9 +1,10 @@
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { Badge, ProjectAvatar, UserBadge } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
-import { Detail } from "~/components/detail";
+import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { findLaborMarket } from "~/services/labor-market.server";
 
@@ -42,17 +43,22 @@ export default function Marketplace() {
         <section className="flex flex-col space-y-7 pb-12">
           <div className="flex flex-wrap gap-x-8">
             <Detail>
-              {/*<DetailItem title="Sponser">
-               <UserBadge />
-              </DetailItem>
+              {laborMarket?.sponsorAddress ? (
+                <DetailItem title="Sponser">
+                  {/*<UserBadge url="u/id" address={laborMarket?.sponsorAddress} balance={200} />*/}
+                </DetailItem>
+              ) : (
+                <></>
+              )}
               <DetailItem title="Chain/Project">
-                {laborMarket?.projects?.map((p) => (
+                /
+                {/*{laborMarket?.projects?.map((p) => (
                   <Badge key={p.slug} className="pl-2">
                     <ProjectAvatar project={p} />
                     <span className="mx-1">{p.name}</span>
                   </Badge>
-                ))}
-                </DetailItem>*/}
+                ))}*/}
+              </DetailItem>
             </Detail>
           </div>
           <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.description}</p>

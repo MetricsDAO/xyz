@@ -89,7 +89,7 @@ export default function ChallengeSubmission() {
               <Badge>{fromNow(submission.createdAt.toString())}</Badge>
             </DetailItem>
             <DetailItem title="Overall Score">
-              <ScoreBadge score={10} />
+              <ScoreBadge score={submission.score} />
             </DetailItem>
             <DetailItem title="Reviews">
               <Badge>{reviews.length}</Badge>
@@ -100,12 +100,7 @@ export default function ChallengeSubmission() {
               </DetailItem>
             )}
           </Detail>
-          <p className="text-gray-500 max-w-2xl">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac augue interdum mattis elit quam sapien tellus
-            pellentesque. Vel magna consectetur mauris eu. Mauris arcu diam dolor ut tincidunt. Sit euismod sit
-            fermentum, consequat maecenas. Ante odio eget nunc velit id volutpat. Aliquam leo non viverra metus, ligula
-            commodo aliquet velit massa. Lacinia lacus amet massa
-          </p>
+          <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
         </section>
         <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
@@ -200,12 +195,12 @@ function ReviewQuestionDrawerButton({
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Review Question</Button>
+      <Button onClick={() => setOpen(true)}>Review & Score</Button>
       <Drawer open={open} onClose={() => setOpen(false)}>
         <div className="flex flex-col mx-auto space-y-10 px-2">
           <div className="space-y-3">
-            <p className="text-3xl font-semibold">Review Question</p>
-            <p className="italic text-gray-500">
+            <p className="text-3xl font-semibold">Review & Score</p>
+            <p className="italic text-gray-500 text-sm">
               Important: You can't edit this score after submitting. Double check your score and ensure it's good to go
             </p>
           </div>
