@@ -31,22 +31,22 @@ export async function loader({ request }: DataFunctionArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: "MetricsDAO",
+    title: "MetricsDAO | The DAO for Web3 Data Analytics",
     viewport: "width=device-width, initial-scale=1.0",
     charSet: "utf-8",
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
-    description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    description: "Connecting projects with the best analysts in Web3 for all data needs.",
     "og:image": "https://metricsdao.xyz/img/social.png",
-    "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:description": "Connecting projects with the best analysts in Web3 for all data needs.",
     "og:url": "https://metricsdao.xyz",
-    "og:title": "Metrics DAO",
+    "og:title": "MetricsDAO | The DAO for Web3 Data Analytics",
     "og:type": "website",
     "twitter:card": "summary_large_image",
     "twitter:domain": "metricsdao.xyz",
     "twitter:url": "https://metricsdao.xyz",
-    "twitter:title": "Metrics DAO",
-    "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "twitter:title": "MetricsDAO | The DAO for Web3 Data Analytics",
+    "twitter:description": "Connecting projects with the best analysts in Web3 for all data needs.",
     "twitter:image": "https://metricsdao.xyz/img/social.png",
   };
 };
