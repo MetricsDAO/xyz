@@ -3,6 +3,15 @@
 export interface Typegen0 {
   "@@xstate/typegen": true;
   internalEvents: {
+    "done.invoke.chain-write.transactionWrite:invocation[0]": {
+      type: "done.invoke.chain-write.transactionWrite:invocation[0]";
+      data: unknown;
+      __tip: "See the XState TS docs to learn how to strongly type this.";
+    };
+    "error.platform.chain-write.transactionWrite:invocation[0]": {
+      type: "error.platform.chain-write.transactionWrite:invocation[0]";
+      data: unknown;
+    };
     "xstate.init": { type: "xstate.init" };
   };
   invokeSrcNameMap: {};
@@ -13,25 +22,25 @@ export interface Typegen0 {
     services: never;
   };
   eventsCausingActions: {
-    devAutoIndex: "TRANSACTION_SUCCESS";
-    notifyTransactionFailure: "TRANSACTION_FAILURE";
-    notifyTransactionSuccess: "TRANSACTION_SUCCESS";
+    devAutoIndex: "done.invoke.chain-write.transactionWrite:invocation[0]";
+    notifyTransactionFailure: "error.platform.chain-write.transactionWrite:invocation[0]";
+    notifyTransactionSuccess: "done.invoke.chain-write.transactionWrite:invocation[0]";
     notifyTransactionWrite: "TRANSACTION_WRITE";
     setContractData: "TRANSACTION_READY";
     setTransactionHash: "TRANSACTION_WRITE";
-    setTransactionReceipt: "TRANSACTION_SUCCESS";
+    setTransactionReceipt: "done.invoke.chain-write.transactionWrite:invocation[0]";
   };
   eventsCausingDelays: {};
   eventsCausingGuards: {};
   eventsCausingServices: {};
   matchesStates:
     | "idle"
-    | "transactionComplete"
     | "transactionFailure"
     | "transactionPrepare"
     | "transactionPrepare.failure"
     | "transactionPrepare.loading"
     | "transactionReady"
+    | "transactionSuccess"
     | "transactionWrite"
     | { transactionPrepare?: "failure" | "loading" };
   tags: never;

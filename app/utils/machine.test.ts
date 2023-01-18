@@ -4,6 +4,7 @@ import { interpret } from "xstate";
 import type { LaborMarketContract } from "~/domain";
 import { fakeLaborMarketNew } from "~/domain";
 import { createBlockchainTransactionStateMachine } from "./machine";
+import { waitFor } from "xstate/lib/waitFor";
 
 describe("test chain transaction machine", async () => {
   test("happy path", async () => {
@@ -32,13 +33,18 @@ describe("test chain transaction machine", async () => {
     expect(service.getSnapshot().value).toEqual("transactionReady");
     expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
 
-    service.send({ type: "TRANSACTION_WRITE", transactionHash: transactionHash });
+    service.send({
+      type: "TRANSACTION_WRITE",
+      transactionHash: transactionHash,
+      transactionPromise: Promise.resolve(transactionReceipt),
+    });
     expect(service.getSnapshot().value).toEqual("transactionWrite");
     expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
     expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWrite")?.exec).toHaveBeenCalled();
 
-    service.send({ type: "TRANSACTION_SUCCESS", transactionReceipt });
-    expect(service.getSnapshot().value).toEqual("transactionComplete");
+    await waitFor(service, (state) => state.matches("transactionSuccess"));
+
+    expect(service.getSnapshot().value).toEqual("transactionSuccess");
     expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
     expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
   });

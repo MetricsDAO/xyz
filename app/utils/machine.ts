@@ -5,7 +5,11 @@ type Events<ContractData> =
   | { type: "TRANSACTION_PREPARE" }
   | { type: "TRANSACTION_READY"; data: ContractData }
   | { type: "TRANSACTION_CANCEL" }
-  | { type: "TRANSACTION_WRITE"; transactionHash: string }
+  | {
+      type: "TRANSACTION_WRITE";
+      transactionHash: string;
+      transactionPromise: Promise<TransactionReceipt>;
+    }
   | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt }
   | { type: "TRANSACTION_FAILURE" };
 
@@ -60,12 +64,21 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         },
         transactionWrite: {
           entry: "notifyTransactionWrite",
-          on: {
-            TRANSACTION_SUCCESS: { target: "transactionComplete", actions: "setTransactionReceipt" },
-            TRANSACTION_FAILURE: { target: "transactionFailure" },
+          invoke: {
+            src: (context, event) => {
+              // Should only ever come from TRANSACTION_WRITE event
+              return event.type === "TRANSACTION_WRITE" ? event.transactionPromise : Promise.reject();
+            },
+            onDone: {
+              target: "transactionSuccess",
+              actions: "setTransactionReceipt",
+            },
+            onError: {
+              target: "transactionFailure",
+            },
           },
         },
-        transactionComplete: {
+        transactionSuccess: {
           entry: ["notifyTransactionSuccess", "devAutoIndex"],
         },
         transactionFailure: {
@@ -87,7 +100,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         }),
         setTransactionReceipt: assign({
           transactionReceipt: (context, event) => {
-            return event.transactionReceipt;
+            return event.data as TransactionReceipt;
           },
         }),
       },

@@ -34,6 +34,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 const validator = withZod(LaborMarketFormSchema);
+const machine = createBlockchainTransactionStateMachine<LaborMarketContract>();
 
 type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
@@ -49,7 +50,7 @@ export const action = async ({ request }: ActionArgs) => {
 export default function CreateMarketplace() {
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
-  const [state, send] = useMachine(createBlockchainTransactionStateMachine<LaborMarketContract>(), {
+  const [state, send] = useMachine(machine, {
     actions: {
       notifyTransactionWrite: (context) => {
         // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
@@ -78,6 +79,8 @@ export default function CreateMarketplace() {
       },
     },
   });
+  // DEBUG
+  // console.log("state", state.value, state.context);
 
   const isUploadingToIpfs = state.matches("transactionPrepare.loading");
   const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
@@ -89,24 +92,12 @@ export default function CreateMarketplace() {
     }
   }, [actionData, send]);
 
-  // Debug
-  // console.log("state", state.value, state.context);
-
   const closeModal = () => {
     send({ type: "TRANSACTION_CANCEL" });
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash });
-    result
-      .wait(1) // 1 block confirmation
-      .then((receipt) => {
-        send({ type: "TRANSACTION_SUCCESS", transactionReceipt: receipt });
-      })
-      .catch((e) => {
-        console.error("something went wrong with the transaction", e);
-        send({ type: "TRANSACTION_FAILURE" });
-      });
+    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
   return (
