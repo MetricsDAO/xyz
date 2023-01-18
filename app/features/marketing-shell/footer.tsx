@@ -41,7 +41,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
     >
       <a
         href="/app/analyze"
-        className="group flex flex-row items-center py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
+        className="group flex flex-row items-center py-8 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
         {[1, 2, 3, 4].map(() => {
           return (
@@ -51,7 +51,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
               <img
                 src="/img/marketing/footer-rocket.png"
                 alt=""
-                className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_400ms_linear_1]"
+                className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_300ms_linear_1]"
               />
             </>
           );
@@ -59,7 +59,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
         <p>LAUNCH APP</p>
       </a>
 
-      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-4 backdrop-blur-sm">
+      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center py-4 px-6 backdrop-blur-sm">
         <Link to="/" className="flex items-center gap-x-3">
           <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="34" />
           <span className="text-sm">© {currentYear} MetricsDAO</span>
