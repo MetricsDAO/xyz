@@ -7,13 +7,14 @@ export interface Typegen0 {
   };
   invokeSrcNameMap: {};
   missingImplementations: {
-    actions: "devAutoIndex" | "notifyTransactionSuccess" | "notifyTransactionWrite";
+    actions: "devAutoIndex" | "notifyTransactionFailure" | "notifyTransactionSuccess" | "notifyTransactionWrite";
     delays: never;
     guards: never;
     services: never;
   };
   eventsCausingActions: {
     devAutoIndex: "TRANSACTION_SUCCESS";
+    notifyTransactionFailure: "TRANSACTION_FAILURE";
     notifyTransactionSuccess: "TRANSACTION_SUCCESS";
     notifyTransactionWrite: "TRANSACTION_WRITE";
     setContractData: "TRANSACTION_READY";
@@ -26,6 +27,7 @@ export interface Typegen0 {
   matchesStates:
     | "idle"
     | "transactionComplete"
+    | "transactionFailure"
     | "transactionPrepare"
     | "transactionPrepare.failure"
     | "transactionPrepare.loading"

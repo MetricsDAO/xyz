@@ -6,7 +6,8 @@ type Events<ContractData> =
   | { type: "TRANSACTION_READY"; data: ContractData }
   | { type: "TRANSACTION_CANCEL" }
   | { type: "TRANSACTION_WRITE"; transactionHash: string }
-  | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt };
+  | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt }
+  | { type: "TRANSACTION_FAILURE" };
 
 type Context<ContractData> = {
   contractData?: ContractData;
@@ -61,10 +62,14 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           entry: "notifyTransactionWrite",
           on: {
             TRANSACTION_SUCCESS: { target: "transactionComplete", actions: "setTransactionReceipt" },
+            TRANSACTION_FAILURE: { target: "transactionFailure" },
           },
         },
         transactionComplete: {
           entry: ["notifyTransactionSuccess", "devAutoIndex"],
+        },
+        transactionFailure: {
+          entry: ["notifyTransactionFailure"],
         },
       },
     },

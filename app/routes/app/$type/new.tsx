@@ -13,15 +13,15 @@ import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
+import type { SendTransactionResult } from "~/features/web3-button/types";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { isValidationError } from "~/utils/utils";
-import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { createLaborMarket } from "~/utils/fetch";
 import { removeLeadingZeros } from "~/utils/helpers";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { isValidationError } from "~/utils/utils";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -59,6 +59,10 @@ export default function CreateMarketplace() {
         toast.dismiss("creating-marketplace");
         toast.success("Marketplace created!");
       },
+      notifyTransactionFailure: () => {
+        toast.dismiss("creating-marketplace");
+        toast.error("Marketplace creation failed");
+      },
       devAutoIndex: (context) => {
         // Create marketplace in the database as a dx side-effect
         if (window.ENV.DEV_AUTO_INDEX) {
@@ -92,12 +96,17 @@ export default function CreateMarketplace() {
     send({ type: "TRANSACTION_CANCEL" });
   };
 
-  const onTransactionSuccess = (transactionReceipt: TransactionReceipt) => {
-    send({ type: "TRANSACTION_SUCCESS", transactionReceipt });
-  };
-
-  const onWriteSuccess = (transactionHash: `0x${string}`) => {
-    send({ type: "TRANSACTION_WRITE", transactionHash });
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash });
+    result
+      .wait(1) // 1 block confirmation
+      .then((receipt) => {
+        send({ type: "TRANSACTION_SUCCESS", transactionReceipt: receipt });
+      })
+      .catch((e) => {
+        console.error("something went wrong with the transaction", e);
+        send({ type: "TRANSACTION_FAILURE" });
+      });
   };
 
   return (
@@ -125,11 +134,7 @@ export default function CreateMarketplace() {
           <div className="space-y-8">
             <p>Please confirm that you would like to create a new marketplace.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <CreateLaborMarketWeb3Button
-                data={state.context.contractData}
-                onTransactionSuccess={onTransactionSuccess}
-                onWriteSuccess={onWriteSuccess}
-              />
+              <CreateLaborMarketWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
               <Button variant="cancel" size="md" onClick={closeModal}>
                 Cancel
               </Button>

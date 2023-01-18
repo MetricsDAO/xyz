@@ -12,6 +12,7 @@ describe("test chain transaction machine", async () => {
         actions: {
           notifyTransactionWrite: vi.fn(),
           notifyTransactionSuccess: vi.fn(),
+          notifyTransactionFailure: vi.fn(),
           devAutoIndex: vi.fn(),
         },
       })

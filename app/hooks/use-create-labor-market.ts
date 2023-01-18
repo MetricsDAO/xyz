@@ -4,14 +4,14 @@ import {
   LaborMarketNetwork,
   LikertEnforcement,
   PaymentModule,
-  ReputationModule,
   ReputationEngine,
+  ReputationModule,
 } from "labor-markets-abi";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
 
-export function useCreateLaborMarket({ data, onTransactionSuccess, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
+export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,
     abi: LaborMarketNetwork.abi,
@@ -42,26 +42,14 @@ export function useCreateLaborMarket({ data, onTransactionSuccess, onWriteSucces
     ],
   });
 
-  const { data: transactionResultData, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      onWriteSuccess?.(result.hash);
-    },
-  });
-
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: transactionResultData?.hash,
-    onError(error) {
-      console.error(error);
-    },
-    async onSuccess(receipt) {
-      onTransactionSuccess?.(receipt);
+      onWriteSuccess?.(result);
     },
   });
 
   return {
     write,
-    isLoading,
-    isSuccess,
   };
 }
