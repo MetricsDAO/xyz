@@ -1,20 +1,21 @@
 import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { assign, createMachine } from "xstate";
 
-type Events<ContractData> =
+type Events<T> =
   | { type: "TRANSACTION_PREPARE" }
-  | { type: "TRANSACTION_READY"; data: ContractData }
+  | { type: "TRANSACTION_READY"; data: T }
   | { type: "TRANSACTION_CANCEL" }
   | {
       type: "TRANSACTION_WRITE";
       transactionHash: string;
       transactionPromise: Promise<TransactionReceipt>;
     }
+  | { type: "done.invoke.wait-for-transaction"; data: TransactionReceipt }
   | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt }
   | { type: "TRANSACTION_FAILURE" };
 
-type Context<ContractData> = {
-  contractData?: ContractData;
+type Context<T> = {
+  contractData?: T;
   transactionHash?: string;
   transactionReceipt?: TransactionReceipt;
 };
@@ -26,7 +27,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-imports
       tsTypes: {} as import("./machine.typegen").Typegen0,
       predictableActionArguments: true, //recommended
-      id: "chain-write",
+      id: "blockchain-transaction-machine",
       initial: "idle",
       context: {
         contractData: undefined,
@@ -65,10 +66,8 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         transactionWrite: {
           entry: "notifyTransactionWrite",
           invoke: {
-            src: (context, event) => {
-              // Should only ever come from TRANSACTION_WRITE event
-              return event.type === "TRANSACTION_WRITE" ? event.transactionPromise : Promise.reject();
-            },
+            id: "wait-for-transaction",
+            src: "waitForTransaction",
             onDone: {
               target: "transactionSuccess",
               actions: "setTransactionReceipt",
@@ -87,6 +86,11 @@ export const createBlockchainTransactionStateMachine = <T>() => {
       },
     },
     {
+      services: {
+        waitForTransaction: (context, event) => {
+          return event.transactionPromise;
+        },
+      },
       actions: {
         setContractData: assign({
           contractData: (context, event) => {
@@ -100,7 +104,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         }),
         setTransactionReceipt: assign({
           transactionReceipt: (context, event) => {
-            return event.data as TransactionReceipt;
+            return event.data;
           },
         }),
       },

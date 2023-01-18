@@ -3,18 +3,17 @@
 export interface Typegen0 {
   "@@xstate/typegen": true;
   internalEvents: {
-    "done.invoke.chain-write.transactionWrite:invocation[0]": {
-      type: "done.invoke.chain-write.transactionWrite:invocation[0]";
+    "done.invoke.wait-for-transaction": {
+      type: "done.invoke.wait-for-transaction";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
-    "error.platform.chain-write.transactionWrite:invocation[0]": {
-      type: "error.platform.chain-write.transactionWrite:invocation[0]";
-      data: unknown;
-    };
+    "error.platform.wait-for-transaction": { type: "error.platform.wait-for-transaction"; data: unknown };
     "xstate.init": { type: "xstate.init" };
   };
-  invokeSrcNameMap: {};
+  invokeSrcNameMap: {
+    waitForTransaction: "done.invoke.wait-for-transaction";
+  };
   missingImplementations: {
     actions: "devAutoIndex" | "notifyTransactionFailure" | "notifyTransactionSuccess" | "notifyTransactionWrite";
     delays: never;
@@ -22,17 +21,19 @@ export interface Typegen0 {
     services: never;
   };
   eventsCausingActions: {
-    devAutoIndex: "done.invoke.chain-write.transactionWrite:invocation[0]";
-    notifyTransactionFailure: "error.platform.chain-write.transactionWrite:invocation[0]";
-    notifyTransactionSuccess: "done.invoke.chain-write.transactionWrite:invocation[0]";
+    devAutoIndex: "done.invoke.wait-for-transaction";
+    notifyTransactionFailure: "error.platform.wait-for-transaction";
+    notifyTransactionSuccess: "done.invoke.wait-for-transaction";
     notifyTransactionWrite: "TRANSACTION_WRITE";
     setContractData: "TRANSACTION_READY";
     setTransactionHash: "TRANSACTION_WRITE";
-    setTransactionReceipt: "done.invoke.chain-write.transactionWrite:invocation[0]";
+    setTransactionReceipt: "done.invoke.wait-for-transaction";
   };
   eventsCausingDelays: {};
   eventsCausingGuards: {};
-  eventsCausingServices: {};
+  eventsCausingServices: {
+    waitForTransaction: "TRANSACTION_WRITE";
+  };
   matchesStates:
     | "idle"
     | "transactionFailure"
