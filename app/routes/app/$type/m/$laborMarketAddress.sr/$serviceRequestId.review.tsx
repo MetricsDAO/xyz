@@ -15,23 +15,23 @@ import { CountdownCard } from "~/components/countdown-card";
 import type { ClaimToReviewContract } from "~/domain";
 import { ClaimToReviewContractSchema } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
-import { findChallenge } from "~/services/challenges-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
-  const challenge = await findChallenge(serviceRequestId, laborMarketAddress);
-  if (!challenge) {
+  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  if (!serviceRequest) {
     throw notFound({ serviceRequestId });
   }
 
-  return typedjson({ challenge }, { status: 200 });
+  return typedjson({ serviceRequest }, { status: 200 });
 };
 
 const validator = withZod(ClaimToReviewContractSchema);
 
 export default function ClaimToReview() {
-  const { challenge } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest } = useTypedLoaderData<typeof loader>();
 
   const [modalData, setModalData] = useState<{ data?: ClaimToReviewContract; isOpen: boolean }>({ isOpen: false });
 
@@ -48,9 +48,9 @@ export default function ClaimToReview() {
         validator={validator}
         className="mx-auto px-10 max-w-4xl space-y-7 mb-12"
       >
-        <input type="hidden" name="laborMarketAddress" value={challenge.laborMarketAddress} />
+        <input type="hidden" name="laborMarketAddress" value={serviceRequest.laborMarketAddress} />
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold">{`Claim to Review ${challenge.title}`}</h1>
+          <h1 className="text-3xl font-semibold">{`Claim to Review ${serviceRequest.title}`}</h1>
           <p className="text-cyan-500 text-lg">
             Claiming is an up front commitment to review and score a minimum number of submissions
           </p>

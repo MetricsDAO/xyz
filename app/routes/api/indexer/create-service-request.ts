@@ -2,7 +2,7 @@ import type { ActionFunction, DataFunctionArgs } from "@remix-run/server-runtime
 import { json } from "@remix-run/server-runtime";
 import { ServiceRequestIndexerSchema } from "~/domain";
 import env from "~/env";
-import { upsertServiceRequest } from "~/services/challenges-service.server";
+import { upsertServiceRequest } from "~/services/service-request.server";
 
 export const action: ActionFunction = async (data: DataFunctionArgs) => {
   if (env.DEV_AUTO_INDEX !== "enabled") {

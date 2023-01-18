@@ -7,7 +7,7 @@ import { unixTimestamp } from "~/utils/date";
 import { createServiceRequest } from "~/utils/fetch";
 import { parseTokenAmount } from "~/utils/helpers";
 
-export function useSubmitRequest({
+export function useCreateServiceRequest({
   data,
   onTransactionSuccess,
   onWriteSuccess,
