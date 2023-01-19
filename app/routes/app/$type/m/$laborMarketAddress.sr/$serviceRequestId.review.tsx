@@ -16,6 +16,7 @@ import type { ClaimToReviewContract } from "~/domain";
 import { ClaimToReviewContractSchema } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
 import { findServiceRequest } from "~/services/service-request.server";
+import { claimToReviewDate } from "~/utils/date";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -72,7 +73,10 @@ export default function ClaimToReview() {
         <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold">Claim to Review Deadline</h2>
-            {/*<CountdownCard start={serviceRequest.createdAt} end={serviceRequest.createdAt} />*/}
+            <CountdownCard
+              start={serviceRequest.createdAt}
+              end={claimToReviewDate(serviceRequest.createdAt, serviceRequest.enforcementExpiration)}
+            />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold">Review Deadline</h2>

@@ -53,3 +53,7 @@ export function progressTime(start: Date, end: Date): number {
   const numerator = dayjs(Date.now()).diff(start, "hours") * 100;
   return Math.min(100, numerator / denominator);
 }
+
+export function claimToReviewDate(createdAt: Date, enforcementExpiration: Date) {
+  return new Date((enforcementExpiration.valueOf() - createdAt.valueOf()) * 0.75 + createdAt.valueOf());
+}
