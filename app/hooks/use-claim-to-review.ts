@@ -14,7 +14,7 @@ export function useClaimToReview({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress,
+    address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signalReview",
     args: [BigNumber.from(data.quantity)],
