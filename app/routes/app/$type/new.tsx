@@ -1,22 +1,27 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { useMachine } from "@xstate/react";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Button, Container, Modal } from "~/components";
-import type { LaborMarketForm, LaborMarketContract } from "~/domain";
+import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
-import { useCreateLaborMarket } from "~/hooks/use-create-labor-market";
+import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
+import type { SendTransactionResult } from "~/features/web3-button/types";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
+import { createLaborMarket } from "~/utils/fetch";
+import { removeLeadingZeros } from "~/utils/helpers";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { isValidationError } from "~/utils/utils";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -29,6 +34,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 const validator = withZod(LaborMarketFormSchema);
+const machine = createBlockchainTransactionStateMachine<LaborMarketContract>();
 
 type ActionResponse = { preparedLaborMarket: LaborMarketContract } | ValidationErrorResponseData;
 export const action = async ({ request }: ActionArgs) => {
@@ -42,72 +48,91 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function CreateMarketplace() {
-  const transition = useTransition();
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+  const [state, send] = useMachine(machine, {
+    actions: {
+      notifyTransactionWrite: (context) => {
+        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
+        toast.loading("Creating marketplace...", { id: "creating-marketplace" });
+      },
+      notifyTransactionSuccess: () => {
+        toast.dismiss("creating-marketplace");
+        toast.success("Marketplace created!");
+      },
+      notifyTransactionFailure: () => {
+        toast.dismiss("creating-marketplace");
+        toast.error("Marketplace creation failed");
+      },
+      devAutoIndex: (context) => {
+        // Create marketplace in the database as a dx side-effect
+        if (window.ENV.DEV_AUTO_INDEX) {
+          invariant(context.contractData, "Contract data is required");
+          invariant(context.transactionReceipt, "Transaction receipt is required");
+          // fire and forget
+          createLaborMarket({
+            ...context.contractData,
+            address: removeLeadingZeros(context.transactionReceipt.logs[0]?.topics[1] as string), // The labor market created address
+            sponsorAddress: context.contractData.userAddress,
+          });
+        }
+      },
+    },
+  });
+  // DEBUG
+  // console.log("state", state.value, state.context);
 
-  const [modalData, setModalData] = useState<{ laborMarket?: LaborMarketContract; isOpen: boolean }>({ isOpen: false });
+  const isUploadingToIpfs = state.matches("transactionPrepare.loading");
+  const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
 
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
-  }
-
+  // If action succeeds the transaction is ready to be written to the blockchain
   useEffect(() => {
-    if (actionData && "preparedLaborMarket" in actionData) {
-      setModalData({ laborMarket: actionData.preparedLaborMarket, isOpen: true });
+    if (actionData && !isValidationError(actionData)) {
+      send({ type: "TRANSACTION_READY", data: actionData.preparedLaborMarket });
     }
-  }, [actionData]);
+  }, [actionData, send]);
+
+  const closeModal = () => {
+    send({ type: "TRANSACTION_CANCEL" });
+  };
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
 
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketForm> validator={validator} method="post" defaultValues={defaultValues}>
+        <ValidatedForm<LaborMarketForm>
+          validator={validator}
+          method="post"
+          defaultValues={defaultValues}
+          onSubmit={(data, event) => {
+            send({ type: "TRANSACTION_PREPARE" });
+          }}
+        >
           <h1 className="text-3xl font-semibold antialiased">Create a Brainstorm Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">
-              {transition.state === "submitting" ? "Loading..." : "Next"}
+              {isUploadingToIpfs ? "Loading..." : "Next"}
             </Button>
           </div>
         </ValidatedForm>
       </div>
-      <Modal title="Create Marketplace?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction laborMarket={modalData.laborMarket} onClose={closeModal} />
-      </Modal>
+      {state.context.contractData && (
+        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
+          <div className="space-y-8">
+            <p>Please confirm that you would like to create a new marketplace.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              <CreateLaborMarketWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              <Button variant="cancel" size="md" onClick={closeModal}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </Container>
-  );
-}
-
-function ConfirmTransaction({ laborMarket, onClose }: { laborMarket?: LaborMarketContract; onClose: () => void }) {
-  invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
-
-  const { write, isLoading } = useCreateLaborMarket({
-    data: laborMarket,
-    onTransactionSuccess() {
-      toast.dismiss("creating-marketplace");
-      toast.success("Marketplace created!");
-      onClose();
-    },
-    onWriteSuccess() {
-      toast.loading("Creating marketplace...", { id: "creating-marketplace" });
-    },
-  });
-
-  const onCreate = () => {
-    write?.();
-  };
-
-  return (
-    <div className="space-y-8">
-      <p>Please confirm that you would like to create a new marketplace.</p>
-      <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
-          Create
-        </Button>
-        <Button variant="cancel" size="md" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
   );
 }

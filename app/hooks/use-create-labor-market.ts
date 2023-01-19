@@ -1,27 +1,17 @@
-import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import {
   LaborMarket,
   LaborMarketNetwork,
   LikertEnforcement,
   PaymentModule,
-  ReputationModule,
   ReputationEngine,
+  ReputationModule,
 } from "labor-markets-abi";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
-import { createLaborMarket } from "~/utils/fetch";
-import { removeLeadingZeros } from "~/utils/helpers";
+import type { Web3Hook } from "~/features/web3-button/types";
 
-export function useCreateLaborMarket({
-  data,
-  onTransactionSuccess,
-  onWriteSuccess,
-}: {
-  data: LaborMarketContract;
-  onWriteSuccess?: () => void;
-  onTransactionSuccess?: (data: TransactionReceipt) => void;
-}) {
+export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,
     abi: LaborMarketNetwork.abi,
@@ -52,34 +42,14 @@ export function useCreateLaborMarket({
     ],
   });
 
-  const { data: transactionResultData, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      onWriteSuccess?.();
-    },
-  });
-
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: transactionResultData?.hash,
-    onError(error) {
-      console.log("error", error);
-    },
-    async onSuccess(receipt) {
-      if (window.ENV.DEV_AUTO_INDEX) {
-        createLaborMarket({
-          ...data,
-          address: removeLeadingZeros(receipt.logs[0]?.topics[1] as string), // The labor market created address
-          sponsorAddress: data.userAddress,
-        });
-      }
-
-      onTransactionSuccess?.(receipt);
+      onWriteSuccess?.(result);
     },
   });
 
   return {
     write,
-    isLoading,
-    isSuccess,
   };
 }
