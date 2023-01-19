@@ -67,6 +67,9 @@ export const upsertServiceRequest = async (data: ServiceRequestIndexer) => {
       contractId: data.contractId,
       title: data.title,
       laborMarketAddress: data.laborMarketAddress,
+      signalExpiration: data.signalExpiration,
+      submissionExpiration: data.submissionExpiration,
+      enforcementExpiration: data.enforcementExpiration,
     },
   });
   return newChallenge;

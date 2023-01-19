@@ -9,11 +9,11 @@ export function fromNow(time: string | number | Date) {
 }
 
 export function countDown(date: Date | string) {
-  const duration = dayjs(date).diff(dayjs());
+  const duration = dayjs(date).diff();
   if (dayjs(date).diff(dayjs(), "month") >= 1) {
-    return dayjs(duration).format("M[m] d[d] h[h]");
-  } else if (dayjs(date).diff(dayjs(), "days") >= 1) {
-    return dayjs(duration).format("d[d] h[h] m[m]");
+    return dayjs(duration).format("M[m] D[d] h[h]");
+  } else if (dayjs(date).diff(dayjs(), "day") >= 1) {
+    return dayjs(duration).format("D[d] h[h] m[m]");
   }
 
   return dayjs(duration).format("h[h] m[m] s[s]");
@@ -42,4 +42,14 @@ export function validateDate(date: string) {
 
 export function validateTime(time: string) {
   return dayjs(time, "HH:mm", true).isValid();
+}
+
+export function dateHasPassed(date: Date) {
+  return dayjs(date).diff() < 0;
+}
+
+export function progressTime(start: Date, end: Date): number {
+  const denominator = dayjs(end).diff(start, "hours");
+  const numerator = dayjs(Date.now()).diff(start, "hours") * 100;
+  return Math.min(100, numerator / denominator);
 }

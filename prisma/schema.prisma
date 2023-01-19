@@ -76,13 +76,16 @@ model LaborMarket {
 }
 
 model ServiceRequest {
-  id                 String       @id @default(cuid())
-  contractId         String       @unique @default(cuid())
-  title              String
-  laborMarketAddress String
-  createdAt          DateTime     @default(now())
-  laborMarket        LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
-  submissions        Submission[]
+  id                    String       @id @default(cuid())
+  contractId            String       @unique @default(cuid())
+  title                 String
+  laborMarketAddress    String
+  createdAt             DateTime     @default(now())
+  signalExpiration      DateTime
+  submissionExpiration  DateTime
+  enforcementExpiration DateTime
+  laborMarket           LaborMarket  @relation(fields: [laborMarketAddress], references: [address])
+  submissions           Submission[]
 
   @@unique([contractId, laborMarketAddress])
 }

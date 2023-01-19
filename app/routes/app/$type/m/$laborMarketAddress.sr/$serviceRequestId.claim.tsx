@@ -57,11 +57,11 @@ export default function ClaimToSubmit() {
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
-            <CountdownCard start={"2023-01-25"} />
+            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.signalExpiration} />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
-            <CountdownCard start={"2022-11-25"} />
+            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.submissionExpiration} />
           </div>
         </div>
       </div>

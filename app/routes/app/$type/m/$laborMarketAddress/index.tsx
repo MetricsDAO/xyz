@@ -170,10 +170,10 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
 
               <Row.Column>5 Sol</Row.Column>
               <Row.Column>
-                <Countdown date={"2023-01-25"} />
+                <Countdown date={sr.submissionExpiration} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={"2022-11-25"} />
+                <Countdown date={sr.enforcementExpiration} />
               </Row.Column>
             </Link>
           </Row>
@@ -212,11 +212,11 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>5 Sol</div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={"2023-01-25"} />
+                <Countdown date={sr.submissionExpiration} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={"2022-11-25"} />
+                <Countdown date={sr.enforcementExpiration} />
               </div>
             </Link>
           </Card>
