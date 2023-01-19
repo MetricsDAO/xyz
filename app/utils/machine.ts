@@ -46,6 +46,10 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         idle: {
           on: {
             TRANSACTION_PREPARE: { target: "transactionPrepare" },
+            TRANSACTION_READY: {
+              target: "transactionReady.ready",
+              actions: "setContractData",
+            },
           },
         },
         transactionPrepare: {
@@ -62,7 +66,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           },
           states: {
             loading: {},
-            failure: {},
+            failure: {}, // might be used in the future
           },
         },
         transactionReady: {
