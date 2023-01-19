@@ -31,7 +31,6 @@ export function useApproveERC20({ data, onWriteSuccess }: Web3Hook<ApproveERC20C
   const { write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      console.log("ummmmm");
       onWriteSuccess?.(result);
     },
   });
