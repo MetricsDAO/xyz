@@ -72,7 +72,7 @@ export default function CreateServiceRequest() {
   const modalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
 
   // DEBUG
-  console.log("state", state.value, state.context);
+  // console.log("state", state.value, state.context);
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
@@ -136,6 +136,9 @@ export default function CreateServiceRequest() {
             <div className="space-y-8">
               <p>Approve the app to transfer {state.context.contractData.pTokenQuantity} "TOKEN NAME" on your behalf</p>
               <div className="flex flex-col sm:flex-row justify-center gap-5">
+                <Button variant="cancel" size="md" onClick={closeModal}>
+                  Cancel
+                </Button>
                 <ApproveERC20TransferWeb3Button
                   data={{
                     amount: state.context.contractData.pTokenQuantity,
