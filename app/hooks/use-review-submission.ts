@@ -14,7 +14,7 @@ export function useReviewSubmission({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress,
+    address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "review",
     args: [BigNumber.from(data.requestId), BigNumber.from(data.submissionId), BigNumber.from(data.score)],

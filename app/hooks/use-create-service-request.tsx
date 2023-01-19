@@ -17,7 +17,7 @@ export function useCreateServiceRequest({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress,
+    address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "submitRequest",
     overrides: {
