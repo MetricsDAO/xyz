@@ -2,7 +2,6 @@ import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
@@ -14,6 +13,7 @@ import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
 import type { SendTransactionResult } from "~/features/web3-button/types";
+import transactionToasts from "~/features/web3-transaction-toasts";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
@@ -50,20 +50,10 @@ export const action = async ({ request }: ActionArgs) => {
 export default function CreateMarketplace() {
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+
   const [state, send] = useMachine(machine, {
     actions: {
-      notifyTransactionWrite: (context) => {
-        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
-        toast.loading("Creating marketplace...", { id: "creating-marketplace" });
-      },
-      notifyTransactionSuccess: () => {
-        toast.dismiss("creating-marketplace");
-        toast.success("Marketplace created!");
-      },
-      notifyTransactionFailure: () => {
-        toast.dismiss("creating-marketplace");
-        toast.error("Marketplace creation failed");
-      },
+      ...transactionToasts,
       devAutoIndex: (context) => {
         // Create marketplace in the database as a dx side-effect
         if (window.ENV.DEV_AUTO_INDEX) {

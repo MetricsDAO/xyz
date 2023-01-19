@@ -2,7 +2,6 @@ import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
@@ -15,6 +14,7 @@ import { ChallengeForm } from "~/features/challenge-form";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { SendTransactionResult } from "~/features/web3-button/types";
+import transactionToasts from "~/features/web3-transaction-toasts";
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
@@ -46,6 +46,7 @@ export default function CreateServiceRequest() {
 
   const [state, send] = useMachine(serviceRequestMachine, {
     actions: {
+      ...transactionToasts,
       devAutoIndex: (context) => {
         if (window.ENV.DEV_AUTO_INDEX) {
           invariant(context.contractData, "Contract data is required");
@@ -54,17 +55,6 @@ export default function CreateServiceRequest() {
             contractId: "1", // hardcoding to 1 for now. Doesn't seem to be a way to get this out of the receipt
           });
         }
-      },
-      notifyTransactionWrite: (context) => {
-        toast.loading("Creating challenge...", { id: "creating-challenge" });
-      },
-      notifyTransactionSuccess: () => {
-        toast.dismiss("creating-challenge");
-        toast.success("Challenge created!");
-      },
-      notifyTransactionFailure: () => {
-        toast.dismiss("creating-challenge");
-        toast.error("Challenge creation failed");
       },
     },
   });

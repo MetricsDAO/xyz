@@ -145,7 +145,7 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Toaster />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
