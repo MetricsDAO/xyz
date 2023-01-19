@@ -13,6 +13,7 @@ import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
+import { dateHasPassed } from "~/utils/date";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -53,7 +54,7 @@ export default function ServiceRequest() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          {/*<UserBadge url="u/id" address={challenge.laborMarket.sponsorAddress} balance={200} />*/}
+          {/*<UserBadge url="u/id" address={serviceRequest.laborMarket.sponsorAddress as `0x${string}`} balance={200} />*/}
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
@@ -75,7 +76,7 @@ export default function ServiceRequest() {
           <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
         </DetailItem>
         <DetailItem title="Winner">
-          <Badge>Pending</Badge>
+          {!dateHasPassed(serviceRequest.enforcementExpiration) ? <Badge>Pending</Badge> : <Badge>todo</Badge>}
         </DetailItem>
       </Detail>
 
@@ -86,7 +87,7 @@ export default function ServiceRequest() {
         </p>
       </article>
 
-      <TabNav className="mb-8">
+      <TabNav className="mb-10">
         <TabNavLink to="" end>
           Submissions <span className="text-gray-400">({serviceRequest._count.submissions})</span>
         </TabNavLink>

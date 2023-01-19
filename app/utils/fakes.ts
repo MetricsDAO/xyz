@@ -35,6 +35,10 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
 };
 
 export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestIndexer => {
+  const signal = faker.date.soon(7);
+  const submission = faker.date.soon(7, signal);
+  const enforcement = faker.date.soon(7, submission);
+
   return {
     id: faker.datatype.uuid(),
     contractId: faker.datatype.uuid(),
@@ -43,9 +47,9 @@ export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceReques
     laborMarketAddress: faker.finance.ethereumAddress(),
     pTokenAddress: faker.finance.ethereumAddress(),
     pTokenQuantity: faker.datatype.string(),
-    signalExpiration: faker.date.future(),
-    submissionExpiration: faker.date.future(),
-    enforcementExpiration: faker.date.future(),
+    signalExpiration: signal,
+    submissionExpiration: submission,
+    enforcementExpiration: enforcement,
     uri: faker.internet.url(),
     createdAt: faker.date.past(),
     ...data,

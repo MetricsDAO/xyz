@@ -1,6 +1,7 @@
 import { useRouteData } from "remix-utils";
 import { CountdownCard } from "~/components/countdown-card";
 import type { findServiceRequest } from "~/services/service-request.server";
+import { claimToReviewDate, dateHasPassed } from "~/utils/date";
 
 export default function ServiceIdTimeline() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
@@ -9,21 +10,55 @@ export default function ServiceIdTimeline() {
   if (!data) {
     throw new Error("ServiceIdTimeline must be rendered under a ServiceId route");
   }
-  // const { serviceRequest } = data;
+  const { serviceRequest } = data;
+  if (!serviceRequest) {
+    throw new Error("ServiceRequest not found");
+  }
+
+  const times = [
+    { label: "claim to submit deadline", time: serviceRequest.signalExpiration },
+    { label: "submissions open", time: serviceRequest.signalExpiration },
+    { label: "submission deadline", time: serviceRequest.submissionExpiration },
+    {
+      label: "claim to review deadline",
+      time: claimToReviewDate(serviceRequest.createdAt, serviceRequest.enforcementExpiration),
+    },
+    { label: "review deadline & winners", time: serviceRequest.enforcementExpiration },
+  ];
+
+  const upcoming = times.filter((t) => t.time && !dateHasPassed(t.time));
+  const passed = times.filter((t) => t.time && dateHasPassed(t.time));
 
   return (
-    <section className="w-full border-spacing-4 border-separate space-y-4">
-      <h3 className="font-semibold">Upcoming</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <CountdownCard start={"2023-01-25"}>claim to submit deadline</CountdownCard>
-        <CountdownCard start={"2023-01-25"}>submission deadline</CountdownCard>
-        <CountdownCard start={"2023-01-25"}>claim to review deadline</CountdownCard>
-        <CountdownCard start={"2023-01-25"}>review deadline &amp; winners</CountdownCard>
-      </div>
-      <h3 className="font-semibold">Passed</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-        <CountdownCard start={"2023-01-25"}>submissions open</CountdownCard>
-      </div>
+    <section className="w-full border-spacing-4 border-separate space-y-14">
+      {upcoming.length === 0 ? (
+        <></>
+      ) : (
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">Upcoming</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
+            {upcoming.map((u) => (
+              <CountdownCard start={serviceRequest.createdAt} end={u.time} key={u.label}>
+                {u.label}
+              </CountdownCard>
+            ))}
+          </div>
+        </div>
+      )}
+      {passed.length === 0 ? (
+        <></>
+      ) : (
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">Passed</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
+            {passed.map((p) => (
+              <CountdownCard start={serviceRequest.createdAt} end={p.time} key={p.label}>
+                {p.label}
+              </CountdownCard>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
