@@ -13,6 +13,7 @@ import invariant from "tiny-invariant";
 import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
 import toast from "react-hot-toast";
 import { Modal } from "~/components";
+import { BigNumber } from "ethers";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -22,11 +23,11 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     throw notFound({ id: serviceRequestId });
   }
 
-  return typedjson({ serviceRequest }, { status: 200 });
+  return typedjson({ serviceRequest, laborMarketAddress }, { status: 200 });
 };
 
 export default function ClaimToSubmit() {
-  const { serviceRequest } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, laborMarketAddress } = useTypedLoaderData<typeof loader>();
 
   const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
 
@@ -80,7 +81,7 @@ export default function ClaimToSubmit() {
       <div className="flex flex-wrap gap-5">
         <Button
           onClick={() => {
-            setModalData({ isOpen: true, data: { serviceRequestId: 1 } });
+            setModalData({ isOpen: true, data: {laborMarketAddress,  serviceRequestId: serviceRequest.contractId } });
           }}
         >
           Claim to Submit
