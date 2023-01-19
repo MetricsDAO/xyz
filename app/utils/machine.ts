@@ -11,7 +11,7 @@ type Events<T> =
       transactionPromise: Promise<TransactionReceipt>;
     }
   | { type: "done.invoke.wait-for-transaction"; data: TransactionReceipt }
-  | { type: "TRANSACTION_SUCCESS"; transactionReceipt: TransactionReceipt }
+  | { type: "TRANSACTION_SUCCESS" }
   | { type: "TRANSACTION_FAILURE" };
 
 type Context<T> = {
