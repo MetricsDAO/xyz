@@ -4,6 +4,10 @@ import { assign, createMachine } from "xstate";
 type Events<T> =
   | { type: "TRANSACTION_PREPARE" }
   | { type: "TRANSACTION_READY"; data: T }
+  | { type: "TRANSACTION_PREAPPROVE"; data: T }
+  | { type: "TRANSACTION_PREAPPROVE_LOADING" }
+  | { type: "TRANSACTION_PREAPPROVE_SUCCESS" }
+  | { type: "TRANSACTION_PREAPPROVE_FAILURE" }
   | { type: "TRANSACTION_CANCEL" }
   | {
       type: "TRANSACTION_WRITE";
@@ -48,7 +52,11 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           initial: "loading",
           on: {
             TRANSACTION_READY: {
-              target: "transactionReady",
+              target: "transactionReady.ready",
+              actions: "setContractData",
+            },
+            TRANSACTION_PREAPPROVE: {
+              target: "transactionReady.preapproveReady",
               actions: "setContractData",
             },
           },
@@ -60,7 +68,22 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         transactionReady: {
           on: {
             TRANSACTION_CANCEL: { target: "idle" }, //start over
-            TRANSACTION_WRITE: { target: "transactionWrite", actions: "setTransactionHash" },
+            TRANSACTION_WRITE: {
+              target: "transactionWrite",
+              actions: "setTransactionHash",
+              cond: (context, event, meta) => meta.state.matches("transactionReady.ready"), // must be ready to advance, for cases where preapprove is required
+            },
+            TRANSACTION_PREAPPROVE_SUCCESS: {
+              target: "transactionReady.ready",
+            },
+            TRANSACTION_PREAPPROVE_FAILURE: { target: "transactionReady.preapproveFailure" },
+            TRANSACTION_PREAPPROVE_LOADING: { target: "transactionReady.preapproveLoading" },
+          },
+          states: {
+            ready: {},
+            preapproveReady: {},
+            preapproveLoading: {},
+            preapproveFailure: {},
           },
         },
         transactionWrite: {
@@ -107,6 +130,11 @@ export const createBlockchainTransactionStateMachine = <T>() => {
             return event.data;
           },
         }),
+        // noop to make these optional when useMachine
+        notifyTransactionWrite: () => {},
+        notifyTransactionSuccess: () => {},
+        notifyTransactionFailure: () => {},
+        devAutoIndex: () => {},
       },
     }
   );

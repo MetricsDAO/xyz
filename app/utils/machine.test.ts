@@ -11,10 +11,8 @@ describe("test chain transaction machine", async () => {
     const service = interpret(
       createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
         actions: {
-          notifyTransactionWrite: vi.fn(),
           notifyTransactionSuccess: vi.fn(),
-          notifyTransactionFailure: vi.fn(),
-          devAutoIndex: vi.fn(),
+          notifyTransactionWrite: vi.fn(),
         },
       })
     );
@@ -30,7 +28,7 @@ describe("test chain transaction machine", async () => {
       type: "TRANSACTION_READY",
       data: laborMarketContract,
     });
-    expect(service.getSnapshot().value).toEqual("transactionReady");
+    expect(service.getSnapshot().value).toEqual({ transactionReady: "ready" });
     expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
 
     service.send({

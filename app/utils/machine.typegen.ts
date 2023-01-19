@@ -15,7 +15,7 @@ export interface Typegen0 {
     waitForTransaction: "done.invoke.wait-for-transaction";
   };
   missingImplementations: {
-    actions: "devAutoIndex" | "notifyTransactionFailure" | "notifyTransactionSuccess" | "notifyTransactionWrite";
+    actions: never;
     delays: never;
     guards: never;
     services: never;
@@ -25,7 +25,7 @@ export interface Typegen0 {
     notifyTransactionFailure: "error.platform.wait-for-transaction";
     notifyTransactionSuccess: "done.invoke.wait-for-transaction";
     notifyTransactionWrite: "TRANSACTION_WRITE";
-    setContractData: "TRANSACTION_READY";
+    setContractData: "TRANSACTION_PREAPPROVE" | "TRANSACTION_READY";
     setTransactionHash: "TRANSACTION_WRITE";
     setTransactionReceipt: "done.invoke.wait-for-transaction";
   };
@@ -41,8 +41,15 @@ export interface Typegen0 {
     | "transactionPrepare.failure"
     | "transactionPrepare.loading"
     | "transactionReady"
+    | "transactionReady.preapproveFailure"
+    | "transactionReady.preapproveLoading"
+    | "transactionReady.preapproveReady"
+    | "transactionReady.ready"
     | "transactionSuccess"
     | "transactionWrite"
-    | { transactionPrepare?: "failure" | "loading" };
+    | {
+        transactionPrepare?: "failure" | "loading";
+        transactionReady?: "preapproveFailure" | "preapproveLoading" | "preapproveReady" | "ready";
+      };
   tags: never;
 }
