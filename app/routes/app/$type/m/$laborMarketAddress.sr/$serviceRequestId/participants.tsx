@@ -24,7 +24,7 @@ export default function ServiceIdParticipants() {
             return (
               <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">
-                  <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+                  <UserBadge url="u/id" address={s.creatorId as `0x${string}`} balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>
                 </div>
               </Card>

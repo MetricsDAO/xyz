@@ -20,6 +20,7 @@ import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
+import { $path } from "remix-routes";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -36,7 +37,6 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function MarketplaceIdChallenges() {
   const { totalResults, params, serviceRequests } = useTypedLoaderData<typeof loader>();
-
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
@@ -153,7 +153,14 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
       {serviceRequests.map((sr) => {
         return (
           <Row asChild columns={6} key={sr.contractId}>
-            <Link to={`/app/brainstorm/m/${sr.laborMarketAddress}/sr/${sr.contractId}`} className="text-sm font-medium">
+            <Link
+              to={$path("/app/:type/m/:laborMarketAddress/sr/:contractId", {
+                type: sr.laborMarket.type,
+                laborMarketAddress: sr.laborMarketAddress,
+                contractId: sr.contractId,
+              })}
+              className="text-sm font-medium"
+            >
               <Row.Column span={2}>{sr.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
@@ -190,7 +197,7 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
         return (
           <Card asChild key={sr.contractId}>
             <Link
-              to={`/app/brainstorm/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
+              to={`/app/${sr.laborMarket.type}/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>

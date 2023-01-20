@@ -26,7 +26,7 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.createdAt)} by </span>
-        <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+        <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
       </div>
     </Card>
   );
