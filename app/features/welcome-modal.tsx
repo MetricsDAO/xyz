@@ -19,17 +19,22 @@ export default function WelcomeModal({ opened, redirectPath }: { opened: boolean
         <img src="/img/mdao-purple-icon.png" alt="" className="mx-auto pb-5" />
         <h3 className="font-medium text-center">Welcome to the MetricsDAO ecosystem!</h3>
         <ul className="pb-10 pt-2 text-sm text-stone-500 list-disc list-outside pl-5">
-          <li>MetricsDAO will never ask you for your private keys or seed phrase.</li>
+          <li>You should not use the primary address you store assets in to connect to the app.</li>
           <li>
             This app is in beta and is subject to change and future code audits. See{" "}
-            <a href="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/">
+            <a
+              href="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/"
+              target="_blank"
+              rel="noreferrer"
+            >
               <u className="text-blue-700">Docs</u>
             </a>{" "}
             for more.
           </li>
+          <li>MetricsDAO will never ask you for your private keys or seed phrase.</li>
           <li>
             By clicking the button below you agree to our{" "}
-            <a href="/terms">
+            <a href="/terms" target="_blank">
               <u className="text-blue-700">Terms and Privacy</u>
             </a>
             .
