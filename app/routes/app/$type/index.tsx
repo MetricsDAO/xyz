@@ -72,17 +72,14 @@ export default function MarketplaceCollection() {
       </header>
 
       <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
-        {type === "brainstorm" ? "Brainstorm" : "Anayltics"} Marketplaces{" "}
+        {type === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplaces{" "}
         <span className="text-gray-400">({totalResults})</span>
       </h2>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesListView
-              marketplaces={marketplaces}
-              type={type === "brainstorm" ? "Brainstorm" : "Anayltics"}
-            />
+            <MarketplacesListView marketplaces={marketplaces} />
             <div className="w-fit m-auto">
               <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
             </div>
@@ -156,10 +153,9 @@ export default function MarketplaceCollection() {
 
 type MarketplaceTableProps = {
   marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
-  type: string;
 };
 
-function MarketplacesListView({ marketplaces, type }: MarketplaceTableProps) {
+function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
   if (marketplaces.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
   }
@@ -168,21 +164,23 @@ function MarketplacesListView({ marketplaces, type }: MarketplaceTableProps) {
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <MarketplacesTable marketplaces={marketplaces} type={type} />
+        <MarketplacesTable marketplaces={marketplaces} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <MarketplacesCard marketplaces={marketplaces} type={type} />
+        <MarketplacesCard marketplaces={marketplaces} />
       </div>
     </>
   );
 }
 
-function MarketplacesTable({ marketplaces, type }: MarketplaceTableProps) {
+function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
+  const { type } = useParams();
+
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={2}>{type} Marketplace</Header.Column>
+        <Header.Column span={2}>{type === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Challenge Pool Totals</Header.Column>
         <Header.Column>Avg. Challenge Pool</Header.Column>
@@ -230,7 +228,8 @@ function MarketplacesTable({ marketplaces, type }: MarketplaceTableProps) {
   );
 }
 
-function MarketplacesCard({ marketplaces, type }: MarketplaceTableProps) {
+function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
+  const { type } = useParams();
   return (
     <div>
       <div className="space-y-4">
@@ -241,7 +240,7 @@ function MarketplacesCard({ marketplaces, type }: MarketplaceTableProps) {
                 to={`/app/${m.type}/m/${m.address}`}
                 className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
-                <div>{type} Marketplace</div>
+                <div>{type === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
                 <div className="text-sm font-medium">{m.title}</div>
 
                 <div>Chain/Project</div>

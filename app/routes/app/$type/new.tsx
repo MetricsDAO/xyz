@@ -1,4 +1,5 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
+import { useParams } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect } from "react";
@@ -50,6 +51,7 @@ export const action = async ({ request }: ActionArgs) => {
 export default function CreateMarketplace() {
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+  const { type } = useParams();
   const [state, send] = useMachine(machine, {
     actions: {
       notifyTransactionWrite: (context) => {
@@ -111,7 +113,9 @@ export default function CreateMarketplace() {
             send({ type: "TRANSACTION_PREPARE" });
           }}
         >
-          <h1 className="text-3xl font-semibold antialiased">Create a Brainstorm Marketplace</h1>
+          <h1 className="text-3xl font-semibold antialiased">
+            Create {type === "brainstorm" ? "a Brainstorm" : "an Analytics"} Marketplace
+          </h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">

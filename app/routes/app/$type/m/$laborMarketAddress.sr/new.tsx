@@ -1,3 +1,4 @@
+import { useParams } from "@remix-run/react";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
@@ -45,6 +46,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 export default function CreateServiceRequest() {
   const { defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+  const { type } = useParams();
 
   const [modalData, setModalData] = useState<{ serviceRequest?: ServiceRequestContract; isOpen: boolean }>({
     isOpen: false,
@@ -62,16 +64,7 @@ export default function CreateServiceRequest() {
 
   return (
     <Container className="max-w-3xl my-10 space-y-10">
-      <div className="space-y-3">
-        <h1 className="font-semibold text-3xl">Launch a Brainstorm Challenge</h1>
-        <p className="text-lg text-cyan-500">
-          Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
-        </p>
-        <p className="text-sm text-gray-500">
-          You fund and launch a Brainstorm challenge. The community submits ideas. Peer reviewers score and surface the
-          best ideas. Winners earn tokens from your reward pool!
-        </p>
-      </div>
+      {type === "brainstorm" ? <BrainstormHeader /> : <AnalyticsHeader />}
 
       <ValidatedForm
         method="post"
@@ -90,17 +83,7 @@ export default function CreateServiceRequest() {
           </Field>
         </section>
         <section className="space-y-3">
-          <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
-          <Field>
-            <ValidatedTextarea
-              name="description"
-              rows={7}
-              placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
-
-              Example: What are the most important questions to answer about user behavior on Ethereum?"
-            />
-            <Error name="description" />
-          </Field>
+          {type === "brainstorm" ? <BrainstormInput /> : <AnalyticsInput />}
           <div className="flex flex-col md:flex-row gap-2">
             <div className="flex-grow">
               <Field>
@@ -276,5 +259,72 @@ function ConfirmTransaction({
         </Button>
       </div>
     </div>
+  );
+}
+
+function BrainstormHeader() {
+  return (
+    <div className="space-y-3">
+      <h1 className="font-semibold text-3xl">Launch a Brainstorm Challenge</h1>
+      <p className="text-lg text-cyan-500">
+        Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
+      </p>
+      <p className="text-sm text-gray-500">
+        You fund and launch a Brainstorm challenge. The community submits ideas. Peer reviewers score and surface the
+        best ideas. Winners earn tokens from your reward pool!
+      </p>
+    </div>
+  );
+}
+
+function AnalyticsHeader() {
+  return (
+    <div className="space-y-3">
+      <h1 className="font-semibold text-3xl">Launch an Analytics Challenge</h1>
+      <p className="text-lg text-cyan-500">
+        Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+        projects launch, grow and succeed.
+      </p>
+      <p className="text-sm text-gray-500">
+        You fund and launch an Analytics challenge. Analysts submit work. Peer reviewers score and surface the best
+        outputs. Winners earn tokens from your reward pool!
+      </p>
+    </div>
+  );
+}
+
+function BrainstormInput() {
+  return (
+    <>
+      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
+      <Field>
+        <ValidatedTextarea
+          name="description"
+          rows={7}
+          placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
+
+    Example: What are the most important questions to answer about user behavior on Ethereum?"
+        />
+        <Error name="description" />
+      </Field>
+    </>
+  );
+}
+
+function AnalyticsInput() {
+  return (
+    <>
+      <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?</h2>
+      <Field>
+        <ValidatedTextarea
+          name="description"
+          rows={7}
+          placeholder="Enter a question to answer, problem to solve, or tool to create. 
+
+          Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
+        />
+        <Error name="description" />
+      </Field>
+    </>
   );
 }
