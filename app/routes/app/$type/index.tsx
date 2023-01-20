@@ -1,14 +1,13 @@
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Link, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { getParamsOrFail } from "remix-params-helper";
-import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
-import { ValidatedForm } from "remix-validated-form";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
-import { Header, Row, Table } from "~/components/table";
+import { getParamsOrFail } from "remix-params-helper";
+import { $params, $path } from "remix-routes";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { ValidatedForm } from "remix-validated-form";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
@@ -19,10 +18,11 @@ import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
+import { Header, Row, Table } from "~/components/table";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { $path, $params } from "remix-routes";
 
 const validator = withZod(LaborMarketSearchSchema);
 
