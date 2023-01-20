@@ -10,12 +10,12 @@ import { useParams } from "@remix-run/react";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
   const [launchAccess] = useControlField("launch.access");
-  const { type } = useParams();
+  const { mType } = useParams();
 
   return (
     <div className="space-y-10 py-5">
-      {type === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
-      <input type="hidden" name="type" value={type} />
+      {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
+      <input type="hidden" name="type" value={mType} />
       <Field>
         <Label size="lg">Challenge Marketplace Title</Label>
         <ValidatedInput type="text" name="title" placeholder="e.g Solana Breakpoint 2023" />
@@ -27,7 +27,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <ValidatedTextarea
           name="description"
           placeholder={
-            type === "brainstorm"
+            mType === "brainstorm"
               ? "What’s the goal of this Brainstorm marketplace?"
               : "What’s the goal of this Analytics marketplace?"
           }

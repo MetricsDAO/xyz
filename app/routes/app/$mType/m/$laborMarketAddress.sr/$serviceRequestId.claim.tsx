@@ -28,7 +28,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 
 export default function ClaimToSubmit() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
-  const { type } = useParams();
+  const { mType } = useParams();
 
   const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
 
@@ -41,7 +41,8 @@ export default function ClaimToSubmit() {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
         <h2 className="text-lg text-cyan-500">
-          Claiming is an up front commitment to submit at least one {type === "brainstorm" ? "submission" : "dashboard"}
+          Claiming is an up front commitment to submit at least one{" "}
+          {mType === "brainstorm" ? "submission" : "dashboard"}
         </h2>
         <p className="text-gray-500 text-sm">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked

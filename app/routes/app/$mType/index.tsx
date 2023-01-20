@@ -29,7 +29,7 @@ const validator = withZod(LaborMarketSearchSchema);
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
 
-  url.searchParams.set("type", $params("/app/:type", params).type);
+  url.searchParams.set("type", $params("/app/:mType", params).mType);
 
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(searchParams);
@@ -52,7 +52,7 @@ export default function MarketplaceCollection() {
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
-  const { type } = useParams();
+  const { mType } = useParams();
 
   const handleChange = () => {
     if (formRef.current) {
@@ -63,16 +63,16 @@ export default function MarketplaceCollection() {
   return (
     <Container className="py-16">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
-        {type === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
+        {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
         <aside>
           <Button size="lg" asChild>
-            <Link to={$path("/app/:type/new", { type: type })}>Create Marketplace</Link>
+            <Link to={$path("/app/:mType/new", { mType: mType })}>Create Marketplace</Link>
           </Button>
         </aside>
       </header>
 
       <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
-        {type === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplaces{" "}
+        {mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplaces{" "}
         <span className="text-gray-400">({totalResults})</span>
       </h2>
 
@@ -175,12 +175,12 @@ function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
 }
 
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
-  const { type } = useParams();
+  const { mType } = useParams();
 
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={2}>{type === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
+        <Header.Column span={2}>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Challenge Pool Totals</Header.Column>
         <Header.Column>Avg. Challenge Pool</Header.Column>
@@ -190,7 +190,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         return (
           <Row asChild columns={6} key={m.address}>
             <Link
-              to={$path("/app/:type/m/:laborMarketAddress", { type: m.type, laborMarketAddress: m.address })}
+              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.type, laborMarketAddress: m.address })}
               className="text-sm font-medium"
             >
               <Row.Column span={2}>{m.title}</Row.Column>
@@ -229,7 +229,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
 }
 
 function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
-  const { type } = useParams();
+  const { mType } = useParams();
   return (
     <div>
       <div className="space-y-4">
@@ -240,7 +240,7 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
                 to={`/app/${m.type}/m/${m.address}`}
                 className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
-                <div>{type === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
+                <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
                 <div className="text-sm font-medium">{m.title}</div>
 
                 <div>Chain/Project</div>

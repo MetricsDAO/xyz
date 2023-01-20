@@ -59,7 +59,7 @@ export default function ChallengeSubmission() {
   const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
-  const { type } = useParams();
+  const { mType } = useParams();
 
   const handleChange = () => {
     if (formRef.current) {
@@ -103,7 +103,7 @@ export default function ChallengeSubmission() {
               </DetailItem>
             )}
           </Detail>
-          {type === "brainstorm" ? (
+          {mType === "brainstorm" ? (
             <BrainstormDescription submission={submission} />
           ) : (
             <AnalyzeDescription submission={submission} />

@@ -31,7 +31,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 
 export default function ServiceRequest() {
   const { serviceRequest, numOfReviews } = useTypedLoaderData<typeof loader>();
-  const { type } = useParams();
+  const { mType } = useParams();
 
   return (
     <Container className="py-16">
@@ -40,8 +40,8 @@ export default function ServiceRequest() {
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
             <Link
-              to={$path("/app/:type/m/:laborMarketAddress/sr/:contractId/review", {
-                type: type,
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId/review", {
+                mType: mType,
                 laborMarketAddress: serviceRequest.laborMarketAddress,
                 contractId: serviceRequest.contractId,
               })}
@@ -51,8 +51,8 @@ export default function ServiceRequest() {
           </Button>
           <Button variant="primary" size="lg" asChild>
             <Link
-              to={$path("/app/:type/m/:laborMarketAddress/sr/:contractId/claim", {
-                type: type,
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId/claim", {
+                mType: mType,
                 laborMarketAddress: serviceRequest.laborMarketAddress,
                 contractId: serviceRequest.contractId,
               })}
@@ -62,8 +62,8 @@ export default function ServiceRequest() {
           </Button>
           <Button variant="primary" size="lg" asChild>
             <Link
-              to={$path("/app/:type/m/:laborMarketAddress/sr/:contractId/submit", {
-                type: type,
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId/submit", {
+                mType: mType,
                 laborMarketAddress: serviceRequest.laborMarketAddress,
                 contractId: serviceRequest.contractId,
               })}

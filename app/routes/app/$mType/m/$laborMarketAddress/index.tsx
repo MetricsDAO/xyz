@@ -154,8 +154,8 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
         return (
           <Row asChild columns={6} key={sr.contractId}>
             <Link
-              to={$path("/app/:type/m/:laborMarketAddress/sr/:contractId", {
-                type: sr.laborMarket.type,
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId", {
+                mType: sr.laborMarket.type,
                 laborMarketAddress: sr.laborMarketAddress,
                 contractId: sr.contractId,
               })}

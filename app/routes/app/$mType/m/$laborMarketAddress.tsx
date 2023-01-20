@@ -29,7 +29,7 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket } = useTypedLoaderData<typeof loader>();
-  const { type } = useParams();
+  const { mType } = useParams();
 
   return (
     <Container className="py-16">
@@ -39,8 +39,8 @@ export default function Marketplace() {
           <div className="flex flex-wrap gap-5">
             <Button asChild size="lg">
               <Link
-                to={$path("/app/:type/m/:laborMarketaddress/sr/new", {
-                  type: type,
+                to={$path("/app/:mType/m/:laborMarketaddress/sr/new", {
+                  mType: mType,
                   laborMarketAddress: laborMarket?.address,
                 })}
               >

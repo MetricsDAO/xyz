@@ -10,15 +10,19 @@ type Props = {
 };
 
 export function SubmissionCard({ submission, totalReviews }: Props) {
-  const { type } = useParams();
+  const { mType } = useParams();
 
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={`/app/${type}/m/${submission.laborMarketAddress}/s/${submission.contractId}`}
+        to={`/app/${mType}/m/${submission.laborMarketAddress}/s/${submission.contractId}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
-        {type === "brainstorm" ? <BrainstormInfo submission={submission} /> : <AnalyticsInfo submission={submission} />}
+        {mType === "brainstorm" ? (
+          <BrainstormInfo submission={submission} />
+        ) : (
+          <AnalyticsInfo submission={submission} />
+        )}
         <div className="flex flex-col items-center gap-2">
           <Score score={submission.score} />
           <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>

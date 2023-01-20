@@ -37,7 +37,7 @@ export default function SubmitQuestion() {
   const [modalData, setModalData] = useState<{ data?: SubmissionContract; isOpen: boolean }>({
     isOpen: false,
   });
-  const { type } = useParams();
+  const { mType } = useParams();
 
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
@@ -49,9 +49,9 @@ export default function SubmitQuestion() {
     }
   }, [actionData]);
 
-  if (type === "analyze") {
+  if (mType === "analyze") {
     return <Analyze modalData={modalData} closeModal={closeModal} />;
-  } else if (type === "brainstorm") {
+  } else if (mType === "brainstorm") {
     return <Brainstorm modalData={modalData} closeModal={closeModal} />;
   } else {
     //error
