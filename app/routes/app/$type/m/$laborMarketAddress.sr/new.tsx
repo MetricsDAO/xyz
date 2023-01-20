@@ -14,7 +14,7 @@ import { ChallengeForm } from "~/features/challenge-form";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { SendTransactionResult } from "~/features/web3-button/types";
-import transactionToasts from "~/features/web3-transaction-toasts";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
@@ -46,7 +46,7 @@ export default function CreateServiceRequest() {
 
   const [state, send] = useMachine(serviceRequestMachine, {
     actions: {
-      ...transactionToasts,
+      ...defaultNotifyTransactionActions,
       devAutoIndex: (context) => {
         if (window.ENV.DEV_AUTO_INDEX) {
           invariant(context.contractData, "Contract data is required");

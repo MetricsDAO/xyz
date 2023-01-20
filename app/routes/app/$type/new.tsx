@@ -13,7 +13,7 @@ import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
 import type { SendTransactionResult } from "~/features/web3-button/types";
-import transactionToasts from "~/features/web3-transaction-toasts";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
@@ -53,7 +53,7 @@ export default function CreateMarketplace() {
 
   const [state, send] = useMachine(machine, {
     actions: {
-      ...transactionToasts,
+      ...defaultNotifyTransactionActions,
       devAutoIndex: (context) => {
         // Create marketplace in the database as a dx side-effect
         if (window.ENV.DEV_AUTO_INDEX) {
