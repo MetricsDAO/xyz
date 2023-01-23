@@ -8,6 +8,7 @@ import { $params, $path } from "remix-routes";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
@@ -29,7 +30,7 @@ const validator = withZod(LaborMarketSearchSchema);
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
 
-  url.searchParams.set("type", $params("/app/:mType", params).mType);
+  url.searchParams.set("mType", $params("/app/:mType", params).mType);
 
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(searchParams);
@@ -53,6 +54,7 @@ export default function MarketplaceCollection() {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   const handleChange = () => {
     if (formRef.current) {

@@ -32,6 +32,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 export default function ServiceRequest() {
   const { serviceRequest, numOfReviews } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   return (
     <Container className="py-16">

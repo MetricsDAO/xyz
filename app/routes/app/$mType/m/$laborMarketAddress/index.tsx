@@ -1,5 +1,5 @@
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
-import { Link, useSubmit } from "@remix-run/react";
+import { Link, useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
@@ -21,6 +21,7 @@ import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -141,6 +142,8 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
   return (
     <Table>
       <Header columns={6} className="mb-2">
@@ -155,7 +158,7 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
           <Row asChild columns={6} key={sr.contractId}>
             <Link
               to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId", {
-                mType: sr.laborMarket.type,
+                mType: mType,
                 laborMarketAddress: sr.laborMarketAddress,
                 contractId: sr.contractId,
               })}

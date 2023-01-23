@@ -7,7 +7,7 @@ import type { findServiceRequest } from "~/services/service-request.server";
 
 export default function ServiceIdPrereqs() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
-    "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
+    "routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId"
   );
   if (!data) {
     throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");

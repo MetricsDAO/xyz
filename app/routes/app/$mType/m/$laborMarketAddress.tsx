@@ -30,6 +30,7 @@ export const loader = async (data: DataFunctionArgs) => {
 export default function Marketplace() {
   const { laborMarket } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   return (
     <Container className="py-16">
