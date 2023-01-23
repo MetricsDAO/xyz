@@ -1,28 +1,21 @@
 import { Link, Outlet, useParams } from "@remix-run/react";
+import { $path } from "remix-routes";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { Badge, ProjectAvatar, UserBadge } from "~/components";
+import { notFound } from "remix-utils";
+import invariant from "tiny-invariant";
+import { UserBadge } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { $path } from "remix-routes";
-import invariant from "tiny-invariant";
 
 export const loader = async (data: DataFunctionArgs) => {
-  // TODO: Refactor
-  // const url = new URL(data.request.url);
-  // const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-
-  // if (params.laborMarket == undefined) {
-  //   params.laborMarket = data.params.laborMarketAddress;
-  // }
-
-  let laborMarket = undefined;
-
-  if (data.params.laborMarketAddress != undefined) {
-    laborMarket = await findLaborMarket(data.params.laborMarketAddress);
+  invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
+  const laborMarket = await findLaborMarket(data.params.laborMarketAddress);
+  if (!laborMarket) {
+    throw notFound("Labor market not found");
   }
 
   return typedjson({ laborMarket });
@@ -41,9 +34,9 @@ export default function Marketplace() {
           <div className="flex flex-wrap gap-5">
             <Button asChild size="lg">
               <Link
-                to={$path("/app/:mType/m/:laborMarketaddress/sr/new", {
+                to={$path("/app/:mType/m/:laborMarketAddress/sr/new", {
                   mType: mType,
-                  laborMarketAddress: laborMarket?.address,
+                  laborMarketAddress: laborMarket.address,
                 })}
               >
                 Launch Challenge
