@@ -15,7 +15,7 @@ export function AppFooter() {
 
   return (
     <footer id="bottom">
-      <menu className="flex flex-row items-center gap-x-4 text-xs px-6 justify-end">{items}</menu>
+      <menu className="flex flex-row items-center space-x-4 text-xs px-6 justify-end">{items}</menu>
     </footer>
   );
 }
