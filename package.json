@@ -38,6 +38,7 @@
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^2.0.13",
     "@highlight-run/react": "^1.2.1",
+    "@pinata/sdk": "^2.1.0",
     "@prisma/client": "4.5.0",
     "@radix-ui/react-avatar": "^1.0.1",
     "@radix-ui/react-checkbox": "^1.0.1",

@@ -53,14 +53,14 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
 
 /**
  * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
- * @param {LaborMarketForm} newLaborMarket - The LaborMarketNew to prepare.
+ * @param {LaborMarketForm} form - The labor market form data to prepare.
  * @param {User} user - The user that is creating the LaborMarket.
  * @returns {LaborMarketContract} - The prepared LaborMarket.
  */
-export const prepareLaborMarket = async (newLaborMarket: LaborMarketForm, user: User) => {
-  const metadata = LaborMarketMetaSchema.parse(newLaborMarket); // Prune extra fields from LaborMarketNew
-  const cid = await uploadJsonToIpfs(metadata);
-  const result: LaborMarketContract = { ...newLaborMarket, ipfsHash: cid, userAddress: user.address };
+export const prepareLaborMarket = async (form: LaborMarketForm, user: User) => {
+  const metadata = LaborMarketMetaSchema.parse(form); // Prune extra fields from form
+  const cid = await uploadJsonToIpfs(metadata, metadata.title);
+  const result: LaborMarketContract = { ...form, ipfsHash: cid, userAddress: user.address };
   return result;
 };
 
