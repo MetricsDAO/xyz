@@ -32,9 +32,6 @@ export default function ClaimToSubmit() {
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
   }
-
-  console.log("SERVICE REQUEST ID", serviceRequest.contractId);
-
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
