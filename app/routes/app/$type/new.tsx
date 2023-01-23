@@ -1,4 +1,5 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
+import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect } from "react";
@@ -48,6 +49,7 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function CreateMarketplace() {
+  const transition = useTransition();
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
@@ -72,40 +74,32 @@ export default function CreateMarketplace() {
   // DEBUG
   // console.log("state", state.value, state.context);
 
-  const isUploadingToIpfs = state.matches("transactionPrepare.loading");
-  const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
+  const isModalOpen = state.matches("transactionPrepared") || state.matches("transactionWrite");
 
   // If action succeeds the transaction is ready to be written to the blockchain
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
-      send({ type: "TRANSACTION_READY", data: actionData.preparedLaborMarket });
+      send({ type: "PREPARE_TRANSACTION_READY", data: actionData.preparedLaborMarket });
     }
   }, [actionData, send]);
 
   const closeModal = () => {
-    send({ type: "TRANSACTION_CANCEL" });
+    send({ type: "CANCEL_TRANSACTION" });
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash, transactionPromise: result.wait(1) });
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketForm>
-          validator={validator}
-          method="post"
-          defaultValues={defaultValues}
-          onSubmit={(data, event) => {
-            send({ type: "TRANSACTION_PREPARE" });
-          }}
-        >
+        <ValidatedForm<LaborMarketForm> validator={validator} method="post" defaultValues={defaultValues}>
           <h1 className="text-3xl font-semibold antialiased">Create a Brainstorm Marketplace</h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">
-              {isUploadingToIpfs ? "Loading..." : "Next"}
+              {transition.state === "submitting" ? "Loading..." : "Next"}
             </Button>
           </div>
         </ValidatedForm>

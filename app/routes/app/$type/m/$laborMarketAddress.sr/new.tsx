@@ -59,35 +59,31 @@ export default function CreateServiceRequest() {
     },
   });
 
-  const modalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
+  const modalOpen = state.matches("transactionPrepared") || state.matches("transactionWrite");
 
   // DEBUG
   // console.log("state", state.value, state.context);
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
-      send({ type: "TRANSACTION_PREAPPROVE", data: actionData.preparedServiceRequest });
+      send({ type: "PREPARE_TRANSACTION_PREAPPROVE", data: actionData.preparedServiceRequest });
     }
   }, [actionData, send]);
 
   const onERC20ApproveWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "TRANSACTION_PREAPPROVE_LOADING" });
-    result
-      .wait(1)
-      .then(() => {
-        send({ type: "TRANSACTION_PREAPPROVE_SUCCESS" });
-      })
-      .catch(() => {
-        send({ type: "TRANSACTION_PREAPPROVE_FAILURE" });
-      });
+    send({
+      type: "SUBMIT_PREAPPROVE_TRANSACTION",
+      preapproveTransactionHash: result.hash,
+      preapproveTransactionPromise: result.wait(1),
+    });
   };
 
   const onCreateServiceRequestWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash, transactionPromise: result.wait(1) });
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
   const closeModal = () => {
-    send({ type: "TRANSACTION_CANCEL" });
+    send({ type: "CANCEL_TRANSACTION" });
   };
 
   return (
@@ -111,9 +107,6 @@ export default function CreateServiceRequest() {
         }}
         validator={validator}
         className="space-y-10"
-        onSubmit={(data) => {
-          send({ type: "TRANSACTION_PREPARE" });
-        }}
       >
         <ChallengeForm />
         <Button variant="primary" type="submit">
@@ -122,7 +115,7 @@ export default function CreateServiceRequest() {
       </ValidatedForm>
       {state.context.contractData && (
         <Modal title="Launch Challenge" isOpen={modalOpen} onClose={closeModal}>
-          {state.matches("transactionReady.preapproveReady") && (
+          {state.matches("transactionPrepared.preapprove.ready") && (
             <div className="space-y-8">
               <p>Approve the app to transfer {state.context.contractData.pTokenQuantity} "TOKEN NAME" on your behalf</p>
               <div className="flex flex-col sm:flex-row justify-center gap-5">
@@ -140,8 +133,8 @@ export default function CreateServiceRequest() {
               </div>
             </div>
           )}
-          {state.matches("transactionReady.preapproveLoading") && <div>Loading...</div>}
-          {(state.matches("transactionReady.ready") || state.matches("transactionWrite")) && (
+          {state.matches("transactionPrepared.preapprove.loading") && <div>Loading...</div>}
+          {(state.matches("transactionPrepared.preapprove.success") || state.matches("transactionWrite")) && (
             <div>
               <p>Please confirm that you would like to launch a new challenge.</p>
               <div className="flex flex-col sm:flex-row justify-center gap-5">
