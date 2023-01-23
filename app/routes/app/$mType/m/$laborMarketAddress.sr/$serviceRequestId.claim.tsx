@@ -85,7 +85,13 @@ export default function ClaimToSubmit() {
       <div className="flex flex-wrap gap-5">
         <Button
           onClick={() => {
-            setModalData({ isOpen: true, data: { laborMarketAddress, serviceRequestId: serviceRequest.contractId } });
+            setModalData({
+              isOpen: true,
+              data: {
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.contractId,
+              },
+            });
           }}
         >
           Claim to Submit

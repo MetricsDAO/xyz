@@ -157,10 +157,10 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
         return (
           <Row asChild columns={6} key={sr.contractId}>
             <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId", {
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
                 mType: mType,
                 laborMarketAddress: sr.laborMarketAddress,
-                contractId: sr.contractId,
+                serviceRequestId: sr.contractId,
               })}
               className="text-sm font-medium"
             >
