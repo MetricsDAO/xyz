@@ -2,7 +2,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import toast from "react-hot-toast";
 
 export const defaultNotifyTransactionActions = {
-  notifyTransactionWrite: ({ transactionHash }: { transactionHash?: string }) => {
+  notifyTransactionWait: ({ transactionHash }: { transactionHash?: string }) => {
     toast.loading(
       () => {
         return (

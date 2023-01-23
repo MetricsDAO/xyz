@@ -20,8 +20,8 @@ type Context<T> = {
 };
 
 /**
- * A state machine for managing the lifecycle of a blockchain transaction. There are 3 states, (1) idle, (2) transactionPrepared, and (3) transactionWrite.
- * The idle state is the initial state. The transactionPrepared state is entered when the user is ready to submit a transaction. The transactionWrite state is entered when the user has submitted a transaction.
+ * A state machine for managing the lifecycle of a blockchain transaction. There are 3 states, (1) idle, (2) transactionPrepared, and (3) transactionWait.
+ * The idle state is the initial state. The transactionPrepared state is entered when the user is ready to submit a transaction. The transactionWait state is entered when the user has submitted a transaction.
  *
  * The transactionPrepared state has a substate called preapprove. This is used in cases such as when an contract requires an ERC20 transfer approval beforehand.
  * @returns a state machine
@@ -61,7 +61,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           on: {
             RESET_TRANSACTION: { target: "idle" },
             SUBMIT_TRANSACTION: {
-              target: "transactionWrite.loading",
+              target: "transactionWait.loading",
               actions: "setTransactionHash",
               cond: (context, event, meta) =>
                 meta.state.matches("transactionPrepared.ready") ||
@@ -97,11 +97,11 @@ export const createBlockchainTransactionStateMachine = <T>() => {
             },
           },
         },
-        transactionWrite: {
+        transactionWait: {
           on: {
             RESET_TRANSACTION: { target: "idle" },
           },
-          entry: "notifyTransactionWrite",
+          entry: "notifyTransactionWait",
           states: {
             loading: {
               invoke: {
@@ -152,7 +152,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           },
         }),
         // noop to make these optional when useMachine
-        notifyTransactionWrite: () => {},
+        notifyTransactionWait: () => {},
         notifyTransactionSuccess: () => {},
         notifyTransactionFailure: () => {},
         devAutoIndex: () => {},

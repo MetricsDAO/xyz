@@ -137,7 +137,7 @@ export default function CreateServiceRequest() {
             </div>
           )}
           {state.matches("transactionPrepared.preapprove.loading") && <div>Loading...</div>}
-          {(state.matches("transactionPrepared.preapprove.success") || state.matches("transactionWrite")) && (
+          {(state.matches("transactionPrepared.preapprove.success") || state.matches("transactionWait")) && (
             <div>
               <p>Please confirm that you would like to launch a new challenge.</p>
               <div className="flex flex-col sm:flex-row justify-center gap-5">

@@ -12,7 +12,7 @@ describe("test chain transaction machine", async () => {
       createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
         actions: {
           notifyTransactionSuccess: vi.fn(),
-          notifyTransactionWrite: vi.fn(),
+          notifyTransactionWait: vi.fn(),
         },
       })
     );
@@ -23,70 +23,26 @@ describe("test chain transaction machine", async () => {
 
     // 1. Contract data is validated and ready
     service.send({
-      type: "TRANSACTION_READY",
+      type: "PREPARE_TRANSACTION_READY",
       data: laborMarketContract,
     });
-    expect(service.getSnapshot().value).toEqual({ transactionReady: "ready" });
+    expect(service.getSnapshot().value).toEqual({ transactionPrepared: "ready" });
     expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
 
-    // 2. Transaction has been broadcast to chain
+    // 2. Transaction has been submitted and broadcast to chain
     service.send({
-      type: "TRANSACTION_WRITE",
+      type: "SUBMIT_TRANSACTION",
       transactionHash: transactionHash,
       transactionPromise: Promise.resolve(transactionReceipt),
     });
-    expect(service.getSnapshot().value).toEqual("transactionWrite");
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "loading" });
     expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
-    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWrite")?.exec).toHaveBeenCalled();
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWait")?.exec).toHaveBeenCalled();
 
     // 3. Wait for transaction to resolve to success
-    await waitFor(service, (state) => state.matches("transactionSuccess"));
+    await waitFor(service, (state) => state.matches({ transactionWait: "success" }));
 
-    expect(service.getSnapshot().value).toEqual("transactionSuccess");
-    expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
-    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
-  });
-
-  test("prepare flow", async () => {
-    const service = interpret(
-      createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
-        actions: {
-          notifyTransactionSuccess: vi.fn(),
-          notifyTransactionWrite: vi.fn(),
-        },
-      })
-    );
-    const { laborMarketContract, transactionHash, transactionReceipt } = fakes();
-
-    service.start();
-    expect(service.getSnapshot().value).toEqual("idle");
-
-    // 1. Form data is being transformed (possibly uploading to IPFS)
-    service.send({ type: "TRANSACTION_PREPARE" });
-    expect(service.getSnapshot().value).toEqual({ transactionPrepare: "loading" });
-
-    // 2. Contract data is validated and ready
-    service.send({
-      type: "TRANSACTION_READY",
-      data: laborMarketContract,
-    });
-    expect(service.getSnapshot().value).toEqual({ transactionReady: "ready" });
-    expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
-
-    // 3. Transaction has been broadcast to chain
-    service.send({
-      type: "TRANSACTION_WRITE",
-      transactionHash: transactionHash,
-      transactionPromise: Promise.resolve(transactionReceipt),
-    });
-    expect(service.getSnapshot().value).toEqual("transactionWrite");
-    expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
-    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWrite")?.exec).toHaveBeenCalled();
-
-    // 4. Wait for transaction to resolve to success
-    await waitFor(service, (state) => state.matches("transactionSuccess"));
-
-    expect(service.getSnapshot().value).toEqual("transactionSuccess");
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "success" });
     expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
     expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
   });
@@ -96,7 +52,7 @@ describe("test chain transaction machine", async () => {
       createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
         actions: {
           notifyTransactionSuccess: vi.fn(),
-          notifyTransactionWrite: vi.fn(),
+          notifyTransactionWait: vi.fn(),
         },
       })
     );
@@ -105,44 +61,38 @@ describe("test chain transaction machine", async () => {
     service.start();
     expect(service.getSnapshot().value).toEqual("idle");
 
-    // 1. Form data is being transformed (possibly uploading to IPFS)
-    service.send({ type: "TRANSACTION_PREPARE" });
-    expect(service.getSnapshot().value).toEqual({ transactionPrepare: "loading" });
-
-    // 2. Contract data is ready, but transaction needs preapproval
+    // 1. Contract data is validated and ready... but needs preapproval
     service.send({
-      type: "TRANSACTION_PREAPPROVE",
+      type: "PREPARE_TRANSACTION_PREAPPROVE",
       data: laborMarketContract,
     });
-    expect(service.getSnapshot().value).toEqual({ transactionReady: "preapproveReady" });
+    expect(service.getSnapshot().value).toEqual({ transactionPrepared: { preapprove: "ready" } });
     expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
 
-    // 3. Preapproval fails
     service.send({
-      type: "TRANSACTION_PREAPPROVE_FAILURE",
+      type: "SUBMIT_PREAPPROVE_TRANSACTION",
+      preapproveTransactionHash: "0x123",
+      preapproveTransactionPromise: Promise.resolve(transactionReceipt),
     });
-    expect(service.getSnapshot().value).toEqual({ transactionReady: "preapproveFailure" });
 
-    // 4. Preapproval gets fixed and succeeds
-    service.send({
-      type: "TRANSACTION_PREAPPROVE_SUCCESS",
-    });
-    expect(service.getSnapshot().value).toEqual({ transactionReady: "ready" });
+    // 2. Wait for preapproval transaction to succeed
+    await waitFor(service, (state) => state.matches({ transactionPrepared: { preapprove: "success" } }));
+    expect(service.getSnapshot().value).toEqual({ transactionPrepared: { preapprove: "success" } });
 
-    // 5. Transaction has been broadcast to chain
+    // 3. Transaction has been submitted and broadcast to chain
     service.send({
-      type: "TRANSACTION_WRITE",
+      type: "SUBMIT_TRANSACTION",
       transactionHash: transactionHash,
       transactionPromise: Promise.resolve(transactionReceipt),
     });
-    expect(service.getSnapshot().value).toEqual("transactionWrite");
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "loading" });
     expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
-    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWrite")?.exec).toHaveBeenCalled();
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWait")?.exec).toHaveBeenCalled();
 
-    // 6. Wait for transaction to resolve to success
-    await waitFor(service, (state) => state.matches("transactionSuccess"));
+    // 4. Wait for transaction to resolve to success
+    await waitFor(service, (state) => state.matches({ transactionWait: "success" }));
 
-    expect(service.getSnapshot().value).toEqual("transactionSuccess");
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "success" });
     expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
     expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
   });
