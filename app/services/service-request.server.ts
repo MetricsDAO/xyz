@@ -53,6 +53,7 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
       submissions: true,
       laborMarket: { include: { projects: true } },
       _count: { select: { submissions: true } },
+      description: true,
     },
   });
 };

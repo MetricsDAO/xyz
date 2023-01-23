@@ -1,5 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { Submission } from "@prisma/client";
+import type { Submission } from "@prisma/client";
 import { useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import clsx from "clsx";
@@ -275,7 +275,7 @@ function ReviewQuestionDrawerButton({
 function AnalyzeDescription({ submission }: { submission: Submission }) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">"submission.serviceRequest.description"</p>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.serviceRequest.description}</p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
         <a href={submission.description} className="text-blue-600 text-sm flex flex-row items-center">
           {submission.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />

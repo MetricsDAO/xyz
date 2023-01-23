@@ -15,6 +15,7 @@ import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 import { dateHasPassed } from "~/utils/date";
 import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -103,7 +104,7 @@ export default function ServiceRequest() {
       </Detail>
 
       <article className="text-gray-500 text-sm mb-20 max-w-2xl">
-        <p>{"serviceRequest.description"}</p>
+        <p>{serviceRequest.description}</p>
       </article>
 
       <TabNav className="mb-10">

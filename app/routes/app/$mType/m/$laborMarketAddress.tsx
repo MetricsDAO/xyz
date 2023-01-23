@@ -8,6 +8,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 export const loader = async (data: DataFunctionArgs) => {
   // TODO: Refactor
