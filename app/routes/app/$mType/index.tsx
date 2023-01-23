@@ -30,7 +30,7 @@ const validator = withZod(LaborMarketSearchSchema);
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
 
-  url.searchParams.set("mType", $params("/app/:mType", params).mType);
+  url.searchParams.set("type", $params("/app/:mType", params).mType);
 
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(searchParams);
