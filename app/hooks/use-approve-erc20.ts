@@ -18,7 +18,7 @@ export function useApproveERC20({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: data.ERC20address,
+    address: data.ERC20address as `0x${string}`,
     abi: [
       {
         constant: false,

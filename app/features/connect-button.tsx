@@ -48,8 +48,8 @@ function CustomConnectButton() {
                   </div>
                 )}
                 {account.ensName ? account.ensName : account.displayName}
-                {/* //TODO: later we will show metric and xmetric balances
-                      {account.displayBalance ? ` (${account.displayBalance})` : ""} */}
+                {/* //TODO: later we will show metric and xmetric balances */}
+                {account.displayBalance ? ` (${account.displayBalance})` : ""}
               </div>
             </Button>
           </div>

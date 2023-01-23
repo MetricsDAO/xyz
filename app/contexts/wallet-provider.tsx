@@ -6,7 +6,8 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { SiweMessage } from "siwe";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { polygon, goerli, mainnet } from "wagmi/chains";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 
@@ -15,7 +16,7 @@ export declare type AuthenticationStatus = "loading" | "unauthenticated" | "auth
 
 // TODO: env var
 const IS_DEV = true;
-const DEV_CHAINS = [chain.goerli, chain.mainnet];
+const DEV_CHAINS = [goerli, mainnet];
 
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
@@ -28,7 +29,7 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
 function useConfigs() {
   return useMemo(() => {
     const { chains, provider } = configureChains(
-      [chain.polygon, ...(IS_DEV ? DEV_CHAINS : [])],
+      [polygon, ...(IS_DEV ? DEV_CHAINS : [])],
       [infuraProvider({ apiKey: INFURA_ID }), publicProvider()]
     );
 
