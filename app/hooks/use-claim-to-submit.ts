@@ -14,7 +14,7 @@ export function useClaimToSubmit({
   onTransactionSuccess?: (data: TransactionReceipt) => void;
 }) {
   const { config } = usePrepareContractWrite({
-    address: "0x22ba9cA99983779463C1185cF95b0da5DAc101f9",
+    address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signal",
     args: [BigNumber.from(data.serviceRequestId)],
