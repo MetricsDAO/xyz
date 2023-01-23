@@ -3,6 +3,8 @@ import type { Submission } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
+import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 type Props = {
   submission: Submission;
@@ -11,11 +13,16 @@ type Props = {
 
 export function SubmissionCard({ submission, totalReviews }: Props) {
   const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={`/app/${mType}/m/${submission.laborMarketAddress}/s/${submission.contractId}`}
+        to={$path("/app/:mType/m/:laborMarketAddress/s/:contractId", {
+          mType: mType,
+          laborMarketAddress: submission.laborMarketAddress,
+          contractId: submission.contractId,
+        })}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         {mType === "brainstorm" ? (
