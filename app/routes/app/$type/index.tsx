@@ -20,6 +20,8 @@ import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import CustomConnectButton from "~/features/connect-button";
+import { useOptionalUser } from "~/hooks/use-user";
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
@@ -49,6 +51,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 };
 
 export default function Brainstorm() {
+  const user = useOptionalUser();
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -74,9 +77,13 @@ export default function Brainstorm() {
           </p>
         </main>
         <aside>
-          <Button size="lg" asChild>
-            <Link to="/app/brainstorm/new">Create Marketplace</Link>
-          </Button>
+          {user ? (
+            <Button size="lg" asChild>
+              <Link to="/app/brainstorm/new">Create Marketplace</Link>
+            </Button>
+          ) : (
+            <CustomConnectButton text="Sign in to Create MarketPlace" />
+          )}
         </aside>
       </header>
 
