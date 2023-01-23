@@ -42,10 +42,10 @@ export default function ServiceRequest() {
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
             <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId/review", {
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
                 mType: mType,
                 laborMarketAddress: serviceRequest.laborMarketAddress,
-                contractId: serviceRequest.contractId,
+                serviceRequestId: serviceRequest.contractId,
               })}
             >
               Claim to Review
@@ -53,10 +53,10 @@ export default function ServiceRequest() {
           </Button>
           <Button variant="primary" size="lg" asChild>
             <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId/claim", {
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
                 mType: mType,
                 laborMarketAddress: serviceRequest.laborMarketAddress,
-                contractId: serviceRequest.contractId,
+                serviceRequestId: serviceRequest.contractId,
               })}
             >
               Claim to Submit
@@ -64,10 +64,10 @@ export default function ServiceRequest() {
           </Button>
           <Button variant="primary" size="lg" asChild>
             <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:contractId/submit", {
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
                 mType: mType,
                 laborMarketAddress: serviceRequest.laborMarketAddress,
-                contractId: serviceRequest.contractId,
+                serviceRequestId: serviceRequest.contractId,
               })}
             >
               Submit

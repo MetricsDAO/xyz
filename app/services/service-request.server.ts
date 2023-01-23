@@ -53,7 +53,6 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
       submissions: true,
       laborMarket: { include: { projects: true } },
       _count: { select: { submissions: true } },
-      description: true,
     },
   });
 };
@@ -67,6 +66,7 @@ export const upsertServiceRequest = async (data: ServiceRequestIndexer) => {
     data: {
       contractId: data.contractId,
       title: data.title,
+      description: data.description,
       laborMarketAddress: data.laborMarketAddress,
       signalExpiration: data.signalExpiration,
       submissionExpiration: data.submissionExpiration,
