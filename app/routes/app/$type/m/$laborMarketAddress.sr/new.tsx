@@ -1,7 +1,7 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
@@ -59,14 +59,17 @@ export default function CreateServiceRequest() {
     },
   });
 
-  const modalOpen = state.matches("transactionPrepared") || state.matches("transactionWrite");
+  const [modalOpen, setModalOpen] = useState(false);
 
   // DEBUG
   // console.log("state", state.value, state.context);
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
+      // Clear any previous transaction state
+      send({ type: "RESET_TRANSACTION" });
       send({ type: "PREPARE_TRANSACTION_PREAPPROVE", data: actionData.preparedServiceRequest });
+      setModalOpen(true);
     }
   }, [actionData, send]);
 
@@ -83,7 +86,7 @@ export default function CreateServiceRequest() {
   };
 
   const closeModal = () => {
-    send({ type: "CANCEL_TRANSACTION" });
+    setModalOpen(false);
   };
 
   return (

@@ -2,7 +2,7 @@ import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
@@ -74,17 +74,20 @@ export default function CreateMarketplace() {
   // DEBUG
   // console.log("state", state.value, state.context);
 
-  const isModalOpen = state.matches("transactionPrepared") || state.matches("transactionWrite");
+  const [modalOpen, setModalOpen] = useState(false);
 
   // If action succeeds the transaction is ready to be written to the blockchain
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
+      // Clear any previous transaction state
+      send({ type: "RESET_TRANSACTION" });
       send({ type: "PREPARE_TRANSACTION_READY", data: actionData.preparedLaborMarket });
+      setModalOpen(true);
     }
   }, [actionData, send]);
 
   const closeModal = () => {
-    send({ type: "CANCEL_TRANSACTION" });
+    setModalOpen(false);
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
@@ -105,7 +108,7 @@ export default function CreateMarketplace() {
         </ValidatedForm>
       </div>
       {state.context.contractData && (
-        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
+        <Modal title="Create Marketplace?" isOpen={modalOpen} onClose={closeModal}>
           <div className="space-y-8">
             <p>Please confirm that you would like to create a new marketplace.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-5">

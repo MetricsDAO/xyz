@@ -9,7 +9,7 @@ type Events<T> =
       preapproveTransactionHash: string;
       preapproveTransactionPromise: Promise<TransactionReceipt>;
     }
-  | { type: "CANCEL_TRANSACTION" }
+  | { type: "RESET_TRANSACTION" }
   | { type: "SUBMIT_TRANSACTION"; transactionHash: string; transactionPromise: Promise<TransactionReceipt> }
   | { type: "done.invoke.wait-for-transaction"; data: TransactionReceipt };
 
@@ -59,7 +59,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         },
         transactionPrepared: {
           on: {
-            CANCEL_TRANSACTION: { target: "idle" }, //start over
+            RESET_TRANSACTION: { target: "idle" },
             SUBMIT_TRANSACTION: {
               target: "transactionWrite.loading",
               actions: "setTransactionHash",
@@ -98,6 +98,9 @@ export const createBlockchainTransactionStateMachine = <T>() => {
           },
         },
         transactionWrite: {
+          on: {
+            RESET_TRANSACTION: { target: "idle" },
+          },
           entry: "notifyTransactionWrite",
           states: {
             loading: {
