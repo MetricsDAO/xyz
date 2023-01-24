@@ -21,7 +21,6 @@ export const LaborMarketSchema = z.object({
   submitRepMax: zfd.numeric(z.number()),
   reviewBadgerAddress: EthAddressSchema,
   reviewBadgerTokenId: z.string().min(1, "Required"),
-  tokenSymbols: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   projectIds: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   sponsorAddress: EthAddressSchema,
 });
@@ -53,7 +52,6 @@ export function fakeLaborMarketNew(): LaborMarketForm {
     submitRepMax: faker.datatype.number(100),
     reviewBadgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
     reviewBadgerTokenId: "0",
-    tokenSymbols: ["ETH"],
     projectIds: [],
   };
 }
