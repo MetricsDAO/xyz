@@ -1,60 +1,33 @@
-import type { TracerEvent } from "@flipsidecrypto/pine-sdk";
-import { tracer as createTracer } from "@flipsidecrypto/pine-sdk";
 import type { LaborMarketNetwork, LaborMarket } from "labor-markets-abi";
-import env from "~/env";
-import { indexLaborMarket } from "~/services/indexing.server";
 import { logger } from "~/services/logger.server";
+import { Pinekit } from "pinekit";
+import env from "~/env";
+import { indexLaborMarketConfigured, indexRequestCreated, indexRequestFulfilled } from "./functions";
+import type { ExtractAbiEventNames } from "abitype";
 
-const tracer = createTracer({
-  connection: {
-    apikey: env.PINE_API_KEY,
-    endpoint: "https://pine.lab3547.xyz",
-  },
-  tracer: {
-    namespace: "mdao-dev",
-    version: "0.0.1",
-  },
-});
-
-// Union of all possible event names across all contracts.
 type EventName =
-  | Extract<typeof LaborMarketNetwork["abi"][number], { type: "event" }>["name"]
-  | Extract<typeof LaborMarket["abi"][number], { type: "event" }>["name"];
+  | ExtractAbiEventNames<typeof LaborMarketNetwork["abi"]>
+  | ExtractAbiEventNames<typeof LaborMarket["abi"]>;
 
-async function processEvent(event: TracerEvent) {
-  try {
+const pine = new Pinekit({ apiKey: env.PINE_API_KEY });
+const subscrber = pine.subscriber("bryan-120", { namespace: "mdao-dev", version: "0.0.1" });
+
+async function run() {
+  const events = pine.streamEvents(subscrber, { limit: 10 });
+  for await (const event of events) {
+    logger.info(`indexer: event ${event.decoded.name} at ${event.txHash}`, { event });
     switch (event.decoded.name as EventName) {
       case "LaborMarketConfigured":
-        await indexLaborMarket(event.contract.address);
-        break;
+        await indexLaborMarketConfigured(event);
+      case "RequestCreated":
+        await indexRequestCreated(event);
+      case "RequestFulfilled":
+        await indexRequestFulfilled(event);
     }
-  } catch (error) {
-    logger.error("indexer: processEvent", { event, error });
+    await pine.saveCursorAt(event, subscrber);
   }
 }
 
-async function main() {
-  await tracer.start();
-  await tracer.consume(
-    async function (response) {
-      if (response.error) {
-        logger.error("indexer", response.error);
-        return false;
-      }
-
-      if (!response.data) {
-        logger.info("indexer: no events");
-        return false;
-      }
-
-      for (const event of response.data) {
-        logger.info(`indexer: event: ${event.decoded.name}`, event);
-        await processEvent(event);
-      }
-      return true;
-    },
-    { name: "bryan-112", batchSize: 10 }
-  );
-}
-
-main().finally(() => process.exit(1));
+run()
+  .catch((err) => logger.error(err.message))
+  .finally(() => process.exit(1));

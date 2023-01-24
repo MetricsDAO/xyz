@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { testAddresses } from "contracts/test-addresses";
 import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
-import { Pinekit } from "./pinekit";
+import { Pinekit } from "pinekit";
 
 require("dotenv").config();
 
@@ -44,8 +44,8 @@ program
   .command("list-tracers")
   .description("List all tracers")
   .action(async () => {
-    const res = await pine.listTracers();
-    console.log(res.data);
+    const tracers = await pine.listTracers();
+    console.log(tracers);
   });
 
 program
