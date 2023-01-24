@@ -8,10 +8,11 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   unmount?: boolean;
+  closeButton?: boolean;
 }
 
 // https://headlessui.com/react/dialog
-export function Modal({ title, isOpen, onClose, children, unmount }: ModalProps) {
+export function Modal({ title, isOpen, onClose, children, unmount, closeButton = true }: ModalProps) {
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -45,9 +46,13 @@ export function Modal({ title, isOpen, onClose, children, unmount }: ModalProps)
                     className="flex justify-between items-center text-xl font-medium leading-6 text-gray-900"
                   >
                     <h1>{title}</h1>
-                    <button onClick={onClose}>
-                      <XMarkIcon className="h-7 w-7" />
-                    </button>
+                    {closeButton ? (
+                      <button onClick={onClose}>
+                        <XMarkIcon className="h-7 w-7" />
+                      </button>
+                    ) : (
+                      <></>
+                    )}
                   </Dialog.Title>
                   {children}
                 </Dialog.Panel>

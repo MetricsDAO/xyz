@@ -1,4 +1,5 @@
 import { AppHeader } from "./shell-header";
+import { AppFooter } from "./shell-footer";
 
 // The Shell component is used to wrap the entire app. It's a good place to put things that should be on every page, like a header or footer.
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -7,6 +8,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <Blurs />
       <AppHeader />
       <main className="relative flex-grow z-10">{children}</main>
+      <AppFooter />
     </div>
   );
 }

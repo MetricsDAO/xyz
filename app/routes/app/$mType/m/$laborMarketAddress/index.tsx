@@ -1,5 +1,5 @@
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
-import { Link, useSubmit } from "@remix-run/react";
+import { Link, useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
@@ -20,6 +20,8 @@ import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
+import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -36,7 +38,6 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function MarketplaceIdChallenges() {
   const { totalResults, params, serviceRequests } = useTypedLoaderData<typeof loader>();
-
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
@@ -141,6 +142,8 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
   return (
     <Table>
       <Header columns={6} className="mb-2">
@@ -153,7 +156,14 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
       {serviceRequests.map((sr) => {
         return (
           <Row asChild columns={6} key={sr.contractId}>
-            <Link to={`/app/brainstorm/m/${sr.laborMarketAddress}/sr/${sr.contractId}`} className="text-sm font-medium">
+            <Link
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
+                mType: mType,
+                laborMarketAddress: sr.laborMarketAddress,
+                serviceRequestId: sr.contractId,
+              })}
+              className="text-sm font-medium"
+            >
               <Row.Column span={2}>{sr.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
@@ -170,10 +180,10 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
 
               <Row.Column>5 Sol</Row.Column>
               <Row.Column>
-                <Countdown date={"2023-01-25"} />
+                <Countdown date={sr.submissionExpiration} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={"2022-11-25"} />
+                <Countdown date={sr.enforcementExpiration} />
               </Row.Column>
             </Link>
           </Row>
@@ -190,7 +200,7 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
         return (
           <Card asChild key={sr.contractId}>
             <Link
-              to={`/app/brainstorm/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
+              to={`/app/${sr.laborMarket.type}/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>
@@ -212,11 +222,11 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>5 Sol</div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={"2023-01-25"} />
+                <Countdown date={sr.submissionExpiration} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={"2022-11-25"} />
+                <Countdown date={sr.enforcementExpiration} />
               </div>
             </Link>
           </Card>

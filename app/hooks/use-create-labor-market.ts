@@ -27,7 +27,7 @@ export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMar
         delegateBadge:
           data.launch.access === "delegates"
             ? (data.launch.badgerAddress as `0x${string}`)
-            : "0x9D2D6c0D2563E4540046279054774e165e85eE1F", // hardcoded to a Badger address
+            : "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd", // hardcoded to a Badger address
         delegateTokenId: BigNumber.from(data.launch.access === "delegates" ? data.launch.badgerTokenId : 0),
         maintainerBadge: data.reviewBadgerAddress as `0x${string}`,
         maintainerTokenId: BigNumber.from(data.reviewBadgerTokenId),

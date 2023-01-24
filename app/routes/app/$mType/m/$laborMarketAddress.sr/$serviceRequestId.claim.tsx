@@ -13,6 +13,7 @@ import invariant from "tiny-invariant";
 import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
 import toast from "react-hot-toast";
 import { Modal } from "~/components";
+import { useParams } from "@remix-run/react";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -27,6 +28,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 
 export default function ClaimToSubmit() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
+  const { mType } = useParams();
 
   const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
 
@@ -38,7 +40,10 @@ export default function ClaimToSubmit() {
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
-        <h2 className="text-lg text-cyan-500">Claiming is an up front commitment to submit at least one submission</h2>
+        <h2 className="text-lg text-cyan-500">
+          Claiming is an up front commitment to submit at least one{" "}
+          {mType === "brainstorm" ? "submission" : "dashboard"}
+        </h2>
         <p className="text-gray-500 text-sm">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked
           rMETRIC will be slashed.
@@ -57,11 +62,11 @@ export default function ClaimToSubmit() {
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
-            <CountdownCard start={"2023-01-25"} />
+            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.signalExpiration} />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
-            <CountdownCard start={"2022-11-25"} />
+            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.submissionExpiration} />
           </div>
         </div>
       </div>
@@ -80,7 +85,13 @@ export default function ClaimToSubmit() {
       <div className="flex flex-wrap gap-5">
         <Button
           onClick={() => {
-            setModalData({ isOpen: true, data: { serviceRequestId: 1 } });
+            setModalData({
+              isOpen: true,
+              data: {
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.contractId,
+              },
+            });
           }}
         >
           Claim to Submit

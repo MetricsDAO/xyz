@@ -8,7 +8,7 @@ import { parseTokenAmount } from "~/utils/helpers";
 
 export function useCreateServiceRequest({ data, onWriteSuccess }: Web3Hook<ServiceRequestContract>) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress,
+    address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "submitRequest",
     overrides: {

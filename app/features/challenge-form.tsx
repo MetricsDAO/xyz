@@ -1,6 +1,8 @@
+import { useParams } from "@remix-run/react";
 import { Field, ValidatedInput, ValidatedTextarea, ValidatedSelect, Error } from "~/components";
 
 export function ChallengeForm() {
+  const { mType } = useParams();
   return (
     <>
       <section className="space-y-3">
@@ -11,17 +13,7 @@ export function ChallengeForm() {
         </Field>
       </section>
       <section className="space-y-3">
-        <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
-        <Field>
-          <ValidatedTextarea
-            name="description"
-            rows={7}
-            placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
-
-              Example: What are the most important questions to answer about user behavior on Ethereum?"
-          />
-          <Error name="description" />
-        </Field>
+        {mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}
         <div className="flex flex-col md:flex-row gap-2">
           <div className="flex-grow">
             <Field>
@@ -118,6 +110,42 @@ export function ChallengeForm() {
           challenge marketplace
         </p>
       </section>
+    </>
+  );
+}
+
+function BrainstormTextArea() {
+  return (
+    <>
+      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
+      <Field>
+        <ValidatedTextarea
+          name="description"
+          rows={7}
+          placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
+
+    Example: What are the most important questions to answer about user behavior on Ethereum?"
+        />
+        <Error name="description" />
+      </Field>
+    </>
+  );
+}
+
+function AnalyticsTextArea() {
+  return (
+    <>
+      <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?</h2>
+      <Field>
+        <ValidatedTextarea
+          name="description"
+          rows={7}
+          placeholder="Enter a question to answer, problem to solve, or tool to create. 
+
+          Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
+        />
+        <Error name="description" />
+      </Field>
     </>
   );
 }

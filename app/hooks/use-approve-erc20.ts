@@ -10,7 +10,7 @@ export type ApproveERC20ContractData = {
 
 export function useApproveERC20({ data, onWriteSuccess }: Web3Hook<ApproveERC20ContractData>) {
   const { config } = usePrepareContractWrite({
-    address: data.ERC20address,
+    address: data.ERC20address as `0x${string}`,
     abi: [
       {
         constant: false,
