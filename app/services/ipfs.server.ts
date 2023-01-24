@@ -1,6 +1,6 @@
 import PinataSDK from "@pinata/sdk";
 import type { User } from "@prisma/client";
-import env from "~/env";
+import env from "~/env.server";
 import { prisma } from "./prisma.server";
 
 const pinata = new PinataSDK({
