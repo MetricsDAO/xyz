@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server";
 import { prisma } from "~/services/prisma.server";
 
 import * as Sentry from "@sentry/remix";
-import env from "./env";
+import env from "./env.server";
 
 if (env.SENTRY_DSN) {
   Sentry.init({
