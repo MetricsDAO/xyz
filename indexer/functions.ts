@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, logger } from "ethers";
 import { LaborMarketMetaSchema, LaborMarketSchema } from "~/domain";
 import { upsertLaborMarket } from "../app/services/labor-market.server";
 import env from "~/env";
@@ -9,31 +9,37 @@ import type {
   RequestFulfilledEventObject,
 } from "~/contracts/LaborMarket";
 import { inputsToObject, parseFromIpfs } from "./utils";
+import { LaborMarket__factory } from "~/contracts";
 
 // RPC provider used be all the contract reads in this file
 const provider = new ethers.providers.JsonRpcProvider(env.QUICKNODE_URL);
 
 export async function indexLaborMarketConfigured(event: TracerEvent) {
-  const inputs = inputsToObject<LaborMarketConfiguredEventObject>(event.decoded.inputs);
-  const ipfsData = await parseFromIpfs(LaborMarketMetaSchema, inputs.configuration.marketUri);
+  // const inputs = inputsToObject<LaborMarketConfiguredEventObject>(event.decoded.inputs);
+  const contract = LaborMarket__factory.connect(event.contract.address, provider);
+  const config = await contract.configuration({ blockTag: event.block.number });
+  const owner = await contract.owner({ blockTag: event.block.number });
+  const ipfsData = await parseFromIpfs(LaborMarketMetaSchema, config.marketUri);
   const laborMarket = LaborMarketSchema.parse({
     address: event.contract.address,
-    submitRepMin: inputs.configuration.reputationConfig.submitMin,
-    submitRepMax: inputs.configuration.reputationConfig.submitMin,
-    reviewBadgerAddress: inputs.configuration.maintainerBadge,
-    reviewBadgerTokenId: inputs.configuration.maintainerTokenId,
+    sponsorAddress: owner,
+    submitRepMin: config.reputationConfig.submitMin.toNumber(),
+    submitRepMax: config.reputationConfig.submitMax.toNumber(),
+    reviewBadgerAddress: config.maintainerBadge,
+    reviewBadgerTokenId: config.maintainerTokenId.toHexString(),
     title: ipfsData.title,
     description: ipfsData.description,
     type: ipfsData.type,
     projectIds: ipfsData.projectIds,
-    rewardCurveAddress: inputs.configuration.paymentModule,
+    rewardCurveAddress: config.paymentModule,
     launch: {
       access: "delegates",
-      badgerAddress: inputs.configuration.delegateBadge,
-      badgerTokenId: inputs.configuration.delegateTokenId,
+      badgerAddress: config.delegateBadge,
+      badgerTokenId: config.delegateTokenId.toHexString(),
     },
   });
-  await upsertLaborMarket(laborMarket);
+  const lm = await upsertLaborMarket(laborMarket);
+  logger.info(`indexer: indexed labor market ${lm.address}`);
 }
 
 export async function indexRequestCreated(event: TracerEvent) {

@@ -1,3 +1,4 @@
+import { logger } from "~/services/logger.server";
 import type {
   EventsParams,
   SDKResponse,
@@ -65,9 +66,10 @@ export class Pinekit {
   /**
    * Gets the latest events for a subscriber.
    */
-  public getNextEvents(sub: SubscriberHandle, params: EventsParams) {
+  public async getNextEvents(sub: SubscriberHandle, params: EventsParams) {
     const url = `/events/tracers/${sub.tracer.namespace}/versions/${sub.tracer.version}?subscriber=${sub.subscriber}&limit=${params.limit}`;
-    return this.request<{ events: TracerEvent[] }>(url, { method: "get" });
+    const res = await this.request<{ events: TracerEvent[] } | null>(url, { method: "get" });
+    return res ?? { events: [] };
   }
 
   /**
@@ -94,24 +96,31 @@ export class Pinekit {
 
       // if its still empty, wait a bit and try again
       if (events.length === 0) {
+        logger.info("indexer: no events, waiting 5s...");
         await new Promise((resolve) => setTimeout(resolve, 1000 * 5));
         continue;
       }
-
-      yield events.shift()!;
+      const nextEvent = events.shift()!;
+      yield nextEvent;
     }
   }
 
   /**
    * Saves the current position of the subscriber in the event stream. Usually used within a `streamEvents` loop.
+   *
+   * @example
    * ```ts
-   * const subscrber = client.subscriber(tracer, "my-subscriber");
-   * for await (const event of client.streamEvents(subscriber, { count: 100 })) {
+   * const stream = client.streamEvents(subscriber, { count: 10 });
+   * for await (const event of events) {
    *  await client.saveCursorAt(event, subscriber);
    * }
+   * ```
    */
   public saveCursorAt(event: TracerEvent, sub: SubscriberHandle) {
     const url = `/events/tracers/${sub.tracer.namespace}/versions/${sub.tracer.version}/commit?subscriber=${sub.subscriber}`;
-    return this.request(url, { method: "post" });
+    return this.request(url, {
+      method: "post",
+      body: JSON.stringify({ blockNumber: event.block.number, eventIndex: event.decoded.index }),
+    });
   }
 }

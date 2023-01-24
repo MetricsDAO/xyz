@@ -28,7 +28,7 @@
     "reset": "prisma migrate reset",
     "prod": "yarn build && remix-serve api",
     "typecheck": "tsc -b",
-    "pine": "tsx scripts/pine-cli.ts",
+    "pine": "tsx pinekit/cli.ts",
     "postinstall": "yarn generate:ethers"
   },
   "dependencies": {
