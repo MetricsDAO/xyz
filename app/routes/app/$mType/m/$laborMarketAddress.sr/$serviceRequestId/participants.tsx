@@ -5,7 +5,7 @@ import { fromNow } from "~/utils/date";
 
 export default function ServiceIdParticipants() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
-    "routes/app/$type/m/$laborMarketAddress.sr/$serviceRequestId"
+    "routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId"
   );
   if (!data) {
     throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");
@@ -24,7 +24,7 @@ export default function ServiceIdParticipants() {
             return (
               <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">
-                  <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+                  <UserBadge url="u/id" address={s.creatorId as `0x${string}`} balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>
                 </div>
               </Card>

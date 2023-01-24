@@ -78,7 +78,8 @@ model LaborMarket {
 
 model ServiceRequest {
   id                    String       @id @default(cuid())
-  contractId            String       @unique @default(cuid())
+  contractId            String       @default(cuid())
+  description           String
   title                 String
   laborMarketAddress    String
   createdAt             DateTime     @default(now())
@@ -93,7 +94,7 @@ model ServiceRequest {
 
 model Review {
   id                 String      @id @default(cuid())
-  contractId         String      @unique @default(cuid())
+  contractId         String      @default(cuid())
   submissionId       String
   comment            String
   createdAt          DateTime    @default(now())
@@ -107,7 +108,7 @@ model Review {
 // Represents an on-chain submission to a service request.
 model Submission {
   id                 String         @id @default(cuid())
-  contractId         String         @unique @default(cuid())
+  contractId         String         @default(cuid())
   serviceRequestId   String
   createdAt          DateTime       @default(now())
   creatorId          String
