@@ -13,6 +13,8 @@ import invariant from "tiny-invariant";
 import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
 import toast from "react-hot-toast";
 import { Modal } from "~/components";
+import { useParams } from "@remix-run/react";
+
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
@@ -21,22 +23,27 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     throw notFound({ id: serviceRequestId });
   }
 
-  return typedjson({ serviceRequest, laborMarketAddress }, { status: 200 });
+  return typedjson({ serviceRequest }, { status: 200 });
 };
 
 export default function ClaimToSubmit() {
-  const { serviceRequest, laborMarketAddress } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest } = useTypedLoaderData<typeof loader>();
+  const { mType } = useParams();
 
   const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
 
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
   }
+
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
-        <h2 className="text-lg text-cyan-500">Claiming is an up front commitment to submit at least one submission</h2>
+        <h2 className="text-lg text-cyan-500">
+          Claiming is an up front commitment to submit at least one{" "}
+          {mType === "brainstorm" ? "submission" : "dashboard"}
+        </h2>
         <p className="text-gray-500 text-sm">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked
           rMETRIC will be slashed.
@@ -78,7 +85,13 @@ export default function ClaimToSubmit() {
       <div className="flex flex-wrap gap-5">
         <Button
           onClick={() => {
-            setModalData({ isOpen: true, data: { laborMarketAddress, serviceRequestId: serviceRequest.contractId } });
+            setModalData({
+              isOpen: true,
+              data: {
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.contractId,
+              },
+            });
           }}
         >
           Claim to Submit

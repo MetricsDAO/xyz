@@ -78,6 +78,7 @@ model LaborMarket {
 model ServiceRequest {
   id                    String       @id @default(cuid())
   contractId            String       @default(cuid())
+  description           String
   title                 String
   laborMarketAddress    String
   createdAt             DateTime     @default(now())

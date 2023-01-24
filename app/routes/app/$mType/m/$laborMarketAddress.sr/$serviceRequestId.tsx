@@ -1,4 +1,4 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useParams } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
@@ -14,6 +14,8 @@ import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 import { dateHasPassed } from "~/utils/date";
+import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -30,23 +32,44 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 
 export default function ServiceRequest() {
   const { serviceRequest, numOfReviews } = useTypedLoaderData<typeof loader>();
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
+
   return (
     <Container className="py-16">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/review`}>
+            <Link
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
+                mType: mType,
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.contractId,
+              })}
+            >
               Claim to Review
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/claim`}>
+            <Link
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
+                mType: mType,
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.contractId,
+              })}
+            >
               Claim to Submit
             </Link>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/submit`}>
+            <Link
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
+                mType: mType,
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.contractId,
+              })}
+            >
               Submit
             </Link>
           </Button>
@@ -81,10 +104,7 @@ export default function ServiceRequest() {
       </Detail>
 
       <article className="text-gray-500 text-sm mb-20 max-w-2xl">
-        <p>
-          What's the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What's
-          the challenge What web3 topic do you want to crowdsource potential analytics questions
-        </p>
+        <p>{serviceRequest.description}</p>
       </article>
 
       <TabNav className="mb-10">

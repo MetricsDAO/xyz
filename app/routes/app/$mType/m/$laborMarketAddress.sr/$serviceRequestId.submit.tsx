@@ -1,3 +1,4 @@
+import { useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useEffect, useState } from "react";
@@ -36,6 +37,7 @@ export default function SubmitQuestion() {
   const [modalData, setModalData] = useState<{ data?: SubmissionContract; isOpen: boolean }>({
     isOpen: false,
   });
+  const { mType } = useParams();
 
   function closeModal() {
     setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
@@ -47,6 +49,22 @@ export default function SubmitQuestion() {
     }
   }, [actionData]);
 
+  if (mType === "analyze") {
+    return <Analyze modalData={modalData} closeModal={closeModal} />;
+  } else if (mType === "brainstorm") {
+    return <Brainstorm modalData={modalData} closeModal={closeModal} />;
+  } else {
+    //error
+  }
+}
+
+function Brainstorm({
+  modalData,
+  closeModal,
+}: {
+  modalData: { data?: SubmissionContract; isOpen: boolean };
+  closeModal: () => void;
+}) {
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -75,7 +93,7 @@ export default function SubmitQuestion() {
                     rows={7}
                     placeholder="Enter an idea for something Web3 analysts should address. 
 
-                    Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
+                  Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
                   />
                 </Field>
                 <p className="italic text-gray-500 text-sm">
@@ -92,11 +110,11 @@ export default function SubmitQuestion() {
             </div>
           </ValidatedForm>
           <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
-            <ConfirmTransaction data={modalData.data} onClose={closeModal} />
+            <ConfirmTransaction data={modalData.data} onClose={closeModal} type="Idea" />
           </Modal>
         </main>
         <aside className="lg:basis-1/3 ">
-          <div className="rounded-lg border-2 p-5 bg-sky-100 bg-opacity-5 space-y-6 text-sm">
+          <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
             <p className="font-bold">Be specific:</p>
             <div className="text-gray-500 space-y-3">
               <p>"How many people actively use Sushi?"</p>
@@ -136,7 +154,101 @@ export default function SubmitQuestion() {
   );
 }
 
-function ConfirmTransaction({ data, onClose }: { data?: SubmissionContract; onClose: () => void }) {
+function Analyze({
+  modalData,
+  closeModal,
+}: {
+  modalData: { data?: SubmissionContract; isOpen: boolean };
+  closeModal: () => void;
+}) {
+  return (
+    <Container className="py-16 mx-auto`">
+      <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
+        <main className="lg:max-w-xl space-y-7">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-semibold">Submit Your Work</h1>
+            <h2 className="text-lg text-cyan-500">Provide a public link to your work.</h2>
+            <p className="text-gray-500 text-sm">
+              Submit your work. Peers will review and score your submission. If you’re a winner, you’ll earn tokens and
+              rMETRIC from the challenge reward pool!
+            </p>
+          </div>
+          <ValidatedForm method="post" validator={validator}>
+            <div className="space-y-10">
+              <section className="space-y-3">
+                <h2 className="font-bold">Submission Title</h2>
+                <Field>
+                  <ValidatedInput name="title" placeholder="Submission Title" className="w-full" />
+                </Field>
+              </section>
+              <section className="space-y-3">
+                <h2 className="font-bold">Public link to your work</h2>
+                <Field>
+                  <ValidatedInput name="description" placeholder="Public link to your work" />
+                </Field>
+                <p className="italic text-gray-500 text-sm">
+                  Important: You can’t edit this submission after submitting. Double check your work for typos and
+                  ensure your idea is good to go.{" "}
+                  <i className="text-blue-600">
+                    <a href="https://docs.metricsdao.xyz/metricsdao/code-of-conduct#plagiarism-17">
+                      Plagiarism Code of Conduct.
+                    </a>
+                  </i>
+                </p>
+              </section>
+              <Button type="submit">Next</Button>
+            </div>
+          </ValidatedForm>
+          <Modal title="Submit Work" isOpen={modalData.isOpen} onClose={closeModal}>
+            <ConfirmTransaction data={modalData.data} onClose={closeModal} type="Work" />
+          </Modal>
+        </main>
+        <aside className="lg:basis-1/3 ">
+          <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
+            <div className="space-y-1">
+              <p className="font-bold">Analyst tools and resources:</p>
+              <a
+                href="https://docs.metricsdao.xyz/analyst-resources/resources"
+                target="_blank"
+                rel="noreferrer"
+                className="block text-blue-500"
+              >
+                MetricsDAO Docs
+              </a>
+              <a href="https://blog.metricsdao.xyz/" target="_blank" rel="noreferrer" className="block text-blue-500">
+                MetricsDAO Blog
+              </a>
+            </div>
+            <div className="space-y-1">
+              <p className="font-bold">How to make stuff that lasts:</p>
+              <a
+                href="https://blog.metricsdao.xyz/make-stuff-that-lasts/"
+                target="_blank"
+                rel="noreferrer"
+                className="block text-blue-500"
+              >
+                Make Stuff That Lasts
+              </a>
+            </div>
+            <div className="space-y-1">
+              <p className="font-bold">Examples of best submissions:</p>
+              <a
+                href="https://blog.metricsdao.xyz/tag/best-submissions/"
+                target="_blank"
+                rel="noreferrer"
+                className="block text-blue-500"
+              >
+                Best Submissions
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </Container>
+  );
+}
+
+function ConfirmTransaction({ data, onClose, type }: { data?: SubmissionContract; onClose: () => void; type: string }) {
   invariant(data, "data is required"); // this should never happen but just in case
 
   const { write, isLoading } = useCreateSubmission({
@@ -160,7 +272,7 @@ function ConfirmTransaction({ data, onClose }: { data?: SubmissionContract; onCl
       <p>Please confirm that you would like to make this submission.</p>
       <div className="flex flex-col sm:flex-row justify-center gap-5">
         <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
-          Submit Idea
+          Submit {type}
         </Button>
         <Button variant="cancel" size="md" onClick={onClose}>
           Cancel
