@@ -198,7 +198,6 @@ function ReviewQuestionDrawerButton({
 
   return (
     <>
-      {/* <Button onClick={() => setOpen(true)}>Review & Score</Button> */}
       <ConnectWalletWrapper>
         <Button asChild>
           <Button
