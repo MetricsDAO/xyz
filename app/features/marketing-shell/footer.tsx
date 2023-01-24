@@ -41,6 +41,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
     >
       <a
         href="/app/analyze"
+        target="_blank"
         className="group flex flex-row items-center py-8 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
         {[1, 2, 3, 4].map(() => {

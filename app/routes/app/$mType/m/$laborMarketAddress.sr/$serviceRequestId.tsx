@@ -1,4 +1,4 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useParams } from "@remix-run/react";
 import { Detail, DetailItem } from "~/components/detail";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
@@ -15,6 +15,8 @@ import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 import { dateHasPassed } from "~/utils/date";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -31,6 +33,9 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 
 export default function ServiceRequest() {
   const { serviceRequest, numOfReviews } = useTypedLoaderData<typeof loader>();
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
+
   return (
     <Container className="py-16">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
@@ -100,10 +105,7 @@ export default function ServiceRequest() {
       </Detail>
 
       <article className="text-gray-500 text-sm mb-20 max-w-2xl">
-        <p>
-          What's the challenge What web3 topic do you want to crowdsource potential analytics questions for? Why? What's
-          the challenge What web3 topic do you want to crowdsource potential analytics questions
-        </p>
+        <p>{serviceRequest.description}</p>
       </article>
 
       <TabNav className="mb-10">

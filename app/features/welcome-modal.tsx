@@ -14,7 +14,7 @@ export default function WelcomeModal({ opened, redirectPath }: { opened: boolean
   // force user to agree to terms
   const noop = () => {};
   return (
-    <Modal isOpen={opened} onClose={noop}>
+    <Modal isOpen={opened} onClose={noop} closeButton={false}>
       <div className="px-8">
         <img src="/img/mdao-purple-icon.png" alt="" className="mx-auto pb-5" />
         <h3 className="font-medium text-center">Welcome to the MetricsDAO ecosystem!</h3>

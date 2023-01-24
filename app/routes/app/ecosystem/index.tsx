@@ -178,28 +178,28 @@ function SubmissionsTable() {
       {[1, 2, 3, 4].map((s) => {
         return (
           <Row asChild columns={12} key={"s.contractId"}>
-            <Link to={`/app/brainstorm/sr/s.contractId`} className="text-sm text-stone-500">
-              <Row.Column span={3}>
-                <div className="flex flex-wrap gap-1">
-                  {"s.title"}
-                  <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({"scoreNumtoLabel(s.score)"})</p>
-                </div>
-                <div className="flex flex-row items-center gap-x-2">
-                  <img alt="" src="/img/icons/poly.svg" width={15} />
-                  <CopyToClipboard
-                    className="text-stone-500"
-                    content={truncateAddress(w.address)}
-                    iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
-                  />
-                </div>
-              </Row.Column>
-              <Row.Column span={2}>
-                <Badge>400 rMETRIC</Badge>
-              </Row.Column>
-              <Row.Column span={3}>s.serviceRequest.title</Row.Column>
-              <Row.Column span={2}>
-                {/*<div className="flex items-center gap-2 flex-wrap">
+            {/*<Link to={`/app/${s.serviceRequest.laborMarket.type}/sr/s.contractId`} className="text-sm text-stone-500">*/}
+            <Row.Column span={3}>
+              <div className="flex flex-wrap gap-1">
+                {"s.title"}
+                <img alt="" src="/img/trophy.svg" width={15} />
+                <p className="text-neutral-400 font-thin">({"scoreNumtoLabel(s.score)"})</p>
+              </div>
+              <div className="flex flex-row items-center gap-x-2">
+                <img alt="" src="/img/icons/poly.svg" width={15} />
+                <CopyToClipboard
+                  className="text-stone-500"
+                  content={truncateAddress(w.address)}
+                  iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
+                />
+              </div>
+            </Row.Column>
+            <Row.Column span={2}>
+              <Badge>400 rMETRIC</Badge>
+            </Row.Column>
+            <Row.Column span={3}>s.serviceRequest.title</Row.Column>
+            <Row.Column span={2}>
+              {/*<div className="flex items-center gap-2 flex-wrap">
       {m.projects.map((p) => (
         <Badge key={p.slug} className="pl-2">
           <ProjectAvatar project={p} />
@@ -207,9 +207,9 @@ function SubmissionsTable() {
         </Badge>
       ))}
       </div>*/}
-              </Row.Column>
-              <Row.Column span={2}>{fromNow("11-22-21")}</Row.Column>
-            </Link>
+            </Row.Column>
+            <Row.Column span={2}>{fromNow("11-22-21")}</Row.Column>
+            {/*</Link>*/}
           </Row>
         );
       })}
@@ -225,42 +225,42 @@ function SubmissionsCard() {
       {[1, 2, 3, 4].map((s) => {
         return (
           <Card asChild key={"s.contractId"}>
-            <Link
-              to={`/app/brainstorm/sr/s.contractId`}
+            {/* <Link
+              to={`/app/${s.serviceRequest.laborMarket.type}/sr/s.contractId`}
               className="text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
-            >
-              <div className="col-span-2">
-                <div className="flex gap-1">
-                  {"s.title"}
-                  <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({"scoreNumToLabel(s.score)"})</p>
-                </div>
-                <div className="flex flex-row items-center gap-x-2">
-                  <img alt="" src="/img/icons/poly.svg" width={15} />
-                  <CopyToClipboard
-                    className="text-stone-500"
-                    content={truncateAddress(w.address)}
-                    iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
-                  />
-                </div>
+        >*/}
+            <div className="col-span-2">
+              <div className="flex gap-1">
+                {"s.title"}
+                <img alt="" src="/img/trophy.svg" width={15} />
+                <p className="text-neutral-400 font-thin">({"scoreNumToLabel(s.score)"})</p>
               </div>
-              <p>User rMETRIC</p>
-              <Badge>400 rMETRIC</Badge>
-              <p>Challenge</p>
-              <p>s.serviceRequest.title</p>
-              <p>Chain/Project</p>
-              <div className="flex items-center gap-2 flex-wrap">
-                {/*{m.projects.map((p) => (
+              <div className="flex flex-row items-center gap-x-2">
+                <img alt="" src="/img/icons/poly.svg" width={15} />
+                <CopyToClipboard
+                  className="text-stone-500"
+                  content={truncateAddress(w.address)}
+                  iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
+                />
+              </div>
+            </div>
+            <p>User rMETRIC</p>
+            <Badge>400 rMETRIC</Badge>
+            <p>Challenge</p>
+            <p>s.serviceRequest.title</p>
+            <p>Chain/Project</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              {/*{m.projects.map((p) => (
         <Badge key={p.slug} className="pl-2">
           <ProjectAvatar project={p} />
           <span className="mx-1">{p.name}</span>
         </Badge>
       ))}*/}
-                todo
-              </div>
-              <p>Submitted</p>
-              {fromNow("11-21-22")}
-            </Link>
+              todo
+            </div>
+            <p>Submitted</p>
+            {fromNow("11-21-22")}
+            {/*</Link>*/}
           </Card>
         );
       })}
@@ -348,7 +348,7 @@ function ParticpantsTable() {
       {[1, 2].map((p) => {
         return (
           <Row asChild columns={6} key={p}>
-            <Link to={`/app/brainstorm/c/${p}`} className="text-sm font-medium text-stone-500">
+            <Link to={`/app/type/c/${p}`} className="text-sm font-medium text-stone-500">
               <Row.Column span={1} className="flex flex-row items-center gap-x-2">
                 <img alt="" src="/img/icons/poly.svg" />
                 <CopyToClipboard className="text-stone-500" content={truncateAddress(w.address)} />

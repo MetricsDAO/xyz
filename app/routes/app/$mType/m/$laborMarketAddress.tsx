@@ -1,7 +1,10 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useParams } from "@remix-run/react";
+import { $path } from "remix-routes";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { Badge, ProjectAvatar, UserBadge } from "~/components";
+import { notFound } from "remix-utils";
+import invariant from "tiny-invariant";
+import { UserBadge } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
@@ -10,18 +13,10 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { findLaborMarket } from "~/services/labor-market.server";
 
 export const loader = async (data: DataFunctionArgs) => {
-  // TODO: Refactor
-  // const url = new URL(data.request.url);
-  // const params = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
-
-  // if (params.laborMarket == undefined) {
-  //   params.laborMarket = data.params.laborMarketAddress;
-  // }
-
-  let laborMarket = undefined;
-
-  if (data.params.laborMarketAddress != undefined) {
-    laborMarket = await findLaborMarket(data.params.laborMarketAddress);
+  invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
+  const laborMarket = await findLaborMarket(data.params.laborMarketAddress);
+  if (!laborMarket) {
+    throw notFound("Labor market not found");
   }
 
   return typedjson({ laborMarket });
@@ -29,6 +24,8 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket } = useTypedLoaderData<typeof loader>();
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   return (
     <Container className="py-16">
@@ -48,13 +45,12 @@ export default function Marketplace() {
             <Detail>
               {laborMarket?.sponsorAddress ? (
                 <DetailItem title="Sponser">
-                  {/*<UserBadge url="u/id" address={laborMarket?.sponsorAddress} balance={200} />*/}
+                  <UserBadge url="u/id" address={laborMarket?.sponsorAddress as `0x${string}`} balance={200} />
                 </DetailItem>
               ) : (
                 <></>
               )}
               <DetailItem title="Chain/Project">
-                /
                 {/*{laborMarket?.projects?.map((p) => (
                   <Badge key={p.slug} className="pl-2">
                     <ProjectAvatar project={p} />
@@ -69,7 +65,7 @@ export default function Marketplace() {
 
         <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
           <main className="flex-1">
-            <TabNav className="mb-8">
+            <TabNav className="mb-10">
               <TabNavLink to="" end>
                 {`Challenges (${laborMarket?._count.serviceRequests})`}
               </TabNavLink>

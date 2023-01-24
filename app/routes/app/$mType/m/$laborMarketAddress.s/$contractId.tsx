@@ -1,4 +1,6 @@
-import { useSubmit } from "@remix-run/react";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import type { Review, ServiceRequest, Submission } from "@prisma/client";
+import { useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import clsx from "clsx";
 import { useRef, useState } from "react";
@@ -59,6 +61,7 @@ export default function ChallengeSubmission() {
   const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
+  const { mType } = useParams();
 
   const handleChange = () => {
     if (formRef.current) {
@@ -82,10 +85,10 @@ export default function ChallengeSubmission() {
             laborMarketAddress={submission.laborMarketAddress}
           />
         </section>
-        <section className="flex flex-col space-y-7 pb-24">
+        <section className="flex flex-col space-y-6 pb-24">
           <Detail className="flex flex-wrap gap-x-8 gap-y-4">
             <DetailItem title="Author">
-              <UserBadge url="u/id" address="0x983110309620D911731Ac0932219af06091b6744" balance={200} />
+              <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
             </DetailItem>
             <DetailItem title="Created">
               <Badge>{fromNow(submission.createdAt.toString())}</Badge>
@@ -98,11 +101,15 @@ export default function ChallengeSubmission() {
             </DetailItem>
             {isWinner && (
               <DetailItem title="Winner">
-                <RewardBadge amount={50} token="SOL" rMETRIC={100} variant="winner" />
+                <RewardBadge amount={50} token="SOL" rMETRIC={5000} variant="winner" />
               </DetailItem>
             )}
           </Detail>
-          <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
+          {mType === "brainstorm" ? (
+            <BrainstormDescription submission={submission} />
+          ) : (
+            <AnalyzeDescription submission={submission} />
+          )}
         </section>
         <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
@@ -275,6 +282,33 @@ function ReviewQuestionDrawerButton({
           </div>
         </div>
       </Drawer>
+    </>
+  );
+}
+
+function AnalyzeDescription({
+  submission,
+}: {
+  submission: Submission & {
+    serviceRequest: ServiceRequest;
+  };
+}) {
+  return (
+    <>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.serviceRequest.description}</p>
+      <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
+        <a href={submission.description} className="text-blue-600 text-sm flex flex-row items-center">
+          {submission.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+        </a>
+      </div>
+    </>
+  );
+}
+
+function BrainstormDescription({ submission }: { submission: Submission }) {
+  return (
+    <>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
     </>
   );
 }

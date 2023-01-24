@@ -66,6 +66,7 @@ export const upsertServiceRequest = async (data: ServiceRequestIndexer) => {
     data: {
       contractId: data.contractId,
       title: data.title,
+      description: data.description,
       laborMarketAddress: data.laborMarketAddress,
       signalExpiration: data.signalExpiration,
       submissionExpiration: data.submissionExpiration,
