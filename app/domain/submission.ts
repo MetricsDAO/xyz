@@ -22,6 +22,18 @@ export const SubmissionFormSchema = z.object({
   description: z.string(),
 });
 
+export const SubmissionIndexerSchema = z.object({
+  id: z.string(),
+  contractId: z.string(),
+  score: z.number(),
+  serviceRequestId: z.string(),
+  laborMarketAddress: EthAddressSchema,
+  creatorId: z.string(),
+  title: z.string(),
+  description: z.string(),
+});
+
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
+export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;

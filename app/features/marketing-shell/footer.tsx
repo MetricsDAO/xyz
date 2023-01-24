@@ -1,6 +1,7 @@
 import SocialIcons from "./social-icons";
 import { Link } from "@remix-run/react";
 import clsx from "clsx";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
 
 const links = [
   { link: "https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/mGWNhyjPX5PDPhIGxV81/", label: "Protocol" },
@@ -40,12 +41,25 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
     >
       <a
         href="/app/analyze"
-        className="block py-7 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
+        className="group flex flex-row items-center py-8 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
-        LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP LAUNCH APP
+        {[1, 2, 3, 4].map(() => {
+          return (
+            <>
+              <p>LAUNCH APP</p>
+              <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
+              <img
+                src="/img/marketing/footer-rocket.png"
+                alt=""
+                className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_300ms_linear_1]"
+              />
+            </>
+          );
+        })}
+        <p>LAUNCH APP</p>
       </a>
 
-      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center p-4 backdrop-blur-sm">
+      <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center py-4 px-6 backdrop-blur-sm">
         <Link to="/" className="flex items-center gap-x-3">
           <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="34" />
           <span className="text-sm">© {currentYear} MetricsDAO</span>

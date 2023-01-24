@@ -13,7 +13,7 @@ export default function Index() {
           alt=""
         />
         <aside className="hidden lg:block w-1/6 absolute">
-          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">
+          <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 z-10">
             <div className="w-1 h-20 mx-2.5 mt-7 relative top-0">
               <div id="pageProgress" style={{ height: `0%` }} className="w-0.5 ml-px h-full bg-black " />
             </div>
@@ -37,11 +37,11 @@ export default function Index() {
           </div>
         </aside>
         <main className="flex-1">
-          <section className="space-y-5 h-screen -mt-16 sm:pt-16 flex flex-col items-center justify-center bg-contain bg-no-repeat bg-center bg-[url('/img/marketing/partner-bg-logos-mobile.png')] sm:bg-[url('/img/marketing/partner-bg-logos.png')]">
-            <h1 className="font-bold text-4xl md:text-6xl sm:pt-7 text-center max-w-3xl px-8">
+          <section className="h-screen -mt-16 sm:pt-16 flex flex-col items-center justify-center bg-contain bg-no-repeat bg-center bg-[url('/img/marketing/partner-bg-logos-mobile.png')] sm:bg-[url('/img/marketing/partner-bg-logos.png')]">
+            <h1 className="font-bold text-4xl md:text-6xl sm:pt-7 text-center max-w-3xl px-8 mb-6">
               Work With the Best Analysts in Web3
             </h1>
-            <p className="text-lg md:text-2xl text-center max-w-3xl px-8">
+            <p className="text-lg md:text-2xl text-center max-w-3xl px-8 text-gray-500 mb-8">
               Access the best community of Web3 analysts for on-demand analytics and tooling! Everything analysts create
               is peer reviewed to ensure quality and accuracy.
             </p>
@@ -54,9 +54,9 @@ export default function Index() {
             className="absolute top-100 left-0 -z-10 h-screen w-screen"
             alt=""
           />
-          <section id="why" className="space-y-5 h-screen flex flex-col justify-center items-start lg:ml-10 px-8">
-            <p className="text-white text-2xl">Why MetricsDAO?</p>
-            <p className="font-bold text-2xl md:text-3xl lg:text-4xl md:leading-relaxed lg:leading-relaxed max-w-6xl">
+          <section id="why" className="h-screen flex flex-col justify-center items-start lg:ml-16 px-8">
+            <p className="text-white text-2xl mb-4">Why MetricsDAO?</p>
+            <p className="font-bold text-2xl md:text-3xl lg:text-4xl md:leading-relaxed lg:leading-relaxed max-w-6xl mb-5 md:mb-10">
               Incubated by Flipside Crypto and other <b className="text-white">industry leaders</b>, MetricsDAO provides
               a home for the <b className="text-white">most talented analysts</b> to collaborate, compete, and grow,
               while offering the necessary frameworks to efficiently deliver{" "}
@@ -65,10 +65,10 @@ export default function Index() {
             </p>
             <MarketingButton label="Get In Touch" link="/todo" variant="outline" />
           </section>
-          <section id="offerings" className="space-y-10 flex flex-col items-center pt-12 pb-10 lg:ml-10 px-8">
-            <h2 className="text-4xl md:text-5xl font-bold text-center">Our Core Offerings</h2>
+          <section id="offerings" className="flex flex-col items-center py-24 lg:ml-10 px-8">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">Our Core Offerings</h2>
             <MarketingButton label="Get In Touch" link="/todo" />
-            <div className="flex flex-col lg:flex-row gap-5">
+            <div className="flex flex-col lg:flex-row gap-8 mt-20">
               <div className="mx-auto">
                 <div className="bg-[url(/img/marketing/partner-core-left.png)] bg-cover bg-no-repeat rounded-3xl text-white text-base max-w-xs px-5 pt-7 pb-16 space-y-5">
                   <img src="/img/marketing/partner-rocket.png" alt="" />
@@ -110,13 +110,13 @@ export default function Index() {
               </div>
             </div>
           </section>
-          <section id="testimony" className="space-y-10 py-16 h-screen justify-center flex flex-col items-center px-8">
-            <img src="/img/marketing/logo-uniswap.png" alt="" className="mx-auto" />
-            <p className="text-white text-2xl md:text-4xl max-w-3xl text-center mx-auto">
+          <section id="testimony" className="py-16 h-screen justify-center flex flex-col items-center px-8">
+            <img src="/img/marketing/logo-uniswap.png" alt="" className="mx-auto mb-7" />
+            <p className="text-white text-2xl md:text-4xl max-w-3xl text-center mx-auto mb-6">
               "The Uniswap Foundation empowers users through community-driven analytics and{" "}
               <b>supports initiatives like MetricsDAO to create data-driven narratives and insights."</b>
             </p>
-            <div className="text-white flex items-center justify-center">
+            <div className="text-white flex items-center justify-center mb-14">
               <ChevronRightIcon className="text-white h-6 w-6" />
               <p className="text-xl">
                 <b>Fede Basta</b> Uniswap Grants Program
@@ -150,6 +150,7 @@ function scrollNav() {
   var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
   var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
   var scrolled = (winScroll / height) * 100;
+  scrolled = Math.min(scrolled, 89);
   document.getElementById("pageProgress")!.style.height = scrolled + "%";
   scrolled > 16
     ? (document.getElementById("whyCircle")!.style.fill = "black")

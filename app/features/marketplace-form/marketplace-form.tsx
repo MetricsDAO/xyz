@@ -14,11 +14,11 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
     <div className="space-y-10 py-5">
       <section className="space-y-1">
         <p className="text-cyan-500 text-lg">
-          Crowdsource the best questions for crypto analysts to answer about any web3 topic
+          Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
         </p>
         <p className="text-sm text-gray-500">
-          Control challenge permissions, set up token and blockchain/project allowlists for challenges, and define
-          reward curves
+          Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These
+          parameters will be applied to all challenges in this marketplace.
         </p>
       </section>
 
@@ -32,7 +32,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
 
       <Field>
         <Label size="lg">Details</Label>
-        <ValidatedTextarea name="description" placeholder="What's the goal of this challenge marketplace?" rows={7} />
+        <ValidatedTextarea name="description" placeholder="What’s the goal of this Brainstorm marketplace?" rows={7} />
         <Error name="description" />
       </Field>
 

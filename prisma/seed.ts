@@ -2,7 +2,7 @@ import { upsertLaborMarket } from "~/services/labor-market.server";
 import { fakeLaborMarket, fakeReview, fakeServiceRequest, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
-import { upsertServiceRequest } from "~/services/challenges-service.server";
+import { upsertServiceRequest } from "~/services/service-request.server";
 import { upsertSubmission } from "~/services/submissions.server";
 import type { LaborMarket, ServiceRequest, Submission } from "@prisma/client";
 import { upsertReview } from "~/services/review-service.server";
@@ -57,7 +57,7 @@ async function main() {
 async function seedLaborMarkets() {
   const projectIds = (await prisma.project.findMany()).map((p) => p.id);
   const tokenSymbols = (await prisma.token.findMany()).map((t) => t.symbol);
-  // create 100 fake labor markets in prisma
+  // create 15 fake labor markets in prisma
   for (let i = 0; i < 15; i++) {
     await upsertLaborMarket(
       fakeLaborMarket({
@@ -68,18 +68,26 @@ async function seedLaborMarkets() {
   }
 }
 
-// create 10 fake service requests/challenges for each labor market in Prisma
+// create a fake service request for each labor market in Prisma
 async function seedServiceRequests(laborMarkets: LaborMarket[]) {
   for (const laborMarket of laborMarkets) {
-    await upsertServiceRequest(fakeServiceRequest({}, laborMarket.address as string));
+    await upsertServiceRequest(
+      fakeServiceRequest({
+        laborMarketAddress: laborMarket.address,
+      })
+    );
   }
 }
 
-async function seedSubmissions(allChallenges: ServiceRequest[]) {
-  for (const challenge of allChallenges) {
-    // create 3 fake submissions for each challenge in Prisma
+async function seedSubmissions(serviceRequests: ServiceRequest[]) {
+  for (const serviceRequest of serviceRequests) {
+    // create 3 fake submissions for each Service Request in Prisma
     for (let i = 0; i < 3; i++) {
-      await upsertSubmission(fakeSubmission({}, challenge.id));
+      const submission = fakeSubmission({
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        serviceRequestId: serviceRequest.contractId,
+      });
+      await upsertSubmission(submission);
     }
   }
 }
@@ -88,7 +96,13 @@ async function seedReviews(allSubmissions: Submission[]) {
   for (const submission of allSubmissions) {
     // create 3 fake reviews for each submission in Prisma
     for (let i = 0; i < 3; i++) {
-      await upsertReview(fakeReview({}, submission.id));
+      await upsertReview(
+        fakeReview({
+          serviceRequestId: submission.serviceRequestId,
+          laborMarketAddress: submission.laborMarketAddress,
+          submissionId: submission.contractId,
+        })
+      );
     }
   }
 }
