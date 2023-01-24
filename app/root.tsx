@@ -30,6 +30,10 @@ export async function loader({ request }: DataFunctionArgs) {
 }
 
 export const meta: MetaFunction = () => {
+  let metaImg: string = "https://metricsdao.xyz/img/social.png";
+  if (env.ENVIRONMENT === "development") {
+    metaImg = "https://dev.metricsdao.xyz/img/social.png";
+  }
   return {
     title: "MetricsDAO | The DAO for Web3 Data Analytics",
     viewport: "width=device-width, initial-scale=1.0",
@@ -37,7 +41,7 @@ export const meta: MetaFunction = () => {
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
     description: "Connecting projects with the best analysts in Web3 for all data needs.",
-    "og:image": "https://metricsdao.xyz/img/social.png",
+    "og:image": metaImg,
     "og:description": "Connecting projects with the best analysts in Web3 for all data needs.",
     "og:url": "https://metricsdao.xyz",
     "og:title": "MetricsDAO | The DAO for Web3 Data Analytics",
@@ -47,7 +51,7 @@ export const meta: MetaFunction = () => {
     "twitter:url": "https://metricsdao.xyz",
     "twitter:title": "MetricsDAO | The DAO for Web3 Data Analytics",
     "twitter:description": "Connecting projects with the best analysts in Web3 for all data needs.",
-    "twitter:image": "https://metricsdao.xyz/img/social.png",
+    "twitter:image": metaImg,
   };
 };
 
