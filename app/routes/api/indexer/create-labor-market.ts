@@ -2,7 +2,7 @@ import type { ActionFunction, DataFunctionArgs } from "@remix-run/server-runtime
 import { json } from "@remix-run/server-runtime";
 import { LaborMarketSchema } from "~/domain";
 import { upsertLaborMarket } from "~/services/labor-market.server";
-import env from "~/env";
+import env from "~/env.server";
 import { forbidden } from "remix-utils";
 
 export const action: ActionFunction = async (data: DataFunctionArgs) => {

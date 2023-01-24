@@ -1,7 +1,7 @@
 import type { ActionFunction, DataFunctionArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { ServiceRequestIndexerSchema } from "~/domain";
-import env from "~/env";
+import env from "~/env.server";
 import { upsertServiceRequest } from "~/services/service-request.server";
 
 export const action: ActionFunction = async (data: DataFunctionArgs) => {
