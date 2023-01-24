@@ -14,6 +14,7 @@ import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 import { dateHasPassed } from "~/utils/date";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -36,19 +37,37 @@ export default function ServiceRequest() {
         <h1 className="text-3xl font-semibold">{serviceRequest.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/review`}>
-              Claim to Review
-            </Link>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link
+                  to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/review`}
+                >
+                  Claim to Review
+                </Link>
+              </Button>
+            </ConnectWalletWrapper>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/claim`}>
-              Claim to Submit
-            </Link>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link
+                  to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/claim`}
+                >
+                  Claim to Submit
+                </Link>
+              </Button>
+            </ConnectWalletWrapper>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/submit`}>
-              Submit
-            </Link>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link
+                  to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/submit`}
+                >
+                  Submit
+                </Link>
+              </Button>
+            </ConnectWalletWrapper>
           </Button>
         </div>
       </header>

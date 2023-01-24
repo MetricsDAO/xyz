@@ -25,7 +25,9 @@ import {
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
 import { ReviewSearchSchema } from "~/domain/review";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { useReviewSubmission } from "~/hooks/use-review-submission";
+import { useOptionalUser } from "~/hooks/use-user";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
@@ -174,6 +176,7 @@ function ReviewQuestionDrawerButton({
   requestId: string;
   submissionId: string;
 }) {
+  const user = useOptionalUser();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number>(50);
 
@@ -195,7 +198,19 @@ function ReviewQuestionDrawerButton({
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Review & Score</Button>
+      {/* <Button onClick={() => setOpen(true)}>Review & Score</Button> */}
+      <ConnectWalletWrapper>
+        <Button asChild>
+          <Button
+            size="lg"
+            onClick={() => {
+              user && setOpen(true);
+            }}
+          >
+            Review & Score
+          </Button>
+        </Button>
+      </ConnectWalletWrapper>
       <Drawer open={open} onClose={() => setOpen(false)}>
         <div className="flex flex-col mx-auto space-y-10 px-2">
           <div className="space-y-3">

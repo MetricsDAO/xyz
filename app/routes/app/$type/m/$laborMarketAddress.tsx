@@ -6,6 +6,7 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { findLaborMarket } from "~/services/labor-market.server";
 
 export const loader = async (data: DataFunctionArgs) => {
@@ -35,9 +36,11 @@ export default function Marketplace() {
         <section className="flex flex-wrap gap-5 justify-between pb-5">
           <h1 className="text-3xl font-semibold">{laborMarket?.title} </h1>
           <div className="flex flex-wrap gap-5">
-            <Button asChild size="lg">
-              <Link to={`/app/brainstorm/m/${laborMarket?.address}/sr/new`}>Launch Challenge</Link>
-            </Button>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link to={`/app/brainstorm/m/${laborMarket?.address}/sr/new`}>Launch Challenge</Link>
+              </Button>
+            </ConnectWalletWrapper>
           </div>
         </section>
         <section className="flex flex-col space-y-7 pb-12">
