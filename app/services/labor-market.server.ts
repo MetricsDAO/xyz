@@ -59,7 +59,7 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
  */
 export const prepareLaborMarket = async (form: LaborMarketForm, user: User) => {
   const metadata = LaborMarketMetaSchema.parse(form); // Prune extra fields from form
-  const cid = await uploadJsonToIpfs(metadata, metadata.title);
+  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
   const result: LaborMarketContract = { ...form, ipfsHash: cid, userAddress: user.address };
   return result;
 };
