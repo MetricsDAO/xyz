@@ -54,7 +54,7 @@ export default function SubmitQuestion() {
   } else if (mType === "brainstorm") {
     return <Brainstorm modalData={modalData} closeModal={closeModal} />;
   } else {
-    //error
+    console.error("mtype is neither brainstorm nor analyze");
   }
 }
 
@@ -187,8 +187,8 @@ function Analyze({
                   <ValidatedInput name="description" placeholder="Public link to your work" />
                 </Field>
                 <p className="italic text-gray-500 text-sm">
-                  Important: You can’t edit this submission after submitting. Double check your work for typos and
-                  ensure your idea is good to go.{" "}
+                  Important: You can’t edit this link after submitting. Double check that this link to work is correct,
+                  owned by you, published, and public.{" "}
                   <i className="text-blue-600">
                     <a href="https://docs.metricsdao.xyz/metricsdao/code-of-conduct#plagiarism-17">
                       Plagiarism Code of Conduct.

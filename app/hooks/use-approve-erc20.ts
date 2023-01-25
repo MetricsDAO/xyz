@@ -1,22 +1,14 @@
-import type { TransactionReceipt } from "@ethersproject/abstract-provider";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
+import type { Web3Hook } from "~/features/web3-button/types";
 import { parseTokenAmount } from "~/utils/helpers";
 
-type Data = {
+export type ApproveERC20ContractData = {
   ERC20address: string;
   spender: `0x${string}`;
   amount: string;
 };
 
-export function useApproveERC20({
-  data,
-  onTransactionSuccess,
-  onWriteSuccess,
-}: {
-  data: Data;
-  onWriteSuccess?: () => void;
-  onTransactionSuccess?: (data: TransactionReceipt) => void;
-}) {
+export function useApproveERC20({ data, onWriteSuccess }: Web3Hook<ApproveERC20ContractData>) {
   const { config } = usePrepareContractWrite({
     address: data.ERC20address as `0x${string}`,
     abi: [
@@ -36,26 +28,14 @@ export function useApproveERC20({
     functionName: "approve",
     args: [data.spender, parseTokenAmount(data.amount)],
   });
-  const { data: transactionResultData, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      onWriteSuccess?.();
-    },
-  });
-
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: transactionResultData?.hash,
-    onError(error) {
-      console.log("error", error);
-    },
-    onSuccess(receipt) {
-      onTransactionSuccess?.(receipt);
+      onWriteSuccess?.(result);
     },
   });
 
   return {
     write,
-    isLoading,
-    isSuccess,
   };
 }

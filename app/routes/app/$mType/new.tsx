@@ -1,9 +1,8 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { useParams } from "@remix-run/react";
+import { useParams, useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
-import { useEffect } from "react";
-import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import type { ValidationErrorResponseData } from "remix-validated-form";
@@ -15,6 +14,7 @@ import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
 import type { SendTransactionResult } from "~/features/web3-button/types";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
@@ -49,23 +49,14 @@ export const action = async ({ request }: ActionArgs) => {
 };
 
 export default function CreateMarketplace() {
+  const transition = useTransition();
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
   const { mType } = useParams();
+
   const [state, send] = useMachine(machine, {
     actions: {
-      notifyTransactionWrite: (context) => {
-        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
-        toast.loading("Creating marketplace...", { id: "creating-marketplace" });
-      },
-      notifyTransactionSuccess: () => {
-        toast.dismiss("creating-marketplace");
-        toast.success("Marketplace created!");
-      },
-      notifyTransactionFailure: () => {
-        toast.dismiss("creating-marketplace");
-        toast.error("Marketplace creation failed");
-      },
+      ...defaultNotifyTransactionActions,
       devAutoIndex: (context) => {
         // Create marketplace in the database as a dx side-effect
         if (window.ENV.DEV_AUTO_INDEX) {
@@ -84,48 +75,43 @@ export default function CreateMarketplace() {
   // DEBUG
   // console.log("state", state.value, state.context);
 
-  const isUploadingToIpfs = state.matches("transactionPrepare.loading");
-  const isModalOpen = state.matches("transactionReady") || state.matches("transactionWrite");
+  const [modalOpen, setModalOpen] = useState(false);
 
   // If action succeeds the transaction is ready to be written to the blockchain
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
-      send({ type: "TRANSACTION_READY", data: actionData.preparedLaborMarket });
+      // Clear any previous transaction state
+      send({ type: "RESET_TRANSACTION" });
+      send({ type: "PREPARE_TRANSACTION_READY", data: actionData.preparedLaborMarket });
+      setModalOpen(true);
     }
   }, [actionData, send]);
 
   const closeModal = () => {
-    send({ type: "TRANSACTION_CANCEL" });
+    setModalOpen(false);
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "TRANSACTION_WRITE", transactionHash: result.hash, transactionPromise: result.wait(1) });
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
-        <ValidatedForm<LaborMarketForm>
-          validator={validator}
-          method="post"
-          defaultValues={defaultValues}
-          onSubmit={(data, event) => {
-            send({ type: "TRANSACTION_PREPARE" });
-          }}
-        >
+        <ValidatedForm<LaborMarketForm> validator={validator} method="post" defaultValues={defaultValues}>
           <h1 className="text-3xl font-semibold antialiased">
             Create {mType === "brainstorm" ? "a Brainstorm" : "an Analytics"} Marketplace
           </h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
             <Button size="lg" type="submit">
-              {isUploadingToIpfs ? "Loading..." : "Next"}
+              {transition.state === "submitting" ? "Loading..." : "Next"}
             </Button>
           </div>
         </ValidatedForm>
       </div>
       {state.context.contractData && (
-        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
+        <Modal title="Create Marketplace?" isOpen={modalOpen} onClose={closeModal}>
           <div className="space-y-8">
             <p>Please confirm that you would like to create a new marketplace.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-5">
