@@ -117,10 +117,8 @@ export default function CreateServiceRequest() {
               <div className="space-y-6 text-sm text-center text-stone-500">
                 <p>
                   Approve the app to transfer{" "}
-                  <b className="text-neutral-800">{state.context.contractData.pTokenQuantity}</b> "token" from the
-                  following address on your behalf:
+                  <b className="text-neutral-800">{state.context.contractData.pTokenQuantity}</b> "token" on your behalf
                 </p>
-                <p className="text-neutral-800">{"User address"}</p>
                 <div className="flex flex-col sm:flex-row justify-center gap-2">
                   <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
                     Cancel
@@ -144,7 +142,6 @@ export default function CreateServiceRequest() {
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
                 <p>Approving {state.context.contractData.pTokenQuantity} "token"</p>
-                <p>Confirm this transaction in your wallet</p>
               </div>
             )}
             {state.matches("transactionPrepared.preapprove.success") && (
@@ -171,7 +168,6 @@ export default function CreateServiceRequest() {
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
                 <p>Transferring {state.context.contractData.pTokenQuantity} "token"</p>
-                <p>Confirm this transaction in your wallet</p>
               </div>
             )}
           </div>
