@@ -110,40 +110,67 @@ export default function CreateServiceRequest() {
         </Button>
       </ValidatedForm>
       {state.context.contractData && (
-        <Modal title="Launch Challenge" isOpen={modalOpen} onClose={closeModal}>
-          {state.matches("transactionPrepared.preapprove.ready") && (
-            <div className="space-y-8">
-              <p>Approve the app to transfer {state.context.contractData.pTokenQuantity} "TOKEN NAME" on your behalf</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-5">
-                <Button variant="cancel" size="md" onClick={closeModal}>
-                  Cancel
-                </Button>
-                <ApproveERC20TransferWeb3Button
-                  data={{
-                    amount: state.context.contractData.pTokenQuantity,
-                    ERC20address: state.context.contractData.pTokenAddress,
-                    spender: state.context.contractData.laborMarketAddress as `0x${string}`,
-                  }}
-                  onWriteSuccess={onERC20ApproveWriteSuccess}
-                />
+        <Modal isOpen={modalOpen && !state.matches("transactionWait.success")} onClose={closeModal} closeButton={false}>
+          <div className="space-y-2 flex flex-col items-center px-2">
+            <p className="font-medium">Launch Challenge</p>
+            {state.matches("transactionPrepared.preapprove.ready") && (
+              <div className="space-y-6 text-sm text-center text-stone-500">
+                <p>
+                  Approve the app to transfer{" "}
+                  <b className="text-neutral-800">{state.context.contractData.pTokenQuantity}</b> "token" on your behalf
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-2">
+                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
+                    Cancel
+                  </Button>
+                  <ApproveERC20TransferWeb3Button
+                    data={{
+                      amount: state.context.contractData.pTokenQuantity,
+                      ERC20address: state.context.contractData.pTokenAddress,
+                      spender: state.context.contractData.laborMarketAddress as `0x${string}`,
+                    }}
+                    onWriteSuccess={onERC20ApproveWriteSuccess}
+                  />
+                </div>
               </div>
-            </div>
-          )}
-          {state.matches("transactionPrepared.preapprove.loading") && <div>Loading...</div>}
-          {(state.matches("transactionPrepared.preapprove.success") || state.matches("transactionWait")) && (
-            <div>
-              <p>Please confirm that you would like to launch a new challenge.</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-5">
-                <CreateServiceRequestWeb3Button
-                  data={state.context.contractData}
-                  onWriteSuccess={onCreateServiceRequestWriteSuccess}
+            )}
+            {state.matches("transactionPrepared.preapprove.loading") && (
+              <div className="text-sm text-center text-stone-500">
+                <img
+                  src="/img/loading-icon.png"
+                  alt=""
+                  className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
-                <Button variant="cancel" size="md" onClick={closeModal}>
-                  Cancel
-                </Button>
+                <p>Approving {state.context.contractData.pTokenQuantity} "token"</p>
               </div>
-            </div>
-          )}
+            )}
+            {state.matches("transactionPrepared.preapprove.success") && (
+              <div className="space-y-8">
+                <p className="text-sm text-center text-stone-500 max-w-xs">
+                  Confirm you would like to launch this challenge and transfer funds.
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-2">
+                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
+                    Cancel
+                  </Button>
+                  <CreateServiceRequestWeb3Button
+                    data={state.context.contractData}
+                    onWriteSuccess={onCreateServiceRequestWriteSuccess}
+                  />
+                </div>
+              </div>
+            )}
+            {state.matches("transactionWait") && (
+              <div className="text-sm text-center text-stone-500">
+                <img
+                  src="/img/loading-icon.png"
+                  alt=""
+                  className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
+                />
+                <p>Transferring {state.context.contractData.pTokenQuantity} "token"</p>
+              </div>
+            )}
+          </div>
         </Modal>
       )}
     </Container>
