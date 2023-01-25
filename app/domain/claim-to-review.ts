@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { EthAddressSchema } from "./address";
+import { EvmAddressSchema } from "./address";
 
 export const ClaimToReviewContractSchema = z.object({
-  laborMarketAddress: EthAddressSchema,
+  laborMarketAddress: EvmAddressSchema,
   quantity: zfd.numeric(z.number()),
 });
 

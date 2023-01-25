@@ -32,7 +32,7 @@ export function AddPaymentAddressForm({ networks }: { networks: Network[] }) {
             selectedLabel: (
               <div className="flex gap-2 items-center">
                 <NetworkAvatar size="md" network={n} />
-                <p>{DEFAULT_SYMBOL[n.name]}</p>
+                <p>{n.name}</p>
               </div>
             ),
           }))}

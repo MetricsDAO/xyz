@@ -5,10 +5,12 @@ import { Tooltip } from "../tooltip";
 
 export function CopyToClipboard({
   content,
+  displayContent,
   className,
   iconRight,
 }: {
   content: string;
+  displayContent?: string; // Can be set to display a different string than the one that is copied to clipboard
   className?: string;
   iconRight?: React.ReactNode;
 }) {
@@ -32,7 +34,7 @@ export function CopyToClipboard({
         }}
         className={clsx("flex items-center", className)}
       >
-        {content} {iconRight}
+        {displayContent ?? content} {iconRight}
       </span>
     </Tooltip>
   );

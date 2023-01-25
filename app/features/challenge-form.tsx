@@ -1,7 +1,8 @@
+import type { Token } from "@prisma/client";
 import { useParams } from "@remix-run/react";
 import { Field, ValidatedInput, ValidatedTextarea, ValidatedSelect, Error } from "~/components";
 
-export function ChallengeForm() {
+export function ChallengeForm({ validTokens }: { validTokens: Token[] }) {
   const { mType } = useParams();
   return (
     <>
@@ -93,7 +94,9 @@ export function ChallengeForm() {
               <ValidatedSelect
                 name="rewardToken"
                 placeholder="Token"
-                options={[{ label: "DAI", value: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063" }]}
+                options={validTokens.map((t) => {
+                  return { label: t.symbol, value: t.contractAddress };
+                })}
               />
               <Error name="rewardToken" />
             </Field>
