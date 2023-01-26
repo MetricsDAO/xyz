@@ -41,7 +41,7 @@ export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceReques
 
   return {
     id: faker.datatype.uuid(),
-    contractId: faker.datatype.uuid(),
+    contractId: faker.datatype.number().toString(),
     title: `Service Request - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     laborMarketAddress: faker.finance.ethereumAddress(),
@@ -59,7 +59,7 @@ export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceReques
 export const fakeSubmission = (data: Partial<SubmissionIndexer>): SubmissionIndexer => {
   return {
     id: faker.datatype.uuid(),
-    contractId: faker.datatype.uuid(),
+    contractId: faker.datatype.number().toString(),
     serviceRequestId: faker.datatype.uuid(),
     title: `Submission - ${faker.random.words(3)}`,
     description: faker.random.words(10),
@@ -73,7 +73,7 @@ export const fakeSubmission = (data: Partial<SubmissionIndexer>): SubmissionInde
 export const fakeReview = (data: Partial<Review>): Review => {
   return {
     id: faker.datatype.uuid(),
-    contractId: faker.datatype.uuid(),
+    contractId: faker.datatype.number().toString(),
     serviceRequestId: faker.datatype.uuid(),
     laborMarketAddress: faker.finance.ethereumAddress(),
     comment: faker.random.words(3),

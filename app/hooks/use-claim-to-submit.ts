@@ -1,45 +1,27 @@
-import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { ClaimToSubmitPrepared } from "~/domain";
+import type { Web3Hook } from "~/features/web3-button/types";
 
-export function useClaimToSubmit({
-  data,
-  onTransactionSuccess,
-  onWriteSuccess,
-}: {
-  data: ClaimToSubmitPrepared;
-  onWriteSuccess?: () => void;
-  onTransactionSuccess?: (data: TransactionReceipt) => void;
-}) {
+export function useClaimToSubmit({ data, onWriteSuccess }: Web3Hook<ClaimToSubmitPrepared>) {
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signal",
+    overrides: {
+      gasLimit: BigNumber.from(1000000), // TODO: What do we do here?
+    },
     args: [BigNumber.from(data.serviceRequestId)],
   });
-
-  const { data: transactionResultData, write } = useContractWrite({
+  const { write } = useContractWrite({
     ...config,
     onSuccess(result) {
-      onWriteSuccess?.();
-    },
-  });
-
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: transactionResultData?.hash,
-    onError(error) {
-      console.log("error", error);
-    },
-    onSuccess(receipt) {
-      onTransactionSuccess?.(receipt);
+      onWriteSuccess?.(result);
     },
   });
 
   return {
     write,
-    isLoading,
-    isSuccess,
   };
 }
