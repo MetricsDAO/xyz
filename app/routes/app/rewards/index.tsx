@@ -69,10 +69,9 @@ export default function Rewards() {
             </div>
           </div>
         </main>
-        {/* Not yet for MVP */}
-        {/* <aside className="md:w-1/4 lg:md-1/5">
+        <aside className="md:w-1/4 lg:md-1/5">
           <SearchAndFilter />
-        </aside> */}
+        </aside>
       </section>
     </Container>
   );
@@ -174,21 +173,17 @@ function ClaimButton() {
     }),
     {
       actions: {
-        notifyTransactionWait: defaultNotifyTransactionActions.notifyTransactionWait,
-        notifyTransactionFailure: defaultNotifyTransactionActions.notifyTransactionFailure,
-        notifyTransactionSuccess(context) {
-          defaultNotifyTransactionActions.notifyTransactionSuccess(context);
-          transitionModal();
-        },
+        ...defaultNotifyTransactionActions,
       },
     }
   );
   invariant(state.context.contractData, "Contract data should be defined");
 
   // DEBUG
-  console.log("state", state.context, state.value);
+  // console.log("state", state.context, state.value);
 
   const onWriteSuccess = (result: SendTransactionResult) => {
+    transitionModal();
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
