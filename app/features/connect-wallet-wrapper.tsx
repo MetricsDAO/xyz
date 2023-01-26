@@ -1,9 +1,8 @@
 import { Slot } from "@radix-ui/react-slot";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { redirect } from "@remix-run/node";
 
 // https://www.rainbowkit.com/docs/custom-connect-button
-function ConnectWalletWrapper(props: { children: React.ReactNode;}) {
+function ConnectWalletWrapper(props: { children: React.ReactNode }) {
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
@@ -32,7 +31,7 @@ function ConnectWalletWrapper(props: { children: React.ReactNode;}) {
             <Slot
               {...props}
               onClick={(e) => {
-                e.preventDefault();
+                !connected ? e.preventDefault() : null;
                 openChainModal();
               }}
             />
