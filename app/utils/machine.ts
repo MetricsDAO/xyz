@@ -55,6 +55,11 @@ export const createBlockchainTransactionStateMachine = <T>() => {
               target: "transactionPrepared.preapprove.ready",
               actions: "setContractData",
             },
+            SUBMIT_TRANSACTION: {
+              target: "transactionWait.loading",
+              actions: "setTransactionHash",
+              cond: (context, event, meta) => context.contractData !== undefined,
+            },
           },
         },
         transactionPrepared: {

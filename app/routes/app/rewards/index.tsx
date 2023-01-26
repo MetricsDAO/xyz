@@ -20,6 +20,13 @@ import { getUserId } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import type { ClaimRewardContractData } from "~/hooks/use-claim-reward";
+import { useMachine } from "@xstate/react";
+import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
+import invariant from "tiny-invariant";
+import type { SendTransactionResult } from "@wagmi/core";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUserId(data.request);
@@ -62,9 +69,10 @@ export default function Rewards() {
             </div>
           </div>
         </main>
-        <aside className="md:w-1/4 lg:md-1/5">
+        {/* Not yet for MVP */}
+        {/* <aside className="md:w-1/4 lg:md-1/5">
           <SearchAndFilter />
-        </aside>
+        </aside> */}
       </section>
     </Container>
   );
@@ -150,18 +158,65 @@ function RewardsCards({ rewards }: { rewards: any }) {
   );
 }
 
+const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>();
 function ClaimButton() {
-  const [opened, setOpened] = useState(false);
-  const [openedProcess, setOpenedProcess] = useState(false);
+  const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  function processClaim() {
-    setOpened(false);
-    setOpenedProcess(true);
+  const [state, send] = useMachine(
+    machine.withContext({
+      // Should have this by now
+      contractData: {
+        laborMarketAddress: "0x0000000000000000000000000000000000000000",
+        payoutAddress: "0x0000000000000000000000000000000000000000",
+        submissionId: "0",
+      },
+    }),
+    {
+      actions: {
+        notifyTransactionWait: defaultNotifyTransactionActions.notifyTransactionWait,
+        notifyTransactionFailure: defaultNotifyTransactionActions.notifyTransactionFailure,
+        notifyTransactionSuccess(context) {
+          defaultNotifyTransactionActions.notifyTransactionSuccess(context);
+          transitionModal();
+        },
+      },
+    }
+  );
+  invariant(state.context.contractData, "Contract data should be defined");
+
+  // DEBUG
+  console.log("state", state.context, state.value);
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
+
+  function transitionModal() {
+    closeConfirmedModal();
+    openSuccessModal();
   }
+
+  function openConfirmedModal() {
+    setConfirmedModalOpen(true);
+  }
+
+  function closeConfirmedModal() {
+    setConfirmedModalOpen(false);
+  }
+
+  function openSuccessModal() {
+    setSuccessModalOpen(true);
+  }
+
+  function closeSuccessModal() {
+    setSuccessModalOpen(false);
+  }
+
   return (
     <>
-      <Button onClick={() => setOpened(true)}>Claim</Button>
-      <Modal isOpen={opened} onClose={() => setOpened(false)} title="Claim your reward!">
+      <Button onClick={openConfirmedModal}>Claim</Button>
+      <Modal isOpen={confirmedModalOpen} onClose={closeConfirmedModal} title="Claim your reward!">
         <div className="space-y-5 mt-5">
           <div className="space-y-2">
             <div className="flex items-center">
@@ -183,14 +238,14 @@ function ClaimButton() {
             </p>
           </div>
           <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpened(false)}>
+            <Button variant="cancel" onClick={closeConfirmedModal}>
               Cancel
             </Button>
-            <Button onClick={() => processClaim()}>Claim</Button>
+            <ClaimRewardWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
           </div>
         </div>
       </Modal>
-      <Modal isOpen={openedProcess} onClose={() => setOpenedProcess(false)}>
+      <Modal isOpen={successModalOpen} onClose={closeSuccessModal}>
         <div className="mx-auto space-y-7">
           <img src="/img/check-circle.svg" alt="" className="mx-auto" />
           <div className="space-y-2">
@@ -201,10 +256,12 @@ function ClaimButton() {
             <p className="text-gray-500 text-center text-sm">{"If there are any issues please reach out on Discord"}</p>
           </div>
           <div className="flex gap-2 w-full">
-            <Button variant="cancel" fullWidth>
+            <Button variant="cancel" fullWidth onClick={closeSuccessModal}>
               Cancel
             </Button>
-            <Button fullWidth>Got it</Button>
+            <Button fullWidth onClick={closeSuccessModal}>
+              Got it
+            </Button>
           </div>
         </div>
       </Modal>
