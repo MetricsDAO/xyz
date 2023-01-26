@@ -1,22 +1,23 @@
 import type { DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Error, Modal, ValidatedSegmentedRadio } from "~/components";
-import { Badge } from "~/components/badge";
+import { useMachine } from "@xstate/react";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
-import type { ClaimToReviewContract } from "~/domain";
-import { ClaimToReviewContractSchema } from "~/domain";
-import { useClaimToReview } from "~/hooks/use-claim-to-review";
+import type { ClaimToReviewContract, ClaimToReviewForm } from "~/domain";
+import { ClaimToReviewFormSchema } from "~/domain";
+import { SendTransactionResult } from "~/features/web3-button/types";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
 import { claimToReviewDate } from "~/utils/date";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -29,27 +30,55 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   return typedjson({ serviceRequest }, { status: 200 });
 };
 
-const validator = withZod(ClaimToReviewContractSchema);
+const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToReviewContract>();
+
+const validator = withZod(ClaimToReviewFormSchema);
 
 export default function ClaimToReview() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const [modalData, setModalData] = useState<{ data?: ClaimToReviewContract; isOpen: boolean }>({ isOpen: false });
+  const [state, send] = useMachine(claimToSubmitMachine, {
+    actions: {
+      notifyTransactionWait: (context) => {
+        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
+        defaultNotifyTransactionActions.notifyTransactionWait(context);
+      },
+      notifyTransactionSuccess: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
+      },
+      notifyTransactionFailure: () => {
+        defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+    },
+  });
 
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
+  function handleClaimToReview(data: ClaimToReviewForm) {
+    send({ type: "RESET_TRANSACTION" });
+    send({
+      type: "PREPARE_TRANSACTION_READY",
+      data: {
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        serviceRequestId: serviceRequest.contractId,
+        quantity: data.quantity,
+      },
+    });
+    setIsModalOpen(true);
   }
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
 
   return (
     <Container className="py-16">
       <ValidatedForm
         onSubmit={(data) => {
-          setModalData({ data, isOpen: true });
+          handleClaimToReview(data);
         }}
         validator={validator}
         className="mx-auto px-10 max-w-4xl space-y-7 mb-12"
       >
-        <input type="hidden" name="laborMarketAddress" value={serviceRequest.laborMarketAddress} />
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{`Claim to Review ${serviceRequest.title}`}</h1>
           <p className="text-cyan-500 text-lg">
@@ -102,58 +131,43 @@ export default function ClaimToReview() {
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold">Lock rMETRIC</h2>
-          <div className="flex flex-col md:flex-row gap-2 md:items-center">
+          {/* Revisit later: might not make sense w/ protocol
+            <div className="flex flex-col md:flex-row gap-2 md:items-center">
             <p className="text-sm">
-              You must lock {modalData.data ? <Badge>{modalData.data?.quantity * 5}</Badge> : null} rMETRIC to claim
+              You must lock{" "}
+              {state.context.contractData?.quantity ? <Badge>{state.context.contractData?.quantity * 5}</Badge> : null}{" "}
+              rMETRIC to claim
             </p>
             <Button variant="outline">Lock rMETRIC</Button>
-          </div>
+          </div>*/}
           <p className="mt-2 text-gray-500 italic text-sm">
             Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
           </p>
         </div>
         <div className="flex flex-wrap gap-5">
-          <Button type="submit">Next</Button>
+          <Button type="submit">Claim to Review</Button>
+          <Button variant="cancel">Cancel</Button>
         </div>
       </ValidatedForm>
-      <Modal title="Claim to review?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction data={modalData.data} onClose={closeModal} />
-      </Modal>
+      {state.context.contractData && (
+        <Modal
+          title="Claim to Review"
+          isOpen={isModalOpen && !state.matches("transactionWait")}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <div className="space-y-8">
+            <p>
+              Please confirm that you would like to claim {state.context.contractData.quantity} submissions to review.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              <ClaimToReviewWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </Container>
-  );
-}
-
-function ConfirmTransaction({ data, onClose }: { data?: ClaimToReviewContract; onClose: () => void }) {
-  invariant(data, "data is required"); // this should never happen but just in case
-
-  const { write, isLoading } = useClaimToReview({
-    data: data,
-    onTransactionSuccess() {
-      toast.dismiss("claiming-to-review");
-      toast.success("Submissions Claimed!");
-    },
-    onWriteSuccess() {
-      toast.loading("Claiming Submissions to review...", { id: "claiming-to-review" });
-    },
-  });
-
-  const onCreate = () => {
-    write?.();
-  };
-
-  return (
-    <div className="space-y-8 mt-4">
-      <p>
-        You are claiming to review <b>{data.quantity}</b> submissions
-      </p>
-      <div className="flex flex-wrap gap-5">
-        <Button loading={isLoading} onClick={onCreate}>
-          Claim
-        </Button>
-        <Button variant="cancel" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
   );
 }

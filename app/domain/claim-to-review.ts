@@ -1,10 +1,15 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { EthAddressSchema } from "./address";
 
-export const ClaimToReviewContractSchema = z.object({
-  laborMarketAddress: EthAddressSchema,
+export const ClaimToReviewFormSchema = z.object({
   quantity: zfd.numeric(z.number()),
 });
 
+export const ClaimToReviewContractSchema = z.object({
+  laborMarketAddress: z.string(),
+  serviceRequestId: z.string(),
+  quantity: zfd.numeric(z.number()),
+});
+
+export type ClaimToReviewForm = z.infer<typeof ClaimToReviewFormSchema>;
 export type ClaimToReviewContract = z.infer<typeof ClaimToReviewContractSchema>;
