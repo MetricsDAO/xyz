@@ -70,104 +70,102 @@ export default function ChallengeSubmission() {
   const isWinner = true;
 
   return (
-    <Container className="py-16">
-      <div className="mx-auto container mb-12 px-10">
-        <section className="flex flex-wrap gap-5 justify-between pb-10">
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-semibold">{submission.title}</h1>
-            {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
-          </div>
-          <ReviewQuestionDrawerButton
-            requestId={"0"}
-            submissionId={"0"}
-            laborMarketAddress={submission.laborMarketAddress}
-          />
-        </section>
-        <section className="flex flex-col space-y-6 pb-24">
-          <Detail className="flex flex-wrap gap-x-8 gap-y-4">
-            <DetailItem title="Author">
-              <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+    <Container className="py-16 px-10">
+      <section className="flex flex-wrap gap-5 justify-between pb-10">
+        <div className="flex items-center gap-2">
+          <h1 className="text-3xl font-semibold">{submission.title}</h1>
+          {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
+        </div>
+        <ReviewQuestionDrawerButton
+          requestId={"0"}
+          submissionId={"0"}
+          laborMarketAddress={submission.laborMarketAddress}
+        />
+      </section>
+      <section className="flex flex-col space-y-6 pb-24">
+        <Detail className="flex flex-wrap gap-x-8 gap-y-4">
+          <DetailItem title="Author">
+            <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+          </DetailItem>
+          <DetailItem title="Created">
+            <Badge>{fromNow(submission.createdAt.toString())}</Badge>
+          </DetailItem>
+          <DetailItem title="Overall Score">
+            <ScoreBadge score={submission.score} />
+          </DetailItem>
+          <DetailItem title="Reviews">
+            <Badge>{reviews.length}</Badge>
+          </DetailItem>
+          {isWinner && (
+            <DetailItem title="Winner">
+              <RewardBadge amount={50} token="SOL" rMETRIC={5000} variant="winner" />
             </DetailItem>
-            <DetailItem title="Created">
-              <Badge>{fromNow(submission.createdAt.toString())}</Badge>
-            </DetailItem>
-            <DetailItem title="Overall Score">
-              <ScoreBadge score={submission.score} />
-            </DetailItem>
-            <DetailItem title="Reviews">
-              <Badge>{reviews.length}</Badge>
-            </DetailItem>
-            {isWinner && (
-              <DetailItem title="Winner">
-                <RewardBadge amount={50} token="SOL" rMETRIC={5000} variant="winner" />
-              </DetailItem>
-            )}
-          </Detail>
-          {mType === "brainstorm" ? (
-            <BrainstormDescription submission={submission} />
-          ) : (
-            <AnalyzeDescription submission={submission} />
           )}
-        </section>
-        <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
+        </Detail>
+        {mType === "brainstorm" ? (
+          <BrainstormDescription submission={submission} />
+        ) : (
+          <AnalyzeDescription submission={submission} />
+        )}
+      </section>
+      <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
-        <section className="mt-3">
-          <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
-            <main className="flex-1">
-              <div className="w-full border-spacing-4 border-separate space-y-5">
-                {reviews.map((r) => {
-                  return (
-                    <Card asChild key={r.id}>
-                      <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
-                        <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
-                          <div
-                            className={clsx(
-                              SCORE_COLOR[scoreNumToLabel(r.score)],
-                              "flex w-24 h-12 justify-center items-center rounded-lg"
-                            )}
-                          >
-                            <p>{scoreNumToLabel(r.score)}</p>
-                          </div>
-                          <Avatar />
-                          <p className="font-medium">user.ETH</p>
-                          <Badge>
-                            <p>400 rMETRIC</p>
-                          </Badge>
+      <section className="mt-3">
+        <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
+          <main className="flex-1">
+            <div className="w-full border-spacing-4 border-separate space-y-5">
+              {reviews.map((r) => {
+                return (
+                  <Card asChild key={r.id}>
+                    <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
+                      <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                        <div
+                          className={clsx(
+                            SCORE_COLOR[scoreNumToLabel(r.score)],
+                            "flex w-24 h-12 justify-center items-center rounded-lg"
+                          )}
+                        >
+                          <p>{scoreNumToLabel(r.score)}</p>
                         </div>
-                        <p>{fromNow(r.createdAt)}</p>
+                        <Avatar />
+                        <p className="font-medium">user.ETH</p>
+                        <Badge>
+                          <p>400 rMETRIC</p>
+                        </Badge>
                       </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </main>
-            <aside className="md:w-1/5">
-              <ValidatedForm
-                formRef={formRef}
-                method="get"
-                defaultValues={params}
-                validator={validator}
+                      <p>{fromNow(r.createdAt)}</p>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </main>
+          <aside className="md:w-1/5">
+            <ValidatedForm
+              formRef={formRef}
+              method="get"
+              defaultValues={params}
+              validator={validator}
+              onChange={handleChange}
+              className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
+            >
+              {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
+              <ValidatedSelect
+                placeholder="Select option"
+                name="sortBy"
+                size="sm"
                 onChange={handleChange}
-                className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
-              >
-                {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
-                <ValidatedSelect
-                  placeholder="Select option"
-                  name="sortBy"
-                  size="sm"
-                  onChange={handleChange}
-                  options={[{ label: "Created At", value: "createdAt" }]}
-                />
-                <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
-                <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
-                <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
-                <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
-                <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
-              </ValidatedForm>
-            </aside>
-          </div>
-        </section>
-      </div>
+                options={[{ label: "Created At", value: "createdAt" }]}
+              />
+              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
+              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
+              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
+              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
+              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
+            </ValidatedForm>
+          </aside>
+        </div>
+      </section>
     </Container>
   );
 }

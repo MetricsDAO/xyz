@@ -36,7 +36,7 @@ export default function ServiceRequest() {
   invariant(mType, "marketplace type must be specified");
 
   return (
-    <Container className="py-16">
+    <Container className="py-16 px-10">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.title}</h1>
         <div className="flex flex-wrap gap-5">
