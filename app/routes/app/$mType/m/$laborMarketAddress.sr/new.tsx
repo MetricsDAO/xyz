@@ -17,6 +17,7 @@ import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-se
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { prepareServiceRequest } from "~/services/service-request.server";
+import { listTokens } from "~/services/tokens.server";
 import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
@@ -28,7 +29,8 @@ const serviceRequestMachine = createBlockchainTransactionStateMachine<ServiceReq
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const defaultValues = url.searchParams.get("fake") ? fakeServiceRequestFormData() : undefined;
-  return typedjson({ defaultValues });
+  const tokens = await listTokens();
+  return typedjson({ defaultValues, tokens });
 };
 
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
@@ -43,7 +45,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export default function CreateServiceRequest() {
   const { mType } = useParams();
-  const { defaultValues } = useTypedLoaderData<typeof loader>();
+  const { defaultValues, tokens } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
   const [state, send] = useMachine(serviceRequestMachine, {
@@ -104,7 +106,7 @@ export default function CreateServiceRequest() {
         validator={validator}
         className="space-y-10"
       >
-        <ChallengeForm />
+        <ChallengeForm validTokens={tokens} />
         <Button variant="primary" type="submit">
           Next
         </Button>

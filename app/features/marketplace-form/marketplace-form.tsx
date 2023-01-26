@@ -96,8 +96,8 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
             <Label>Token</Label>
-            <ValidatedCombobox name="tokenSymbols" options={tokens.map((t) => ({ value: t.symbol, label: t.name }))} />
-            <Error name="tokenSymbols" />
+            <ValidatedCombobox name="tokenIds" options={tokens.map((t) => ({ value: t.id, label: t.name }))} />
+            <Error name="tokenIds" />
           </Field>
           <Field>
             <Label>Reward Curve</Label>

@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { EthAddressSchema } from "./address";
+import { EvmAddressSchema } from "./address";
 
 export const LaborMarketSchema = z.object({
   address: z.string(),
@@ -12,18 +12,18 @@ export const LaborMarketSchema = z.object({
     z.object({ access: z.literal("anyone") }),
     z.object({
       access: z.literal("delegates"),
-      badgerAddress: EthAddressSchema,
+      badgerAddress: EvmAddressSchema,
       badgerTokenId: z.string().min(1, "Required"),
     }),
   ]),
-  rewardCurveAddress: EthAddressSchema,
+  rewardCurveAddress: EvmAddressSchema,
   submitRepMin: zfd.numeric(z.number()),
   submitRepMax: zfd.numeric(z.number()),
-  reviewBadgerAddress: EthAddressSchema,
+  reviewBadgerAddress: EvmAddressSchema,
   reviewBadgerTokenId: z.string().min(1, "Required"),
-  tokenSymbols: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  tokenIds: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   projectIds: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  sponsorAddress: EthAddressSchema,
+  sponsorAddress: EvmAddressSchema,
 });
 
 // The properties of a LaborMarket that live off-chain (e.g IPFS). These are properties that are specific to the MDAO app.
@@ -53,7 +53,7 @@ export function fakeLaborMarketNew(): LaborMarketForm {
     submitRepMax: faker.datatype.number(100),
     reviewBadgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
     reviewBadgerTokenId: "0",
-    tokenSymbols: ["ETH"],
+    tokenIds: [],
     projectIds: [],
   };
 }
@@ -61,7 +61,7 @@ export function fakeLaborMarketNew(): LaborMarketForm {
 // Schema for a labor market with an IPFS CID.
 export const LaborMarketContractSchema = LaborMarketFormSchema.extend({
   ipfsHash: z.string(),
-  userAddress: EthAddressSchema,
+  userAddress: EvmAddressSchema,
 });
 
 // Used for searching and filtering marketplaces.

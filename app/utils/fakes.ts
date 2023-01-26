@@ -28,7 +28,7 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
     sponsorAddress: faker.finance.ethereumAddress(),
     reviewBadgerAddress: faker.finance.ethereumAddress(),
     reviewBadgerTokenId: faker.datatype.string(),
-    tokenSymbols: [],
+    tokenIds: [],
     projectIds: [],
     ...data,
   };
