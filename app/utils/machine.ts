@@ -2,17 +2,16 @@ import type { TransactionReceipt } from "@ethersproject/abstract-provider";
 import { assign, createMachine } from "xstate";
 
 type Events<T> =
-  | { type: "TRANSACTION_PREPARE" }
-  | { type: "TRANSACTION_READY"; data: T }
-  | { type: "TRANSACTION_CANCEL" }
+  | { type: "PREPARE_TRANSACTION_READY"; data: T }
+  | { type: "PREPARE_TRANSACTION_PREAPPROVE"; data: T }
   | {
-      type: "TRANSACTION_WRITE";
-      transactionHash: string;
-      transactionPromise: Promise<TransactionReceipt>;
+      type: "SUBMIT_PREAPPROVE_TRANSACTION";
+      preapproveTransactionHash: string;
+      preapproveTransactionPromise: Promise<TransactionReceipt>;
     }
-  | { type: "done.invoke.wait-for-transaction"; data: TransactionReceipt }
-  | { type: "TRANSACTION_SUCCESS" }
-  | { type: "TRANSACTION_FAILURE" };
+  | { type: "RESET_TRANSACTION" }
+  | { type: "SUBMIT_TRANSACTION"; transactionHash: string; transactionPromise: Promise<TransactionReceipt> }
+  | { type: "done.invoke.wait-for-transaction"; data: TransactionReceipt };
 
 type Context<T> = {
   contractData?: T;
@@ -20,6 +19,13 @@ type Context<T> = {
   transactionReceipt?: TransactionReceipt;
 };
 
+/**
+ * A state machine for managing the lifecycle of a blockchain transaction. There are 3 states, (1) idle, (2) transactionPrepared, and (3) transactionWait.
+ * The idle state is the initial state. The transactionPrepared state is entered when the user is ready to submit a transaction. The transactionWait state is entered when the user has submitted a transaction.
+ *
+ * The transactionPrepared state has a substate called preapprove. This is used in cases such as when an contract requires an ERC20 transfer approval beforehand.
+ * @returns a state machine
+ */
 export const createBlockchainTransactionStateMachine = <T>() => {
   return createMachine(
     {
@@ -41,52 +47,90 @@ export const createBlockchainTransactionStateMachine = <T>() => {
       states: {
         idle: {
           on: {
-            TRANSACTION_PREPARE: { target: "transactionPrepare" },
-          },
-        },
-        transactionPrepare: {
-          initial: "loading",
-          on: {
-            TRANSACTION_READY: {
-              target: "transactionReady",
+            PREPARE_TRANSACTION_READY: {
+              target: "transactionPrepared.ready",
+              actions: "setContractData",
+            },
+            PREPARE_TRANSACTION_PREAPPROVE: {
+              target: "transactionPrepared.preapprove.ready",
               actions: "setContractData",
             },
           },
-          states: {
-            loading: {},
-            failure: {},
-          },
         },
-        transactionReady: {
+        transactionPrepared: {
           on: {
-            TRANSACTION_CANCEL: { target: "idle" }, //start over
-            TRANSACTION_WRITE: { target: "transactionWrite", actions: "setTransactionHash" },
-          },
-        },
-        transactionWrite: {
-          entry: "notifyTransactionWrite",
-          invoke: {
-            id: "wait-for-transaction",
-            src: "waitForTransaction",
-            onDone: {
-              target: "transactionSuccess",
-              actions: "setTransactionReceipt",
-            },
-            onError: {
-              target: "transactionFailure",
+            RESET_TRANSACTION: { target: "idle" },
+            SUBMIT_TRANSACTION: {
+              target: "transactionWait.loading",
+              actions: "setTransactionHash",
+              cond: (context, event, meta) =>
+                meta.state.matches("transactionPrepared.ready") ||
+                meta.state.matches("transactionPrepared.preapprove.success"),
             },
           },
+          states: {
+            ready: {},
+            preapprove: {
+              states: {
+                ready: {
+                  on: {
+                    SUBMIT_PREAPPROVE_TRANSACTION: {
+                      target: "loading",
+                    },
+                  },
+                },
+                loading: {
+                  invoke: {
+                    id: "wait-for-preapprove-transaction",
+                    src: "waitForPreapproveTransaction",
+                    onDone: {
+                      target: "success",
+                    },
+                    onError: {
+                      target: "failure",
+                    },
+                  },
+                },
+                success: {},
+                failure: {},
+              },
+            },
+          },
         },
-        transactionSuccess: {
-          entry: ["notifyTransactionSuccess", "devAutoIndex"],
-        },
-        transactionFailure: {
-          entry: ["notifyTransactionFailure"],
+        transactionWait: {
+          on: {
+            RESET_TRANSACTION: { target: "idle" },
+          },
+          entry: "notifyTransactionWait",
+          states: {
+            loading: {
+              invoke: {
+                id: "wait-for-transaction",
+                src: "waitForTransaction",
+                onDone: {
+                  target: "success",
+                  actions: "setTransactionReceipt",
+                },
+                onError: {
+                  target: "failure",
+                },
+              },
+            },
+            success: {
+              entry: ["notifyTransactionSuccess", "devAutoIndex"],
+            },
+            failure: {
+              entry: ["notifyTransactionFailure"],
+            },
+          },
         },
       },
     },
     {
       services: {
+        waitForPreapproveTransaction: (context, event) => {
+          return event.preapproveTransactionPromise;
+        },
         waitForTransaction: (context, event) => {
           return event.transactionPromise;
         },
@@ -107,6 +151,11 @@ export const createBlockchainTransactionStateMachine = <T>() => {
             return event.data;
           },
         }),
+        // noop to make these optional when useMachine
+        notifyTransactionWait: () => {},
+        notifyTransactionSuccess: () => {},
+        notifyTransactionFailure: () => {},
+        devAutoIndex: () => {},
       },
     }
   );

@@ -3,7 +3,6 @@ import type { Network } from "@prisma/client";
 import { useField } from "remix-validated-form";
 import { Error, ValidatedInput, ValidatedSelect } from "~/components";
 import { NetworkAvatar } from "~/components/avatar/network-avatar";
-import { DEFAULT_SYMBOL } from "~/utils/helpers";
 
 function SelectLabel({ network }: { network: Network }) {
   return (
@@ -11,7 +10,7 @@ function SelectLabel({ network }: { network: Network }) {
       <NetworkAvatar size="lg" network={network} />
       <div>
         <p className="font-medium">{network.name}</p>
-        <p className="text-stone-500 text-xs">{DEFAULT_SYMBOL[network.name] ?? network.name}</p>
+        <p className="text-stone-500 text-xs">{network.name}</p>
       </div>
     </div>
   );
@@ -32,7 +31,7 @@ export function AddPaymentAddressForm({ networks }: { networks: Network[] }) {
             selectedLabel: (
               <div className="flex gap-2 items-center">
                 <NetworkAvatar size="md" network={n} />
-                <p>{DEFAULT_SYMBOL[n.name]}</p>
+                <p>{n.name}</p>
               </div>
             ),
           }))}

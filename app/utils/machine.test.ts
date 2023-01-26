@@ -7,14 +7,12 @@ import { createBlockchainTransactionStateMachine } from "./machine";
 import { waitFor } from "xstate/lib/waitFor";
 
 describe("test chain transaction machine", async () => {
-  test("happy path", async () => {
+  test("simple flow", async () => {
     const service = interpret(
       createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
         actions: {
-          notifyTransactionWrite: vi.fn(),
           notifyTransactionSuccess: vi.fn(),
-          notifyTransactionFailure: vi.fn(),
-          devAutoIndex: vi.fn(),
+          notifyTransactionWait: vi.fn(),
         },
       })
     );
@@ -23,28 +21,78 @@ describe("test chain transaction machine", async () => {
     service.start();
     expect(service.getSnapshot().value).toEqual("idle");
 
-    service.send({ type: "TRANSACTION_PREPARE" });
-    expect(service.getSnapshot().value).toEqual({ transactionPrepare: "loading" });
-
+    // 1. Contract data is validated and ready
     service.send({
-      type: "TRANSACTION_READY",
+      type: "PREPARE_TRANSACTION_READY",
       data: laborMarketContract,
     });
-    expect(service.getSnapshot().value).toEqual("transactionReady");
+    expect(service.getSnapshot().value).toEqual({ transactionPrepared: "ready" });
     expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
 
+    // 2. Transaction has been submitted and broadcast to chain
     service.send({
-      type: "TRANSACTION_WRITE",
+      type: "SUBMIT_TRANSACTION",
       transactionHash: transactionHash,
       transactionPromise: Promise.resolve(transactionReceipt),
     });
-    expect(service.getSnapshot().value).toEqual("transactionWrite");
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "loading" });
     expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
-    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWrite")?.exec).toHaveBeenCalled();
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWait")?.exec).toHaveBeenCalled();
 
-    await waitFor(service, (state) => state.matches("transactionSuccess"));
+    // 3. Wait for transaction to resolve to success
+    await waitFor(service, (state) => state.matches({ transactionWait: "success" }));
 
-    expect(service.getSnapshot().value).toEqual("transactionSuccess");
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "success" });
+    expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
+  });
+
+  test("preapprove flow", async () => {
+    const service = interpret(
+      createBlockchainTransactionStateMachine<LaborMarketContract>().withConfig({
+        actions: {
+          notifyTransactionSuccess: vi.fn(),
+          notifyTransactionWait: vi.fn(),
+        },
+      })
+    );
+    const { laborMarketContract, transactionHash, transactionReceipt } = fakes();
+
+    service.start();
+    expect(service.getSnapshot().value).toEqual("idle");
+
+    // 1. Contract data is validated and ready... but needs preapproval
+    service.send({
+      type: "PREPARE_TRANSACTION_PREAPPROVE",
+      data: laborMarketContract,
+    });
+    expect(service.getSnapshot().value).toEqual({ transactionPrepared: { preapprove: "ready" } });
+    expect(service.getSnapshot().context.contractData).equal(laborMarketContract);
+
+    service.send({
+      type: "SUBMIT_PREAPPROVE_TRANSACTION",
+      preapproveTransactionHash: "0x123",
+      preapproveTransactionPromise: Promise.resolve(transactionReceipt),
+    });
+
+    // 2. Wait for preapproval transaction to succeed
+    await waitFor(service, (state) => state.matches({ transactionPrepared: { preapprove: "success" } }));
+    expect(service.getSnapshot().value).toEqual({ transactionPrepared: { preapprove: "success" } });
+
+    // 3. Transaction has been submitted and broadcast to chain
+    service.send({
+      type: "SUBMIT_TRANSACTION",
+      transactionHash: transactionHash,
+      transactionPromise: Promise.resolve(transactionReceipt),
+    });
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "loading" });
+    expect(service.getSnapshot().context.transactionHash).equal(transactionHash);
+    expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionWait")?.exec).toHaveBeenCalled();
+
+    // 4. Wait for transaction to resolve to success
+    await waitFor(service, (state) => state.matches({ transactionWait: "success" }));
+
+    expect(service.getSnapshot().value).toEqual({ transactionWait: "success" });
     expect(service.getSnapshot().context.transactionReceipt).equal(transactionReceipt);
     expect(service.getSnapshot().actions.find((a) => a.type === "notifyTransactionSuccess")?.exec).toHaveBeenCalled();
   });

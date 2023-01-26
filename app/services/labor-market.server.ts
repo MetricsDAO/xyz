@@ -1,6 +1,6 @@
 import type { User } from "@prisma/client";
 import { LaborMarket__factory } from "~/contracts";
-import type { LaborMarketForm, LaborMarketContract, LaborMarketSearch } from "~/domain";
+import type { LaborMarketForm, LaborMarketContract, LaborMarketSearch, LaborMarket } from "~/domain";
 import { LaborMarketMetaSchema } from "~/domain";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
@@ -69,14 +69,14 @@ export const countLaborMarkets = async (params: LaborMarketSearch) => {
 
 /**
  * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
- * @param {LaborMarketForm} newLaborMarket - The LaborMarketNew to prepare.
+ * @param {LaborMarketForm} form - The labor market form data to prepare.
  * @param {User} user - The user that is creating the LaborMarket.
  * @returns {LaborMarketContract} - The prepared LaborMarket.
  */
-export const prepareLaborMarket = async (newLaborMarket: LaborMarketForm, user: User) => {
-  const metadata = LaborMarketMetaSchema.parse(newLaborMarket); // Prune extra fields from LaborMarketNew
-  const cid = await uploadJsonToIpfs(metadata);
-  const result: LaborMarketContract = { ...newLaborMarket, ipfsHash: cid, userAddress: user.address };
+export const prepareLaborMarket = async (form: LaborMarketForm, user: User) => {
+  const metadata = LaborMarketMetaSchema.parse(form); // Prune extra fields from form
+  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
+  const result: LaborMarketContract = { ...form, ipfsHash: cid, userAddress: user.address };
   return result;
 };
 
@@ -84,15 +84,15 @@ export const prepareLaborMarket = async (newLaborMarket: LaborMarketForm, user: 
  * Creates or updates a new LaborMarket. This is only really used by the indexer.
  * @param {LaborMarket} laborMarket - The labor market to create.
  */
-// export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
-//   const { address } = laborMarket;
-//   const newLaborMarket = await prisma.laborMarket.upsert({
-//     where: { address },
-//     update: mapToLaborMarketTableFormat(laborMarket),
-//     create: mapToLaborMarketTableFormat(laborMarket),
-//   });
-//   return newLaborMarket;
-// };
+export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
+  const { address } = laborMarket;
+  const newLaborMarket = await prisma.laborMarket.upsert({
+    where: { address },
+    update: mapToLaborMarketTableFormat(laborMarket),
+    create: mapToLaborMarketTableFormat(laborMarket),
+  });
+  return newLaborMarket;
+};
 
 /**
  * Creates a new LaborMarketDocument object from on-chain data on the contract at `address` at `block`.
@@ -132,25 +132,25 @@ export const indexLaborMarket = async (doc: LaborMarketDoc) => {
   return mongo.laborMarkets.updateOne({ address: doc.address }, { $set: doc }, { upsert: true });
 };
 
-// const mapToLaborMarketTableFormat = (laborMarket: LaborMarket) => {
-//   const { address, projectIds, ...data } = laborMarket;
-//   return {
-//     address,
-//     title: data.title,
-//     description: data.description,
-//     type: data.type,
-//     submitRepMin: data.submitRepMin,
-//     submitRepMax: data.submitRepMax,
-//     rewardCurveAddress: data.rewardCurveAddress,
-//     reviewBadgerAddress: data.reviewBadgerAddress,
-//     reviewBadgerTokenId: data.reviewBadgerTokenId,
-//     launchAccess: data.launch.access,
-//     launchBadgerAddress: data.launch.access === "delegates" ? data.launch.badgerAddress : undefined,
-//     launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
-//     sponsorAddress: data.sponsorAddress,
-//     projects: { connect: projectIds.map((id) => ({ id })) },
-//   };
-// };
+const mapToLaborMarketTableFormat = (laborMarket: LaborMarket) => {
+  const { address, projectIds, ...data } = laborMarket;
+  return {
+    address,
+    title: data.title,
+    description: data.description,
+    type: data.type,
+    submitRepMin: data.submitRepMin,
+    submitRepMax: data.submitRepMax,
+    rewardCurveAddress: data.rewardCurveAddress,
+    reviewBadgerAddress: data.reviewBadgerAddress,
+    reviewBadgerTokenId: data.reviewBadgerTokenId,
+    launchAccess: data.launch.access,
+    launchBadgerAddress: data.launch.access === "delegates" ? data.launch.badgerAddress : undefined,
+    launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
+    sponsorAddress: data.sponsorAddress,
+    projects: { connect: projectIds.map((id) => ({ id })) },
+  };
+};
 
 /**
  * Counts the number of LaborMarkets that match a given LaborMarketSearch.

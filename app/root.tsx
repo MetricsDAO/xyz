@@ -7,7 +7,7 @@ import { getUser } from "./services/session.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { Toaster } from "react-hot-toast";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import env from "./env";
+import env from "./env.server";
 import { Blurs } from "./features/shell";
 import { Error as ErrorBoundary } from "./components/error-boundary";
 import { withSentry } from "@sentry/remix";
@@ -145,7 +145,7 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Toaster />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );

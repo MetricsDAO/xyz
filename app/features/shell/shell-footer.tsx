@@ -8,7 +8,7 @@ const links = [
 
 export function AppFooter() {
   const items = links.map((link) => (
-    <a key={link.link} href={link.link} className="block py-6 text-neutral-600">
+    <a key={link.link} href={link.link} target="_blank" rel="noreferrer" className="block py-6 text-neutral-600">
       {link.label}
     </a>
   ));

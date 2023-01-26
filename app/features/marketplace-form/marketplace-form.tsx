@@ -6,24 +6,16 @@ import { ValidatedCombobox } from "../../components/combobox/combobox";
 import type { Project, Token } from "@prisma/client";
 import { Error, Field, Label } from "../../components/field";
 import { Button } from "../../components/button";
+import { useParams } from "@remix-run/react";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
   const [launchAccess] = useControlField("launch.access");
+  const { mType } = useParams();
 
   return (
     <div className="space-y-10 py-5">
-      <section className="space-y-1">
-        <p className="text-cyan-500 text-lg">
-          Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
-        </p>
-        <p className="text-sm text-gray-500">
-          Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These
-          parameters will be applied to all challenges in this marketplace.
-        </p>
-      </section>
-
-      <input type="hidden" name="type" value="brainstorm" />
-
+      {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
+      <input type="hidden" name="type" value={mType} />
       <Field>
         <Label size="lg">Challenge Marketplace Title</Label>
         <ValidatedInput type="text" name="title" placeholder="e.g Solana Breakpoint 2023" />
@@ -32,7 +24,15 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
 
       <Field>
         <Label size="lg">Details</Label>
-        <ValidatedTextarea name="description" placeholder="What’s the goal of this Brainstorm marketplace?" rows={7} />
+        <ValidatedTextarea
+          name="description"
+          placeholder={
+            mType === "brainstorm"
+              ? "What’s the goal of this Brainstorm marketplace?"
+              : "What’s the goal of this Analytics marketplace?"
+          }
+          rows={7}
+        />
         <Error name="description" />
       </Field>
 
@@ -96,8 +96,8 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
             <Label>Token</Label>
-            <ValidatedCombobox name="tokenSymbols" options={tokens.map((t) => ({ value: t.symbol, label: t.name }))} />
-            <Error name="tokenSymbols" />
+            <ValidatedCombobox name="tokenIds" options={tokens.map((t) => ({ value: t.id, label: t.name }))} />
+            <Error name="tokenIds" />
           </Field>
           <Field>
             <Label>Reward Curve</Label>
@@ -139,5 +139,34 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         </div>
       </Field>
     </div>
+  );
+}
+
+function AnalyticsDescription() {
+  return (
+    <section className="space-y-1">
+      <p className="text-cyan-500 text-lg">
+        Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+        projects launch, grow and succeed.
+      </p>
+      <p className="text-sm text-gray-500">
+        Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These parameters
+        will be applied to all challenges in this marketplace.
+      </p>
+    </section>
+  );
+}
+
+function BrainstormDescription() {
+  return (
+    <section className="space-y-1">
+      <p className="text-cyan-500 text-lg">
+        Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
+      </p>
+      <p className="text-sm text-gray-500">
+        Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These parameters
+        will be applied to all challenges in this marketplace.
+      </p>
+    </section>
   );
 }

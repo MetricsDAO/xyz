@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Link, useSubmit } from "@remix-run/react";
+import { Link, useParams, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
@@ -8,6 +8,7 @@ import { $params, $path } from "remix-routes";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
@@ -29,7 +30,7 @@ const validator = withZod(LaborMarketSearchSchema);
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
 
-  url.searchParams.set("type", $params("/app/:type", params).type);
+  url.searchParams.set("type", $params("/app/:mType", params).mType);
 
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(searchParams);
@@ -48,10 +49,12 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   );
 };
 
-export default function Brainstorm() {
+export default function MarketplaceCollection() {
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   const handleChange = () => {
     if (formRef.current) {
@@ -62,26 +65,17 @@ export default function Brainstorm() {
   return (
     <Container className="py-16">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
-        <main className="flex-1 space-y-3 max-w-2xl">
-          <h1 className="text-3xl font-semibold">Brainstorm Marketplaces</h1>
-          <p className="text-lg text-cyan-500">
-            Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
-          </p>
-          <p className="text-gray-500 text-sm">
-            Explore Brainstorm marketplaces to launch or discover challenges. Claim challenges to submit your best
-            ideas, or peer review others’ to surface and reward the most relevant ideas. Outputs of a Brainstorm can
-            prompt Analytics challenges.
-          </p>
-        </main>
+        {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
         <aside>
           <Button size="lg" asChild>
-            <Link to="/app/brainstorm/new">Create Marketplace</Link>
+            <Link to={$path("/app/:mType/new", { mType: mType })}>Create Marketplace</Link>
           </Button>
         </aside>
       </header>
 
       <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
-        Brainstorm Marketplaces <span className="text-gray-400">({totalResults})</span>
+        {mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplaces{" "}
+        <span className="text-gray-400">({totalResults})</span>
       </h2>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -183,10 +177,12 @@ function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
 }
 
 function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
+  const { mType } = useParams();
+
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={2}>Brainstorm Marketplace</Header.Column>
+        <Header.Column span={2}>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Challenge Pool Totals</Header.Column>
         <Header.Column>Avg. Challenge Pool</Header.Column>
@@ -196,7 +192,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         return (
           <Row asChild columns={6} key={m.address}>
             <Link
-              to={$path("/app/:type/m/:laborMarketAddress", { type: m.type, laborMarketAddress: m.address })}
+              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.type, laborMarketAddress: m.address })}
               className="text-sm font-medium"
             >
               <Row.Column span={2}>{m.title}</Row.Column>
@@ -235,6 +231,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
 }
 
 function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
+  const { mType } = useParams();
   return (
     <div>
       <div className="space-y-4">
@@ -242,10 +239,10 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
           return (
             <Card asChild key={m.address}>
               <Link
-                to={`/app/brainstorm/m/${m.address}`}
+                to={`/app/${m.type}/m/${m.address}`}
                 className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
-                <div>Brainstorm Marketplace</div>
+                <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
                 <div className="text-sm font-medium">{m.title}</div>
 
                 <div>Chain/Project</div>
@@ -278,5 +275,37 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
         })}
       </div>
     </div>
+  );
+}
+
+function AnalyzeDescription() {
+  return (
+    <main className="flex-1 space-y-3 max-w-2xl">
+      <h1 className="text-3xl font-semibold">Analytics Marketplaces</h1>
+      <p className="text-lg text-cyan-500">
+        Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+        projects launch, grow and succeed.
+      </p>
+      <p className="text-gray-500 text-sm">
+        Explore Analytics marketplaces to launch or discover challenges. Claim challenges to submit your best work, or
+        peer review others’ work to reward the highest quality outputs.
+      </p>
+    </main>
+  );
+}
+
+function BrainstormDescription() {
+  return (
+    <main className="flex-1 space-y-3 max-w-2xl">
+      <h1 className="text-3xl font-semibold">Brainstorm Marketplaces</h1>
+      <p className="text-lg text-cyan-500">
+        Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
+      </p>
+      <p className="text-gray-500 text-sm">
+        Explore Brainstorm marketplaces to launch or discover challenges. Claim challenges to submit your best ideas, or
+        peer review others’ to surface and reward the most relevant ideas. Outputs of a Brainstorm can prompt Analytics
+        challenges.
+      </p>
+    </main>
   );
 }
