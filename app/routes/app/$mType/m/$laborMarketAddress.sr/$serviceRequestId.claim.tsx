@@ -67,8 +67,6 @@ export default function ClaimToSubmit() {
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
-  console.log("state", state.value, state.context);
-
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
