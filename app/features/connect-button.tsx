@@ -3,7 +3,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "~/components/button";
 
 // https://www.rainbowkit.com/docs/custom-connect-button
-function CustomConnectButton({ text }: { text?: string }) {
+function CustomConnectButton() {
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, authenticationStatus, mounted }) => {
@@ -14,16 +14,16 @@ function CustomConnectButton({ text }: { text?: string }) {
         if (!ready) {
           // The docs make this a blank state with opactiy 0, but might be better to show a loading indicator of some sort
           return (
-            <Button variant={text ? undefined : "gradient"} className="pointer-events-none select-none opacity-0">
-              {text ? text : "Connect Wallet"}
+            <Button variant="gradient" className="pointer-events-none select-none opacity-0">
+              Connect Wallet
             </Button>
           );
         }
 
         if (!connected) {
           return (
-            <Button variant={text ? undefined : "gradient"} onClick={openConnectModal}>
-              {text ? text : "Connect Wallet"}
+            <Button variant="gradient" onClick={openConnectModal}>
+              Connect Wallet
             </Button>
           );
         }
@@ -38,7 +38,7 @@ function CustomConnectButton({ text }: { text?: string }) {
 
         return (
           <div>
-            <Button size="lg" onClick={openAccountModal} variant="gradient">
+            <Button onClick={openAccountModal} variant="gradient">
               <div className="flex flex-row gap-2 items-center align-middle">
                 {account.ensAvatar ? (
                   account.ensAvatar
