@@ -1,7 +1,7 @@
 import type { LaborMarketNetwork, LaborMarket } from "labor-markets-abi";
 import { logger } from "~/services/logger.server";
 import { Pinekit } from "pinekit";
-import env from "~/env";
+import env from "~/env.server";
 import type { ExtractAbiEventNames } from "abitype";
 import { documentLaborMarket, indexLaborMarket } from "~/services/labor-market.server";
 
