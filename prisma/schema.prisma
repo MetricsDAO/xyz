@@ -46,11 +46,15 @@ model Project {
 
 // Represents a token that MDAO supports. Appear in labor market creation flows and search.
 model Token {
-  symbol       String        @id @unique
-  name         String
-  networkName  String
-  chain        Network       @relation(fields: [networkName], references: [name])
-  laborMarkets LaborMarket[]
+  id              String        @id @default(cuid())
+  symbol          String
+  name            String
+  networkName     String
+  contractAddress String
+  chain           Network       @relation(fields: [networkName], references: [name])
+  laborMarkets    LaborMarket[]
+
+  @@unique([symbol, networkName])
 }
 
 // Indexed models...

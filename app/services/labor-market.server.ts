@@ -79,7 +79,7 @@ export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
 };
 
 const mapToLaborMarketTableFormat = (laborMarket: LaborMarket) => {
-  const { address, projectIds, tokenSymbols, ...data } = laborMarket;
+  const { address, projectIds, tokenIds, ...data } = laborMarket;
   return {
     address,
     title: data.title,
@@ -95,7 +95,7 @@ const mapToLaborMarketTableFormat = (laborMarket: LaborMarket) => {
     launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
     sponsorAddress: data.sponsorAddress,
     projects: { connect: projectIds.map((id) => ({ id })) },
-    tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
+    tokens: { connect: tokenIds.map((id) => ({ id })) },
   };
 };
 

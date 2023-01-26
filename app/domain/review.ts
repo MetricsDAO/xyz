@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EthAddressSchema } from "./address";
+import { EvmAddressSchema } from "./address";
 
 export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["createdAt"]).default("createdAt").describe("Sort by column."),
@@ -11,7 +11,7 @@ export const ReviewSearchSchema = z.object({
 });
 
 export const ReviewSchema = z.object({
-  laborMarketAddress: EthAddressSchema,
+  laborMarketAddress: EvmAddressSchema,
   score: z.number(),
   requestId: z.string(),
   submissionId: z.string(),
