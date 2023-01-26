@@ -187,6 +187,7 @@ function ReviewQuestionDrawerButton({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<number>(50);
+  const [scoreSelectionOpen, setScoreSelectionOpen] = useState(true);
 
   const [state, send] = useMachine(reviewSubmissionMachine, {
     actions: {
@@ -214,6 +215,7 @@ function ReviewQuestionDrawerButton({
         score: selected,
       },
     });
+    setScoreSelectionOpen(false);
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
@@ -224,7 +226,7 @@ function ReviewQuestionDrawerButton({
     <>
       <Button onClick={() => setIsModalOpen(true)}>Review & Score</Button>
       <Drawer open={isModalOpen && !state.matches("transactionWait")} onClose={() => setIsModalOpen(false)}>
-        {!state.context.contractData && (
+        {scoreSelectionOpen && (
           <div className="flex flex-col mx-auto space-y-10 px-2">
             <div className="space-y-3">
               <p className="text-3xl font-semibold">Review & Score</p>
@@ -290,7 +292,7 @@ function ReviewQuestionDrawerButton({
             </div>
           </div>
         )}
-        {state.context.contractData && (
+        {state.context.contractData && !scoreSelectionOpen && (
           <div className="space-y-5">
             <p className="text-3xl font-semibold">Review & Score</p>
             <p>
@@ -298,8 +300,8 @@ function ReviewQuestionDrawerButton({
               <b>{scoreNumToLabel(state.context.contractData.score)}</b>.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-2">
-              <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>
-                Cancel
+              <Button variant="cancel" size="md" fullWidth onClick={() => setScoreSelectionOpen(true)}>
+                Back
               </Button>
               <ReviewSubmissionWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
             </div>
