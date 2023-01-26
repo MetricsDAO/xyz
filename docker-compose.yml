@@ -18,6 +18,13 @@ services:
     ports:
       - "5435:5432"
 
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
   # app:
   #   build: .
   #   ports:

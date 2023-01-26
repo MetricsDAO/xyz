@@ -17,9 +17,8 @@ export async function uploadJsonToIpfs(data: any, metadata: Record<string, strin
 /**
  * Fetches a JSON object from IPFS.
  * @param cid - The CID of the JSON object to fetch.
- * @returns {Promise<any>} - The JSON object.
  * @throws {Error} - If the request fails or JSON isn't valid.
  */
 export async function fetchIpfsJson(cid: string) {
-  return fetch(`https://blue-tough-bird-536.mypinata.cloud/ipfs/${cid}`);
+  return fetch(`https://blue-tough-bird-536.mypinata.cloud/ipfs/${cid}`).then((res) => res.json());
 }
