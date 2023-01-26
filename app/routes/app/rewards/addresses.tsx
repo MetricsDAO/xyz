@@ -109,18 +109,19 @@ function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <Table>
       <Header columns={12}>
-        <Header.Column span={2}>Chain/Project</Header.Column>
+        <Header.Column span={2}>Chain</Header.Column>
         <Header.Column span={5}>Address</Header.Column>
         <Header.Column span={2}>Last Updated</Header.Column>
       </Header>
       {wallets.map((wallet) => {
         return (
           <Row columns={12} key={wallet.address}>
-            <Row.Column span={2}>project</Row.Column>
+            <Row.Column span={2}>{wallet.chain.name}</Row.Column>
             <Row.Column span={5} className="flex flex-row items-center gap-x-2">
               <CopyToClipboard
                 className="text-black"
-                content={truncateAddress(wallet.address)}
+                content={wallet.address}
+                displayContent={truncateAddress(wallet.address)}
                 iconRight={<ClipboardDocumentIcon className="ml-0.5 h-5 w-5" />}
               />
             </Row.Column>
@@ -195,7 +196,7 @@ function AddAddressForm({ onDone }: { onDone: () => void }) {
       fetcher={fetcher}
       defaultValues={{
         payment: {
-          networkName: "Ethereum",
+          networkName: "Polygon",
           address: "",
         },
       }}

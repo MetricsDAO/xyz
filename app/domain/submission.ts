@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EthAddressSchema } from "./address";
+import { EvmAddressSchema } from "./address";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -12,7 +12,7 @@ export const SubmissionSearchSchema = z.object({
 });
 
 export const SubmissionContractSchema = z.object({
-  laborMarketAddress: EthAddressSchema,
+  laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.number(),
   uri: z.string(),
 });
@@ -27,7 +27,7 @@ export const SubmissionIndexerSchema = z.object({
   contractId: z.string(),
   score: z.number(),
   serviceRequestId: z.string(),
-  laborMarketAddress: EthAddressSchema,
+  laborMarketAddress: EvmAddressSchema,
   creatorId: z.string(),
   title: z.string(),
   description: z.string(),

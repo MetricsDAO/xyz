@@ -3,13 +3,13 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import { validateDate, validateTime } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
-import { EthAddressSchema } from "./address";
+import { EvmAddressSchema } from "./address";
 
 export const ServiceRequestSchema = z.object({
   id: z.string({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
-  laborMarketAddress: EthAddressSchema,
+  laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
 
@@ -43,7 +43,7 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true,
   endTime: InputTimeSchema,
   reviewEndDate: InputDateSchema,
   reviewEndTime: InputTimeSchema,
-  rewardToken: EthAddressSchema,
+  rewardToken: EvmAddressSchema,
   rewardPool: TokenAmountSchema,
 });
 
@@ -53,7 +53,7 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   description: true,
   laborMarketAddress: true,
 }).extend({
-  pTokenAddress: EthAddressSchema,
+  pTokenAddress: EvmAddressSchema,
   pTokenQuantity: TokenAmountSchema,
   signalExpiration: DateSchema,
   submissionExpiration: DateSchema,
@@ -78,7 +78,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     endTime: dayjs(endDate).format("HH:mm"),
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
-    rewardToken: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+    rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
     rewardPool: "0.000000000000000001",
   };
 }
