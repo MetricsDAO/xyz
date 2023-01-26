@@ -1,10 +1,11 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import type { Review, ServiceRequest, Submission } from "@prisma/client";
+import type { ServiceRequest, Submission } from "@prisma/client";
+import { useMachine } from "@xstate/react";
 import { useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
+import type { SendTransactionResult } from "@wagmi/core";
 import clsx from "clsx";
 import { useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -26,12 +27,15 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
+import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
-import { useReviewSubmission } from "~/hooks/use-review-submission";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
 import { SCORE_COLOR } from "~/utils/helpers";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
@@ -54,6 +58,8 @@ export const loader = async (data: DataFunctionArgs) => {
 
   return typedjson({ submission, reviews, params }, { status: 200 });
 };
+
+const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
   const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
@@ -179,92 +185,126 @@ function ReviewQuestionDrawerButton({
   requestId: string;
   submissionId: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<number>(50);
 
-  const { write } = useReviewSubmission({
-    data: { laborMarketAddress: laborMarketAddress, requestId: requestId, submissionId: submissionId, score: selected },
-    onTransactionSuccess() {
-      toast.dismiss("review-submission");
-      toast.success("Submission Reviewed!");
-    },
-    onWriteSuccess() {
-      toast.loading("Reviewing Submision...", { id: "review-submission" });
-      setOpen(false);
+  const [state, send] = useMachine(reviewSubmissionMachine, {
+    actions: {
+      notifyTransactionWait: (context) => {
+        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
+        defaultNotifyTransactionActions.notifyTransactionWait(context);
+      },
+      notifyTransactionSuccess: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
+      },
+      notifyTransactionFailure: () => {
+        defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
     },
   });
 
-  const onCreate = () => {
-    write?.();
+  const handleReviewSubmission = () => {
+    send({ type: "RESET_TRANSACTION" });
+    send({
+      type: "PREPARE_TRANSACTION_READY",
+      data: {
+        laborMarketAddress: laborMarketAddress,
+        submissionId: submissionId,
+        requestId: requestId,
+        score: selected,
+      },
+    });
+  };
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Review & Score</Button>
-      <Drawer open={open} onClose={() => setOpen(false)}>
-        <div className="flex flex-col mx-auto space-y-10 px-2">
-          <div className="space-y-3">
+      <Button onClick={() => setIsModalOpen(true)}>Review & Score</Button>
+      <Drawer open={isModalOpen && !state.matches("transactionWait")} onClose={() => setIsModalOpen(false)}>
+        {!state.context.contractData && (
+          <div className="flex flex-col mx-auto space-y-10 px-2">
+            <div className="space-y-3">
+              <p className="text-3xl font-semibold">Review & Score</p>
+              <p className="italic text-gray-500 text-sm">
+                Important: You can't edit this score after submitting. Double check your score and ensure it's good to
+                go
+              </p>
+            </div>
+            <div className="flex flex-col space-y-3">
+              <Button
+                variant="outline"
+                onClick={() => setSelected(100)}
+                className={clsx("hover:bg-green-200", {
+                  "bg-green-200": selected === 100,
+                })}
+              >
+                Great
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSelected(75)}
+                className={clsx("hover:bg-blue-200", {
+                  "bg-blue-200": selected === 75,
+                })}
+              >
+                Good
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSelected(50)}
+                className={clsx("hover:bg-gray-200", {
+                  "bg-gray-200": selected === 50,
+                })}
+              >
+                Average
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSelected(25)}
+                className={clsx("hover:bg-orange-200", {
+                  "bg-orange-200": selected === 25,
+                })}
+              >
+                Bad
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSelected(0)}
+                className={clsx("hover:bg-red-200", {
+                  "bg-red-200": selected === 0,
+                })}
+              >
+                Spam
+              </Button>
+            </div>
+            <div className="flex gap-2 w-full">
+              <Button variant="cancel" fullWidth onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleReviewSubmission} fullWidth>
+                Submit Score
+              </Button>
+            </div>
+          </div>
+        )}
+        {state.context.contractData && (
+          <div className="space-y-5">
             <p className="text-3xl font-semibold">Review & Score</p>
-            <p className="italic text-gray-500 text-sm">
-              Important: You can't edit this score after submitting. Double check your score and ensure it's good to go
+            <p>
+              Please confirm that you would like to give this submission a score of{" "}
+              <b>{scoreNumToLabel(state.context.contractData.score)}</b>.
             </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-2">
+              <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+              <ReviewSubmissionWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+            </div>
           </div>
-          <div className="flex flex-col space-y-3">
-            <Button
-              variant="outline"
-              onClick={() => setSelected(100)}
-              className={clsx("hover:bg-green-200", {
-                "bg-green-200": selected === 100,
-              })}
-            >
-              Great
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setSelected(75)}
-              className={clsx("hover:bg-blue-200", {
-                "bg-blue-200": selected === 75,
-              })}
-            >
-              Good
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setSelected(50)}
-              className={clsx("hover:bg-gray-200", {
-                "bg-gray-200": selected === 50,
-              })}
-            >
-              Average
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setSelected(25)}
-              className={clsx("hover:bg-orange-200", {
-                "bg-orange-200": selected === 25,
-              })}
-            >
-              Bad
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setSelected(0)}
-              className={clsx("hover:bg-red-200", {
-                "bg-red-200": selected === 0,
-              })}
-            >
-              Spam
-            </Button>
-          </div>
-          <div className="flex gap-2 w-full">
-            <Button variant="cancel" className="w-full" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button className="w-full" onClick={onCreate}>
-              Submit Score
-            </Button>
-          </div>
-        </div>
+        )}
       </Drawer>
     </>
   );
