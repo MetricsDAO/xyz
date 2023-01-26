@@ -10,7 +10,7 @@ type EventName =
   | ExtractAbiEventNames<typeof LaborMarket["abi"]>;
 
 const pine = new Pinekit({ apiKey: env.PINE_API_KEY });
-const subscrber = pine.subscriber("bryan-125", { namespace: "mdao-dev", version: "0.0.1" });
+const subscrber = pine.subscriber(env.PINE_SUBSCRIBER, { namespace: env.PINE_NAMESPACE, version: "0.0.1" });
 
 async function run() {
   const events = pine.streamEvents(subscrber, { limit: 10 });

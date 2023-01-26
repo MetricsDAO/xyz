@@ -8,6 +8,8 @@ const envSchema = z.object({
   PINATA_API_KEY: z.string(),
   PINATA_SECRET_API_KEY: z.string(),
   PINE_API_KEY: z.string(),
+  PINE_NAMESPACE: z.string(),
+  PINE_SUBSCRIBER: z.string(),
   SENTRY_DSN: z.string().optional(),
   QUICKNODE_URL: z.string(),
   DEV_AUTO_INDEX: z.string().optional(),

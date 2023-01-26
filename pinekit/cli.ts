@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { testAddresses } from "contracts/test-addresses";
 import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
 import { Pinekit } from "pinekit";
+import env from "~/env.server";
 
 require("dotenv").config();
 
@@ -9,9 +10,7 @@ const program = new Command();
 
 program.name("pine-cli").description("CLI for interacting with Pine");
 
-program.requiredOption("-k, --api-key <key>", "API key for Pine", process.env.PINE_API_KEY);
-
-const pine = new Pinekit(program.opts().apiKey);
+const pine = new Pinekit(env.PINE_API_KEY);
 
 program
   .command("create-tracer")
@@ -22,7 +21,7 @@ program
       ? testAddresses.LaborMarketNetwork
       : LaborMarketNetwork.address;
     const res = await pine.createTracer({
-      namespace: "mdao-dev",
+      namespace: env.PINE_NAMESPACE,
       version: "0.0.1",
       blockchain: {
         name: "polygon",
