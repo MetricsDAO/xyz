@@ -1,29 +1,21 @@
-import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
-import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { useParams } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { SendTransactionResult } from "@wagmi/core";
+import { useMachine } from "@xstate/react";
+import { useState } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
-import { findServiceRequest } from "~/services/service-request.server";
+import { Modal } from "~/components";
+import { Badge } from "~/components/badge";
+import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
-import { Button } from "~/components/button";
-import { Badge } from "~/components/badge";
 import type { ClaimToSubmitPrepared } from "~/domain";
-import { ClaimToSubmitContractSchema } from "~/domain";
-import { useEffect, useState } from "react";
-import invariant from "tiny-invariant";
-import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
-import toast from "react-hot-toast";
-import { Modal } from "~/components";
-import { useParams } from "@remix-run/react";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
-import { useMachine } from "@xstate/react";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { findServiceRequest } from "~/services/service-request.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import type { ValidationErrorResponseData } from "remix-validated-form";
-import { validationError } from "remix-validated-form";
-import { getUser } from "~/services/session.server";
-import { withZod } from "@remix-validated-form/with-zod";
-import { isValidationError } from "~/utils/utils";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -36,55 +28,53 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   return typedjson({ serviceRequest }, { status: 200 });
 };
 
-const validator = withZod(ClaimToSubmitContractSchema);
-
-type ActionResponse = { claim: ClaimToSubmitPrepared } | ValidationErrorResponseData;
-export const action = async ({ request }: ActionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "You must be logged in to claim a submission");
-  const result = await validator.validate(await request.formData());
-  if (result.error) return validationError(result.error);
-
-  return typedjson({ claim: result.data });
-};
+const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
 
 export default function ClaimToSubmit() {
-  const actionData = useTypedActionData<ActionResponse>();
-
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
 
-  const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
-
-  const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
-
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
-  }
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [state, send] = useMachine(claimToSubmitMachine, {
     actions: {
       notifyTransactionWait: (context) => {
         // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
-        toast.loading("Creating marketplace...", { id: "creating-marketplace" });
+        defaultNotifyTransactionActions.notifyTransactionWait(context);
       },
-      notifyTransactionSuccess: () => {
-        toast.dismiss("creating-marketplace");
-        toast.success("Marketplace created!");
+      notifyTransactionSuccess: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
       },
       notifyTransactionFailure: () => {
-        toast.dismiss("creating-marketplace");
-        toast.error("Marketplace creation failed");
+        defaultNotifyTransactionActions.notifyTransactionFailure();
       },
     },
   });
+
+  const handleClaimToSubmit = () => {
+    send({ type: "RESET_TRANSACTION" });
+    send({
+      type: "PREPARE_TRANSACTION_READY",
+      data: {
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        serviceRequestId: serviceRequest.contractId,
+      },
+    });
+    setIsModalOpen(true);
+  };
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
+
+  console.log("state", state.value, state.context);
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
         <h2 className="text-lg text-cyan-500">
-          Claiming is an up front commitment to submit at least one{" "}
+          Claiming is an up front commitment to submit at least one
           {mType === "brainstorm" ? "submission" : "dashboard"}
         </h2>
         <p className="text-gray-500 text-sm">
@@ -126,29 +116,17 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <Button
-          onClick={() => {
-            setModalData({
-              isOpen: true,
-              data: {
-                laborMarketAddress: serviceRequest.laborMarketAddress,
-                serviceRequestId: serviceRequest.contractId,
-              },
-            });
-          }}
-        >
-          Claim to Submit
-        </Button>
+        <Button onClick={handleClaimToSubmit}>Claim to Submit</Button>
         <Button variant="cancel">Cancel</Button>
       </div>
       <div className="invisible"></div>
       {state.context.contractData && (
-        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={closeModal}>
+        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <div className="space-y-8">
-            <p>Please confirm that you would like to create a new marketplace.</p>
+            <p>Please confirm that you would like to claim a submission.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-5">
               <ClaimToSubmitWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
-              <Button variant="cancel" size="md" onClick={closeModal}>
+              <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>
             </div>
