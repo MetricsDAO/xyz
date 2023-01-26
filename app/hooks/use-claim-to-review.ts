@@ -9,9 +9,6 @@ export function useClaimToReview({ data, onWriteSuccess }: Web3Hook<ClaimToRevie
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signalReview",
-    overrides: {
-      gasLimit: BigNumber.from(1000000), // TODO: What do we do here?
-    },
     args: [BigNumber.from(data.quantity)],
   });
 

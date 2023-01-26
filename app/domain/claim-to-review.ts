@@ -8,7 +8,7 @@ export const ClaimToReviewFormSchema = z.object({
 export const ClaimToReviewContractSchema = z.object({
   laborMarketAddress: z.string(),
   serviceRequestId: z.string(),
-  quantity: zfd.numeric(z.number()),
+  quantity: z.number(),
 });
 
 export type ClaimToReviewForm = z.infer<typeof ClaimToReviewFormSchema>;
