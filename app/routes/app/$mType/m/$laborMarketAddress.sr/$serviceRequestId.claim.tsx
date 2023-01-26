@@ -119,7 +119,11 @@ export default function ClaimToSubmit() {
       </div>
       <div className="invisible"></div>
       {state.context.contractData && (
-        <Modal title="Create Marketplace?" isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <Modal
+          title="Claim to Submit"
+          isOpen={isModalOpen && !state.matches("transactionWait")}
+          onClose={() => setIsModalOpen(false)}
+        >
           <div className="space-y-8">
             <p>Please confirm that you would like to claim a submission.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-5">
