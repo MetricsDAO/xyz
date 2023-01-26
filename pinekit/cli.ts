@@ -10,7 +10,7 @@ const program = new Command();
 
 program.name("pine-cli").description("CLI for interacting with Pine");
 
-const pine = new Pinekit(env.PINE_API_KEY);
+const pine = new Pinekit({ apiKey: env.PINE_API_KEY });
 
 program
   .command("create-tracer")
