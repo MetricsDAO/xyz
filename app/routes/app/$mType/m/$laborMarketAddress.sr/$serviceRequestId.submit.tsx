@@ -75,10 +75,22 @@ export default function SubmitQuestion() {
   };
 
   if (mType === "analyze") {
-    return <Analyze isModalOpen={isModalOpen} closeModal={closeModal} state={state} onWriteSuccess={onWriteSuccess} />;
+    return (
+      <Analyze
+        isModalOpen={isModalOpen && !state.matches("transactionWait")}
+        closeModal={closeModal}
+        contractData={state.context.contractData}
+        onWriteSuccess={onWriteSuccess}
+      />
+    );
   } else if (mType === "brainstorm") {
     return (
-      <Brainstorm isModalOpen={isModalOpen} closeModal={closeModal} state={state} onWriteSuccess={onWriteSuccess} />
+      <Brainstorm
+        isModalOpen={isModalOpen && !state.matches("transactionWait")}
+        closeModal={closeModal}
+        contractData={state.context.contractData}
+        onWriteSuccess={onWriteSuccess}
+      />
     );
   } else {
     console.error("mtype is neither brainstorm nor analyze");
@@ -88,12 +100,12 @@ export default function SubmitQuestion() {
 function Brainstorm({
   isModalOpen,
   closeModal,
-  state,
+  contractData,
   onWriteSuccess,
 }: {
   isModalOpen: boolean;
   closeModal: () => void;
-  state: any;
+  contractData: SubmissionContract | undefined;
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
   return (
@@ -140,17 +152,19 @@ function Brainstorm({
               <Button type="submit">Next</Button>
             </div>
           </ValidatedForm>
-          <Modal title="Submit Idea" isOpen={isModalOpen && !state.matches("transactionWait")} onClose={closeModal}>
-            <div className="space-y-8">
-              <p>Please confirm that you would like to submit this idea.</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-5">
-                <CreateSubmissionWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
-                <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
-                  Cancel
-                </Button>
+          {contractData && (
+            <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
+              <div className="space-y-8">
+                <p>Please confirm that you would like to submit this idea.</p>
+                <div className="flex flex-col sm:flex-row justify-center gap-5">
+                  <CreateSubmissionWeb3Button data={contractData} onWriteSuccess={onWriteSuccess} />
+                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
+                    Cancel
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Modal>
+            </Modal>
+          )}
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
@@ -196,12 +210,12 @@ function Brainstorm({
 function Analyze({
   isModalOpen,
   closeModal,
-  state,
+  contractData,
   onWriteSuccess,
 }: {
   isModalOpen: boolean;
   closeModal: () => void;
-  state: any;
+  contractData: SubmissionContract | undefined;
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
   return (
@@ -242,17 +256,19 @@ function Analyze({
               <Button type="submit">Next</Button>
             </div>
           </ValidatedForm>
-          <Modal title="Submit Work" isOpen={isModalOpen && !state.matches("transactionWait")} onClose={closeModal}>
-            <div className="space-y-8">
-              <p>Please confirm that you would like to submit this work.</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-5">
-                <CreateSubmissionWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
-                <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
-                  Cancel
-                </Button>
+          {contractData && (
+            <Modal title="Submit Work" isOpen={isModalOpen} onClose={closeModal}>
+              <div className="space-y-8">
+                <p>Please confirm that you would like to submit this work.</p>
+                <div className="flex flex-col sm:flex-row justify-center gap-5">
+                  <CreateSubmissionWeb3Button data={contractData} onWriteSuccess={onWriteSuccess} />
+                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
+                    Cancel
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Modal>
+            </Modal>
+          )}
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
