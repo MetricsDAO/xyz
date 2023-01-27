@@ -1,8 +1,8 @@
 import { useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
+import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { typedjson, useTypedActionData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
@@ -11,13 +11,17 @@ import { z } from "zod";
 import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
-import { useCreateSubmission } from "~/hooks/use-create-submission";
+import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
+import type { SendTransactionResult } from "~/features/web3-button/types";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
 import { prepareSubmission } from "~/services/submissions.server";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 
 const validator = withZod(SubmissionFormSchema);
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
+const submissionMachine = createBlockchainTransactionStateMachine<SubmissionContract>();
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
@@ -34,36 +38,75 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export default function SubmitQuestion() {
   const actionData = useTypedActionData<ActionResponse>();
-  const [modalData, setModalData] = useState<{ data?: SubmissionContract; isOpen: boolean }>({
-    isOpen: false,
-  });
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { mType } = useParams();
 
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
-  }
+  const [state, send] = useMachine(submissionMachine, {
+    actions: {
+      notifyTransactionWait: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionWait(context);
+      },
+      notifyTransactionSuccess: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
+      },
+      notifyTransactionFailure: () => {
+        defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+    },
+  });
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
-      setModalData({ data: actionData.preparedSubmission, isOpen: true });
+      send({ type: "RESET_TRANSACTION" });
+      send({
+        type: "PREPARE_TRANSACTION_READY",
+        data: actionData.preparedSubmission,
+      });
+      setIsModalOpen(true);
     }
-  }, [actionData]);
+  }, [actionData, send]);
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   if (mType === "analyze") {
-    return <Analyze modalData={modalData} closeModal={closeModal} />;
+    return (
+      <Analyze
+        isModalOpen={isModalOpen && !state.matches("transactionWait")}
+        closeModal={closeModal}
+        contractData={state.context.contractData}
+        onWriteSuccess={onWriteSuccess}
+      />
+    );
   } else if (mType === "brainstorm") {
-    return <Brainstorm modalData={modalData} closeModal={closeModal} />;
+    return (
+      <Brainstorm
+        isModalOpen={isModalOpen && !state.matches("transactionWait")}
+        closeModal={closeModal}
+        contractData={state.context.contractData}
+        onWriteSuccess={onWriteSuccess}
+      />
+    );
   } else {
     console.error("mtype is neither brainstorm nor analyze");
   }
 }
 
 function Brainstorm({
-  modalData,
+  isModalOpen,
   closeModal,
+  contractData,
+  onWriteSuccess,
 }: {
-  modalData: { data?: SubmissionContract; isOpen: boolean };
+  isModalOpen: boolean;
   closeModal: () => void;
+  contractData: SubmissionContract | undefined;
+  onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
   return (
     <Container className="py-16 mx-auto`">
@@ -109,9 +152,19 @@ function Brainstorm({
               <Button type="submit">Next</Button>
             </div>
           </ValidatedForm>
-          <Modal title="Launch Challenge?" isOpen={modalData.isOpen} onClose={closeModal}>
-            <ConfirmTransaction data={modalData.data} onClose={closeModal} type="Idea" />
-          </Modal>
+          {contractData && (
+            <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
+              <div className="space-y-8">
+                <p>Please confirm that you would like to submit this idea.</p>
+                <div className="flex flex-col sm:flex-row justify-center gap-5">
+                  <CreateSubmissionWeb3Button data={contractData} onWriteSuccess={onWriteSuccess} />
+                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </Modal>
+          )}
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
@@ -155,11 +208,15 @@ function Brainstorm({
 }
 
 function Analyze({
-  modalData,
+  isModalOpen,
   closeModal,
+  contractData,
+  onWriteSuccess,
 }: {
-  modalData: { data?: SubmissionContract; isOpen: boolean };
+  isModalOpen: boolean;
   closeModal: () => void;
+  contractData: SubmissionContract | undefined;
+  onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
   return (
     <Container className="py-16 mx-auto`">
@@ -199,9 +256,19 @@ function Analyze({
               <Button type="submit">Next</Button>
             </div>
           </ValidatedForm>
-          <Modal title="Submit Work" isOpen={modalData.isOpen} onClose={closeModal}>
-            <ConfirmTransaction data={modalData.data} onClose={closeModal} type="Work" />
-          </Modal>
+          {contractData && (
+            <Modal title="Submit Work" isOpen={isModalOpen} onClose={closeModal}>
+              <div className="space-y-8">
+                <p>Please confirm that you would like to submit this work.</p>
+                <div className="flex flex-col sm:flex-row justify-center gap-5">
+                  <CreateSubmissionWeb3Button data={contractData} onWriteSuccess={onWriteSuccess} />
+                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </Modal>
+          )}
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
@@ -245,39 +312,5 @@ function Analyze({
         </aside>
       </div>
     </Container>
-  );
-}
-
-function ConfirmTransaction({ data, onClose, type }: { data?: SubmissionContract; onClose: () => void; type: string }) {
-  invariant(data, "data is required"); // this should never happen but just in case
-
-  const { write, isLoading } = useCreateSubmission({
-    data,
-    onTransactionSuccess() {
-      toast.dismiss("submission-create");
-      toast.success("Submission sent!");
-      onClose();
-    },
-    onWriteSuccess() {
-      toast.loading("Submitting...", { id: "submission-create" });
-    },
-  });
-
-  const onCreate = () => {
-    write?.();
-  };
-
-  return (
-    <div className="space-y-8">
-      <p>Please confirm that you would like to make this submission.</p>
-      <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
-          Submit {type}
-        </Button>
-        <Button variant="cancel" size="md" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
   );
 }
