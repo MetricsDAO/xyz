@@ -26,7 +26,7 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
-import type { ServiceRequest, SubmissionIndexer, SubmissionIndexer } from "~/domain";
+import type { ServiceRequest, SubmissionIndexer } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
