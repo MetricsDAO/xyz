@@ -41,7 +41,6 @@ export default function ClaimToReview() {
   const [state, send] = useMachine(claimToSubmitMachine, {
     actions: {
       notifyTransactionWait: (context) => {
-        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
         defaultNotifyTransactionActions.notifyTransactionWait(context);
       },
       notifyTransactionSuccess: (context) => {
