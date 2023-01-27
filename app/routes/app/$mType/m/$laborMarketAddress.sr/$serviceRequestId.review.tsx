@@ -12,7 +12,7 @@ import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import type { ClaimToReviewContract, ClaimToReviewForm } from "~/domain";
 import { ClaimToReviewFormSchema } from "~/domain";
-import { SendTransactionResult } from "~/features/web3-button/types";
+import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
 import { claimToReviewDate } from "~/utils/date";
