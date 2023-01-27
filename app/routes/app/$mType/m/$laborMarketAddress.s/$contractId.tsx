@@ -206,15 +206,14 @@ function ReviewQuestionDrawerButton({
   return (
     <>
       <ConnectWalletWrapper>
-        <Button asChild>
-          <Button
-            size="lg"
-            onClick={() => {
-              user && setOpen(true);
-            }}
-          >
-            Review & Score
-          </Button>
+        <Button
+          size="lg"
+          onClick={() => {
+            user && setOpen(true);
+          }}
+          asChild
+        >
+          <span>Review & Score</span>
         </Button>
       </ConnectWalletWrapper>
       <Drawer open={open} onClose={() => setOpen(false)}>
