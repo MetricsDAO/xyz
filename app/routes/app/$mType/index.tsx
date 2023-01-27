@@ -63,7 +63,7 @@ export default function MarketplaceCollection() {
   };
 
   return (
-    <Container className="py-16">
+    <Container className="py-16 px-10">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
         {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
         <aside>
