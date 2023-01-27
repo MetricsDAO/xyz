@@ -16,7 +16,7 @@ export function Modal({ title, isOpen, onClose, children, unmount, closeButton =
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={onClose} unmount>
+        <Dialog as="div" className="relative z-30" onClose={onClose} unmount>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
