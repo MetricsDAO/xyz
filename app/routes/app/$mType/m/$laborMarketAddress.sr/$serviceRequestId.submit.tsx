@@ -39,15 +39,36 @@ export default function SubmitQuestion() {
   });
   const { mType } = useParams();
 
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
-  }
+  const [state, send] = useMachine(claimToSubmitMachine, {
+    actions: {
+      notifyTransactionWait: (context) => {
+        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
+        defaultNotifyTransactionActions.notifyTransactionWait(context);
+      },
+      notifyTransactionSuccess: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
+      },
+      notifyTransactionFailure: () => {
+        defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+    },
+  });
 
-  useEffect(() => {
-    if (actionData && !isValidationError(actionData)) {
-      setModalData({ data: actionData.preparedSubmission, isOpen: true });
-    }
-  }, [actionData]);
+  const handleClaimToSubmit = () => {
+    send({ type: "RESET_TRANSACTION" });
+    send({
+      type: "PREPARE_TRANSACTION_READY",
+      data: {
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        serviceRequestId: serviceRequest.contractId,
+      },
+    });
+    setIsModalOpen(true);
+  };
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
 
   if (mType === "analyze") {
     return <Analyze modalData={modalData} closeModal={closeModal} />;
@@ -248,36 +269,6 @@ function Analyze({
   );
 }
 
-function ConfirmTransaction({ data, onClose, type }: { data?: SubmissionContract; onClose: () => void; type: string }) {
-  invariant(data, "data is required"); // this should never happen but just in case
+function confirmModal()}{
 
-  const { write, isLoading } = useCreateSubmission({
-    data,
-    onTransactionSuccess() {
-      toast.dismiss("submission-create");
-      toast.success("Submission sent!");
-      onClose();
-    },
-    onWriteSuccess() {
-      toast.loading("Submitting...", { id: "submission-create" });
-    },
-  });
-
-  const onCreate = () => {
-    write?.();
-  };
-
-  return (
-    <div className="space-y-8">
-      <p>Please confirm that you would like to make this submission.</p>
-      <div className="flex flex-col sm:flex-row justify-center gap-5">
-        <Button size="md" type="button" onClick={onCreate} loading={isLoading}>
-          Submit {type}
-        </Button>
-        <Button variant="cancel" size="md" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
-  );
 }
