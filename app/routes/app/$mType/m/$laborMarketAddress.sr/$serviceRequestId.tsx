@@ -45,7 +45,11 @@ export default function ServiceRequest() {
             <ConnectWalletWrapper>
               <Button size="lg" asChild>
                 <Link
-                  to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/review`}
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
+                    mType: mType,
+                    laborMarketAddress: serviceRequest.laborMarketAddress,
+                    serviceRequestId: serviceRequest.contractId,
+                  })}
                 >
                   Claim to Review
                 </Link>
@@ -56,7 +60,11 @@ export default function ServiceRequest() {
             <ConnectWalletWrapper>
               <Button size="lg" asChild>
                 <Link
-                  to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/claim`}
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
+                    mType: mType,
+                    laborMarketAddress: serviceRequest.laborMarketAddress,
+                    serviceRequestId: serviceRequest.contractId,
+                  })}
                 >
                   Claim to Submit
                 </Link>
@@ -67,7 +75,11 @@ export default function ServiceRequest() {
             <ConnectWalletWrapper>
               <Button size="lg" asChild>
                 <Link
-                  to={`/app/brainstorm/m/${serviceRequest.laborMarketAddress}/sr/${serviceRequest.contractId}/submit`}
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
+                    mType: mType,
+                    laborMarketAddress: serviceRequest.laborMarketAddress,
+                    serviceRequestId: serviceRequest.contractId,
+                  })}
                 >
                   Submit
                 </Link>

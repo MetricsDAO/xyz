@@ -35,7 +35,14 @@ export default function Marketplace() {
           <div className="flex flex-wrap gap-5">
             <ConnectWalletWrapper>
               <Button size="lg" asChild>
-                <Link to={`/app/brainstorm/m/${laborMarket?.address}/sr/new`}>Launch Challenge</Link>
+                <Link
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/new", {
+                    mType: mType,
+                    laborMarketAddress: laborMarket.address,
+                  })}
+                >
+                  Launch Challenge
+                </Link>
               </Button>
             </ConnectWalletWrapper>
           </div>
