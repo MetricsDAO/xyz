@@ -33,7 +33,7 @@ function ConnectWalletWrapper(props: { children: React.ReactNode }) {
             <Slot
               {...props}
               onClick={(e) => {
-                !connected ? e.preventDefault() : null;
+                e.preventDefault();
                 openChainModal();
               }}
             />
