@@ -6,7 +6,9 @@ import type { Web3Hook } from "~/features/web3-button/types";
 import { unixTimestamp } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
 
-export function useCreateServiceRequest({ data, onWriteSuccess }: Web3Hook<ServiceRequestContract>) {
+type Props = Web3Hook<ServiceRequestContract>;
+
+export function useCreateServiceRequest({ data, onWriteSuccess }: Props) {
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,

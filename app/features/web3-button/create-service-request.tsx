@@ -11,8 +11,8 @@ export function CreateServiceRequestWeb3Button({ data, onWriteSuccess }: Web3Hoo
   };
 
   return (
-    <Button size="md" type="button" onClick={onClick}>
-      Create
+    <Button size="md" type="button" onClick={onClick} fullWidth>
+      Launch
     </Button>
   );
 }

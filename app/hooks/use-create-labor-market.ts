@@ -11,7 +11,9 @@ import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
 
-export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
+type Props = Web3Hook<LaborMarketContract>;
+
+export function useCreateLaborMarket({ data, onWriteSuccess }: Props) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,
     abi: LaborMarketNetwork.abi,

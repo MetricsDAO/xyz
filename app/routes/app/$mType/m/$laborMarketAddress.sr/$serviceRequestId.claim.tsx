@@ -1,19 +1,21 @@
+import { useParams } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { SendTransactionResult } from "@wagmi/core";
+import { useMachine } from "@xstate/react";
+import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
-import { findServiceRequest } from "~/services/service-request.server";
+import { Modal } from "~/components";
+import { Badge } from "~/components/badge";
+import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
-import { Button } from "~/components/button";
-import { Badge } from "~/components/badge";
 import type { ClaimToSubmitPrepared } from "~/domain";
-import { useState } from "react";
-import invariant from "tiny-invariant";
-import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
-import toast from "react-hot-toast";
-import { Modal } from "~/components";
-import { useParams } from "@remix-run/react";
+import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { findServiceRequest } from "~/services/service-request.server";
+import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -26,22 +28,51 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   return typedjson({ serviceRequest }, { status: 200 });
 };
 
+const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
+
 export default function ClaimToSubmit() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
 
-  const [modalData, setModalData] = useState<{ data?: ClaimToSubmitPrepared; isOpen: boolean }>({ isOpen: false });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  function closeModal() {
-    setModalData((previousInputs) => ({ ...previousInputs, isOpen: false }));
-  }
+  const [state, send] = useMachine(claimToSubmitMachine, {
+    actions: {
+      notifyTransactionWait: (context) => {
+        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
+        defaultNotifyTransactionActions.notifyTransactionWait(context);
+      },
+      notifyTransactionSuccess: (context) => {
+        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
+      },
+      notifyTransactionFailure: () => {
+        defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+    },
+  });
+
+  const handleClaimToSubmit = () => {
+    send({ type: "RESET_TRANSACTION" });
+    send({
+      type: "PREPARE_TRANSACTION_READY",
+      data: {
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        serviceRequestId: serviceRequest.contractId,
+      },
+    });
+    setIsModalOpen(true);
+  };
+
+  const onWriteSuccess = (result: SendTransactionResult) => {
+    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
         <h2 className="text-lg text-cyan-500">
-          Claiming is an up front commitment to submit at least one{" "}
+          Claiming is an up front commitment to submit at least one
           {mType === "brainstorm" ? "submission" : "dashboard"}
         </h2>
         <p className="text-gray-500 text-sm">
@@ -83,58 +114,27 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <Button
-          onClick={() => {
-            setModalData({
-              isOpen: true,
-              data: {
-                laborMarketAddress: serviceRequest.laborMarketAddress,
-                serviceRequestId: serviceRequest.contractId,
-              },
-            });
-          }}
-        >
-          Claim to Submit
-        </Button>
+        <Button onClick={handleClaimToSubmit}>Claim to Submit</Button>
         <Button variant="cancel">Cancel</Button>
       </div>
       <div className="invisible"></div>
-      <Modal title="Claim to submit?" isOpen={modalData.isOpen} onClose={closeModal}>
-        <ConfirmTransaction data={modalData.data} onClose={closeModal} />
-      </Modal>
+      {state.context.contractData && (
+        <Modal
+          title="Claim to Submit"
+          isOpen={isModalOpen && !state.matches("transactionWait")}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <div className="space-y-8">
+            <p>Please confirm that you would like to claim a submission.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              <ClaimToSubmitWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </Container>
-  );
-}
-
-function ConfirmTransaction({ data, onClose }: { data?: ClaimToSubmitPrepared; onClose: () => void }) {
-  invariant(data, "ClaimToSubmitPrepared is required"); // this should never happen but just in case
-
-  const { write, isLoading } = useClaimToSubmit({
-    data: data,
-    onTransactionSuccess() {
-      toast.dismiss("claiming-to-submit");
-      toast.success("Challenge Claimed!");
-    },
-    onWriteSuccess() {
-      toast.loading("Claiming challenge to submit...", { id: "claiming-to-submit" });
-    },
-  });
-
-  const onCreate = () => {
-    write?.();
-  };
-
-  return (
-    <div className="space-y-8 mt-4">
-      <p>Are you sure you want to claim a submission for this challenge?</p>
-      <div className="flex flex-wrap gap-5">
-        <Button loading={isLoading} onClick={onCreate}>
-          Claim
-        </Button>
-        <Button variant="cancel" onClick={onClose}>
-          Cancel
-        </Button>
-      </div>
-    </div>
   );
 }

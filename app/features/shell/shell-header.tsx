@@ -54,8 +54,13 @@ export function AppHeader() {
     </NavLink>
   ));
 
+  let mobileItems = items;
+  if (user) {
+    mobileItems = items.concat(secondaryItems);
+  }
+
   return (
-    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
+    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-20">
       <div className="flex items-center">
         <Menu as="div" className="relative">
           <Menu.Button className="flex items-center mr-3 md:hidden">
@@ -71,7 +76,7 @@ export function AppHeader() {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute left-0 mt-2 w-56 origin-top-left rounded-lg bg-white shadow-lg p-4 flex flex-col space-y-3 ring-1 ring-black ring-opacity-5">
-              {items.concat(secondaryItems).map((item) => (
+              {mobileItems.map((item) => (
                 <Menu.Item key={item.key}>{item}</Menu.Item>
               ))}
             </Menu.Items>

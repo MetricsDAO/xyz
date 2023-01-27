@@ -13,7 +13,7 @@ describe("LaborMarketFormSchema", () => {
       rewardCurveAddress: faker.finance.ethereumAddress(),
       reviewBadgerAddress: faker.finance.ethereumAddress(),
       reviewBadgerTokenId: "foo",
-      tokenSymbols: ["METRIC"],
+      tokenIds: ["1"],
       projectIds: ["1"],
       // @ts-expect-error - so we can simulate a bad input from the client
       launch: {
@@ -36,7 +36,7 @@ describe("LaborMarketFormSchema", () => {
       rewardCurveAddress: faker.finance.ethereumAddress(),
       reviewBadgerAddress: faker.finance.ethereumAddress(),
       reviewBadgerTokenId: "foo",
-      tokenSymbols: ["METRIC"],
+      tokenIds: ["1"],
       projectIds: ["1"],
       launch: {
         access: "delegates",

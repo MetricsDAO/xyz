@@ -12,10 +12,11 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  address   String   @default("")
-  createdAt DateTime @default(now())
+  id        String         @id @default(cuid())
+  address   String         @default("")
+  createdAt DateTime       @default(now())
   wallet    Wallet[]
+  Ipfs      IpfsMetadata[]
 }
 
 model Wallet {
@@ -45,11 +46,15 @@ model Project {
 
 // Represents a token that MDAO supports. Appear in labor market creation flows and search.
 model Token {
-  symbol       String        @id @unique
-  name         String
-  networkName  String
-  chain        Network       @relation(fields: [networkName], references: [name])
-  laborMarkets LaborMarket[]
+  id              String        @id @default(cuid())
+  symbol          String
+  name            String
+  networkName     String
+  contractAddress String
+  chain           Network       @relation(fields: [networkName], references: [name])
+  laborMarkets    LaborMarket[]
+
+  @@unique([symbol, networkName])
 }
 
 // Indexed models...
@@ -125,4 +130,14 @@ model Network {
   name   String   @id @unique
   token  Token[]
   wallet Wallet[]
+}
+
+model IpfsMetadata {
+  id          String   @id @default(cuid())
+  hash        String   @unique
+  url         String?
+  sizeBytes   Int
+  timestamp   DateTime
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
 }
