@@ -70,7 +70,7 @@ export default function MarketplaceCollection() {
         <aside>
           <ConnectWalletWrapper>
             <Button size="lg" asChild>
-              <Link to="/app/brainstorm/new">Create Marketplace</Link>
+              <Link to={$path("/app/:mType/new", { mType: mType })}>Create Marketplace</Link>
             </Button>
           </ConnectWalletWrapper>
         </aside>
