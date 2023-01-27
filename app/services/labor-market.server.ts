@@ -1,4 +1,5 @@
 import type { User } from "@prisma/client";
+import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketForm, LaborMarketContract, LaborMarketSearch, LaborMarket } from "~/domain";
 import { LaborMarketMetaSchema } from "~/domain";
@@ -97,9 +98,9 @@ export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
 /**
  * Creates a new LaborMarketDocument object from on-chain data on the contract at `address` at `block`.
  */
-export const documentLaborMarket = async ({ address, block }: { address: string; block?: number }) => {
-  const contract = LaborMarket__factory.connect(address, nodeProvider);
-  const config = await contract.configuration({ blockTag: block });
+export const documentLaborMarket = async (event: TracerEvent) => {
+  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const config = await contract.configuration({ blockTag: event.block.number });
 
   // only save appData if it's valid, otherwise save null
   const appData = await fetchIpfsJson(config.marketUri)
@@ -107,8 +108,8 @@ export const documentLaborMarket = async ({ address, block }: { address: string;
     .catch(() => null);
 
   return {
-    address,
-    owner: await contract.owner({ blockTag: block }),
+    address: event.contract.address,
+    owner: await contract.owner({ blockTag: event.block.number }),
     reputationConfig: {
       submitMin: config.reputationConfig.submitMin.toNumber(),
       submitMax: config.reputationConfig.submitMax.toNumber(),

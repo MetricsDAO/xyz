@@ -1,11 +1,14 @@
-import type {
-  ServiceRequestForm,
-  ServiceRequestContract,
-  ServiceRequestSearch,
-  ServiceRequestIndexer,
-} from "~/domain/service-request";
+import type { TracerEvent } from "pinekit/types";
+import { LaborMarket__factory } from "~/contracts";
+import type { RequestCreatedEventObject } from "~/contracts/LaborMarket";
+import type { ServiceRequestForm, ServiceRequestContract, ServiceRequestSearch } from "~/domain/service-request";
+import { ServiceRequestIpfsSchema } from "~/domain/service-request";
 import { ServiceRequestContractSchema } from "~/domain/service-request";
 import { parseDatetime } from "~/utils/date";
+import { inputsToObject } from "~/utils/utils";
+import { fetchIpfsJson } from "./ipfs.server";
+import { mongo } from "./mongo.server";
+import { nodeProvider } from "./node.server";
 import { prisma } from "./prisma.server";
 
 /**
@@ -58,22 +61,11 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
 };
 
 /**
- * Creates a new ServiceRequest. This is only really used by the indexer.
- * @param {ServiceRequestIndexer} data - The service request data
+ * Creates or replaces a new ServiceRequest. This is only really used by the indexer.
+ * @param doc - The service request document.
  */
-export const upsertServiceRequest = async (data: ServiceRequestIndexer) => {
-  const newChallenge = await prisma.serviceRequest.create({
-    data: {
-      contractId: data.contractId,
-      title: data.title,
-      description: data.description,
-      laborMarketAddress: data.laborMarketAddress,
-      signalExpiration: data.signalExpiration,
-      submissionExpiration: data.submissionExpiration,
-      enforcementExpiration: data.enforcementExpiration,
-    },
-  });
-  return newChallenge;
+export const upsertServiceRequest = async (doc: ServiceRequestDoc) => {
+  return mongo.serviceRequests.updateOne({ requestId: doc.requestId }, { $set: doc }, { upsert: true });
 };
 
 /**
@@ -99,3 +91,29 @@ export const prepareServiceRequest = (laborMarketAddress: string, form: ServiceR
   });
   return contractData;
 };
+
+/**
+ * Create a new ServiceRequestDoc from a TracerEvent.
+ */
+export const documentServiceRequest = async (event: TracerEvent) => {
+  const inputs = inputsToObject<RequestCreatedEventObject>(event.decoded.inputs);
+  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const serviceRequest = await contract.serviceRequests(inputs.requestId, { blockTag: event.block.number });
+  const appData = await fetchIpfsJson(serviceRequest.uri)
+    .then(ServiceRequestIpfsSchema.parse)
+    .catch(() => null);
+  return {
+    laborMarketAddress: event.contract.address,
+    requestId: inputs.requestId,
+    pToken: serviceRequest.pToken,
+    pTokenQ: serviceRequest.pTokenQ,
+    signalExp: serviceRequest.signalExp,
+    submissionExp: serviceRequest.submissionExp,
+    enforcementExp: serviceRequest.enforcementExp,
+    serviceRequester: serviceRequest.serviceRequester,
+    uri: serviceRequest.uri,
+    appData,
+  };
+};
+
+export type ServiceRequestDoc = Awaited<ReturnType<typeof documentServiceRequest>>;

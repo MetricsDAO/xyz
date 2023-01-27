@@ -4,6 +4,7 @@ import { Pinekit } from "pinekit";
 import env from "~/env.server";
 import type { ExtractAbiEventNames } from "abitype";
 import { documentLaborMarket, indexLaborMarket } from "~/services/labor-market.server";
+import { documentServiceRequest, upsertServiceRequest } from "~/services/service-request.server";
 
 type EventName =
   | ExtractAbiEventNames<typeof LaborMarketNetwork["abi"]>
@@ -19,21 +20,17 @@ async function run() {
     try {
       switch (event.decoded.name as EventName) {
         case "LaborMarketConfigured":
-          await documentLaborMarket({ address: event.contract.address, block: event.block.number }).then(
-            indexLaborMarket
-          );
-        // case "RequestCreated":
-        //   await indexRequestCreated(event);
-        // case "RequestFulfilled":
-        //   await indexRequestFulfilled(event);
+          await documentLaborMarket(event).then(indexLaborMarket);
+        case "RequestCreated":
+          await documentServiceRequest(event).then(upsertServiceRequest);
       }
+      await pine.saveCursorAt(event, subscrber);
     } catch (error) {
       const err = error as Error;
       logger.error(`indexer: failed to index event ${event.decoded.name} at ${event.txHash}, skipping`, {
         error: err.message,
       });
     }
-    await pine.saveCursorAt(event, subscrber);
   }
 }
 
