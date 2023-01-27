@@ -192,7 +192,6 @@ function ReviewQuestionDrawerButton({
   const [state, send] = useMachine(reviewSubmissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
-        // Link to transaction? https://goerli.etherscan.io/address/${context.transactionHash}
         defaultNotifyTransactionActions.notifyTransactionWait(context);
       },
       notifyTransactionSuccess: (context) => {
