@@ -2,6 +2,7 @@ import { useRouteData } from "remix-utils";
 import { Badge, Card, UserBadge } from "~/components";
 import type { findServiceRequest } from "~/services/service-request.server";
 import { fromNow } from "~/utils/date";
+import { changeAddressType } from "~/utils/helpers";
 
 export default function ServiceIdParticipants() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
@@ -24,7 +25,7 @@ export default function ServiceIdParticipants() {
             return (
               <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">
-                  <UserBadge url="u/id" address={s.creatorId as `0x${string}`} balance={200} />
+                  <UserBadge url="u/id" address={changeAddressType(s.creatorId)} balance={200} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>
                 </div>
               </Card>

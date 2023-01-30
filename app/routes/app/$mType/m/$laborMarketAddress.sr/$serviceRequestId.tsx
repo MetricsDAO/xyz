@@ -77,7 +77,7 @@ export default function ServiceRequest() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          {/*<UserBadge url="u/id" address={serviceRequest.laborMarket.sponsorAddress as `0x${string}`} balance={200} />*/}
+          {/*<UserBadge url="u/id" address={changeAddressType(serviceRequest.laborMarket.sponsorAddress)} balance={200} />*/}
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">

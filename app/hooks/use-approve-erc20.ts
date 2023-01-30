@@ -1,6 +1,6 @@
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { Web3Hook } from "~/features/web3-button/types";
-import { parseTokenAmount } from "~/utils/helpers";
+import { changeAddressType, parseTokenAmount } from "~/utils/helpers";
 
 export type ApproveERC20ContractData = {
   ERC20address: string;
@@ -10,7 +10,7 @@ export type ApproveERC20ContractData = {
 
 export function useApproveERC20({ data, onWriteSuccess }: Web3Hook<ApproveERC20ContractData>) {
   const { config } = usePrepareContractWrite({
-    address: data.ERC20address as `0x${string}`,
+    address: changeAddressType(data.ERC20address),
     abi: [
       {
         constant: false,

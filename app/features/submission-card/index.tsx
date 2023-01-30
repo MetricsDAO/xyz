@@ -5,6 +5,7 @@ import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
+import { changeAddressType } from "~/utils/helpers";
 
 type Props = {
   submission: Submission;
@@ -37,7 +38,7 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.createdAt)} by </span>
-        <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+        <UserBadge url="u/id" address={changeAddressType(submission.creatorId)} balance={200} />
       </div>
     </Card>
   );

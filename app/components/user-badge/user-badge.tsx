@@ -12,7 +12,7 @@ export function UserBadge({ url, address, balance }: { url: string; address: `0x
   });
 
   const { data: ensAvatarUrl } = useEnsAvatar({
-    address: address as `0x${string}`,
+    address: address,
     chainId: 1,
   });
 

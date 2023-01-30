@@ -32,7 +32,7 @@ import { ReviewSearchSchema } from "~/domain/review";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
-import { SCORE_COLOR } from "~/utils/helpers";
+import { changeAddressType, SCORE_COLOR } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
@@ -91,7 +91,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+            <UserBadge url="u/id" address={changeAddressType(submission.creatorId)} balance={200} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAt.toString())}</Badge>

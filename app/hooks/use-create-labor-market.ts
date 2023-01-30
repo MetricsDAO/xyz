@@ -10,6 +10,7 @@ import {
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
+import { changeAddressType } from "~/utils/helpers";
 
 type Props = Web3Hook<LaborMarketContract>;
 
@@ -20,7 +21,7 @@ export function useCreateLaborMarket({ data, onWriteSuccess }: Props) {
     functionName: "createLaborMarket",
     args: [
       LaborMarket.address,
-      data.userAddress as `0x${string}`,
+      changeAddressType(data.userAddress),
       {
         network: LaborMarketNetwork.address,
         enforcementModule: LikertEnforcement.address,
@@ -28,10 +29,10 @@ export function useCreateLaborMarket({ data, onWriteSuccess }: Props) {
         marketUri: data.ipfsHash,
         delegateBadge:
           data.launch.access === "delegates"
-            ? (data.launch.badgerAddress as `0x${string}`)
+            ? changeAddressType(data.launch.badgerAddress)
             : "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd", // hardcoded to a Badger address
         delegateTokenId: BigNumber.from(data.launch.access === "delegates" ? data.launch.badgerTokenId : 0),
-        maintainerBadge: data.reviewBadgerAddress as `0x${string}`,
+        maintainerBadge: changeAddressType(data.reviewBadgerAddress),
         maintainerTokenId: BigNumber.from(data.reviewBadgerTokenId),
         reputationModule: ReputationModule.address,
         reputationConfig: {

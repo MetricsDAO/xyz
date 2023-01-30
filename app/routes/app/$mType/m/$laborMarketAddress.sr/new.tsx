@@ -19,6 +19,7 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
 import { createServiceRequest } from "~/utils/fetch";
+import { changeAddressType } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 
@@ -129,7 +130,7 @@ export default function CreateServiceRequest() {
                     data={{
                       amount: state.context.contractData.pTokenQuantity,
                       ERC20address: state.context.contractData.pTokenAddress,
-                      spender: state.context.contractData.laborMarketAddress as `0x${string}`,
+                      spender: changeAddressType(state.context.contractData.laborMarketAddress),
                     }}
                     onWriteSuccess={onERC20ApproveWriteSuccess}
                   />

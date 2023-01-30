@@ -23,6 +23,10 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
+export function changeAddressType(address: string): `0x${string}` {
+  return address as `0x${string}`;
+}
+
 export const SCORE_COLOR = {
   Great: "bg-lime-100",
   Good: "bg-blue-200",

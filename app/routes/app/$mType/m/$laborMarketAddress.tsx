@@ -10,6 +10,7 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { findLaborMarket } from "~/services/labor-market.server";
+import { changeAddressType } from "~/utils/helpers";
 
 export const loader = async (data: DataFunctionArgs) => {
   invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
@@ -48,7 +49,7 @@ export default function Marketplace() {
           <Detail>
             {laborMarket?.sponsorAddress ? (
               <DetailItem title="Sponser">
-                <UserBadge url="u/id" address={laborMarket?.sponsorAddress as `0x${string}`} balance={200} />
+                <UserBadge url="u/id" address={changeAddressType(laborMarket?.sponsorAddress)} balance={200} />
               </DetailItem>
             ) : (
               <></>
