@@ -2714,10 +2714,10 @@
   resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-7.6.0.tgz#9ea331766084288634a9247fcd8b84f16ff4ba07"
   integrity sha512-XK6BTq1NDMo9Xqw/YkYyGjSsg44fbNwYRx7QK2CuoQgyy+f1rrTDHoExVM5PsyXCtfl2vs2vVJ0MN0yN6LppRw==
 
-"@flipsidecrypto/pine-sdk@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@flipsidecrypto/pine-sdk/-/pine-sdk-0.0.4.tgz#70ae853b9838bfe0776a14bde850c9d1efbbeed8"
-  integrity sha512-RvmT3GQXDu0mNF6boa1/sBkHM94MV3+jfiJEpv4ha5bcLyWIUC4cLI0Sk0WK/QYG0B/b4Th2VRhr6uUdiH1EZg==
+"@flipsidecrypto/pine-sdk@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@flipsidecrypto/pine-sdk/-/pine-sdk-0.0.6.tgz#c32874fe77fe7e7253a928484b2bedcf6be82bad"
+  integrity sha512-bGPOKZ/da5cMC85+nROIyyy0lh6tKKY2zy0gcllYaXnSW7GFFwayC10yNL+BerFBOHeoTurUYzMHhTBhuuD4NQ==
   dependencies:
     node-fetch "2"
 
@@ -11124,10 +11124,10 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
-labor-markets-abi@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.3.2.tgz#1c07b266373c029037eed793769623a2d21ad3d8"
-  integrity sha512-vSD9vVsG7XZFa08bW8U+kkk2rfnST5VvCI/8NderNMRJP0uACHGrCmO067Ro91PTO5ORZEPR75jNXPPR/4T0HQ==
+labor-markets-abi@1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.4.2.tgz#6042f9d760f818bc8bf2255fc9c2c11503cfc434"
+  integrity sha512-FDtNzbU2Mzy6xJK1u7n+wdcFi07QLWXfINI69eA7ZX5o9mMlFSb6khUWnoFewLIewy0v6LS4mI2QkcIRtphYmA==
 
 language-subtag-registry@^0.3.20:
   version "0.3.22"

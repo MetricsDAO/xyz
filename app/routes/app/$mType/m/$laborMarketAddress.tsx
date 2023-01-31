@@ -30,7 +30,7 @@ export default function Marketplace() {
     <Container className="py-16">
       <div className="mx-auto container mb-12 px-10">
         <section className="flex flex-wrap gap-5 justify-between pb-5">
-          <h1 className="text-3xl font-semibold">{laborMarket?.title} </h1>
+          <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
           <div className="flex flex-wrap gap-5">
             <Button asChild size="lg">
               <Link
@@ -47,9 +47,9 @@ export default function Marketplace() {
         <section className="flex flex-col space-y-7 pb-12">
           <div className="flex flex-wrap gap-x-8">
             <Detail>
-              {laborMarket?.sponsorAddress ? (
+              {laborMarket?.configuration.owner ? (
                 <DetailItem title="Sponser">
-                  <UserBadge url="u/id" address={laborMarket?.sponsorAddress as `0x${string}`} balance={200} />
+                  <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} balance={200} />
                 </DetailItem>
               ) : (
                 <></>
@@ -64,14 +64,14 @@ export default function Marketplace() {
               </DetailItem>
             </Detail>
           </div>
-          <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.description}</p>
+          <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
         </section>
 
         <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
           <main className="flex-1">
             <TabNav className="mb-10">
               <TabNavLink to="" end>
-                {`Challenges (${laborMarket?._count.serviceRequests})`}
+                {`Challenges (${laborMarket?.serviceRequestCount})`}
               </TabNavLink>
               <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
               <TabNavLink to="./rewards">Rewards</TabNavLink>

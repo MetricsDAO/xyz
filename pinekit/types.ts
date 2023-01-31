@@ -8,19 +8,49 @@ export interface SubscriberHandle {
   subscriber: string;
 }
 
-export type TracerCreateParams = {
+export interface TracerContract {
+  name: string;
+  addresses: string[];
+  schema: any;
+}
+
+export interface TracerConfig {
   namespace: string;
   version: string;
   blockchain: {
     name: string;
     network: string;
   };
-  contracts: {
-    name: string;
-    addresses: string[];
-    schema: any;
-  }[];
-};
+  contracts: TracerContract[];
+}
+
+export type TracerStateName = "TRACER_STATE_BACKFILL" | "TRACER_STATE_REALTIME";
+
+export interface TracerState {
+  id: string;
+  state: TracerState;
+  details: string | null;
+  createdAt: string;
+  updatedAt: string;
+  tracerId: string;
+}
+
+export interface TracerDetails {
+  id: string;
+  namespace: string;
+  version: string;
+  config: TracerConfig;
+  temporalWfId: string;
+  blockchainId: string;
+  userId: string;
+  checkpointBlockNumber: number;
+  createdAt: string;
+  updatedAt: string;
+  currentStateId: string;
+  parentTracerId: string;
+  currentState: TracerState;
+  historicalState: TracerState[];
+}
 
 export interface EventsParams {
   limit?: number;
@@ -31,7 +61,7 @@ export interface EventsCommitParams {
   eventIndex: number;
 }
 
-export type TracerEvent = {
+export interface TracerEvent {
   storeIndex: number;
   txHash: string;
   contract: {
@@ -45,17 +75,17 @@ export type TracerEvent = {
   decoded: {
     index: number;
     name: string;
-    inputs: { name: string; value: string }[];
+    inputs: Record<string, string>;
   };
   topics?: string[];
   data?: string;
-};
+}
 
-export type SDKError = {
+export interface SDKError {
   // type?: ValueOf<typeof ERROR_TYPES> | "NETWORK_ERROR";
   name?: string;
   msg: string;
-};
+}
 
 export type SDKResponse<DataType> =
   | {

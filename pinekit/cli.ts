@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { testAddresses } from "contracts/test-addresses";
 import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
-import { Pinekit } from "pinekit";
+import { Client } from "pinekit";
 import env from "~/env.server";
 
 require("dotenv").config();
@@ -10,7 +10,7 @@ const program = new Command();
 
 program.name("pine-cli").description("CLI for interacting with Pine");
 
-const pine = new Pinekit({ apiKey: env.PINE_API_KEY });
+const pine = new Client({ apiKey: env.PINE_API_KEY });
 
 program
   .command("create-tracer")
@@ -44,7 +44,7 @@ program
   .description("List all tracers")
   .action(async () => {
     const tracers = await pine.listTracers();
-    console.log(tracers);
+    console.table(tracers.map((t) => ({ namespace: t.namespace, version: t.version, state: t.currentState.state })));
   });
 
 program
@@ -54,6 +54,26 @@ program
   .description("Start a tracer")
   .action(async (namespace, version) => {
     const res = await pine.startTracer({ namespace, version });
+    console.log(res);
+  });
+
+program
+  .command("tracer-details")
+  .argument("<namespace>", "Namespace of the tracer")
+  .argument("<version>", "Version of the tracer")
+  .description("Get details of a tracer")
+  .action(async (namespace, version) => {
+    const res = await pine.getTracerDetails({ namespace, version });
+    console.log(res.config.contracts);
+  });
+
+program
+  .command("cancel-tracer")
+  .argument("<namespace>", "Namespace of the tracer")
+  .argument("<version>", "Version of the tracer")
+  .description("Stop a tracer")
+  .action(async (namespace, version) => {
+    const res = await pine.cancelTracer({ namespace, version });
     console.log(res);
   });
 
