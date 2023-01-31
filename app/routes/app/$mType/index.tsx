@@ -189,22 +189,23 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
         <Header.Column>Active Challenges</Header.Column>
       </Header>
       {marketplaces.map((m) => {
+        invariant(m.appData, "marketplace type must be specified");
         return (
           <Row asChild columns={6} key={m.address}>
             <Link
-              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.type, laborMarketAddress: m.address })}
+              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.appData.type, laborMarketAddress: m.address })}
               className="text-sm font-medium"
             >
-              <Row.Column span={2}>{m.title}</Row.Column>
+              <Row.Column span={2}>{m.appData.title}</Row.Column>
               <Row.Column>
-                <div className="flex items-center gap-2 flex-wrap">
+                {/* <div className="flex items-center gap-2 flex-wrap">
                   {m.projects.map((p) => (
                     <Badge key={p.slug} className="pl-2">
                       <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
                     </Badge>
                   ))}
-                </div>
+                </div> */}
               </Row.Column>
 
               <Row.Column>
@@ -221,7 +222,7 @@ function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
                 </Badge>
               </Row.Column>
 
-              <Row.Column>{m._count.serviceRequests.toLocaleString()}</Row.Column>
+              <Row.Column>{m.serviceRequestCount.toLocaleString()}</Row.Column>
             </Link>
           </Row>
         );
@@ -236,24 +237,25 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
     <div>
       <div className="space-y-4">
         {marketplaces.map((m) => {
+          invariant(m.appData, "marketplace type must be specified");
           return (
             <Card asChild key={m.address}>
               <Link
-                to={`/app/${m.type}/m/${m.address}`}
+                to={`/app/${m.appData.type}/m/${m.address}`}
                 className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               >
                 <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
-                <div className="text-sm font-medium">{m.title}</div>
+                <div className="text-sm font-medium">{m.appData.title}</div>
 
                 <div>Chain/Project</div>
-                <div className="flex flex-wrap gap-2">
+                {/* <div className="flex flex-wrap gap-2">
                   {m.projects.map((p) => (
                     <Badge key={p.slug} className="pl-2">
                       <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
                     </Badge>
                   ))}
-                </div>
+                </div> */}
 
                 <div>Challenge Pool Totals</div>
                 <Badge>
@@ -268,7 +270,7 @@ function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
                 </Badge>
 
                 <div>Active Challenges</div>
-                <div>{m._count.serviceRequests.toLocaleString()}</div>
+                <div>{m.serviceRequestCount.toLocaleString()}</div>
               </Link>
             </Card>
           );

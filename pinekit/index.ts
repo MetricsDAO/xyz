@@ -1,1 +1,2 @@
-export * from "./pinekit";
+export * from "./client";
+export * from "./worker";
