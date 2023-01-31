@@ -1,15 +1,15 @@
 import { LaborMarketNetwork as LaborMarketNetworkAbi, LaborMarket as LaborMarketAbi } from "labor-markets-abi";
-import envServer from "~/env.server";
+import env from "~/env.server";
 import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
 import * as pine from "pinekit";
 
 const worker = pine.createWorker({
-  client: new pine.Client({ apiKey: envServer.PINE_API_KEY }),
-  subscriber: envServer.PINE_SUBSCRIBER,
+  client: new pine.Client({ apiKey: env.PINE_API_KEY }),
+  subscriber: env.PINE_SUBSCRIBER,
   logger: logger,
   tracer: {
-    namespace: envServer.PINE_NAMESPACE,
+    namespace: env.PINE_NAMESPACE,
     version: "1.4.2-2",
     blockchain: { name: "polygon", network: "mainnet" },
   },
