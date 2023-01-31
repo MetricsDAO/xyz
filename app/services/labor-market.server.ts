@@ -14,8 +14,8 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
   return mongo.laborMarkets
     .find({
       valid: true,
-      $text: { $search: params.q ?? "" },
-      "appData.projectIds": params.project ? { $in: params.project?.map ?? [] } : undefined,
+      ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+      ...(params.project ? { "appData.projectIds": { $in: params.project } } : {}),
     })
     .sort({ [params.sortBy]: params.order })
     .skip(params.first * (params.page - 1))
