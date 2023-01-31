@@ -9,19 +9,17 @@ export const LaborMarketSchema = z.object({
   description: z.string().min(1, "Required"),
   type: z.enum(["brainstorm", "analyze"]),
   launch: z.discriminatedUnion("access", [
-    z.object({ access: z.literal("anyone") }),
+    // z.object({ access: z.literal("anyone") }), Not needed for MVP
     z.object({
       access: z.literal("delegates"),
       badgerAddress: EvmAddressSchema,
       badgerTokenId: z.string().min(1, "Required"),
     }),
   ]),
-  rewardCurveAddress: EvmAddressSchema,
   submitRepMin: zfd.numeric(z.number()),
   submitRepMax: zfd.numeric(z.number()),
   reviewBadgerAddress: EvmAddressSchema,
   reviewBadgerTokenId: z.string().min(1, "Required"),
-  tokenIds: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   projectIds: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   sponsorAddress: EvmAddressSchema,
 });
@@ -48,12 +46,10 @@ export function fakeLaborMarketNew(): LaborMarketForm {
       badgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
       badgerTokenId: "1",
     },
-    rewardCurveAddress: faker.finance.ethereumAddress(),
     submitRepMin: faker.datatype.number(100),
     submitRepMax: faker.datatype.number(100),
-    reviewBadgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
-    reviewBadgerTokenId: "0",
-    tokenIds: [],
+    reviewBadgerAddress: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+    reviewBadgerTokenId: "3",
     projectIds: [],
   };
 }
