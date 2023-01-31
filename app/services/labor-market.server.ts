@@ -13,6 +13,7 @@ import { nodeProvider } from "./node.server";
 export const searchLaborMarkets = async (params: LaborMarketSearch) => {
   return mongo.laborMarkets
     .find({
+      valid: true,
       $text: { $search: params.q ?? "" },
       "appData.projectIds": params.project ? { $in: params.project?.map ?? [] } : undefined,
     })
