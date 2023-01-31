@@ -61,7 +61,7 @@ export interface EventsCommitParams {
   eventIndex: number;
 }
 
-export interface TracerEvent {
+export interface TracerEvent<A = Record<string, string>> {
   storeIndex: number;
   txHash: string;
   contract: {
@@ -75,7 +75,7 @@ export interface TracerEvent {
   decoded: {
     index: number;
     name: string;
-    inputs: Record<string, string>;
+    inputs: A;
   };
   topics?: string[];
   data?: string;
