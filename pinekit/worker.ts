@@ -1,7 +1,12 @@
 import type { TracerConfig, TracerContract, TracerEvent } from "./types";
-import type { Abi, ExtractAbiEventNames } from "abitype";
+import type { Abi, ExtractAbiEventNames, ExtractAbiEvent } from "abitype";
 import type { Client } from "./client";
 import envServer from "~/env.server";
+
+type ParseAbiInput<ABI extends Abi, EventName extends ExtractAbiEventNames<ABI>> = Record<
+  NonNullable<ExtractAbiEvent<ABI, EventName>["inputs"][number]["name"]>,
+  string
+>;
 
 interface WorkerOpts {
   tracer: Omit<TracerConfig, "contracts">;
@@ -17,8 +22,8 @@ interface WorkerContract<T extends Abi = Abi> extends TracerContract {
   schema: T;
 }
 
-interface WorkerEventFn {
-  (event: TracerEvent): unknown;
+interface WorkerEventFn<A = Record<string, string>> {
+  (event: TracerEvent<A>): unknown;
 }
 
 export function createWorker({ tracer, client, subscriber, logger = console }: WorkerOpts) {
@@ -62,11 +67,11 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
   function onEvent<TContract extends WorkerContract, TEventName extends ExtractAbiEventNames<TContract["schema"]>>(
     contract: TContract,
     event: TEventName,
-    fn: WorkerEventFn
+    fn: WorkerEventFn<ParseAbiInput<TContract["schema"], TEventName>>
   ) {
     const key = `${contract.name}.${event}`;
     const handlers = handlerRegistry.get(key) || new Set();
-    handlers.add(fn);
+    handlers.add(fn as WorkerEventFn);
     handlerRegistry.set(key, handlers);
   }
 
