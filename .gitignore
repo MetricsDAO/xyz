@@ -2,6 +2,7 @@ node_modules
 
 .cache
 .env
+.env.test
 .vercel
 .output
 
@@ -14,6 +15,8 @@ node_modules
 /api/
 app/styles/app.css
 .idea/
+
+app/contracts
 
 yarn-error.log
 

@@ -30,13 +30,13 @@ export default function MarketplaceIdPrerequesites() {
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">{laborMarket?.submitRepMin} rMETRIC</div>
+                      <div className="normal-case">{laborMarket?.configuration.reputationParams.submitMin} rMETRIC</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
-                      <div className="normal-case">{laborMarket?.submitRepMax} rMETRIC</div>
+                      <div className="normal-case">{laborMarket?.configuration.reputationParams.submitMax} rMETRIC</div>
                     </Badge>
                   </div>
                 </div>
@@ -48,7 +48,7 @@ export default function MarketplaceIdPrerequesites() {
                 <div className="text-xs text-gray-500">MDAO S4 REVIEWER BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
-                  <div className="text-base text-[#252525]">{laborMarket?.reviewBadgerAddress}</div>
+                  <div className="text-base text-[#252525]">{laborMarket?.configuration.maintainerBadge.token}</div>
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
@@ -58,7 +58,7 @@ export default function MarketplaceIdPrerequesites() {
                 <div className="text-xs text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
                 <div className="flex gap-2">
                   <Avatar />
-                  <div className="text-base text-[#252525]">{laborMarket?.launchBadgerAddress}</div>
+                  <div className="text-base text-[#252525]">{laborMarket?.configuration.delegateBadge.token}</div>
                 </div>
               </Card>
             </div>

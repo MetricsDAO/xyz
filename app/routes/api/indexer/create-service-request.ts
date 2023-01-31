@@ -10,5 +10,5 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
   }
   const payload = await data.request.json();
   const c = ServiceRequestIndexerSchema.parse(payload);
-  return json(await upsertServiceRequest(c));
+  // return json(await upsertServiceRequest(c));
 };

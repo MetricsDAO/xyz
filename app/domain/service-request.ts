@@ -98,8 +98,14 @@ export const ServiceRequestIndexerSchema = ServiceRequestContractSchema.extend({
   contractId: z.string(),
 });
 
+export const ServiceRequestIpfsSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+});
+
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
 export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;
+export type ServiceRequestIpfs = z.infer<typeof ServiceRequestIpfsSchema>;

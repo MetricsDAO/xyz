@@ -9,7 +9,7 @@ export function useClaimToReview({ data, onWriteSuccess }: Web3Hook<ClaimToRevie
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signalReview",
-    args: [BigNumber.from(data.quantity)],
+    args: [BigNumber.from(1), BigNumber.from(data.quantity)],
   });
 
   const { write } = useContractWrite({

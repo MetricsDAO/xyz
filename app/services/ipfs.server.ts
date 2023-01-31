@@ -40,3 +40,12 @@ export const uploadJsonToIpfs = async (user: User, data: any, name?: string) => 
   });
   return res.IpfsHash;
 };
+
+/**
+ * Fetches a JSON object from IPFS.
+ * @param cid - The CID of the JSON object to fetch.
+ * @throws {Error} - If the request fails or JSON isn't valid.
+ */
+export async function fetchIpfsJson(cid: string) {
+  return fetch(`${GATEWAY}/ipfs/${cid}`).then((res) => res.json());
+}

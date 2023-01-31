@@ -45,14 +45,14 @@ export function fakeLaborMarketNew(): LaborMarketForm {
     type: "brainstorm",
     launch: {
       access: "delegates",
-      badgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
-      badgerTokenId: "1",
+      badgerAddress: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+      badgerTokenId: "2",
     },
     rewardCurveAddress: faker.finance.ethereumAddress(),
     submitRepMin: faker.datatype.number(100),
     submitRepMax: faker.datatype.number(100),
-    reviewBadgerAddress: "0xce5dFf7E45187fDEb10fAc24c3cFB20E039ac5fd",
-    reviewBadgerTokenId: "0",
+    reviewBadgerAddress: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+    reviewBadgerTokenId: "3",
     tokenIds: [],
     projectIds: [],
   };
@@ -76,6 +76,41 @@ export const LaborMarketSearchSchema = z.object({
   first: z.number().min(1).max(100).default(12).describe("The number of results to return."),
 });
 
+const BadgePairSchema = z.object({
+  token: EvmAddressSchema,
+  tokenId: z.string(),
+});
+
+/**
+ * The schema for a LaborMarketDocument. This should be identical to how the document is stored in mongo.
+ */
+const LaborMarketDocSchema = z.object({
+  address: EvmAddressSchema,
+  valid: z.boolean(),
+  configuration: z.object({
+    marketUri: z.string(),
+    owner: EvmAddressSchema,
+    maintainerBadge: BadgePairSchema,
+    delegateBadge: BadgePairSchema,
+    reputationBadge: BadgePairSchema,
+    reputationParams: z.object({
+      rewardPool: z.number(),
+      signalStake: z.number(),
+      submitMin: z.number(),
+      submitMax: z.number(),
+    }),
+    modules: z.object({
+      network: EvmAddressSchema,
+      enforcement: EvmAddressSchema,
+      payment: EvmAddressSchema,
+      reputation: EvmAddressSchema,
+    }),
+  }),
+  serviceRequestCount: z.number(),
+  appData: LaborMarketMetaSchema.nullable(),
+});
+
+export type LaborMarketDoc = z.infer<typeof LaborMarketDocSchema>;
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
 export type LaborMarketContract = z.infer<typeof LaborMarketContractSchema>;
