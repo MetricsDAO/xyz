@@ -3,13 +3,10 @@ import type { Abi, ExtractAbiEventNames, ExtractAbiEvent } from "abitype";
 import type { Client } from "./client";
 import envServer from "~/env.server";
 
-type ExtractABIEventInputNames<ABI extends Abi, EventName extends ExtractAbiEventNames<ABI>> = NonNullable<
-  ExtractAbiEvent<ABI, EventName>["inputs"][number]["name"]
+type ParseAbiInput<ABI extends Abi, EventName extends ExtractAbiEventNames<ABI>> = Record<
+  NonNullable<ExtractAbiEvent<ABI, EventName>["inputs"][number]["name"]>,
+  string
 >;
-
-type ParseAbiInput<ABI extends Abi, EventName extends ExtractAbiEventNames<ABI>> = {
-  [Key in ExtractABIEventInputNames<ABI, EventName>]: string;
-};
 
 interface WorkerOpts {
   tracer: Omit<TracerConfig, "contracts">;
