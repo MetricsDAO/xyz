@@ -9,6 +9,7 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { findLaborMarket } from "~/services/labor-market.server";
 
 export const loader = async (data: DataFunctionArgs) => {
@@ -27,12 +28,12 @@ export default function Marketplace() {
   invariant(mType, "marketplace type must be specified");
 
   return (
-    <Container className="py-16">
-      <div className="mx-auto container mb-12 px-10">
-        <section className="flex flex-wrap gap-5 justify-between pb-5">
-          <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
-          <div className="flex flex-wrap gap-5">
-            <Button asChild size="lg">
+    <Container className="py-16 px-10">
+      <section className="flex flex-wrap gap-5 justify-between pb-5">
+        <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
+        <div className="flex flex-wrap gap-5">
+          <ConnectWalletWrapper>
+            <Button size="lg" asChild>
               <Link
                 to={$path("/app/:mType/m/:laborMarketAddress/sr/new", {
                   mType: mType,
@@ -42,44 +43,44 @@ export default function Marketplace() {
                 Launch Challenge
               </Link>
             </Button>
-          </div>
-        </section>
-        <section className="flex flex-col space-y-7 pb-12">
-          <div className="flex flex-wrap gap-x-8">
-            <Detail>
-              {laborMarket?.configuration.owner ? (
-                <DetailItem title="Sponser">
-                  <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} balance={200} />
-                </DetailItem>
-              ) : (
-                <></>
-              )}
-              <DetailItem title="Chain/Project">
-                {/*{laborMarket?.projects?.map((p) => (
+          </ConnectWalletWrapper>
+        </div>
+      </section>
+      <section className="flex flex-col space-y-7 pb-12">
+        <div className="flex flex-wrap gap-x-8">
+          <Detail>
+            {laborMarket?.configuration.owner ? (
+              <DetailItem title="Sponser">
+                <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} balance={200} />
+              </DetailItem>
+            ) : (
+              <></>
+            )}
+            <DetailItem title="Chain/Project">
+              {/*{laborMarket?.projects?.map((p) => (
                   <Badge key={p.slug} className="pl-2">
                     <ProjectAvatar project={p} />
                     <span className="mx-1">{p.name}</span>
                   </Badge>
                 ))}*/}
-              </DetailItem>
-            </Detail>
-          </div>
-          <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
-        </section>
+            </DetailItem>
+          </Detail>
+        </div>
+        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
+      </section>
 
-        <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
-          <main className="flex-1">
-            <TabNav className="mb-10">
-              <TabNavLink to="" end>
-                {`Challenges (${laborMarket?.serviceRequestCount})`}
-              </TabNavLink>
-              <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
-              <TabNavLink to="./rewards">Rewards</TabNavLink>
-            </TabNav>
-            <Outlet />
-          </main>
-        </section>
-      </div>
+      <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
+        <main className="flex-1">
+          <TabNav className="mb-10">
+            <TabNavLink to="" end>
+              {`Challenges (${laborMarket?.serviceRequestCount})`}
+            </TabNavLink>
+            <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
+            <TabNavLink to="./rewards">Rewards</TabNavLink>
+          </TabNav>
+          <Outlet />
+        </main>
+      </section>
     </Container>
   );
 }

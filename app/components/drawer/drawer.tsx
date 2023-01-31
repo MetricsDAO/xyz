@@ -11,7 +11,7 @@ type DrawerProps = {
 export const Drawer = ({ open, onClose, children }: DrawerProps) => {
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog as="div" className="relative z-30" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
