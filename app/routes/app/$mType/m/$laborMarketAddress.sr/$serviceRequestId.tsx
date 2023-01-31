@@ -14,6 +14,7 @@ import { ProjectAvatar } from "~/components/avatar";
 import { countReviews } from "~/services/review-service.server";
 import { RewardBadge } from "~/components/reward-badge";
 import { dateHasPassed } from "~/utils/date";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 
@@ -41,37 +42,49 @@ export default function ServiceRequest() {
         <h1 className="text-3xl font-semibold">{serviceRequest.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
-                mType: mType,
-                laborMarketAddress: serviceRequest.laborMarketAddress,
-                serviceRequestId: serviceRequest.contractId,
-              })}
-            >
-              Claim to Review
-            </Link>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
+                    mType: mType,
+                    laborMarketAddress: serviceRequest.laborMarketAddress,
+                    serviceRequestId: serviceRequest.contractId,
+                  })}
+                >
+                  Claim to Review
+                </Link>
+              </Button>
+            </ConnectWalletWrapper>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
-                mType: mType,
-                laborMarketAddress: serviceRequest.laborMarketAddress,
-                serviceRequestId: serviceRequest.contractId,
-              })}
-            >
-              Claim to Submit
-            </Link>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
+                    mType: mType,
+                    laborMarketAddress: serviceRequest.laborMarketAddress,
+                    serviceRequestId: serviceRequest.contractId,
+                  })}
+                >
+                  Claim to Submit
+                </Link>
+              </Button>
+            </ConnectWalletWrapper>
           </Button>
           <Button variant="primary" size="lg" asChild>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
-                mType: mType,
-                laborMarketAddress: serviceRequest.laborMarketAddress,
-                serviceRequestId: serviceRequest.contractId,
-              })}
-            >
-              Submit
-            </Link>
+            <ConnectWalletWrapper>
+              <Button size="lg" asChild>
+                <Link
+                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
+                    mType: mType,
+                    laborMarketAddress: serviceRequest.laborMarketAddress,
+                    serviceRequestId: serviceRequest.contractId,
+                  })}
+                >
+                  Submit
+                </Link>
+              </Button>
+            </ConnectWalletWrapper>
           </Button>
         </div>
       </header>

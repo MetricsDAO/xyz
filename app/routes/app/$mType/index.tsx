@@ -21,6 +21,7 @@ import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
@@ -67,9 +68,11 @@ export default function MarketplaceCollection() {
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
         {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
         <aside>
-          <Button size="lg" asChild>
-            <Link to={$path("/app/:mType/new", { mType: mType })}>Create Marketplace</Link>
-          </Button>
+          <ConnectWalletWrapper>
+            <Button size="lg" asChild>
+              <Link to={$path("/app/:mType/new", { mType: mType })}>Create Marketplace</Link>
+            </Button>
+          </ConnectWalletWrapper>
         </aside>
       </header>
 

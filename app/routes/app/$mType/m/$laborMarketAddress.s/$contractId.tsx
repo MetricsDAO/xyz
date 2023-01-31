@@ -1,9 +1,8 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import type { ServiceRequest, Submission } from "@prisma/client";
-import { useMachine } from "@xstate/react";
 import { useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { SendTransactionResult } from "@wagmi/core";
+import { useMachine } from "@xstate/react";
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { getParamsOrFail } from "remix-params-helper";
@@ -27,15 +26,18 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
+import type { ServiceRequest, SubmissionIndexer } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
+import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { useOptionalUser } from "~/hooks/use-user";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { fromNow } from "~/utils/date";
 import { SCORE_COLOR } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
-import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
@@ -185,6 +187,8 @@ function ReviewQuestionDrawerButton({
   requestId: string;
   submissionId: string;
 }) {
+  const user = useOptionalUser();
+  const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<number>(50);
   const [scoreSelectionOpen, setScoreSelectionOpen] = useState(true);
@@ -223,7 +227,17 @@ function ReviewQuestionDrawerButton({
 
   return (
     <>
-      <Button onClick={() => setIsModalOpen(true)}>Review & Score</Button>
+      <ConnectWalletWrapper>
+        <Button
+          size="lg"
+          onClick={() => {
+            user && setOpen(true);
+          }}
+          asChild
+        >
+          <span>Review & Score</span>
+        </Button>
+      </ConnectWalletWrapper>
       <Drawer open={isModalOpen && !state.matches("transactionWait")} onClose={() => setIsModalOpen(false)}>
         {scoreSelectionOpen && (
           <div className="flex flex-col mx-auto space-y-10 px-2">
@@ -314,7 +328,7 @@ function ReviewQuestionDrawerButton({
 function AnalyzeDescription({
   submission,
 }: {
-  submission: Submission & {
+  submission: SubmissionIndexer & {
     serviceRequest: ServiceRequest;
   };
 }) {
@@ -330,7 +344,7 @@ function AnalyzeDescription({
   );
 }
 
-function BrainstormDescription({ submission }: { submission: Submission }) {
+function BrainstormDescription({ submission }: { submission: SubmissionIndexer }) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
