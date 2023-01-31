@@ -68,7 +68,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
           <ValidatedSelect
             name="launch.access"
             options={[
-              { label: "Anyone", value: "anyone" },
+              // { label: "Anyone", value: "anyone" }, // Not for MVP
               { label: "Delegates only", value: "delegates" },
             ]}
           />
@@ -89,22 +89,6 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
             </Field>
           </div>
         ) : null}
-      </section>
-
-      <section>
-        <Label size="lg">Challenge Rewards</Label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Field>
-            <Label>Token</Label>
-            <ValidatedCombobox name="tokenIds" options={tokens.map((t) => ({ value: t.id, label: t.name }))} />
-            <Error name="tokenIds" />
-          </Field>
-          <Field>
-            <Label>Reward Curve</Label>
-            <ValidatedSelect name="rewardCurveAddress" options={[{ value: "linear", label: "Linear" }]} />
-            <Error name="rewardCurveAddress" />
-          </Field>
-        </div>
       </section>
 
       <section>

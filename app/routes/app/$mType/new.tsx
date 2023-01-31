@@ -30,7 +30,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const tokens = await listTokens();
   const defaultValues = url.searchParams.get("fake")
     ? fakeLaborMarketNew()
-    : ({ launch: { access: "anyone" } } as const);
+    : ({ launch: { access: "delegates", badgerAddress: "", badgerTokenId: "" } } as const);
   return typedjson({ projects, tokens, defaultValues });
 };
 

@@ -11,9 +11,8 @@ import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
 
-type Props = Web3Hook<LaborMarketContract>;
-
-export function useCreateLaborMarket({ data, onWriteSuccess }: Props) {
+const REPUTATION_TOKEN_ID = 4;
+export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,
     abi: LaborMarketNetwork.abi,
@@ -30,8 +29,8 @@ export function useCreateLaborMarket({ data, onWriteSuccess }: Props) {
           reputation: ReputationModule.address,
         },
         delegateBadge: {
-          token: data.launch.access === "delegates" ? (data.launch.badgerAddress as `0x${string}`) : "0x0", // hardcoded to a Badger address
-          tokenId: BigNumber.from(data.launch.access === "delegates" ? data.launch.badgerTokenId : 0),
+          token: data.launch.badgerAddress as `0x${string}`,
+          tokenId: BigNumber.from(data.launch.badgerTokenId),
         },
         maintainerBadge: {
           token: data.reviewBadgerAddress as `0x${string}`,
@@ -39,13 +38,13 @@ export function useCreateLaborMarket({ data, onWriteSuccess }: Props) {
         },
         reputationBadge: {
           token: ReputationToken.address,
-          tokenId: BigNumber.from(4), //TODO const
+          tokenId: BigNumber.from(REPUTATION_TOKEN_ID),
         },
         reputationParams: {
           rewardPool: BigNumber.from(5000),
           signalStake: BigNumber.from(5),
-          submitMin: BigNumber.from(10),
-          submitMax: BigNumber.from(1e15),
+          submitMin: BigNumber.from(data.submitRepMin),
+          submitMax: BigNumber.from(data.submitRepMax),
         },
       },
     ],

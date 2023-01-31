@@ -17,7 +17,6 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
     title: `Labor Market - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     type: faker.helpers.arrayElement(["brainstorm", "analyze"]) as "brainstorm" | "analyze",
-    rewardCurveAddress: faker.finance.ethereumAddress(),
     submitRepMin: faker.datatype.number(),
     submitRepMax: faker.datatype.number(),
     launch: {
@@ -28,7 +27,6 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
     sponsorAddress: faker.finance.ethereumAddress(),
     reviewBadgerAddress: faker.finance.ethereumAddress(),
     reviewBadgerTokenId: faker.datatype.string(),
-    tokenIds: [],
     projectIds: [],
     ...data,
   };
