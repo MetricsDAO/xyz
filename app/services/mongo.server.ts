@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
+import type { LaborMarketDoc } from "~/domain";
 import env from "~/env.server";
-import type { LaborMarketDoc } from "./labor-market.server";
 import type { ServiceRequestDoc } from "./service-request.server";
 
 const client = new MongoClient(env.MONGODB_URI, { retryWrites: true, writeConcern: { w: "majority" } });

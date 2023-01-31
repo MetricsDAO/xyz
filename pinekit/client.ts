@@ -1,14 +1,14 @@
-import { logger } from "~/services/logger.server";
 import type {
   EventsParams,
   SDKResponse,
   SubscriberHandle,
-  TracerCreateParams,
+  TracerConfig,
+  TracerDetails,
   TracerEvent,
   TracerHandle,
 } from "./types";
 
-export class Pinekit {
+export class Client {
   constructor(private opts: { apiKey: string }) {}
 
   /**
@@ -41,7 +41,7 @@ export class Pinekit {
   /**
    * Creates a tracer.
    */
-  public createTracer(tracer: TracerCreateParams) {
+  public createTracer(tracer: TracerConfig) {
     return this.request("/tracers", { method: "post", body: JSON.stringify(tracer) });
   }
 
@@ -49,11 +49,27 @@ export class Pinekit {
    * Lists all tracers for the current user.
    */
   public listTracers() {
-    return this.request<TracerHandle[]>("/tracers", { method: "get" });
+    return this.request<TracerDetails[]>("/tracers", { method: "get" });
   }
 
+  public async getTracerDetails(tracer: TracerHandle) {
+    return this.request<TracerDetails>(`/tracers/${tracer.namespace}/versions/${tracer.version}`, {
+      method: "get",
+    });
+  }
+
+  /**
+   * Starts a tracer.
+   */
   public startTracer(tracer: TracerHandle) {
     return this.request(`/tracers/${tracer.namespace}/versions/${tracer.version}/start`, { method: "post" });
+  }
+
+  /**
+   * Cancels a tracer.
+   */
+  public cancelTracer(tracer: TracerHandle) {
+    return this.request(`/tracers/${tracer.namespace}/versions/${tracer.version}/cancel`, { method: "post" });
   }
 
   /**
@@ -96,7 +112,6 @@ export class Pinekit {
 
       // if its still empty, wait a bit and try again
       if (events.length === 0) {
-        logger.info("indexer: no events, waiting 5s...");
         await new Promise((resolve) => setTimeout(resolve, 1000 * 5));
         continue;
       }

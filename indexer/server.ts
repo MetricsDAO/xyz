@@ -1,16 +1,16 @@
 import type { LaborMarketNetwork, LaborMarket } from "labor-markets-abi";
 import { logger } from "~/services/logger.server";
-import { Pinekit } from "pinekit";
+import { Client } from "pinekit";
 import env from "~/env.server";
 import type { ExtractAbiEventNames } from "abitype";
-import { documentLaborMarket, indexLaborMarket } from "~/services/labor-market.server";
+import { documentLaborMarket, upsertLaborMarket } from "~/services/labor-market.server";
 import { documentServiceRequest, upsertServiceRequest } from "~/services/service-request.server";
 
 type EventName =
   | ExtractAbiEventNames<typeof LaborMarketNetwork["abi"]>
   | ExtractAbiEventNames<typeof LaborMarket["abi"]>;
 
-const pine = new Pinekit({ apiKey: env.PINE_API_KEY });
+const pine = new Client({ apiKey: env.PINE_API_KEY });
 const subscrber = pine.subscriber(env.PINE_SUBSCRIBER, { namespace: env.PINE_NAMESPACE, version: "0.0.1" });
 
 async function run() {
@@ -20,7 +20,7 @@ async function run() {
     try {
       switch (event.decoded.name as EventName) {
         case "LaborMarketConfigured":
-          await documentLaborMarket(event).then(indexLaborMarket);
+          await documentLaborMarket(event).then(upsertLaborMarket);
         case "RequestCreated":
           await documentServiceRequest(event).then(upsertServiceRequest);
       }

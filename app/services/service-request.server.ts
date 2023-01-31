@@ -1,11 +1,10 @@
 import type { TracerEvent } from "pinekit/types";
+import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
-import type { RequestCreatedEventObject } from "~/contracts/LaborMarket";
 import type { ServiceRequestForm, ServiceRequestContract, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestIpfsSchema } from "~/domain/service-request";
 import { ServiceRequestContractSchema } from "~/domain/service-request";
 import { parseDatetime } from "~/utils/date";
-import { inputsToObject } from "~/utils/utils";
 import { fetchIpfsJson } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -65,7 +64,7 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
  * @param doc - The service request document.
  */
 export const upsertServiceRequest = async (doc: ServiceRequestDoc) => {
-  return mongo.serviceRequests.updateOne({ requestId: doc.requestId }, { $set: doc }, { upsert: true });
+  return mongo.serviceRequests.updateOne({ id: doc.id }, { $set: doc }, { upsert: true });
 };
 
 /**
@@ -96,15 +95,15 @@ export const prepareServiceRequest = (laborMarketAddress: string, form: ServiceR
  * Create a new ServiceRequestDoc from a TracerEvent.
  */
 export const documentServiceRequest = async (event: TracerEvent) => {
-  const inputs = inputsToObject<RequestCreatedEventObject>(event.decoded.inputs);
   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
-  const serviceRequest = await contract.serviceRequests(inputs.requestId, { blockTag: event.block.number });
+  const requestId = z.string().parse(event.decoded.inputs.requestId);
+  const serviceRequest = await contract.serviceRequests(requestId, { blockTag: event.block.number });
   const appData = await fetchIpfsJson(serviceRequest.uri)
     .then(ServiceRequestIpfsSchema.parse)
     .catch(() => null);
   return {
+    id: requestId,
     laborMarketAddress: event.contract.address,
-    requestId: inputs.requestId,
     pToken: serviceRequest.pToken,
     pTokenQ: serviceRequest.pTokenQ,
     signalExp: serviceRequest.signalExp,
