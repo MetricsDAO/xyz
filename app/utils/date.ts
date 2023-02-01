@@ -28,6 +28,14 @@ export function unixTimestamp(date: Date): number {
 }
 
 /**
+ * Returns a Date of a unix timestamp (in seconds)
+ * @param seconds string of unix timestamp in seconds
+ */
+export function fromUnixTimestamp(seconds: string): Date {
+  return dayjs.unix(parseInt(seconds)).toDate();
+}
+
+/**
  * Converts string date and time to a Date object
  * @param date a date with format YYYY-MM-DD
  * @param time a time with format HH:mm

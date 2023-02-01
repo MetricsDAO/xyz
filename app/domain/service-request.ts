@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
-import { validateDate, validateTime } from "~/utils/date";
+import { fromUnixTimestamp, validateDate, validateTime } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
 
@@ -12,6 +12,12 @@ export const ServiceRequestSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
+
+const unixDateSchema = z.preprocess((arg) => {
+  if (typeof arg == "string") {
+    return fromUnixTimestamp(arg);
+  }
+}, z.date());
 
 const DateSchema = z.preprocess((arg) => {
   if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
@@ -59,6 +65,27 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   submissionExpiration: DateSchema,
   enforcementExpiration: DateSchema,
   uri: z.string(),
+});
+
+// inputs: {
+//   requester: '0x7A9260b97113B51aDf233d2fb3F006F09a329654',
+//   requestId: '1',
+//   uri: '0xef92be2575290ba46efb08e2ffb7294a1881b26b748e4e7d82eee9cda9bca5ff',
+//   pToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+//   pTokenQ: '1',
+//   signalExp: '1675310940',
+//   submissionExp: '1676058000',
+//   enforcementExp: '1677421260'
+// }
+export const ServiceRequest_RequestConfiguredEventSchema = z.object({
+  requester: EvmAddressSchema,
+  requestId: z.string(),
+  uri: z.string(),
+  pToken: EvmAddressSchema,
+  pTokenQ: TokenAmountSchema,
+  signalExp: unixDateSchema,
+  submissionExp: unixDateSchema,
+  enforcementExp: unixDateSchema,
 });
 
 // Generate a fake Service Request for testing using faker.

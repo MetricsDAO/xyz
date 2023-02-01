@@ -2,6 +2,7 @@ import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { ServiceRequestForm, ServiceRequestContract, ServiceRequestSearch } from "~/domain/service-request";
+import { ServiceRequest_RequestConfiguredEventSchema } from "~/domain/service-request";
 import { ServiceRequestIpfsSchema } from "~/domain/service-request";
 import { ServiceRequestContractSchema } from "~/domain/service-request";
 import { parseDatetime } from "~/utils/date";
@@ -66,6 +67,59 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
 export const upsertServiceRequest = async (doc: ServiceRequestDoc) => {
   return mongo.serviceRequests.updateOne({ id: doc.id }, { $set: doc }, { upsert: true });
 };
+
+/**
+ * Upserts a ServiceRequestDoc in the index database from a Pine TracerEvent.
+ */
+export async function indexServiceRequest(event: TracerEvent) {
+  console.log("event", event);
+  const decodedInput = ServiceRequest_RequestConfiguredEventSchema.parse(event.decoded.inputs);
+  console.log("decodedInput", decodedInput);
+  // const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  // const config = await contract.serviceRequests();
+  // config.
+
+  // // const appData = await fetchIpfsJson(config.marketUri)
+  // //   .then(LaborMarketMetaSchema.parse)
+  // //   .catch(() => null);
+
+  // // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
+  // const doc: Omit<LaborMarketDoc, "serviceRequestCount"> = {
+  //   address: event.contract.address,
+  //   valid: appData !== null,
+  //   indexedAt: new Date(),
+  //   appData,
+  //   configuration: {
+  //     owner: config.owner,
+  //     marketUri: config.marketUri,
+  //     delegateBadge: {
+  //       token: config.delegateBadge.token,
+  //       tokenId: config.delegateBadge.tokenId.toString(),
+  //     },
+  //     maintainerBadge: {
+  //       token: config.maintainerBadge.token,
+  //       tokenId: config.maintainerBadge.tokenId.toString(),
+  //     },
+  //     reputationBadge: {
+  //       token: config.reputationBadge.token,
+  //       tokenId: config.reputationBadge.tokenId.toString(),
+  //     },
+  //     reputationParams: {
+  //       rewardPool: config.reputationParams.rewardPool.toNumber(),
+  //       signalStake: config.reputationParams.signalStake.toNumber(),
+  //       submitMax: config.reputationParams.submitMax.toNumber(),
+  //       submitMin: config.reputationParams.submitMin.toNumber(),
+  //     },
+  //     modules: config.modules,
+  //   },
+  // };
+
+  // return mongo.laborMarkets.updateOne(
+  //   { address: doc.address },
+  //   { $set: doc, $setOnInsert: { serviceRequestCount: 0 } },
+  //   { upsert: true }
+  // );
+}
 
 /**
  * Prepare a new Challenge for submission to the contract.
