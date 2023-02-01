@@ -9,7 +9,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
+import { TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";

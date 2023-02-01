@@ -70,11 +70,6 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   uri: z.string(),
 });
 
-// RequestConfigured event from protocol
-export const ServiceRequest_RequestConfiguredEventSchema = z.object({
-  requestId: z.string(),
-});
-
 /**
  * The schema for a ServiceRequestDocument. This should be identical to how the document is stored in mongo.
  */
