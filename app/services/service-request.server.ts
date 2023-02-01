@@ -105,6 +105,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<ServiceRequestDoc, "submissionCount"> = {
+    id: requestId,
     address: event.contract.address,
     valid: appData !== null,
     indexedAt: new Date(),
