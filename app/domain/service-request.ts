@@ -9,6 +9,8 @@ export const ServiceRequestSchema = z.object({
   id: z.string({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
+  language: z.enum(["english", "spanish"]),
+  projects: z.enum(["ethereum", "solana"]),
   laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
@@ -40,9 +42,12 @@ const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
-export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true, description: true }).extend({
-  language: z.enum(["english", "spanish"]),
-  projects: z.enum(["ethereum", "solana"]),
+export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
+  title: true,
+  description: true,
+  language: true,
+  projects: true,
+}).extend({
   startDate: InputDateSchema,
   startTime: InputTimeSchema,
   endDate: InputDateSchema,
@@ -53,10 +58,12 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true,
   rewardPool: TokenAmountSchema,
 });
 
-export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
-  // Metadata needed for DEV_AUTO_INDEX
+export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
+});
+
+export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   laborMarketAddress: true,
 }).extend({
   pTokenAddress: EvmAddressSchema,
@@ -67,25 +74,29 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   uri: z.string(),
 });
 
-// inputs: {
-//   requester: '0x7A9260b97113B51aDf233d2fb3F006F09a329654',
-//   requestId: '1',
-//   uri: '0xef92be2575290ba46efb08e2ffb7294a1881b26b748e4e7d82eee9cda9bca5ff',
-//   pToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-//   pTokenQ: '1',
-//   signalExp: '1675310940',
-//   submissionExp: '1676058000',
-//   enforcementExp: '1677421260'
-// }
+// RequestConfigured event from protocol
 export const ServiceRequest_RequestConfiguredEventSchema = z.object({
-  requester: EvmAddressSchema,
   requestId: z.string(),
-  uri: z.string(),
-  pToken: EvmAddressSchema,
-  pTokenQ: TokenAmountSchema,
-  signalExp: unixDateSchema,
-  submissionExp: unixDateSchema,
-  enforcementExp: unixDateSchema,
+});
+
+/**
+ * The schema for a ServiceRequestDocument. This should be identical to how the document is stored in mongo.
+ */
+const ServiceRequestDocSchema = z.object({
+  address: EvmAddressSchema,
+  valid: z.boolean(),
+  indexedAt: z.date(),
+  configuration: z.object({
+    requester: EvmAddressSchema,
+    pToken: EvmAddressSchema,
+    pTokenQuantity: z.string(),
+    signalExpiration: unixDateSchema,
+    submissionExpiration: unixDateSchema,
+    enforcementExpiration: unixDateSchema,
+    uri: z.string(),
+  }),
+  submissionCount: z.number(),
+  appData: ServiceRequestMetaSchema.nullable(),
 });
 
 // Generate a fake Service Request for testing using faker.
@@ -136,3 +147,4 @@ export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
 export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;
 export type ServiceRequestIpfs = z.infer<typeof ServiceRequestIpfsSchema>;
+export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;
