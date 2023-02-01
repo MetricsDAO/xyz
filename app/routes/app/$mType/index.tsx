@@ -9,24 +9,26 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { TokenAvatar } from "~/components/avatar";
-import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
-import { Card } from "~/components/card";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
-import { Header, Row, Table } from "~/components/table";
 import { LaborMarketSearchSchema } from "~/domain/labor-market";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { MarketplacesListView } from "~/features/marketplaces-list-view";
 import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
 const validator = withZod(LaborMarketSearchSchema);
+
+export type MarketplaceTableProps = {
+  marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
+  projects: UseDataFunctionReturn<typeof loader>["projects"];
+};
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -84,7 +86,7 @@ export default function MarketplaceCollection() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesListView marketplaces={marketplaces} />
+            <MarketplacesListView marketplaces={marketplaces} projects={projects} />
             <div className="w-fit m-auto">
               <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
             </div>
@@ -153,133 +155,6 @@ export default function MarketplaceCollection() {
         </aside>
       </section>
     </Container>
-  );
-}
-
-type MarketplaceTableProps = {
-  marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
-};
-
-function MarketplacesListView({ marketplaces }: MarketplaceTableProps) {
-  if (marketplaces.length === 0) {
-    return <p>No results. Try changing search and filter options.</p>;
-  }
-
-  return (
-    <>
-      {/* Desktop */}
-      <div className="hidden lg:block">
-        <MarketplacesTable marketplaces={marketplaces} />
-      </div>
-      {/* Mobile */}
-      <div className="block lg:hidden">
-        <MarketplacesCard marketplaces={marketplaces} />
-      </div>
-    </>
-  );
-}
-
-function MarketplacesTable({ marketplaces }: MarketplaceTableProps) {
-  const { mType } = useParams();
-
-  return (
-    <Table>
-      <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={2}>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
-        <Header.Column>Chain/Project</Header.Column>
-        <Header.Column>Challenge Pool Totals</Header.Column>
-        <Header.Column>Avg. Challenge Pool</Header.Column>
-        <Header.Column>Active Challenges</Header.Column>
-      </Header>
-      {marketplaces.map((m) => {
-        invariant(m.appData, "marketplace type must be specified");
-        return (
-          <Row asChild columns={6} key={m.address}>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.appData.type, laborMarketAddress: m.address })}
-              className="text-sm font-medium"
-            >
-              <Row.Column span={2}>{m.appData.title}</Row.Column>
-              <Row.Column>
-                {/* <div className="flex items-center gap-2 flex-wrap">
-                  {m.projects.map((p) => (
-                    <Badge key={p.slug} className="pl-2">
-                      <ProjectAvatar project={p} />
-                      <span className="mx-1">{p.name}</span>
-                    </Badge>
-                  ))}
-                </div> */}
-              </Row.Column>
-
-              <Row.Column>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-              </Row.Column>
-
-              <Row.Column>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-              </Row.Column>
-
-              <Row.Column>{m.serviceRequestCount.toLocaleString()}</Row.Column>
-            </Link>
-          </Row>
-        );
-      })}
-    </Table>
-  );
-}
-
-function MarketplacesCard({ marketplaces }: MarketplaceTableProps) {
-  const { mType } = useParams();
-  return (
-    <div>
-      <div className="space-y-4">
-        {marketplaces.map((m) => {
-          invariant(m.appData, "marketplace type must be specified");
-          return (
-            <Card asChild key={m.address}>
-              <Link
-                to={`/app/${m.appData.type}/m/${m.address}`}
-                className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
-              >
-                <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
-                <div className="text-sm font-medium">{m.appData.title}</div>
-
-                <div>Chain/Project</div>
-                {/* <div className="flex flex-wrap gap-2">
-                  {m.projects.map((p) => (
-                    <Badge key={p.slug} className="pl-2">
-                      <ProjectAvatar project={p} />
-                      <span className="mx-1">{p.name}</span>
-                    </Badge>
-                  ))}
-                </div> */}
-
-                <div>Challenge Pool Totals</div>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-
-                <div>Avg. Challenge Pool</div>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-
-                <div>Active Challenges</div>
-                <div>{m.serviceRequestCount.toLocaleString()}</div>
-              </Link>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
   );
 }
 

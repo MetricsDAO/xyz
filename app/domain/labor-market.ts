@@ -20,7 +20,7 @@ export const LaborMarketSchema = z.object({
   submitRepMax: zfd.numeric(z.number()),
   reviewBadgerAddress: EvmAddressSchema,
   reviewBadgerTokenId: z.string().min(1, "Required"),
-  projectIds: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   sponsorAddress: EvmAddressSchema,
 });
 
@@ -29,7 +29,7 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
   title: true,
   description: true,
   type: true,
-  projectIds: true,
+  projectSlugs: true,
   rewardTokens: true,
 });
 
@@ -50,7 +50,7 @@ export function fakeLaborMarketNew(): LaborMarketForm {
     submitRepMax: faker.datatype.number(100),
     reviewBadgerAddress: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
     reviewBadgerTokenId: "3",
-    projectIds: [],
+    projectSlugs: ["ethereum", "polygon"],
   };
 }
 
@@ -66,7 +66,7 @@ export const LaborMarketSearchSchema = z.object({
   sortBy: z.enum(["title", "serviceRequests"]).default("title").describe("Sort by column."),
   type: z.enum(["brainstorm", "analyze"]).describe("Type of the labor market (MDAO specific)."),
   order: z.enum(["asc", "desc"]).default("desc").describe("Order of the results."),
-  project: z.array(z.string()).optional().describe("Project IDs to filter by."),
+  project: z.array(z.string()).optional().describe("Project slugs to filter by."),
   token: z.array(z.string()).optional().describe("Token symbols to filter by."),
   page: z.number().min(1).default(1).describe("Page number."),
   first: z.number().min(1).max(100).default(12).describe("The number of results to return."),
@@ -83,6 +83,7 @@ const BadgePairSchema = z.object({
 const LaborMarketDocSchema = z.object({
   address: EvmAddressSchema,
   valid: z.boolean(),
+  indexedAt: z.date(),
   configuration: z.object({
     marketUri: z.string(),
     owner: EvmAddressSchema,
