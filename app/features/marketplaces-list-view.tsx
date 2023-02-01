@@ -2,11 +2,12 @@ import type { Project } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import { ProjectAvatar, TokenAvatar } from "~/components/avatar";
+import { TokenAvatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
 import type { MarketplaceTableProps } from "~/routes/app/$mType";
+import { ProjectBadges } from "./project-badges";
 
 export function MarketplacesListView(props: MarketplaceTableProps) {
   if (props.marketplaces.length === 0) {
@@ -128,21 +129,6 @@ function MarketplacesCard({ marketplaces, projects }: MarketplaceTableProps) {
           );
         })}
       </div>
-    </div>
-  );
-}
-
-function ProjectBadges({ projects }: { projects: Project[] }) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {projects.map((p) => {
-        return (
-          <Badge key={p.id} className="pl-2">
-            <ProjectAvatar project={p} />
-            <span className="mx-1">{p.name}</span>
-          </Badge>
-        );
-      })}
     </div>
   );
 }

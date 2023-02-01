@@ -1,3 +1,4 @@
+import type { Project } from "@prisma/client";
 import { Link, Outlet, useParams } from "@remix-run/react";
 import { $path } from "remix-routes";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
@@ -10,7 +11,9 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
+import { listProjects } from "~/services/projects.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
@@ -19,11 +22,18 @@ export const loader = async (data: DataFunctionArgs) => {
     throw notFound("Labor market not found");
   }
 
-  return typedjson({ laborMarket });
+  const allProjects = await listProjects();
+  const laborMarketProjects = laborMarket.appData?.projectSlugs
+    .map((slug) => {
+      return allProjects.find((p) => p.slug === slug);
+    })
+    .filter((p): p is Project => !!p);
+
+  return typedjson({ laborMarket, laborMarketProjects });
 };
 
 export default function Marketplace() {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
+  const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -56,14 +66,9 @@ export default function Marketplace() {
             ) : (
               <></>
             )}
-            <DetailItem title="Chain/Project">
-              {/*{laborMarket?.projects?.map((p) => (
-                  <Badge key={p.slug} className="pl-2">
-                    <ProjectAvatar project={p} />
-                    <span className="mx-1">{p.name}</span>
-                  </Badge>
-                ))}*/}
-            </DetailItem>
+            {laborMarketProjects && (
+              <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
+            )}
           </Detail>
         </div>
         <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
