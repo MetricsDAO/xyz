@@ -1,7 +1,5 @@
 import { Slot } from "@radix-ui/react-slot";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { redirect } from "@remix-run/server-runtime";
-import { useEffect, useState } from "react";
 
 // https://www.rainbowkit.com/docs/custom-connect-button
 function ConnectWalletWrapper(props: { children: React.ReactNode }) {

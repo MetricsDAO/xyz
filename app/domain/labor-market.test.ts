@@ -12,7 +12,7 @@ describe("LaborMarketFormSchema", () => {
       submitRepMax: 100,
       reviewBadgerAddress: faker.finance.ethereumAddress(),
       reviewBadgerTokenId: "foo",
-      projectIds: ["1"],
+      projectSlugs: ["ethereum"],
       // @ts-expect-error - so we can simulate a bad input from the client
       launch: {
         access: "delegates",
@@ -33,7 +33,7 @@ describe("LaborMarketFormSchema", () => {
       submitRepMax: 100,
       reviewBadgerAddress: faker.finance.ethereumAddress(),
       reviewBadgerTokenId: "foo",
-      projectIds: ["1"],
+      projectSlugs: ["ethereum"],
       launch: {
         access: "delegates",
         badgerAddress: faker.finance.ethereumAddress(),

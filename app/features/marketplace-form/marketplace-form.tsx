@@ -40,10 +40,10 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <Label size="lg">Blockchain/Project(s)</Label>
         <ValidatedCombobox
           placeholder="e.g Ethereum, Solana, etc..."
-          name="projectIds"
-          options={projects.map((p) => ({ label: p.name, value: p.id }))}
+          name="projectSlugs"
+          options={projects.map((p) => ({ label: p.name, value: p.slug }))}
         />
-        <Error name="projectIds" />
+        <Error name="projectSlugs" />
       </Field>
 
       <section className="space-y-4">
