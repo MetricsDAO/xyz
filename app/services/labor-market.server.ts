@@ -12,11 +12,7 @@ import { nodeProvider } from "./node.server";
  */
 export const searchLaborMarkets = async (params: LaborMarketSearch) => {
   return mongo.laborMarkets
-    .find({
-      valid: true,
-      ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
-      ...(params.project ? { "appData.projectIds": { $in: params.project } } : {}),
-    })
+    .find(searchParams(params))
     .sort({ [params.sortBy]: params.order })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
@@ -29,10 +25,22 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
  * @returns {number} - The number of LaborMarkets that match the search.
  */
 export const countLaborMarkets = async (params: LaborMarketSearch) => {
-  // TODO: Filter on "type" once we start saving that in the appData
-  return mongo.laborMarkets.countDocuments({ $text: { $search: params.q ?? "" } });
+  return mongo.laborMarkets.countDocuments(searchParams(params));
 };
 
+/**
+ * Convenience function to share the search parameters between search and count.
+ * @param {LaborMarketSearch} params - The search parameters.
+ * @returns criteria to find labor market in MongoDb
+ */
+const searchParams = (params: LaborMarketSearch): Parameters<typeof mongo.laborMarkets.find>[0] => {
+  return {
+    valid: true,
+    "appData.type": params.type,
+    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
+  };
+};
 /**
  * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
  * @param {LaborMarketForm} form - The labor market form data to prepare.
@@ -60,6 +68,7 @@ export async function indexLaborMarket(event: TracerEvent) {
   const doc: Omit<LaborMarketDoc, "serviceRequestCount"> = {
     address: event.contract.address,
     valid: appData !== null,
+    indexedAt: new Date(),
     appData,
     configuration: {
       owner: config.owner,
