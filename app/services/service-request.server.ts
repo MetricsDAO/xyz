@@ -1,15 +1,11 @@
+import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
-import type {
-  ServiceRequestContract,
-  ServiceRequestDoc,
-  ServiceRequestForm,
-  ServiceRequestSearch,
-} from "~/domain/service-request";
-import { ServiceRequestContractSchema, ServiceRequestIpfsSchema } from "~/domain/service-request";
+import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
+import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
 import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
-import { fetchIpfsJson } from "./ipfs.server";
+import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
 import { prisma } from "./prisma.server";
@@ -77,8 +73,9 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
  * @param {ServiceRequestForm} form - service request form data
  * @returns {ServiceRequestContract} - The prepared service request.
  */
-export const prepareServiceRequest = (laborMarketAddress: string, form: ServiceRequestForm): ServiceRequestContract => {
-  // TODO: upload data to ipfs
+export const prepareServiceRequest = async (user: User, laborMarketAddress: string, form: ServiceRequestForm) => {
+  const metadata = ServiceRequestMetaSchema.parse(form); // Prune extra fields from form
+  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
 
   // parse for type safety
   const contractData = ServiceRequestContractSchema.parse({
@@ -87,7 +84,7 @@ export const prepareServiceRequest = (laborMarketAddress: string, form: ServiceR
     description: form.description,
     pTokenAddress: form.rewardToken,
     pTokenQuantity: form.rewardPool,
-    uri: "ipfs-uri",
+    uri: cid,
     enforcementExpiration: parseDatetime(form.reviewEndDate, form.reviewEndTime),
     submissionExpiration: parseDatetime(form.endDate, form.endTime),
     signalExpiration: parseDatetime(form.startDate, form.startTime),
@@ -103,7 +100,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   const requestId = z.string().parse(event.decoded.inputs.requestId);
   const serviceRequest = await contract.serviceRequests(requestId, { blockTag: event.block.number });
   const appData = await fetchIpfsJson(serviceRequest.uri)
-    .then(ServiceRequestIpfsSchema.parse)
+    .then(ServiceRequestMetaSchema.parse)
     .catch(() => null);
 
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.

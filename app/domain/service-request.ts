@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
-import { fromUnixTimestamp, validateDate, validateTime } from "~/utils/date";
+import { validateDate, validateTime } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
 
@@ -14,12 +14,6 @@ export const ServiceRequestSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
-
-const unixDateSchema = z.preprocess((arg) => {
-  if (typeof arg == "string") {
-    return fromUnixTimestamp(arg);
-  }
-}, z.date());
 
 const DateSchema = z.preprocess((arg) => {
   if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
@@ -61,6 +55,8 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
 export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
+  language: true,
+  projects: true,
 });
 
 export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
@@ -90,9 +86,9 @@ const ServiceRequestDocSchema = z.object({
     requester: EvmAddressSchema,
     pToken: EvmAddressSchema,
     pTokenQuantity: z.string(),
-    signalExpiration: unixDateSchema,
-    submissionExpiration: unixDateSchema,
-    enforcementExpiration: unixDateSchema,
+    signalExpiration: z.date(),
+    submissionExpiration: z.date(),
+    enforcementExpiration: z.date(),
     uri: z.string(),
   }),
   submissionCount: z.number(),
@@ -136,15 +132,9 @@ export const ServiceRequestIndexerSchema = ServiceRequestContractSchema.extend({
   contractId: z.string(),
 });
 
-export const ServiceRequestIpfsSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-});
-
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
 export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;
-export type ServiceRequestIpfs = z.infer<typeof ServiceRequestIpfsSchema>;
 export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;

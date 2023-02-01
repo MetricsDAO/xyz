@@ -17,6 +17,7 @@ import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-se
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { prepareServiceRequest } from "~/services/service-request.server";
+import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
@@ -35,11 +36,13 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
+  const user = await getUser(request);
+  invariant(user, "You must be logged in to create a marketplace");
   const result = await validator.validate(await request.formData());
   const { laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
-  const preparedServiceRequest = await prepareServiceRequest(laborMarketAddress, result.data);
+  const preparedServiceRequest = await prepareServiceRequest(user, laborMarketAddress, result.data);
   return typedjson({ preparedServiceRequest });
 };
 
