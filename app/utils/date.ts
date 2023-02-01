@@ -29,10 +29,10 @@ export function unixTimestamp(date: Date): number {
 
 /**
  * Returns a Date of a unix timestamp (in seconds)
- * @param seconds string of unix timestamp in seconds
+ * @param seconds unix timestamp in seconds
  */
-export function fromUnixTimestamp(seconds: string): Date {
-  return dayjs.unix(parseInt(seconds)).toDate();
+export function fromUnixTimestamp(seconds: number): Date {
+  return dayjs.unix(seconds).toDate();
 }
 
 /**

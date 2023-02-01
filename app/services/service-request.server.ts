@@ -113,9 +113,9 @@ export const indexServiceRequest = async (event: TracerEvent) => {
       uri: serviceRequest.uri,
       pToken: serviceRequest.pToken,
       pTokenQuantity: serviceRequest.pTokenQ.toString(),
-      signalExpiration: fromUnixTimestamp(serviceRequest.signalExp.toString()),
-      submissionExpiration: fromUnixTimestamp(serviceRequest.submissionExp.toString()),
-      enforcementExpiration: fromUnixTimestamp(serviceRequest.enforcementExp.toString()),
+      signalExpiration: fromUnixTimestamp(serviceRequest.signalExp.toNumber()),
+      submissionExpiration: fromUnixTimestamp(serviceRequest.submissionExp.toNumber()),
+      enforcementExpiration: fromUnixTimestamp(serviceRequest.enforcementExp.toNumber()),
     },
     appData,
   };
