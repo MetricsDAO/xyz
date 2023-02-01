@@ -63,11 +63,18 @@ export default function Index() {
               <b className="text-white">high-quality insights</b> to any project in the{" "}
               <b className="text-white">Web3</b> space.
             </p>
-            <MarketingButton label="Get In Touch" link="/todo" variant="outline" />
+            <MarketingButton
+              label="Get In Touch"
+              link="https://docs.google.com/forms/d/e/1FAIpQLSdh5JDUp-7MSl-N-Mk_4hNWmGdNRkpcdhzuLMbSP0ef9f094Q/viewform"
+              variant="outline"
+            />
           </section>
           <section id="offerings" className="flex flex-col items-center py-24 lg:ml-10 px-8">
             <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">Our Core Offerings</h2>
-            <MarketingButton label="Get In Touch" link="/todo" />
+            <MarketingButton
+              label="Get In Touch"
+              link="https://docs.google.com/forms/d/e/1FAIpQLSdh5JDUp-7MSl-N-Mk_4hNWmGdNRkpcdhzuLMbSP0ef9f094Q/viewform"
+            />
             <div className="flex flex-col lg:flex-row gap-8 mt-20">
               <div className="mx-auto">
                 <div className="bg-[url(/img/marketing/partner-core-left.png)] bg-cover bg-no-repeat rounded-3xl text-white text-base max-w-xs px-5 pt-7 pb-16 space-y-5">
