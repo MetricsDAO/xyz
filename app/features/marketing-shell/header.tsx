@@ -4,7 +4,7 @@ import { Bars3Icon } from "@heroicons/react/20/solid";
 import { Link } from "@remix-run/react";
 
 const links = [
-  { link: "https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/mGWNhyjPX5PDPhIGxV81/", label: "Protocol" },
+  { link: "https://metricsdao.xyz/whitepaper", label: "Protocol" },
   { link: "https://docs.metricsdao.xyz/", label: "Docs" },
   { link: "https://discourse.metricsdao.xyz/", label: "Governance" },
   { link: "https://blog.metricsdao.xyz/", label: "Blog" },
