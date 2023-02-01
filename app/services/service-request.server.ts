@@ -59,14 +59,6 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
   });
 };
 
-// /**
-//  * Creates or replaces a new ServiceRequest. This is only really used by the indexer.
-//  * @param doc - The service request document.
-//  */
-// export const upsertServiceRequest = async (doc: ServiceRequestDoc) => {
-//   return mongo.serviceRequests.updateOne({ id: doc.id }, { $set: doc }, { upsert: true });
-// };
-
 /**
  * Prepare a new Challenge for submission to the contract.
  * @param {string} laborMarketAddress - The labor market address the service request belongs to
@@ -122,7 +114,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   };
 
   return mongo.serviceRequests.updateOne(
-    { address: doc.address },
+    { address: doc.address, id: doc.id },
     { $set: doc, $setOnInsert: { submissionCount: 0 } },
     { upsert: true }
   );
