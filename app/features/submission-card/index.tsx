@@ -1,7 +1,7 @@
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import type { Submission } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
-import { Card, Score, UserBadge } from "~/components";
+import { Avatar, Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
@@ -32,7 +32,19 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
         )}
         <div className="flex flex-col items-center gap-2">
           <Score score={submission.score} />
-          <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>
+          <div className="flex text-xs text-gray-500">
+            {/*TODO: use actual data */}
+            {true ? (
+              <>
+                <UserCircleIcon height={6} width={6} />
+                <p className="text-zinc-800">You</p>
+                <p>+</p>
+              </>
+            ) : (
+              <></>
+            )}
+            <p>{totalReviews} reviewers</p>
+          </div>
         </div>
       </Link>
       <div className="flex flex-wrap items-center text-xs">
