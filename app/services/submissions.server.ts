@@ -64,15 +64,12 @@ export const upsertSubmission = async (submission: SubmissionIndexer) => {
  * @param {ServiceRequest} form - the service request the submission is being submitted for
  * @returns {SubmissionContract} - The prepared submission
  */
-export const prepareSubmission = (
-  serviceRequest: Pick<ServiceRequest, "laborMarketAddress">,
-  form: SubmissionForm
-): SubmissionContract => {
+export const prepareSubmission = (laborMarketAddress: string, form: SubmissionForm): SubmissionContract => {
   // TODO: upload data to ipfs
 
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({
-    laborMarketAddress: serviceRequest.laborMarketAddress,
+    laborMarketAddress: laborMarketAddress,
     serviceRequestId: 1, // TODO should come from db
     uri: "ipfs-uri",
   });
