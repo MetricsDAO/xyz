@@ -7,8 +7,6 @@ import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/di
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { ProjectAvatar } from "~/components/avatar";
-import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -23,6 +21,11 @@ import { countServiceRequests, searchServiceRequests } from "~/services/service-
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 import { findLaborMarket } from "~/services/labor-market.server";
+import type { Project } from "@prisma/client";
+import { ProjectBadges } from "~/features/project-badges";
+import { listProjects } from "~/services/projects.server";
+import { notFound } from "remix-utils";
+import { DetailItem } from "~/components";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -30,12 +33,21 @@ const paramsSchema = z.object({ laborMarketAddress: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
   const { laborMarketAddress } = paramsSchema.parse(data.params);
   const laborMarket = await findLaborMarket(laborMarketAddress);
+  if (!laborMarket) {
+    throw notFound("Labor market not found");
+  }
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
-  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket });
+  const allProjects = await listProjects();
+  const laborMarketProjects = laborMarket.appData?.projectSlugs
+    .map((slug) => {
+      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs.includes(p.slug));
+    })
+    .filter((p): p is Project => !!p);
+  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, laborMarketProjects });
 };
 
 export default function MarketplaceIdChallenges() {
@@ -146,7 +158,7 @@ type MarketplaceChallengesTableProps = {
 function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
-  const { laborMarketAddress } = useTypedLoaderData<typeof loader>();
+  const { laborMarketAddress, laborMarketProjects } = useTypedLoaderData<typeof loader>();
 
   return (
     <Table>
@@ -172,12 +184,9 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
               <Row.Column>
                 <div className="flex">
                   <div>
-                    {/* {sr.laborMarket.projects?.map((p) => (
-                      <Badge key={p.slug} className="pl-2">
-                        <ProjectAvatar project={p} />
-                        <span className="mx-1">{p.name}</span>
-                      </Badge>
-                    ))} */}
+                    {laborMarketProjects && (
+                      <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
+                    )}
                   </div>
                 </div>
               </Row.Column>
@@ -198,7 +207,7 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
 }
 
 function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTableProps) {
-  const { laborMarketAddress, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { laborMarketAddress, laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
 
   return (
     <div className="space-y-4">
@@ -215,12 +224,9 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>Chain/Project</div>
               <div className="flex">
                 <div>
-                  {/* {sr.laborMarket.projects?.map((p) => (
-                    <Badge key={p.slug} className="pl-2">
-                      <ProjectAvatar project={p} />
-                      <span className="mx-1">{p.name}</span>
-                    </Badge>
-                  ))} */}
+                  {laborMarketProjects && (
+                    <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
+                  )}
                 </div>
               </div>
 

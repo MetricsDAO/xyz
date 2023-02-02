@@ -10,13 +10,17 @@ import { Container } from "~/components/container";
 import { Button } from "~/components/button";
 import { Badge } from "~/components/badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { ProjectAvatar } from "~/components/avatar";
-import { countReviews } from "~/services/review-service.server";
+
 import { RewardBadge } from "~/components/reward-badge";
 import { dateHasPassed } from "~/utils/date";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
+import { ProjectBadges } from "~/features/project-badges";
+import { findLaborMarket } from "~/services/labor-market.server";
+import { listProjects } from "~/services/projects.server";
+import type { Project } from "@prisma/client";
+import { UserBadge } from "~/components";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -25,14 +29,24 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!serviceRequest) {
     throw notFound({ serviceRequestId });
   }
+  const laborMarket = await findLaborMarket(laborMarketAddress);
+  if (!laborMarket) {
+    throw notFound({ laborMarket });
+  }
 
+  const allProjects = await listProjects();
+  const laborMarketProjects = laborMarket.appData?.projectSlugs
+    .map((slug) => {
+      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs.includes(p.slug));
+    })
+    .filter((p): p is Project => !!p);
   // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = 0;
-  return typedjson({ serviceRequest, numOfReviews }, { status: 200 });
+  return typedjson({ serviceRequest, numOfReviews, laborMarket, laborMarketProjects }, { status: 200 });
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, numOfReviews, laborMarketProjects, laborMarket } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -90,18 +104,13 @@ export default function ServiceRequest() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          {/*<UserBadge url="u/id" address={serviceRequest.laborMarket.sponsorAddress as `0x${string}`} balance={200} />*/}
+          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} balance={200} />
         </DetailItem>
-        <DetailItem title="Chain/Project">
-          <div className="flex space-x-4">
-            {/* {serviceRequest.laborMarket.projects.map((p) => (
-              <Badge key={p.slug} className="pl-2">
-                <ProjectAvatar project={p} />
-                <span className="mx-1">{p.name}</span>
-              </Badge>
-            ))} */}
-          </div>
-        </DetailItem>
+        <div className="flex space-x-4">
+          {laborMarketProjects && (
+            <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
+          )}
+        </div>
         <DetailItem title="Reward Pool">
           <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
         </DetailItem>
