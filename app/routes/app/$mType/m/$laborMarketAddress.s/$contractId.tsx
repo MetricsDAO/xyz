@@ -35,8 +35,8 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { useOptionalUser } from "~/hooks/use-user";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
+import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
-import { SCORE_COLOR } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({
