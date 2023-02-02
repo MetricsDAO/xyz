@@ -22,7 +22,7 @@ program
       : LaborMarketNetwork.address;
     const res = await pine.createTracer({
       namespace: env.PINE_NAMESPACE,
-      version: "0.0.1",
+      version: "0.0.2",
       blockchain: {
         name: "polygon",
         network: "mainnet",
