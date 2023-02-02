@@ -35,18 +35,18 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   }
 
   const allProjects = await listProjects();
-  const laborMarketProjects = laborMarket.appData?.projectSlugs
+  const serviceRequestProjects = laborMarket.appData?.projectSlugs
     .map((slug) => {
-      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs.includes(p.slug));
+      return allProjects.find((p) => p.slug === slug && serviceRequest.appData?.projects.includes(slug));
     })
     .filter((p): p is Project => !!p);
   // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = 0;
-  return typedjson({ serviceRequest, numOfReviews, laborMarket, laborMarketProjects }, { status: 200 });
+  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects }, { status: 200 });
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, laborMarketProjects, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -107,8 +107,8 @@ export default function ServiceRequest() {
           <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} balance={200} />
         </DetailItem>
         <div className="flex space-x-4">
-          {laborMarketProjects && (
-            <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
+          {serviceRequestProjects && (
+            <DetailItem title="Chain/Project">{<ProjectBadges projects={serviceRequestProjects} />}</DetailItem>
           )}
         </div>
         <DetailItem title="Reward Pool">

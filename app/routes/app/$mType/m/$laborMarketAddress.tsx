@@ -25,7 +25,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const allProjects = await listProjects();
   const laborMarketProjects = laborMarket.appData?.projectSlugs
     .map((slug) => {
-      return allProjects.find((p) => p.slug === slug);
+      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs);
     })
     .filter((p): p is Project => !!p);
 
@@ -60,7 +60,7 @@ export default function Marketplace() {
         <div className="flex flex-wrap gap-x-8">
           <Detail>
             {laborMarket?.configuration.owner ? (
-              <DetailItem title="Sponser">
+              <DetailItem title="Sponsor">
                 <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} balance={200} />
               </DetailItem>
             ) : (

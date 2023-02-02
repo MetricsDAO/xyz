@@ -44,7 +44,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const allProjects = await listProjects();
   const laborMarketProjects = laborMarket.appData?.projectSlugs
     .map((slug) => {
-      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs.includes(p.slug));
+      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs);
     })
     .filter((p): p is Project => !!p);
   return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, laborMarketProjects });
@@ -183,11 +183,7 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
               <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
-                  <div>
-                    {laborMarketProjects && (
-                      <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
-                    )}
-                  </div>
+                  <div>{laborMarketProjects && <ProjectBadges projects={laborMarketProjects} />}</div>
                 </div>
               </Row.Column>
 
