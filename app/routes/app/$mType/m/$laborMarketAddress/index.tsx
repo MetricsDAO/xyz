@@ -22,22 +22,26 @@ import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
+import { findLaborMarket } from "~/services/labor-market.server";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
   const { laborMarketAddress } = paramsSchema.parse(data.params);
+  const laborMarket = await findLaborMarket(laborMarketAddress);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
-  const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
+  const searchParams = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
+  const serviceRequests = await searchServiceRequests(searchParams);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
-  return typedjson({ serviceRequests, totalResults, params });
+  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket });
 };
 
 export default function MarketplaceIdChallenges() {
   const { totalResults, params, serviceRequests } = useTypedLoaderData<typeof loader>();
+  console.log("service requests", serviceRequests);
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
@@ -144,6 +148,8 @@ type MarketplaceChallengesTableProps = {
 function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
+  const { laborMarketAddress } = useTypedLoaderData<typeof loader>();
+
   return (
     <Table>
       <Header columns={6} className="mb-2">
@@ -155,36 +161,32 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
       </Header>
       {serviceRequests.map((sr) => {
         return (
-          <Row asChild columns={6} key={sr.contractId}>
+          <Row asChild columns={6} key={sr.id}>
             <Link
               to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
                 mType: mType,
-                laborMarketAddress: sr.laborMarketAddress,
-                serviceRequestId: sr.contractId,
+                laborMarketAddress: laborMarketAddress,
+                serviceRequestId: sr.id,
               })}
               className="text-sm font-medium"
             >
-              <Row.Column span={2}>{sr.title}</Row.Column>
+              <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
                   <div>
-                    {sr.laborMarket.projects?.map((p) => (
+                    {/* {sr.laborMarket.projects?.map((p) => (
                       <Badge key={p.slug} className="pl-2">
                         <ProjectAvatar project={p} />
                         <span className="mx-1">{p.name}</span>
                       </Badge>
-                    ))}
+                    ))} */}
                   </div>
                 </div>
               </Row.Column>
 
               <Row.Column>5 Sol</Row.Column>
-              <Row.Column>
-                <Countdown date={sr.submissionExpiration} />
-              </Row.Column>
-              <Row.Column>
-                <Countdown date={sr.enforcementExpiration} />
-              </Row.Column>
+              <Row.Column>{/* <Countdown date={sr.submissionExpiration} /> */}</Row.Column>
+              <Row.Column>{/* <Countdown date={sr.enforcementExpiration} /> */}</Row.Column>
             </Link>
           </Row>
         );
@@ -194,40 +196,38 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
 }
 
 function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTableProps) {
+  const { laborMarketAddress, laborMarket } = useTypedLoaderData<typeof loader>();
+
   return (
     <div className="space-y-4">
       {serviceRequests.map((sr) => {
         return (
-          <Card asChild key={sr.contractId}>
+          <Card asChild key={sr.id}>
             <Link
-              to={`/app/${sr.laborMarket.type}/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
+              to={`/app/${laborMarket?.appData?.type}/m/${laborMarketAddress}/sr/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>
-              <div className="text-sm font-medium">{sr.title}</div>
+              <div className="text-sm font-medium">{sr.appData?.title}</div>
 
               <div>Chain/Project</div>
               <div className="flex">
                 <div>
-                  {sr.laborMarket.projects?.map((p) => (
+                  {/* {sr.laborMarket.projects?.map((p) => (
                     <Badge key={p.slug} className="pl-2">
                       <ProjectAvatar project={p} />
                       <span className="mx-1">{p.name}</span>
                     </Badge>
-                  ))}
+                  ))} */}
                 </div>
               </div>
 
               <div>Reward Pool</div>
               <div>5 Sol</div>
               <div>Submit Deadline</div>
-              <div className="text-gray-500 text-sm">
-                <Countdown date={sr.submissionExpiration} />
-              </div>
+              <div className="text-gray-500 text-sm">{/* <Countdown date={sr.submissionExpiration} /> */}</div>
               <div>Review Deadline</div>
-              <div className="text-gray-500 text-sm">
-                <Countdown date={sr.enforcementExpiration} />
-              </div>
+              <div className="text-gray-500 text-sm">{/* <Countdown date={sr.enforcementExpiration} /> */}</div>
             </Link>
           </Card>
         );
