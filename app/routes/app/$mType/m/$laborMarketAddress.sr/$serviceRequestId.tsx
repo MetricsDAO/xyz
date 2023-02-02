@@ -26,8 +26,8 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     throw notFound({ serviceRequestId });
   }
 
-  const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
-  const numOfReviews = await countReviews(submissionIds);
+  // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
+  const numOfReviews = 0;
   return typedjson({ serviceRequest, numOfReviews }, { status: 200 });
 };
 
@@ -39,7 +39,7 @@ export default function ServiceRequest() {
   return (
     <Container className="py-16 px-10">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
-        <h1 className="text-3xl font-semibold">{serviceRequest.title}</h1>
+        <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
           <Button variant="cancel" size="lg" asChild>
             <ConnectWalletWrapper>
@@ -47,8 +47,8 @@ export default function ServiceRequest() {
                 <Link
                   to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
                     mType: mType,
-                    laborMarketAddress: serviceRequest.laborMarketAddress,
-                    serviceRequestId: serviceRequest.contractId,
+                    laborMarketAddress: serviceRequest.address,
+                    serviceRequestId: serviceRequest.id,
                   })}
                 >
                   Claim to Review
@@ -62,8 +62,8 @@ export default function ServiceRequest() {
                 <Link
                   to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
                     mType: mType,
-                    laborMarketAddress: serviceRequest.laborMarketAddress,
-                    serviceRequestId: serviceRequest.contractId,
+                    laborMarketAddress: serviceRequest.address,
+                    serviceRequestId: serviceRequest.id,
                   })}
                 >
                   Claim to Submit
@@ -77,8 +77,8 @@ export default function ServiceRequest() {
                 <Link
                   to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
                     mType: mType,
-                    laborMarketAddress: serviceRequest.laborMarketAddress,
-                    serviceRequestId: serviceRequest.contractId,
+                    laborMarketAddress: serviceRequest.address,
+                    serviceRequestId: serviceRequest.id,
                   })}
                 >
                   Submit
@@ -94,35 +94,39 @@ export default function ServiceRequest() {
         </DetailItem>
         <DetailItem title="Chain/Project">
           <div className="flex space-x-4">
-            {serviceRequest.laborMarket.projects.map((p) => (
+            {/* {serviceRequest.laborMarket.projects.map((p) => (
               <Badge key={p.slug} className="pl-2">
                 <ProjectAvatar project={p} />
                 <span className="mx-1">{p.name}</span>
               </Badge>
-            ))}
+            ))} */}
           </div>
         </DetailItem>
         <DetailItem title="Reward Pool">
           <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
         </DetailItem>
         <DetailItem title="Submissions">
-          <Badge className="px-4 min-w-full">{serviceRequest._count.submissions}</Badge>
+          <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
         </DetailItem>
         <DetailItem title="Reviews">
           <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
         </DetailItem>
         <DetailItem title="Winner">
-          {!dateHasPassed(serviceRequest.enforcementExpiration) ? <Badge>Pending</Badge> : <Badge>todo</Badge>}
+          {!dateHasPassed(serviceRequest.configuration.enforcementExpiration) ? (
+            <Badge>Pending</Badge>
+          ) : (
+            <Badge>todo</Badge>
+          )}
         </DetailItem>
       </Detail>
 
       <article className="text-gray-500 text-sm mb-20 max-w-2xl">
-        <p>{serviceRequest.description}</p>
+        <p>{serviceRequest.appData?.description}</p>
       </article>
 
       <TabNav className="mb-10">
         <TabNavLink to="" end>
-          Submissions <span className="text-gray-400">({serviceRequest._count.submissions})</span>
+          Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
         </TabNavLink>
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>

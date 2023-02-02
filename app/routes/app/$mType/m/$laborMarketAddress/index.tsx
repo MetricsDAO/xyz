@@ -33,15 +33,13 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
-  const searchParams = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
-  const serviceRequests = await searchServiceRequests(searchParams);
+  const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
   return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket });
 };
 
 export default function MarketplaceIdChallenges() {
   const { totalResults, params, serviceRequests } = useTypedLoaderData<typeof loader>();
-  console.log("service requests", serviceRequests);
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
@@ -185,8 +183,12 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
               </Row.Column>
 
               <Row.Column>5 Sol</Row.Column>
-              <Row.Column>{/* <Countdown date={sr.submissionExpiration} /> */}</Row.Column>
-              <Row.Column>{/* <Countdown date={sr.enforcementExpiration} /> */}</Row.Column>
+              <Row.Column>
+                <Countdown date={sr.configuration?.submissionExpiration} />
+              </Row.Column>
+              <Row.Column>
+                <Countdown date={sr.configuration?.enforcementExpiration} />
+              </Row.Column>
             </Link>
           </Row>
         );
@@ -225,9 +227,13 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>Reward Pool</div>
               <div>5 Sol</div>
               <div>Submit Deadline</div>
-              <div className="text-gray-500 text-sm">{/* <Countdown date={sr.submissionExpiration} /> */}</div>
+              <div className="text-gray-500 text-sm">
+                <Countdown date={sr.configuration?.submissionExpiration} />
+              </div>
               <div>Review Deadline</div>
-              <div className="text-gray-500 text-sm">{/* <Countdown date={sr.enforcementExpiration} /> */}</div>
+              <div className="text-gray-500 text-sm">
+                <Countdown date={sr.configuration?.enforcementExpiration} />
+              </div>
             </Link>
           </Card>
         );

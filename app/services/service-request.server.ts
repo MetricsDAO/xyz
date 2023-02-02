@@ -39,6 +39,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
 const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
   return {
     valid: true,
+    ...(params.laborMarket ? { address: params.laborMarket } : {}),
     ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
     ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
   };
@@ -50,14 +51,7 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
-  return prisma.serviceRequest.findUnique({
-    where: { contractId_laborMarketAddress: { contractId: id, laborMarketAddress } },
-    include: {
-      submissions: true,
-      laborMarket: { include: { projects: true } },
-      _count: { select: { submissions: true } },
-    },
-  });
+  return mongo.serviceRequests.findOne({ id, address: laborMarketAddress, valid: true });
 };
 
 /**

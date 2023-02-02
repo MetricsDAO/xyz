@@ -16,14 +16,14 @@ export default function ServiceIdTimeline() {
   }
 
   const times = [
-    { label: "claim to submit deadline", time: serviceRequest.signalExpiration },
-    { label: "submissions open", time: serviceRequest.signalExpiration },
-    { label: "submission deadline", time: serviceRequest.submissionExpiration },
-    {
-      label: "claim to review deadline",
-      time: claimToReviewDate(serviceRequest.createdAt, serviceRequest.enforcementExpiration),
-    },
-    { label: "review deadline & winners", time: serviceRequest.enforcementExpiration },
+    { label: "claim to submit deadline", time: serviceRequest.configuration?.signalExpiration },
+    { label: "submissions open", time: serviceRequest.configuration?.signalExpiration },
+    { label: "submission deadline", time: serviceRequest.configuration?.submissionExpiration },
+    // {
+    //   label: "claim to review deadline",
+    //   time: claimToReviewDate(serviceRequest.createdAt, serviceRequest.configuration?.enforcementExpiration),
+    // },
+    { label: "review deadline & winners", time: serviceRequest.configuration?.enforcementExpiration },
   ];
 
   const upcoming = times.filter((t) => t.time && !dateHasPassed(t.time));
@@ -37,11 +37,11 @@ export default function ServiceIdTimeline() {
         <div className="space-y-4">
           <h3 className="font-semibold text-lg">Upcoming</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-            {upcoming.map((u) => (
+            {/* {upcoming.map((u) => (
               <CountdownCard start={serviceRequest.createdAt} end={u.time} key={u.label}>
                 {u.label}
               </CountdownCard>
-            ))}
+            ))} */}
           </div>
         </div>
       )}
@@ -51,11 +51,11 @@ export default function ServiceIdTimeline() {
         <div className="space-y-4">
           <h3 className="font-semibold text-lg">Passed</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-            {passed.map((p) => (
+            {/* {passed.map((p) => (
               <CountdownCard start={serviceRequest.createdAt} end={p.time} key={p.label}>
                 {p.label}
               </CountdownCard>
-            ))}
+            ))} */}
           </div>
         </div>
       )}
