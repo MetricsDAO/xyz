@@ -90,11 +90,12 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     .then(ServiceRequestMetaSchema.parse)
     .catch(() => null);
 
+  const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<ServiceRequestDoc, "submissionCount"> = {
     id: requestId,
     address: event.contract.address,
-    valid: appData !== null,
+    valid: isValid,
     indexedAt: new Date(),
     configuration: {
       requester: serviceRequest.serviceRequester,
@@ -107,6 +108,17 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     },
     appData,
   };
+
+  if (isValid) {
+    await mongo.laborMarkets.updateOne(
+      { address: doc.address },
+      {
+        $inc: {
+          serviceRequestCount: 1,
+        },
+      }
+    );
+  }
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
