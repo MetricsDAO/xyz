@@ -102,7 +102,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),
     language: "english",
-    projectSlugs: ["ethereum"],
+    projectSlugs: [],
     startDate: dayjs(startDate).format("YYYY-MM-DD"),
     startTime: dayjs(startDate).format("HH:mm"),
     endDate: dayjs(endDate).format("YYYY-MM-DD"),
@@ -110,7 +110,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
     rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    rewardPool: "0.000000000000000001",
+    rewardPool: "0.000001",
   };
 }
 
