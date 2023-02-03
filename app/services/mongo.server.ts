@@ -3,7 +3,10 @@ import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
 import env from "~/env.server";
 
 const client = new MongoClient(env.MONGODB_URI);
-const db = client.db("mdao");
+
+// Since every index is a deterministic history, we can have each subscriber have its own database.
+// This is useful for deploying changes to the index and having it recreate from scratch.
+const db = client.db(env.PINE_SUBSCRIBER);
 
 const laborMarkets = db.collection<LaborMarketDoc>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
