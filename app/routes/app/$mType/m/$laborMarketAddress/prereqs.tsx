@@ -1,9 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
 import { useRouteData } from "remix-utils";
-import { Avatar } from "~/components/avatar";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
-import { useTokenURI } from "~/hooks/use-badge-image";
+import { useTokenURL } from "~/hooks/use-token-url";
 import type { findLaborMarket } from "~/services/labor-market.server";
 
 export default function MarketplaceIdPrerequesites() {
@@ -18,10 +16,9 @@ export default function MarketplaceIdPrerequesites() {
     throw new Error("no labor market found");
   }
 
-  const maintainerURL = useTokenURI(laborMarket.configuration.maintainerBadge);
-  const delegateURL = useTokenURI(laborMarket.configuration.delegateBadge);
+  const maintainerURL = useTokenURL(laborMarket.configuration.maintainerBadge);
+  const delegateURL = useTokenURL(laborMarket.configuration.delegateBadge);
 
-  console.log(maintainerURL);
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
       <main className="flex-1">

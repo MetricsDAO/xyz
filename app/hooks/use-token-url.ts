@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { ReputationToken } from "labor-markets-abi";
 import { useContractReads } from "wagmi";
 
-export function useTokenURI(Token: { tokenId: string | undefined; token: string }) {
+export function useTokenURL(Token: { tokenId: string | undefined; token: string }) {
   const { data, isError, isLoading } = useContractReads({
     contracts: [
       {
@@ -18,8 +18,9 @@ export function useTokenURI(Token: { tokenId: string | undefined; token: string 
 }
 
 function useSubQuery(URI: [string]) {
-  return useQuery({
-    queryKey: ["repoData"],
+  const eh = useQuery({
+    queryKey: ["badgerIconQuery"],
     queryFn: () => fetch(`https://badger.mypinata.cloud/ipfs/${URI[0]}`).then((res) => res.json()),
   });
+  console.log(eh);
 }
