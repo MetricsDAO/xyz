@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/helpers";
+import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/constants";
 
 type Props = {
   score: number;

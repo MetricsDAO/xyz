@@ -35,8 +35,8 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { useOptionalUser } from "~/hooks/use-user";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
+import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
-import { SCORE_COLOR } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({
@@ -325,16 +325,10 @@ function ReviewQuestionDrawerButton({
   );
 }
 
-function AnalyzeDescription({
-  submission,
-}: {
-  submission: SubmissionIndexer & {
-    serviceRequest: ServiceRequest;
-  };
-}) {
+function AnalyzeDescription({ submission }: { submission: SubmissionIndexer }) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.serviceRequest.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
         <a href={submission.description} className="text-blue-600 text-sm flex flex-row items-center">
           {submission.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />

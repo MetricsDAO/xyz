@@ -12,6 +12,7 @@ export default function ServiceIdPrereqs() {
   if (!data) {
     throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");
   }
+
   const { serviceRequest } = data;
 
   return (
@@ -24,12 +25,12 @@ export default function ServiceIdPrereqs() {
         <Card className="p-5">
           <h3 className="font-medium mb-4">You must hold this much rMETRIC to enter submissions for this challenge</h3>
           <Detail>
-            <DetailItem title="Min Balance">
+            {/* <DetailItem title="Min Balance">
               <Badge>{serviceRequest?.laborMarket.submitRepMin} rMETRIC</Badge>
             </DetailItem>
             <DetailItem title="Max Balance">
               <Badge>{serviceRequest?.laborMarket.submitRepMax} rMETRIC</Badge>
-            </DetailItem>
+            </DetailItem> */}
           </Detail>
         </Card>
 
@@ -41,7 +42,7 @@ export default function ServiceIdPrereqs() {
             <DetailItem title="MDAO S4 Reviewer Badge">
               <Badge className="pl-2 flex space-x-1">
                 <Avatar />
-                <span>{serviceRequest?.laborMarket.reviewBadgerAddress}</span>
+                <span>{serviceRequest?.address}</span>
               </Badge>
             </DetailItem>
           </Detail>

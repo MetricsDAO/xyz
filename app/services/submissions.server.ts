@@ -1,4 +1,3 @@
-import type { ServiceRequest } from "~/domain";
 import type { SubmissionContract, SubmissionForm, SubmissionIndexer, SubmissionSearch } from "~/domain/submission";
 import { SubmissionContractSchema } from "~/domain/submission";
 import { prisma } from "./prisma.server";
@@ -61,18 +60,15 @@ export const upsertSubmission = async (submission: SubmissionIndexer) => {
 /**
  * Prepare a new Submission for writing to chain
  * @param {string} laborMarketAddress - The labor market address the submission belongs to
- * @param {ServiceRequest} form - the service request the submission is being submitted for
+ * @param {SubmissionForm} form - the service request the submission is being submitted for
  * @returns {SubmissionContract} - The prepared submission
  */
-export const prepareSubmission = (
-  serviceRequest: Pick<ServiceRequest, "laborMarketAddress">,
-  form: SubmissionForm
-): SubmissionContract => {
+export const prepareSubmission = (laborMarketAddress: string, form: SubmissionForm): SubmissionContract => {
   // TODO: upload data to ipfs
 
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({
-    laborMarketAddress: serviceRequest.laborMarketAddress,
+    laborMarketAddress: laborMarketAddress,
     serviceRequestId: 1, // TODO should come from db
     uri: "ipfs-uri",
   });

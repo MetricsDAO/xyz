@@ -32,7 +32,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedSubmission = await prepareSubmission(serviceRequest, result.data);
+  const preparedSubmission = prepareSubmission(laborMarketAddress, result.data);
   return typedjson({ preparedSubmission });
 };
 

@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { validateDate, validateTime } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
@@ -9,6 +10,8 @@ export const ServiceRequestSchema = z.object({
   id: z.string({ description: "The id of the service request." }),
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
+  language: z.enum(["english", "spanish"]),
+  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
@@ -34,9 +37,12 @@ const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
-export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true, description: true }).extend({
-  language: z.enum(["english", "spanish"]),
-  projects: z.enum(["ethereum", "solana"]),
+export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
+  title: true,
+  description: true,
+  language: true,
+  projectSlugs: true,
+}).extend({
   startDate: InputDateSchema,
   startTime: InputTimeSchema,
   endDate: InputDateSchema,
@@ -47,10 +53,14 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({ title: true,
   rewardPool: TokenAmountSchema,
 });
 
-export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
-  // Metadata needed for DEV_AUTO_INDEX
+export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
+  language: true,
+  projectSlugs: true,
+});
+
+export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   laborMarketAddress: true,
 }).extend({
   pTokenAddress: EvmAddressSchema,
@@ -59,6 +69,27 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
   submissionExpiration: DateSchema,
   enforcementExpiration: DateSchema,
   uri: z.string(),
+});
+
+/**
+ * The schema for a ServiceRequestDocument. This should be identical to how the document is stored in mongo.
+ */
+const ServiceRequestDocSchema = z.object({
+  id: z.string().describe("The request id"),
+  address: EvmAddressSchema,
+  valid: z.boolean(),
+  indexedAt: z.date(),
+  configuration: z.object({
+    requester: EvmAddressSchema,
+    pToken: EvmAddressSchema,
+    pTokenQuantity: z.string(),
+    signalExpiration: z.date(),
+    submissionExpiration: z.date(),
+    enforcementExpiration: z.date(),
+    uri: z.string(),
+  }),
+  submissionCount: z.number(),
+  appData: ServiceRequestMetaSchema.nullable(),
 });
 
 // Generate a fake Service Request for testing using faker.
@@ -71,7 +102,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),
     language: "english",
-    projects: "ethereum",
+    projectSlugs: [],
     startDate: dayjs(startDate).format("YYYY-MM-DD"),
     startTime: dayjs(startDate).format("HH:mm"),
     endDate: dayjs(endDate).format("YYYY-MM-DD"),
@@ -79,7 +110,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
     rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    rewardPool: "0.000000000000000001",
+    rewardPool: "0.000001",
   };
 }
 
@@ -98,14 +129,9 @@ export const ServiceRequestIndexerSchema = ServiceRequestContractSchema.extend({
   contractId: z.string(),
 });
 
-export const ServiceRequestIpfsSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-});
-
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
 export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;
-export type ServiceRequestIpfs = z.infer<typeof ServiceRequestIpfsSchema>;
+export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;
