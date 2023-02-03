@@ -102,7 +102,13 @@ export default function ChallengeSubmission() {
             <ScoreBadge score={submission.score} />
           </DetailItem>
           <DetailItem title="Reviews">
-            <Badge>{reviews.length}</Badge>
+            {true ? (
+              <div className="inline-flex items-center justify-center text-sm border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
+                <p className="font-medium">{`You + ${reviews.length} reviewers`}</p>
+              </div>
+            ) : (
+              <Badge>{reviews.length}</Badge>
+            )}
           </DetailItem>
           {isWinner && (
             <DetailItem title="Winner">
