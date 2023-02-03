@@ -20,7 +20,7 @@ export default function ServiceIdParticipants() {
 
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="w-full border-spacing-4 border-separate space-y-4">
-          {serviceRequest?.submissions.map((s) => {
+          {/* {serviceRequest?.submissions.map((s) => {
             return (
               <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">
@@ -29,7 +29,7 @@ export default function ServiceIdParticipants() {
                 </div>
               </Card>
             );
-          })}
+          })} */}
         </main>
         <aside className="md:w-1/5">filters here</aside>
       </div>

@@ -1,7 +1,6 @@
 import { MongoClient } from "mongodb";
-import type { LaborMarketDoc } from "~/domain";
+import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
 import env from "~/env.server";
-import type { ServiceRequestDoc } from "./service-request.server";
 
 const client = new MongoClient(env.MONGODB_URI);
 const db = client.db("mdao");
