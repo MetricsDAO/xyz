@@ -3,10 +3,14 @@ import { Link, useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
+import { $path } from "remix-routes";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { badRequest, notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { z } from "zod";
+import { DetailItem } from "~/components";
 import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -17,15 +21,10 @@ import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
-import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
-import { $path } from "remix-routes";
-import invariant from "tiny-invariant";
-import { findLaborMarket } from "~/services/labor-market.server";
-import type { Project } from "@prisma/client";
 import { ProjectBadges } from "~/features/project-badges";
-import { listProjects } from "~/services/projects.server";
-import { notFound } from "remix-utils";
-import { DetailItem } from "~/components";
+import { findLaborMarket } from "~/services/labor-market.server";
+import { findProjectsBySlug } from "~/services/projects.server";
+import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -41,12 +40,13 @@ export const loader = async (data: DataFunctionArgs) => {
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
-  const allProjects = await listProjects();
-  const laborMarketProjects = laborMarket.appData?.projectSlugs
-    .map((slug) => {
-      return allProjects.find((p) => p.slug === slug && laborMarket.appData?.projectSlugs);
-    })
-    .filter((p): p is Project => !!p);
+
+  if (!laborMarket.appData) {
+    throw badRequest("Labor market app data is missing");
+  }
+
+  const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
+
   return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, laborMarketProjects });
 };
 
@@ -183,7 +183,7 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
               <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
-                  <div>{laborMarketProjects && <ProjectBadges projects={laborMarketProjects} />}</div>
+                  <ProjectBadges projects={laborMarketProjects} />
                 </div>
               </Row.Column>
 
@@ -220,9 +220,7 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>Chain/Project</div>
               <div className="flex">
                 <div>
-                  {laborMarketProjects && (
-                    <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
-                  )}
+                  <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
                 </div>
               </div>
 

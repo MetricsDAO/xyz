@@ -1,26 +1,25 @@
 import { Link, Outlet, useParams } from "@remix-run/react";
-import { Detail, DetailItem } from "~/components/detail";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { z } from "zod";
-import { findServiceRequest } from "~/services/service-request.server";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { notFound } from "remix-utils";
-import { Container } from "~/components/container";
-import { Button } from "~/components/button";
+import { badRequest, notFound } from "remix-utils";
+import { z } from "zod";
 import { Badge } from "~/components/badge";
+import { Button } from "~/components/button";
+import { Container } from "~/components/container";
+import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { findServiceRequest } from "~/services/service-request.server";
 
-import { RewardBadge } from "~/components/reward-badge";
-import { dateHasPassed } from "~/utils/date";
-import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
+import { UserBadge } from "~/components";
+import { RewardBadge } from "~/components/reward-badge";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { listProjects } from "~/services/projects.server";
-import type { Project } from "@prisma/client";
-import { UserBadge } from "~/components";
+import { findProjectsBySlug } from "~/services/projects.server";
+import { dateHasPassed } from "~/utils/date";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -34,12 +33,12 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     throw notFound({ laborMarket });
   }
 
-  const allProjects = await listProjects();
-  const serviceRequestProjects = laborMarket.appData?.projectSlugs
-    .map((slug) => {
-      return allProjects.find((p) => p.slug === slug && serviceRequest.appData?.projects.includes(slug));
-    })
-    .filter((p): p is Project => !!p);
+  if (!serviceRequest.appData) {
+    throw badRequest("Labor market app data is missing");
+  }
+
+  const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
+
   // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = 0;
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects }, { status: 200 });

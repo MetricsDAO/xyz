@@ -1,3 +1,4 @@
+import type { Project } from "@prisma/client";
 import { ethers } from "ethers";
 
 export const PROJECT_ICONS: Record<string, string | undefined> = {
@@ -54,4 +55,12 @@ export const parseTokenAmount = (amount: string) => {
  */
 export function removeLeadingZeros(str: string): string {
   return ethers.utils.hexStripZeros(str);
+}
+
+export function findProjectsBySlug(projects: Project[], slugs: string[]) {
+  return slugs
+    .map((slug) => {
+      return projects.find((p) => p.slug === slug);
+    })
+    .filter((p): p is Project => !!p);
 }
