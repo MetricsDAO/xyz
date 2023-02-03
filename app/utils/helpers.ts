@@ -46,7 +46,8 @@ export const SCORE_COLOR_SECONDARY = {
  * @returns {BigNumber}
  */
 export const parseTokenAmount = (amount: string) => {
-  return ethers.utils.parseUnits(amount, 18);
+  // MVP: only support 6 decimals for USDC
+  return ethers.utils.parseUnits(amount, 6);
 };
 
 /**
