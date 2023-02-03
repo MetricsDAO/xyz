@@ -11,36 +11,38 @@ import { nodeProvider } from "./node.server";
 import { prisma } from "./prisma.server";
 
 /**
- * Returns an array of Service Requests for a given ServiceRequestSearch.
- * @param {ServiceRequestSearch} params - The search parameters.
+ * Returns an array of ServiceRequestDoc for a given Service Request.
  */
 export const searchServiceRequests = async (params: ServiceRequestSearch) => {
-  return prisma.serviceRequest.findMany({
-    include: { submissions: true, laborMarket: { include: { projects: true } } },
-    where: {
-      title: { search: params.q },
-      laborMarketAddress: params.laborMarket,
-    },
-    orderBy: {
-      [params.sortBy]: params.order,
-    },
-    take: params.first,
-    skip: params.first * (params.page - 1),
-  });
+  return mongo.serviceRequests
+    .find(searchParams(params))
+    .sort({ [params.sortBy]: params.order })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
 };
 
 /**
- * Counts the number of Service Requests that match a given ServiceRequestSearch.
+ * Counts the number of ServiceRequests that match a given ServiceRequestSearch.
  * @param {ServiceRequestSearch} params - The search parameters.
- * @returns {number} - The number of Service Requests that match the search.
+ * @returns {number} - The number of service requests that match the search.
  */
 export const countServiceRequests = async (params: ServiceRequestSearch) => {
-  return prisma.serviceRequest.count({
-    where: {
-      title: { search: params.q },
-      laborMarketAddress: params.laborMarket,
-    },
-  });
+  return mongo.serviceRequests.countDocuments(searchParams(params));
+};
+
+/**
+ * Convenience function to share the search parameters between search and count.
+ * @param {LaborMarketSearch} params - The search parameters.
+ * @returns criteria to find labor market in MongoDb
+ */
+const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
+  return {
+    valid: true,
+    ...(params.laborMarket ? { address: params.laborMarket } : {}),
+    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
+  };
 };
 
 /**
@@ -49,14 +51,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
-  return prisma.serviceRequest.findUnique({
-    where: { contractId_laborMarketAddress: { contractId: id, laborMarketAddress } },
-    include: {
-      submissions: true,
-      laborMarket: { include: { projects: true } },
-      _count: { select: { submissions: true } },
-    },
-  });
+  return mongo.serviceRequests.findOne({ id, address: laborMarketAddress, valid: true });
 };
 
 /**
@@ -95,11 +90,12 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     .then(ServiceRequestMetaSchema.parse)
     .catch(() => null);
 
+  const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<ServiceRequestDoc, "submissionCount"> = {
     id: requestId,
     address: event.contract.address,
-    valid: appData !== null,
+    valid: isValid,
     indexedAt: new Date(),
     configuration: {
       requester: serviceRequest.serviceRequester,
@@ -112,6 +108,17 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     },
     appData,
   };
+
+  if (isValid) {
+    await mongo.laborMarkets.updateOne(
+      { address: doc.address },
+      {
+        $inc: {
+          serviceRequestCount: 1,
+        },
+      }
+    );
+  }
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },

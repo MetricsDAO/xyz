@@ -9,7 +9,7 @@ describe("ServiceRequestFormSchema", () => {
       title: "Test",
       description: "Test",
       language: "english",
-      projects: "ethereum",
+      projectSlugs: ["ethereum"],
       startDate: "2021-01-01",
       startTime: "12:00",
       endDate: "2021-01-01",

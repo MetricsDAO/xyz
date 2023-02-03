@@ -11,7 +11,8 @@ import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
-import { SubmissionSearchSchema } from "~/domain/submission";
+import type { SubmissionSearch } from "~/domain/submission";
+import { SubmissionContract, SubmissionSearchSchema } from "~/domain/submission";
 import { SubmissionCard } from "~/features/submission-card";
 import { searchSubmissions } from "~/services/submissions.server";
 
@@ -21,7 +22,8 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   invariant(params.serviceRequestId, "id is required");
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.serviceRequestId });
+  // const submissions = await searchSubmissions({ ...search, serviceRequestId: params.serviceRequestId });
+  const submissions: SubmissionSearch[] = [];
   return typedjson({ submissions });
 };
 
@@ -39,9 +41,9 @@ export default function ChallengeIdSubmissions() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
-        {submissions.map((s) => {
+        {/* {submissions.map((s) => {
           return <SubmissionCard key={s.contractId} submission={s} totalReviews={s.reviews.length} />;
-        })}
+        })} */}
       </main>
 
       <aside className="md:w-1/4 text-sm">

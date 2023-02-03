@@ -10,7 +10,7 @@ export const ServiceRequestSchema = z.object({
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   language: z.enum(["english", "spanish"]),
-  projects: z.enum(["ethereum", "solana"]),
+  projectSlugs: z.array(z.string()),
   laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });
@@ -40,7 +40,7 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
   language: true,
-  projects: true,
+  projectSlugs: true,
 }).extend({
   startDate: InputDateSchema,
   startTime: InputTimeSchema,
@@ -56,7 +56,7 @@ export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
   language: true,
-  projects: true,
+  projectSlugs: true,
 });
 
 export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
@@ -101,7 +101,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     title: faker.commerce.productName(),
     description: faker.lorem.paragraphs(2),
     language: "english",
-    projects: "ethereum",
+    projectSlugs: ["ethereum"],
     startDate: dayjs(startDate).format("YYYY-MM-DD"),
     startTime: dayjs(startDate).format("HH:mm"),
     endDate: dayjs(endDate).format("YYYY-MM-DD"),

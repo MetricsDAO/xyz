@@ -3,12 +3,14 @@ import { Link, useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
+import { $path } from "remix-routes";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { badRequest, notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { z } from "zod";
-import { ProjectAvatar } from "~/components/avatar";
-import { Badge } from "~/components/badge";
+import { DetailItem } from "~/components";
 import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -19,21 +21,33 @@ import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
+import { ProjectBadges } from "~/features/project-badges";
+import { findLaborMarket } from "~/services/labor-market.server";
+import { findProjectsBySlug } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
-import { $path } from "remix-routes";
-import invariant from "tiny-invariant";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
   const { laborMarketAddress } = paramsSchema.parse(data.params);
+  const laborMarket = await findLaborMarket(laborMarketAddress);
+  if (!laborMarket) {
+    throw notFound("Labor market not found");
+  }
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
-  return typedjson({ serviceRequests, totalResults, params });
+
+  if (!laborMarket.appData) {
+    throw badRequest("Labor market app data is missing");
+  }
+
+  const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
+
+  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, laborMarketProjects });
 };
 
 export default function MarketplaceIdChallenges() {
@@ -144,6 +158,8 @@ type MarketplaceChallengesTableProps = {
 function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
+  const { laborMarketAddress, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+
   return (
     <Table>
       <Header columns={6} className="mb-2">
@@ -155,35 +171,28 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
       </Header>
       {serviceRequests.map((sr) => {
         return (
-          <Row asChild columns={6} key={sr.contractId}>
+          <Row asChild columns={6} key={sr.id}>
             <Link
               to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
                 mType: mType,
-                laborMarketAddress: sr.laborMarketAddress,
-                serviceRequestId: sr.contractId,
+                laborMarketAddress: laborMarketAddress,
+                serviceRequestId: sr.id,
               })}
               className="text-sm font-medium"
             >
-              <Row.Column span={2}>{sr.title}</Row.Column>
+              <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
-                  <div>
-                    {sr.laborMarket.projects?.map((p) => (
-                      <Badge key={p.slug} className="pl-2">
-                        <ProjectAvatar project={p} />
-                        <span className="mx-1">{p.name}</span>
-                      </Badge>
-                    ))}
-                  </div>
+                  <ProjectBadges projects={laborMarketProjects} />
                 </div>
               </Row.Column>
 
               <Row.Column>5 Sol</Row.Column>
               <Row.Column>
-                <Countdown date={sr.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExpiration} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={sr.enforcementExpiration} />
+                <Countdown date={sr.configuration?.enforcementExpiration} />
               </Row.Column>
             </Link>
           </Row>
@@ -194,27 +203,24 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
 }
 
 function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTableProps) {
+  const { laborMarketAddress, laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+
   return (
     <div className="space-y-4">
       {serviceRequests.map((sr) => {
         return (
-          <Card asChild key={sr.contractId}>
+          <Card asChild key={sr.id}>
             <Link
-              to={`/app/${sr.laborMarket.type}/m/${sr.laborMarketAddress}/sr/${sr.contractId}`}
+              to={`/app/${laborMarket?.appData?.type}/m/${laborMarketAddress}/sr/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenges</div>
-              <div className="text-sm font-medium">{sr.title}</div>
+              <div className="text-sm font-medium">{sr.appData?.title}</div>
 
               <div>Chain/Project</div>
               <div className="flex">
                 <div>
-                  {sr.laborMarket.projects?.map((p) => (
-                    <Badge key={p.slug} className="pl-2">
-                      <ProjectAvatar project={p} />
-                      <span className="mx-1">{p.name}</span>
-                    </Badge>
-                  ))}
+                  <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
                 </div>
               </div>
 
@@ -222,11 +228,11 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>5 Sol</div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExpiration} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.enforcementExpiration} />
+                <Countdown date={sr.configuration?.enforcementExpiration} />
               </div>
             </Link>
           </Card>
