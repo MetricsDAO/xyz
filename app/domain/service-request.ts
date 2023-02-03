@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { validateDate, validateTime } from "~/utils/date";
 import { parseTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
@@ -10,7 +11,7 @@ export const ServiceRequestSchema = z.object({
   title: z.string({ description: "The title of the service request." }).min(1, "Required"),
   description: z.string({ description: "The description of the service request." }).min(1, "Required"),
   language: z.enum(["english", "spanish"]),
-  projectSlugs: z.array(z.string()),
+  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   laborMarketAddress: EvmAddressSchema,
   createdAt: z.date({ description: "The date the service request was created." }),
 });

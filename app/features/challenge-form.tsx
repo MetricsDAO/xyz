@@ -1,6 +1,6 @@
 import type { Project, Token } from "@prisma/client";
 import { useParams } from "@remix-run/react";
-import { Field, ValidatedInput, ValidatedTextarea, ValidatedSelect, Error } from "~/components";
+import { Field, ValidatedInput, ValidatedTextarea, ValidatedSelect, Error, ValidatedCombobox } from "~/components";
 
 export function ChallengeForm({ validTokens, validProjects }: { validTokens: Token[]; validProjects: Project[] }) {
   const { mType } = useParams();
@@ -28,12 +28,12 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
           </div>
           <div className="flex-grow">
             <Field>
-              <ValidatedSelect
-                name="projects"
+              <ValidatedCombobox
                 placeholder="Blockchain/Project(s)"
+                name="projectSlugs"
                 options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
               />
-              <Error name="projects" />
+              <Error name="projectSlugs" />
             </Field>
           </div>
         </div>
