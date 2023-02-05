@@ -16,8 +16,6 @@ import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-e
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findLaborMarket } from "~/services/labor-market.server";
-import { findProjectsBySlug } from "~/services/projects.server";
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";

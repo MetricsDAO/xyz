@@ -38,7 +38,8 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (result.error) return validationError(result.error);
   console.log("result.data", result.data);
 
-  const preparedSubmission = prepareSubmission(user, laborMarketAddress, result.data);
+  const preparedSubmission = await prepareSubmission(user, laborMarketAddress, result.data);
+  console.log("preparedSubmission", preparedSubmission);
   return typedjson({ preparedSubmission });
 };
 
@@ -46,7 +47,6 @@ export default function SubmitQuestion() {
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { mType } = useParams();
-  console.log("mType", mType);
   const [state, send] = useMachine(submissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
@@ -73,6 +73,7 @@ export default function SubmitQuestion() {
   }, [actionData, send]);
 
   const onWriteSuccess = (result: SendTransactionResult) => {
+    console.log("onWriteSuccess", result);
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
