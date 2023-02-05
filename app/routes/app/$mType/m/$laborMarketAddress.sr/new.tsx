@@ -4,7 +4,6 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
 import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
-import { badRequest, notFound } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
@@ -30,21 +29,11 @@ const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
 const serviceRequestMachine = createBlockchainTransactionStateMachine<ServiceRequestContract>();
 
-export const loader = async ({ request, params }: DataFunctionArgs) => {
-  const { laborMarketAddress } = paramsSchema.parse(params);
-  const laborMarket = await findLaborMarket(laborMarketAddress);
-  if (!laborMarket) {
-    throw notFound("Labor market not found");
-  }
+export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const defaultValues = url.searchParams.get("fake") ? fakeServiceRequestFormData() : undefined;
   const tokens = await listTokens();
-
-  if (!laborMarket.appData) {
-    throw badRequest("Labor market app data is required");
-  }
-  const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
-  return typedjson({ defaultValues, laborMarket, laborMarketProjects, tokens });
+  return typedjson({ defaultValues, tokens });
 };
 
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
@@ -61,7 +50,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export default function CreateServiceRequest() {
   const { mType } = useParams();
-  const { defaultValues, tokens, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const { defaultValues, tokens } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
 
   const [state, send] = useMachine(serviceRequestMachine, {

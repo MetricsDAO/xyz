@@ -2,6 +2,7 @@ import { useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
+import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { typedjson, useTypedActionData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
@@ -15,6 +16,7 @@ import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submis
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
+import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
@@ -25,14 +27,18 @@ const submissionMachine = createBlockchainTransactionStateMachine<SubmissionCont
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
+  const user = await getUser(request);
+  invariant(user, "You must be logged in to create a marketplace");
+
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
   invariant(serviceRequest, "service request must exist");
 
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
+  console.log("result.data", result.data);
 
-  const preparedSubmission = prepareSubmission(laborMarketAddress, result.data);
+  const preparedSubmission = prepareSubmission(user, laborMarketAddress, result.data);
   return typedjson({ preparedSubmission });
 };
 
@@ -40,7 +46,7 @@ export default function SubmitQuestion() {
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { mType } = useParams();
-
+  console.log("mType", mType);
   const [state, send] = useMachine(submissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
@@ -108,6 +114,7 @@ function Brainstorm({
   contractData: SubmissionContract | undefined;
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
+  console.log("contractData", contractData);
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">

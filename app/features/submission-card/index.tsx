@@ -5,9 +5,10 @@ import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
+import type { SubmissionDoc } from "~/domain";
 
 type Props = {
-  submission: Submission;
+  submission: SubmissionDoc;
   totalReviews: number;
 };
 
@@ -21,7 +22,7 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
         to={$path("/app/:mType/m/:laborMarketAddress/s/:contractId", {
           mType: mType,
           laborMarketAddress: submission.laborMarketAddress,
-          contractId: submission.contractId,
+          contractId: submission.id,
         })}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
@@ -31,31 +32,32 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
           <AnalyticsInfo submission={submission} />
         )}
         <div className="flex flex-col items-center gap-2">
-          <Score score={submission.score} />
+          {/* hard coded for now */}
+          <Score score={2} />
           <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>
         </div>
       </Link>
       <div className="flex flex-wrap items-center text-xs">
-        <span className="mr-1">{fromNow(submission.createdAt)} by </span>
-        <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+        <span className="mr-1">{fromNow(submission.indexedAt)} by </span>
+        <UserBadge url="u/id" address={submission.configuration.requester as `0x${string}`} balance={200} />
       </div>
     </Card>
   );
 }
 
-function BrainstormInfo({ submission }: { submission: Submission }) {
+function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
   return (
     <main className="space-y-2 flex-1">
-      <h4 className="font-medium text-gray-900">{submission.title}</h4>
-      <section className="text-gray-900">{submission.description}</section>
+      <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
+      <section className="text-gray-900">{submission.appData?.description}</section>
     </main>
   );
 }
 
-function AnalyticsInfo({ submission }: { submission: Submission }) {
+function AnalyticsInfo({ submission }: { submission: SubmissionDoc }) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
-      {submission.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+      {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
     </main>
   );
 }

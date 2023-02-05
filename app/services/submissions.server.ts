@@ -1,71 +1,113 @@
-import type { SubmissionContract, SubmissionForm, SubmissionIndexer, SubmissionSearch } from "~/domain/submission";
+import type { TracerEvent } from "pinekit/types";
+import { z } from "zod";
+import { LaborMarket__factory } from "~/contracts";
+import type { ServiceRequestDoc } from "~/domain/service-request";
+import { ServiceRequestMetaSchema } from "~/domain/service-request";
+import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import { SubmissionFormSchema, submissionMetaDataSchema } from "~/domain/submission";
 import { SubmissionContractSchema } from "~/domain/submission";
-import { prisma } from "./prisma.server";
+import { fromUnixTimestamp } from "~/utils/date";
+import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
+import { mongo } from "./mongo.server";
+import { nodeProvider } from "./node.server";
+import type { User } from "@prisma/client";
 
 /**
- * Returns an array of LaborMarkets for a given LaborMarketSearch.
- * @param params - The search parameters.
+ * Returns an array of SubmissionDoc for a given Service Request.
  */
 export const searchSubmissions = async (params: SubmissionSearch) => {
-  return prisma.submission.findMany({
-    include: { reviews: true },
-    where: {
-      title: { search: params.q },
-      description: { search: params.q },
-      serviceRequestId: params.serviceRequestId,
-    },
-    orderBy: {
-      [params.sortBy]:
-        "reviews" !== params.sortBy
-          ? params.order
-          : {
-              _count: params.order,
-            },
-    },
-    take: params.first,
-    skip: params.first * (params.page - 1),
-  });
+  return mongo.submissions
+    .find(searchParams(params))
+    .sort({ [params.sortBy]: params.order })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
 };
 
 /**
- * Finds a submission by its id.
- * @param {string} contractId - The ID of the submission to find.
- * @returns {Promise<Submission | null>} - The submission or null if not found.
+ * Counts the number of Submissions that match a given SubmissionSearch.
+ * @param {SubmissionSearch} params - The search parameters.
+ * @returns {number} - The number of submissions that match the search.
  */
-export const findSubmission = async (laborMarketAddress: string, contractId: string) => {
-  return prisma.submission.findUnique({
-    where: { contractId_laborMarketAddress: { contractId, laborMarketAddress } },
-    include: { reviews: true, serviceRequest: true },
-  });
+export const countSubmissions = async (params: SubmissionSearch) => {
+  return mongo.submissions.countDocuments(searchParams(params));
 };
 
 /**
- * Creates or updates a new submission. This is only really used by the indexer.
- * @param {Submission} submission - The submission to create.
+ * Convenience function to share the search parameters between search and count.
+ * @param {SubmissionSearch} params - The search parameters.
+ * @returns criteria to find labor market in MongoDb
  */
-export const upsertSubmission = async (submission: SubmissionIndexer) => {
-  const { serviceRequestId, laborMarketAddress, ...data } = submission;
-  const newSubmission = await prisma.submission.upsert({
-    where: { contractId_laborMarketAddress: { contractId: submission.contractId, laborMarketAddress } },
-    update: data,
-    create: {
-      serviceRequestId,
-      laborMarketAddress,
-      ...data,
-    },
-  });
-  return newSubmission;
+const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submissions.find>[0] => {
+  return {
+    valid: true,
+    ...(params.laborMarketAddress ? { address: params.laborMarketAddress } : {}),
+    ...(params.serviceRequestId ? { address: params.serviceRequestId } : {}),
+    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+  };
 };
 
+/**
+ * Finds a Submission by its ID.
+ * @param {String} id - The ID of the Challenge.
+ * @returns - The Submission or null if not found.
+ */
+export const findSubmission = async (id: string, laborMarketAddress: string) => {
+  return mongo.submissions.findOne({ id, address: laborMarketAddress, valid: true });
+};
+/**
+ * Create a new SubmissionDoc from a TracerEvent.
+ */
+export const indexSubmission = async (event: TracerEvent) => {
+  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const requestId = z.string().parse(event.decoded.inputs.requestId);
+  const submission = await contract.serviceSubmissions(requestId, { blockTag: event.block.number });
+  const appData = await fetchIpfsJson(submission.uri)
+    .then(submissionMetaDataSchema.parse)
+    .catch(() => null);
+
+  const isValid = appData !== null;
+  // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
+  const doc: Omit<SubmissionDoc, "reviewCount"> = {
+    id: requestId,
+    laborMarketAddress: event.contract.address,
+    valid: isValid,
+    reviewed: submission.reviewed,
+    submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
+    indexedAt: new Date(),
+    configuration: {
+      requester: submission.serviceProvider,
+      uri: submission.uri,
+    },
+    appData,
+  };
+
+  // if (isValid) {
+  //   await mongo.serviceRequests.updateOne(
+  //     { id: doc.id },
+  //     {
+  //       $inc: {
+  //         submissionCount: 1,
+  //       },
+  //     }
+  //   );
+  // }
+};
 /**
  * Prepare a new Submission for writing to chain
  * @param {string} laborMarketAddress - The labor market address the submission belongs to
+ * @param {string} serviceRequestId - The service request the submission belongs to
  * @param {SubmissionForm} form - the service request the submission is being submitted for
  * @returns {SubmissionContract} - The prepared submission
  */
-export const prepareSubmission = (laborMarketAddress: string, form: SubmissionForm): SubmissionContract => {
+export const prepareSubmission = async (
+  user: User,
+  laborMarketAddress: string,
+  form: SubmissionForm
+): Promise<SubmissionContract> => {
   // TODO: upload data to ipfs
-
+  const metadata = submissionMetaDataSchema.parse(form); // Prune extra fields from form
+  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({
     laborMarketAddress: laborMarketAddress,
