@@ -134,7 +134,7 @@ model Network {
 
 model IpfsMetadata {
   id          String   @id @default(cuid())
-  hash        String   @unique
+  hash        String
   url         String?
   sizeBytes   Int
   timestamp   DateTime
