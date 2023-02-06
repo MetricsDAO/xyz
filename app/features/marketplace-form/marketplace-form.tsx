@@ -92,16 +92,29 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       </section>
 
       <section>
+        <h4 className="font-semibold mb-4">Challenge Rewards</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Field>
+            <Label>Reward Token Allowlist</Label>
+            <ValidatedSelect name="tokenAllowlist" options={tokens.map((t) => ({ label: t.name, value: t.symbol }))} />
+            <Error name="tokenAllowlist" />
+          </Field>
+          <Field>
+            <Label>Reward Curve</Label>
+            <ValidatedSelect name="rewardCurve" options={[{ label: "Reward by overall score", value: "delegates" }]} />
+          </Field>
+        </div>
+      </section>
+
+      <section>
         <h4 className="font-semibold mb-4">Control who has permission to submit on challenges</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Minimum rMETRIC Balance</Label>
-            <ValidatedInput name="submitRepMin" />
+            <ValidatedInput name="submitRepMin" placeholder="Minimum rMETRIC Balance" />
             <Error name="submitRepMin" />
           </Field>
           <Field>
-            <Label>Maximum rMETRIC Balance</Label>
-            <ValidatedInput name="submitRepMax" />
+            <ValidatedInput name="submitRepMax" placeholder="Maximum rMETRIC Balance" />
             <Error name="submitRepMax" />
           </Field>
         </div>
@@ -111,13 +124,11 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <Label size="lg">Control who has permission to review challenge submissions</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Reviewer Badger Contract Address</Label>
-            <ValidatedInput type="text" name="reviewBadgerAddress" placeholder="0x..." />
+            <ValidatedInput type="text" name="reviewBadgerAddress" placeholder="Reviewer Badger Contract Address" />
             <Error name="reviewBadgerAddress" />
           </Field>
           <Field>
-            <Label>Reviewer Badger Token ID</Label>
-            <ValidatedInput type="text" name="reviewBadgerTokenId" />
+            <ValidatedInput type="text" name="reviewBadgerTokenId" placeholder="TokenID" />
             <Error name="reviewBadgerTokenId" />
           </Field>
         </div>

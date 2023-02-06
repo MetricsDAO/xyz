@@ -28,8 +28,8 @@ export default function ChallengeIdRewards() {
         <Detail>
           <DetailItem title="How the reward pool is distributed">
             <div className="flex space-x-2 text-sm text-gray-600">
-              <span className="bg-blue-100 text-blue-600 rounded px-1">Aggressive</span>
-              <p>Rewards the top 10% of submissions. Winners are determined through peer review</p>
+              <span className="bg-blue-100 text-blue-600 rounded px-1">Reward by Overall Score</span>
+              <p>Rewards are distributed based on overall submission scores. Higher scores are rewarded more.</p>
             </div>
           </DetailItem>
         </Detail>
