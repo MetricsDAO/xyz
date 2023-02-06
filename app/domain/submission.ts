@@ -14,7 +14,7 @@ export const SubmissionSearchSchema = z.object({
 
 export const SubmissionContractSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
-  serviceRequestId: z.number(),
+  serviceRequestId: z.string(),
   uri: z.string(),
 });
 
@@ -42,6 +42,7 @@ export const submissionMetaDataSchema = SubmissionFormSchema.extend({
 const SubmissionDocSchema = z.object({
   id: z.string().describe("The request id"),
   laborMarketAddress: EvmAddressSchema,
+  serviceRequestId: z.string(),
   valid: z.boolean(),
   reviewed: z.boolean(),
   submissionUrl: z.string().nullable(),

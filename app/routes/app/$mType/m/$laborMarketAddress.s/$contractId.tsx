@@ -26,7 +26,7 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
-import type { ServiceRequest, SubmissionIndexer } from "~/domain";
+import type { ServiceRequest, SubmissionDoc, SubmissionIndexer } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -325,23 +325,23 @@ function ReviewQuestionDrawerButton({
   );
 }
 
-function AnalyzeDescription({ submission }: { submission: SubmissionIndexer }) {
+function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
-        <a href={submission.description} className="text-blue-600 text-sm flex flex-row items-center">
-          {submission.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+        <a href={submission.appData?.description} className="text-blue-600 text-sm flex flex-row items-center">
+          {submission.appData?.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
         </a>
       </div>
     </>
   );
 }
 
-function BrainstormDescription({ submission }: { submission: SubmissionIndexer }) {
+function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
     </>
   );
 }

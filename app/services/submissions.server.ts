@@ -49,12 +49,22 @@ const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submiss
 
 /**
  * Finds a Submission by its ID.
- * @param {String} id - The ID of the Challenge.
+ * @param {String} id - The ID of the submission.
  * @returns - The Submission or null if not found.
  */
 export const findSubmission = async (id: string, laborMarketAddress: string) => {
   return mongo.submissions.findOne({ id, address: laborMarketAddress, valid: true });
 };
+
+/**
+ * Counts the number of Submissions on a particular service request.
+ * @param {SubmissionSearch} params - The search parameters.
+ * @returns {number} - The number of submissions that match the search.
+ */
+export const countSubmissionsOnServiceRequest = async (serviceRequestId: string) => {
+  return mongo.submissions.countDocuments({ serviceRequestId, valid: true });
+};
+
 /**
  * Create a new SubmissionDoc from a TracerEvent.
  */
@@ -66,11 +76,16 @@ export const indexSubmission = async (event: TracerEvent) => {
     .then(submissionMetaDataSchema.parse)
     .catch(() => null);
 
+  const currentSubmissionCount = await countSubmissionsOnServiceRequest(requestId);
+  console.log("CURRENT SUBMISSION COUNT", currentSubmissionCount);
+
+  console.log("REQUEST ID", submission.requestId.toString());
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "reviewCount"> = {
-    id: requestId,
+    id: (currentSubmissionCount + 1).toString(),
     laborMarketAddress: event.contract.address,
+    serviceRequestId: requestId,
     valid: isValid,
     reviewed: submission.reviewed,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
@@ -82,16 +97,22 @@ export const indexSubmission = async (event: TracerEvent) => {
     appData,
   };
 
-  // if (isValid) {
-  //   await mongo.serviceRequests.updateOne(
-  //     { id: doc.id },
-  //     {
-  //       $inc: {
-  //         submissionCount: 1,
-  //       },
-  //     }
-  //   );
-  // }
+  if (isValid) {
+    await mongo.serviceRequests.updateOne(
+      { id: doc.serviceRequestId },
+      {
+        $inc: {
+          submissionCount: 1,
+        },
+      }
+    );
+  }
+
+  return mongo.submissions.updateOne(
+    { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
+    { $set: doc, $setOnInsert: { reviewCount: 0 } },
+    { upsert: true }
+  );
 };
 /**
  * Prepare a new Submission for writing to chain
@@ -103,16 +124,18 @@ export const indexSubmission = async (event: TracerEvent) => {
 export const prepareSubmission = async (
   user: User,
   laborMarketAddress: string,
+  serviceRequestId: string,
   form: SubmissionForm
 ): Promise<SubmissionContract> => {
   // TODO: upload data to ipfs
   const metadata = submissionMetaDataSchema.parse(form); // Prune extra fields from form
-  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
+  const cid = await uploadJsonToIpfs(user, metadata);
+  console.log("CID", cid);
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({
     laborMarketAddress: laborMarketAddress,
-    serviceRequestId: 1, // TODO should come from db
-    uri: "ipfs-uri",
+    serviceRequestId: serviceRequestId, // TODO should come from db
+    uri: cid,
   });
   return contractData;
 };

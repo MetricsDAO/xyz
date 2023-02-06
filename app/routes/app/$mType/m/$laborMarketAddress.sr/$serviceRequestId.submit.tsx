@@ -38,7 +38,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (result.error) return validationError(result.error);
   console.log("result.data", result.data);
 
-  const preparedSubmission = await prepareSubmission(user, laborMarketAddress, result.data);
+  const preparedSubmission = await prepareSubmission(user, laborMarketAddress, serviceRequestId, result.data);
   console.log("preparedSubmission", preparedSubmission);
   return typedjson({ preparedSubmission });
 };
