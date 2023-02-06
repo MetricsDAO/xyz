@@ -3,24 +3,28 @@ import { BigNumber } from "ethers";
 import { ReputationToken } from "labor-markets-abi";
 import { useContractReads } from "wagmi";
 
-export function useTokenURL(Token: { tokenId: string | undefined; token: string }) {
-  const { data, isError, isLoading } = useContractReads({
+const BADGER_IPFS_GATEWAY = "https://badger.mypinata.cloud";
+
+type Props = { tokenId: string; token: string };
+
+export function useTokenURL({ token, tokenId }: Props) {
+  const { data } = useContractReads({
     contracts: [
       {
-        address: Token.token as `0x${string}`,
+        address: token as `0x${string}`,
         abi: ReputationToken.abi,
         functionName: "uri",
-        args: [BigNumber.from(Token.tokenId)],
+        args: [BigNumber.from(tokenId)],
       },
     ],
   });
-  return useSubQuery(data);
-}
 
-function useSubQuery(URI: [string]) {
-  const eh = useQuery({
-    queryKey: ["badgerIconQuery"],
-    queryFn: () => fetch(`https://badger.mypinata.cloud/ipfs/${URI[0]}`).then((res) => res.json()),
+  const { data: queryData } = useQuery({
+    enabled: !!data?.[0],
+    queryKey: ["useTokenURL", token, tokenId],
+    queryFn: () => fetch(`${BADGER_IPFS_GATEWAY}/ipfs/${data?.[0]}`).then((res) => res.json()),
   });
-  console.log(eh);
+
+  // image attribute should exist
+  return queryData?.image;
 }
