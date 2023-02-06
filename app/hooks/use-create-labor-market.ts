@@ -10,8 +10,8 @@ import {
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
+import { REPUTATION_TOKEN_ID } from "~/utils/constants";
 
-const REPUTATION_TOKEN_ID = 4;
 export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,

@@ -55,8 +55,8 @@ export default function ClaimToSubmit() {
     send({
       type: "PREPARE_TRANSACTION_READY",
       data: {
-        laborMarketAddress: serviceRequest.laborMarketAddress,
-        serviceRequestId: serviceRequest.contractId,
+        laborMarketAddress: serviceRequest.address,
+        serviceRequestId: serviceRequest.id,
       },
     });
     setIsModalOpen(true);
@@ -69,7 +69,7 @@ export default function ClaimToSubmit() {
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.title}</h1>
+        <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.appData?.title}</h1>
         <h2 className="text-lg text-cyan-500">
           Claiming is an up front commitment to submit at least one
           {mType === "brainstorm" ? "submission" : "dashboard"}
@@ -92,11 +92,11 @@ export default function ClaimToSubmit() {
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
-            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.signalExpiration} />
+            <CountdownCard start={serviceRequest.indexedAt} end={serviceRequest.configuration?.signalExpiration} />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
-            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.submissionExpiration} />
+            <CountdownCard start={serviceRequest.indexedAt} end={serviceRequest.configuration?.submissionExpiration} />
           </div>
         </div>
       </div>

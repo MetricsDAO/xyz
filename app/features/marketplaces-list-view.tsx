@@ -1,4 +1,3 @@
-import type { Project } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
@@ -7,6 +6,7 @@ import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
 import type { MarketplaceTableProps } from "~/routes/app/$mType";
+import { findProjectsBySlug } from "~/utils/helpers";
 import { ProjectBadges } from "./project-badges";
 
 export function MarketplacesListView(props: MarketplaceTableProps) {
@@ -41,7 +41,7 @@ function MarketplacesTable({ marketplaces, projects }: MarketplaceTableProps) {
         <Header.Column>Active Challenges</Header.Column>
       </Header>
       {marketplaces.map((m) => {
-        invariant(m.appData, "marketplace type must be specified");
+        invariant(m.appData, "appdata must be valid");
         return (
           <Row asChild columns={6} key={m.address}>
             <Link
@@ -50,13 +50,7 @@ function MarketplacesTable({ marketplaces, projects }: MarketplaceTableProps) {
             >
               <Row.Column span={2}>{m.appData.title}</Row.Column>
               <Row.Column>
-                <ProjectBadges
-                  projects={m.appData.projectSlugs
-                    .map((slug) => {
-                      return projects.find((p) => p.slug === slug);
-                    })
-                    .filter((p): p is Project => !!p)}
-                />
+                <ProjectBadges projects={findProjectsBySlug(projects, m.appData.projectSlugs)} />
               </Row.Column>
 
               <Row.Column>
@@ -101,13 +95,7 @@ function MarketplacesCard({ marketplaces, projects }: MarketplaceTableProps) {
 
                 <div>Chain/Project</div>
                 <div className="flex flex-wrap gap-2">
-                  <ProjectBadges
-                    projects={m.appData.projectSlugs
-                      .map((slug) => {
-                        return projects.find((p) => p.slug === slug);
-                      })
-                      .filter((p): p is Project => !!p)}
-                  />
+                  <ProjectBadges projects={findProjectsBySlug(projects, m.appData.projectSlugs)} />
                 </div>
 
                 <div>Challenge Pool Totals</div>

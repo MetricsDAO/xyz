@@ -57,8 +57,8 @@ export default function ClaimToReview() {
     send({
       type: "PREPARE_TRANSACTION_READY",
       data: {
-        laborMarketAddress: serviceRequest.laborMarketAddress,
-        serviceRequestId: serviceRequest.contractId,
+        laborMarketAddress: serviceRequest.address,
+        serviceRequestId: serviceRequest.id,
         quantity: data.quantity,
       },
     });
@@ -79,7 +79,7 @@ export default function ClaimToReview() {
         className="mx-auto px-10 max-w-4xl space-y-7 mb-12"
       >
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold">{`Claim to Review ${serviceRequest.title}`}</h1>
+          <h1 className="text-3xl font-semibold">{`Claim to Review ${serviceRequest.appData?.title}`}</h1>
           <p className="text-cyan-500 text-lg">
             Claiming is an up front commitment to review and score a minimum number of submissions
           </p>
@@ -102,13 +102,13 @@ export default function ClaimToReview() {
           <div className="space-y-2">
             <h2 className="font-semibold">Claim to Review Deadline</h2>
             <CountdownCard
-              start={serviceRequest.createdAt}
-              end={claimToReviewDate(serviceRequest.createdAt, serviceRequest.enforcementExpiration)}
+              start={serviceRequest.indexedAt}
+              end={claimToReviewDate(serviceRequest.indexedAt, serviceRequest.configuration.enforcementExpiration)}
             />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold">Review Deadline</h2>
-            <CountdownCard start={serviceRequest.createdAt} end={serviceRequest.enforcementExpiration} />
+            <CountdownCard start={serviceRequest.indexedAt} end={serviceRequest.configuration?.enforcementExpiration} />
           </div>
         </div>
         <div className="space-y-2">

@@ -3,6 +3,7 @@ import env from "~/env.server";
 import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
 import * as pine from "pinekit";
+import { indexServiceRequest } from "~/services/service-request.server";
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),
@@ -29,6 +30,10 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
   return indexLaborMarket(event);
+});
+
+worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
+  return indexServiceRequest(event);
 });
 
 worker.run();
