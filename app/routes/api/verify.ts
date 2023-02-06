@@ -6,8 +6,6 @@ import { createUser, findUserByAddress } from "~/services/user.server";
 import chainalysisAbi from "~/abi/chainalysis.json";
 import { ethers } from "ethers";
 
-const RPC_URL = "https://mainnet.infura.io/v3/54fcc811bac44f99b84a04a4a3e2f998";
-
 export const action: ActionFunction = async (data: DataFunctionArgs) => {
   const { message, signature } = await data.request.json();
   const siweMessage = new SiweMessage(message);
@@ -40,7 +38,7 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
  * @returns {Promise<boolean>} - True if the address is sanctioned, false otherwise.
  */
 async function isAddressSanctioned(address: string): Promise<boolean> {
-  const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
+  const provider = ethers.providers.getDefaultProvider();
   const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";
   const contract = new ethers.Contract(contract_address, chainalysisAbi.abi, provider);
   const isSanctioned = await contract.isSanctioned(address);
