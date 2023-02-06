@@ -53,8 +53,8 @@ export default function MarketplaceIdPrerequesites() {
                   You must hold this badge to review and score submissions on challenges
                 </p>
                 <div className="text-xs text-gray-500">MDAO S4 REVIEWER BADGE</div>
-                <div className="flex gap-2">
-                  <img src={maintainerURL} alt="" />
+                <div className="flex gap-2 items-center">
+                  <img src={maintainerURL} alt="" className="h-4 w-4" />
                   <div className="text-base text-[#252525]">{laborMarket?.configuration.maintainerBadge.token}</div>
                 </div>
               </Card>
@@ -63,8 +63,8 @@ export default function MarketplaceIdPrerequesites() {
                   You must hold this badge to launch new challenges
                 </p>
                 <div className="text-xs text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
-                <div className="flex gap-2">
-                  <img src={delegateURL} alt="" />
+                <div className="flex gap-2 items-center">
+                  <img src={delegateURL} alt="" className="h-4 w-4" />
                   <div className="text-base text-[#252525]">{laborMarket?.configuration.delegateBadge.token}</div>
                 </div>
               </Card>
