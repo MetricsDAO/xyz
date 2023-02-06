@@ -1,4 +1,5 @@
 import { useRouteData } from "remix-utils";
+import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { useTokenURL } from "~/hooks/use-token-url";
@@ -12,9 +13,8 @@ export default function MarketplaceIdPrerequesites() {
     throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");
   }
   const { laborMarket } = data;
-  if (!laborMarket) {
-    throw new Error("no labor market found");
-  }
+
+  invariant(laborMarket, "No labormarket found");
 
   const maintainerURL = useTokenURL(laborMarket.configuration.maintainerBadge);
   const delegateURL = useTokenURL(laborMarket.configuration.delegateBadge);
