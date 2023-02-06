@@ -23,8 +23,9 @@ import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { findProjectsBySlug } from "~/services/projects.server";
+import { listProjects } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
+import { findProjectsBySlug } from "~/utils/helpers";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -40,23 +41,18 @@ export const loader = async (data: DataFunctionArgs) => {
   const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
+  const projects = await listProjects();
 
-  if (!laborMarket.appData) {
-    throw badRequest("Labor market app data is missing");
-  }
-
-  const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
-
-  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, laborMarketProjects });
+  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, projects });
 };
 
 export default function MarketplaceIdChallenges() {
-  const { totalResults, params, serviceRequests } = useTypedLoaderData<typeof loader>();
+  const { totalResults, params, serviceRequests, projects } = useTypedLoaderData<typeof loader>();
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <ChallengesListView serviceRequests={serviceRequests} />
+          <ChallengesListView serviceRequests={serviceRequests} projects={projects} />
           <div className="w-fit m-auto">
             <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
@@ -153,12 +149,13 @@ function SearchAndFilter() {
 
 type MarketplaceChallengesTableProps = {
   serviceRequests: UseDataFunctionReturn<typeof loader>["serviceRequests"];
+  projects: UseDataFunctionReturn<typeof loader>["projects"];
 };
 
-function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesTableProps) {
+function MarketplacesChallengesTable({ serviceRequests, projects }: MarketplaceChallengesTableProps) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
-  const { laborMarketAddress, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const { laborMarketAddress } = useTypedLoaderData<typeof loader>();
 
   return (
     <Table>
@@ -183,7 +180,7 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
               <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
-                  <ProjectBadges projects={laborMarketProjects} />
+                  <ProjectBadges projects={findProjectsBySlug(projects, sr.appData?.projectSlugs ?? [])} />
                 </div>
               </Row.Column>
 
@@ -202,8 +199,8 @@ function MarketplacesChallengesTable({ serviceRequests }: MarketplaceChallengesT
   );
 }
 
-function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTableProps) {
-  const { laborMarketAddress, laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+function MarketplacesChallengesCard({ serviceRequests, projects }: MarketplaceChallengesTableProps) {
+  const { laborMarketAddress, laborMarket } = useTypedLoaderData<typeof loader>();
 
   return (
     <div className="space-y-4">
@@ -220,7 +217,9 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
               <div>Chain/Project</div>
               <div className="flex">
                 <div>
-                  <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
+                  <DetailItem title="Chain/Project">
+                    <ProjectBadges projects={findProjectsBySlug(projects, sr.appData?.projectSlugs ?? [])} />
+                  </DetailItem>
                 </div>
               </div>
 
@@ -242,8 +241,8 @@ function MarketplacesChallengesCard({ serviceRequests }: MarketplaceChallengesTa
   );
 }
 
-function ChallengesListView({ serviceRequests }: MarketplaceChallengesTableProps) {
-  if (serviceRequests.length === 0) {
+function ChallengesListView(props: MarketplaceChallengesTableProps) {
+  if (props.serviceRequests.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
   }
 
@@ -251,11 +250,11 @@ function ChallengesListView({ serviceRequests }: MarketplaceChallengesTableProps
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <MarketplacesChallengesTable serviceRequests={serviceRequests} />
+        <MarketplacesChallengesTable {...props} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <MarketplacesChallengesCard serviceRequests={serviceRequests} />
+        <MarketplacesChallengesCard {...props} />
       </div>
     </>
   );
