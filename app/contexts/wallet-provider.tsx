@@ -1,22 +1,19 @@
 import type { AvatarComponent } from "@rainbow-me/rainbowkit";
-import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
-import { RainbowKitAuthenticationProvider } from "@rainbow-me/rainbowkit";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  createAuthenticationAdapter,
+  getDefaultWallets,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { SiweMessage } from "siwe";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { polygon, goerli, mainnet } from "wagmi/chains";
-import { infuraProvider } from "wagmi/providers/infura";
+import { mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
-const INFURA_ID = "54fcc811bac44f99b84a04a4a3e2f998";
 export declare type AuthenticationStatus = "loading" | "unauthenticated" | "authenticated";
-
-// TODO: env var
-const IS_DEV = true;
-const DEV_CHAINS = [goerli, mainnet];
 
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
@@ -28,10 +25,7 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
 
 function useConfigs() {
   return useMemo(() => {
-    const { chains, provider } = configureChains(
-      [polygon, ...(IS_DEV ? DEV_CHAINS : [])],
-      [infuraProvider({ apiKey: INFURA_ID }), publicProvider()]
-    );
+    const { chains, provider } = configureChains([polygon, mainnet], [publicProvider()]);
 
     const { connectors } = getDefaultWallets({
       appName: "MetricsDAO",
