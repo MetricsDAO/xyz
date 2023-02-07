@@ -1,4 +1,4 @@
-import { ArrowTopRightOnSquareIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import type { Submission } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
@@ -28,13 +28,13 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
         )}
         <div className="flex flex-col items-center gap-2">
           <Score score={2} />
-          <div className="flex text-xs text-gray-500">
+          <div className="flex text-xs text-gray-500 items-center">
             {/*TODO: use actual data */}
             {true ? (
               <>
-                <UserCircleIcon height={6} width={6} />
+                <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="text-zinc-800">You</p>
-                <p>+</p>
+                <p>{" + "}</p>
               </>
             ) : (
               <></>
@@ -45,7 +45,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.indexedAt)} by </span>
-        <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} balance={200} />
+        <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
       </div>
     </Card>
   );

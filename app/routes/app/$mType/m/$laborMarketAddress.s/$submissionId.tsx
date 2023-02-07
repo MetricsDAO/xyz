@@ -95,7 +95,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} balance={200} />
+            <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submission.indexedAt.toString())}</Badge>
@@ -103,7 +103,8 @@ export default function ChallengeSubmission() {
           <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">
             {true ? (
-              <div className="inline-flex items-center justify-center text-sm border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
+              <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
+                <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="font-medium">{`You + ${reviews.length} reviewers`}</p>
               </div>
             ) : (
