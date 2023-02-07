@@ -17,6 +17,7 @@ import { UserBadge } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
+import { useHasPerformed } from "~/hooks/use-has-claimed";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { dateHasPassed } from "~/utils/date";
@@ -49,6 +50,18 @@ export default function ServiceRequest() {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
+  const hasClaimedToSubmit = useHasPerformed({
+    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    serviceRequestId: serviceRequest.id,
+    action: "HAS_SIGNALED",
+  });
+
+  const hasSubmitted = useHasPerformed({
+    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    serviceRequestId: serviceRequest.id,
+    action: "HAS_SUBMITTED",
+  });
+
   return (
     <Container className="py-16 px-10">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
@@ -69,35 +82,39 @@ export default function ServiceRequest() {
               </Button>
             </ConnectWalletWrapper>
           </Button>
+          {!hasClaimedToSubmit && !hasSubmitted && (
+            <Button variant="primary" size="lg" asChild>
+              <ConnectWalletWrapper>
+                <Button size="lg" asChild>
+                  <Link
+                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
+                      mType: mType,
+                      laborMarketAddress: serviceRequest.address,
+                      serviceRequestId: serviceRequest.id,
+                    })}
+                  >
+                    Claim to Submit
+                  </Link>
+                </Button>
+              </ConnectWalletWrapper>
+            </Button>
+          )}
           <Button variant="primary" size="lg" asChild>
-            <ConnectWalletWrapper>
-              <Button size="lg" asChild>
-                <Link
-                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
-                    mType: mType,
-                    laborMarketAddress: serviceRequest.address,
-                    serviceRequestId: serviceRequest.id,
-                  })}
-                >
-                  Claim to Submit
-                </Link>
-              </Button>
-            </ConnectWalletWrapper>
-          </Button>
-          <Button variant="primary" size="lg" asChild>
-            <ConnectWalletWrapper>
-              <Button size="lg" asChild>
-                <Link
-                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
-                    mType: mType,
-                    laborMarketAddress: serviceRequest.address,
-                    serviceRequestId: serviceRequest.id,
-                  })}
-                >
-                  Submit
-                </Link>
-              </Button>
-            </ConnectWalletWrapper>
+            {hasClaimedToSubmit && (
+              <ConnectWalletWrapper>
+                <Button size="lg" asChild>
+                  <Link
+                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
+                      mType: mType,
+                      laborMarketAddress: serviceRequest.address,
+                      serviceRequestId: serviceRequest.id,
+                    })}
+                  >
+                    Submit
+                  </Link>
+                </Button>
+              </ConnectWalletWrapper>
+            )}
           </Button>
         </div>
       </header>
