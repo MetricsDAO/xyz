@@ -136,7 +136,7 @@ function BrainstormTextArea() {
 function AnalyticsTextArea() {
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-center">
+      <div className="flex flex-col lg:flex-row lg:items-center">
         <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?</h2>
         <div className="group">
           <InformationCircleIcon className="h-5 w-5 text-neutral-400 ml-1" />
