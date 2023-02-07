@@ -2,6 +2,7 @@ import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import { ClaimToReviewEventSchema } from "~/domain/claim-to-review";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
 import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
@@ -92,7 +93,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<ServiceRequestDoc, "submissionCount"> = {
+  const doc: Omit<ServiceRequestDoc, "submissionCount" | "claimsToReview"> = {
     id: requestId,
     address: event.contract.address,
     valid: isValid,
@@ -122,7 +123,16 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
-    { $set: doc, $setOnInsert: { submissionCount: 0 } },
+    { $set: doc, $setOnInsert: { submissionCount: 0, claimsToReview: [] } },
     { upsert: true }
+  );
+};
+
+export const indexClaimToReview = async (event: TracerEvent) => {
+  const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
+
+  return mongo.serviceRequests.updateOne(
+    { address: event.contract.address, id: inputs.requestId },
+    { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };
