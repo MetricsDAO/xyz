@@ -1,6 +1,5 @@
 import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
-import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
@@ -83,7 +82,7 @@ export const indexSubmission = async (event: TracerEvent) => {
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "reviewCount"> = {
-    id: (currentSubmissionCount + 1).toString(),
+    id: submissionId,
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
     valid: isValid,
