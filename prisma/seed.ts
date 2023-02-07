@@ -78,6 +78,12 @@ async function main() {
         contractAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
         symbol: "USDC",
       },
+      {
+        name: "Metrics Beta",
+        networkName: "Polygon",
+        contractAddress: "0xe1805534B191029731907737042623e1bc6b87D8",
+        symbol: "MBETA",
+      },
     ],
   });
 
