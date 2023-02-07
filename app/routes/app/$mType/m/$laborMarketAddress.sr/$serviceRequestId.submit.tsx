@@ -2,7 +2,6 @@ import { useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
-import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { typedjson, useTypedActionData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
@@ -36,10 +35,8 @@ export const action = async ({ request, params }: ActionArgs) => {
 
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
-  console.log("result.data", result.data);
 
   const preparedSubmission = await prepareSubmission(user, laborMarketAddress, serviceRequestId, result.data);
-  console.log("preparedSubmission", preparedSubmission);
   return typedjson({ preparedSubmission });
 };
 
@@ -115,7 +112,6 @@ function Brainstorm({
   contractData: SubmissionContract | undefined;
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
-  console.log("contractData", contractData);
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">

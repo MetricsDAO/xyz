@@ -23,7 +23,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const submissions = await searchSubmissions({ ...search, serviceRequestId: params.serviceRequestId });
-  console.log("Submissions", submissions);
   return typedjson({ submissions });
 };
 
