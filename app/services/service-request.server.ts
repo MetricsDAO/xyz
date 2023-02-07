@@ -122,7 +122,6 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
-    { $set: doc, $setOnInsert: { submissionCount: 0, claimsToReview: [] } },
     { $set: doc, $setOnInsert: { submissionCount: 0, claimsToSubmit: [], claimsToReview: [] } },
     { upsert: true }
   );
@@ -134,7 +133,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   return mongo.serviceRequests.updateOne(
     { address: event.contract.address, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
-      );
+  );
 };
 
 export const indexClaimToSubmit = async (event: TracerEvent) => {
@@ -143,6 +142,5 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
   return mongo.serviceRequests.updateOne(
     { address: event.contract.address, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
-
   );
 };

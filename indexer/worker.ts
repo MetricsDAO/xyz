@@ -3,7 +3,6 @@ import * as pine from "pinekit";
 import env from "~/env.server";
 import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
-import * as pine from "pinekit";
 import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
 import { indexSubmission } from "~/services/submissions.server";
 
@@ -37,7 +36,6 @@ worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
   return indexServiceRequest(event);
 });
-
 
 worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
   return indexClaimToReview(event);
