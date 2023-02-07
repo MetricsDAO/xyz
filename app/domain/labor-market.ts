@@ -104,6 +104,12 @@ const LaborMarketDocSchema = z.object({
     }),
   }),
   serviceRequestCount: z.number(),
+  serviceRequestRewardPools: z.array(
+    z.object({
+      pToken: EvmAddressSchema,
+      pTokenQuantity: z.string(),
+    })
+  ),
   appData: LaborMarketMetaSchema.nullable(),
 });
 

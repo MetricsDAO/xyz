@@ -13,6 +13,7 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
+import { listTokens } from "~/services/tokens.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
@@ -27,7 +28,9 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
 
-  return typedjson({ laborMarket, laborMarketProjects });
+  const tokens = await listTokens();
+
+  return typedjson({ laborMarket, laborMarketProjects, tokens });
 };
 
 export default function Marketplace() {

@@ -1,7 +1,9 @@
 import type { User } from "@prisma/client";
+import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import type { LaborMarketDoc } from "~/domain";
 import { ClaimToSubmitEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
@@ -110,11 +112,19 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   };
 
   if (isValid) {
+    const lm = await mongo.laborMarkets.findOne({ address: doc.address });
     await mongo.laborMarkets.updateOne(
       { address: doc.address },
       {
         $inc: {
           serviceRequestCount: 1,
+        },
+        $set: {
+          serviceRequestRewardPools: calculateRewardPools(
+            lm?.serviceRequestRewardPools ?? [],
+            doc.configuration.pToken,
+            doc.configuration.pTokenQuantity
+          ),
         },
       }
     );
@@ -134,4 +144,22 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
     { address: event.contract.address, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
+};
+
+const calculateRewardPools = (
+  existingPools: LaborMarketDoc["serviceRequestRewardPools"],
+  pToken: string,
+  pTokenQuantity: string
+) => {
+  const newPools = [...existingPools];
+  const pool = newPools.find((pool) => pool.pToken === pToken);
+  if (pool) {
+    pool.pTokenQuantity = BigNumber.from(pool.pTokenQuantity).add(pTokenQuantity).toString();
+  } else {
+    newPools.push({
+      pToken: pToken,
+      pTokenQuantity: pTokenQuantity,
+    });
+  }
+  return newPools;
 };
