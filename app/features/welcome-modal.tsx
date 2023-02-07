@@ -22,11 +22,7 @@ export default function WelcomeModal({ opened, redirectPath }: { opened: boolean
           <li>You should not use the primary address you store assets in to connect to the app.</li>
           <li>
             This app is in beta and is subject to change and future code audits. See{" "}
-            <a
-              href="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href="https://metricsdao.gitbook.io/metrics-app/" target="_blank" rel="noreferrer">
               <u className="text-blue-700">Docs</u>
             </a>{" "}
             for more.
