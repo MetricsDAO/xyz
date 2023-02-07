@@ -17,5 +17,23 @@ export const ReviewSchema = z.object({
   submissionId: z.string(),
 });
 
+const ReviewMetadataSchema = ReviewSchema.pick({
+  score: true,
+});
+
+const ReviewDocSchema = z.object({
+  id: z.string().describe("The request id"),
+  laborMarketAddress: EvmAddressSchema,
+  submissionId: z.string(),
+  valid: z.boolean(),
+  indexedAt: z.date(),
+  configuration: z.object({
+    serviceProvider: EvmAddressSchema,
+    uri: z.string(),
+  }),
+  appData: ReviewMetadataSchema.nullable(),
+});
+
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
 export type ReviewContract = z.infer<typeof ReviewSchema>;
+export type ReviewDoc = z.infer<typeof ReviewDocSchema>;
