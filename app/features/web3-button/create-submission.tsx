@@ -4,7 +4,6 @@ import { useCreateSubmission } from "~/hooks/use-create-submission";
 import type { Web3Hook } from "./types";
 
 export function CreateSubmissionWeb3Button({ data, onWriteSuccess }: Web3Hook<SubmissionContract>) {
-  console.log("CreateSubmissionWeb3Button", { data, onWriteSuccess });
   const { write } = useCreateSubmission({ data, onWriteSuccess });
 
   const onClick = () => {

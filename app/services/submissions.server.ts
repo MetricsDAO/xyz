@@ -68,17 +68,10 @@ export const indexSubmission = async (event: TracerEvent) => {
   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
   const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
   const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
-  console.log("SUBMISSION", submission, submission.uri);
   const appData = await fetchIpfsJson(submission.uri)
     .then(submissionMetaDataSchema.parse)
     .catch(() => null);
 
-  console.log("APP DATA", appData);
-
-  const currentSubmissionCount = await countSubmissionsOnServiceRequest(requestId);
-  console.log("CURRENT SUBMISSION COUNT", currentSubmissionCount);
-
-  console.log("REQUEST ID", submission.requestId.toString());
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "reviewCount"> = {
@@ -128,11 +121,10 @@ export const prepareSubmission = async (
 ): Promise<SubmissionContract> => {
   const metadata = submissionMetaDataSchema.parse(form); // Prune extra fields from form
   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
-  console.log("CID", cid);
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({
     laborMarketAddress: laborMarketAddress,
-    serviceRequestId: serviceRequestId, // TODO should come from db
+    serviceRequestId: serviceRequestId,
     uri: cid,
   });
   return contractData;
