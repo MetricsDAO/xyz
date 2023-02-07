@@ -53,7 +53,7 @@ export const loader = async (data: DataFunctionArgs) => {
   params.submissionId = contractId;
   const reviews = await searchReviews(params);
 
-  const submission = await findSubmission(laborMarketAddress, contractId);
+  const submission = await findSubmission(contractId, laborMarketAddress);
   if (!submission) {
     throw notFound({ contractId });
   }
@@ -85,7 +85,7 @@ export default function ChallengeSubmission() {
     <Container className="py-16 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-10">
         <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-semibold">{submission.title}</h1>
+          <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <ReviewQuestionDrawerButton
@@ -97,14 +97,12 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+            <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} balance={200} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submission.createdAt.toString())}</Badge>
+            <Badge>{fromNow(submission.indexedAt.toString())}</Badge>
           </DetailItem>
-          <DetailItem title="Overall Score">
-            <ScoreBadge score={submission.score} />
-          </DetailItem>
+          <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">
             <Badge>{reviews.length}</Badge>
           </DetailItem>

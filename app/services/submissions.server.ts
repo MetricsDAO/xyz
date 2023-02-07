@@ -37,9 +37,9 @@ export const countSubmissions = async (params: SubmissionSearch) => {
 const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submissions.find>[0] => {
   return {
     valid: true,
-    ...(params.laborMarketAddress ? { address: params.laborMarketAddress } : {}),
-    ...(params.serviceRequestId ? { address: params.serviceRequestId } : {}),
-    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
+    ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
+    // ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
   };
 };
 
@@ -49,7 +49,7 @@ const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submiss
  * @returns - The Submission or null if not found.
  */
 export const findSubmission = async (id: string, laborMarketAddress: string) => {
-  return mongo.submissions.findOne({ id, address: laborMarketAddress, valid: true });
+  return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
 };
 
 /**
@@ -90,7 +90,7 @@ export const indexSubmission = async (event: TracerEvent) => {
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
-      requester: submission.serviceProvider,
+      serviceProvider: submission.serviceProvider,
       uri: submission.uri,
     },
     appData,

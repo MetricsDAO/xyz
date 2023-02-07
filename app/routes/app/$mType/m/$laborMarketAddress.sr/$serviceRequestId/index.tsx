@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Checkbox } from "~/components/checkbox";
@@ -19,10 +20,15 @@ import { searchSubmissions } from "~/services/submissions.server";
 const validator = withZod(SubmissionSearchSchema);
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
-  invariant(params.serviceRequestId, "id is required");
+  invariant(params.serviceRequestId, "serviceRequestId is required");
+  invariant(params.laborMarketAddress, "laborMarketAddress is required");
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissions({ ...search, serviceRequestId: params.serviceRequestId });
+  const submissions = await searchSubmissions({
+    ...search,
+    laborMarketAddress: params.laborMarketAddress,
+    serviceRequestId: params.serviceRequestId,
+  });
   console.log("Submissions", submissions);
   return typedjson({ submissions });
 };
@@ -31,7 +37,8 @@ export type ChallengeSubmissonProps = {
   submissions: UseDataFunctionReturn<typeof loader>["submissions"];
 };
 
-export default function ChallengeIdSubmissions({ submissions }: ChallengeSubmissonProps) {
+export default function ChallengeIdSubmissions() {
+  const { submissions } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 

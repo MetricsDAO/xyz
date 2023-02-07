@@ -48,7 +48,7 @@ const SubmissionDocSchema = z.object({
   submissionUrl: z.string().nullable(),
   indexedAt: z.date(),
   configuration: z.object({
-    requester: EvmAddressSchema,
+    serviceProvider: EvmAddressSchema,
     uri: z.string(),
   }),
   reviewCount: z.number(),
