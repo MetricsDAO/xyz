@@ -50,6 +50,9 @@ export default function ServiceRequest() {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
+  const deadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
+  console.log("DEADLINE PAST", deadlinePassed);
+
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.address as `0x${string}`,
     serviceRequestId: serviceRequest.id,
@@ -82,7 +85,7 @@ export default function ServiceRequest() {
               </Button>
             </ConnectWalletWrapper>
           </Button>
-          {!hasClaimedToSubmit && !hasSubmitted && (
+          {!hasClaimedToSubmit && !deadlinePassed && !hasSubmitted && (
             <Button variant="primary" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
