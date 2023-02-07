@@ -50,6 +50,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId });
+  console.log("reviews", reviews);
 
   const submission = await findSubmission(submissionId, laborMarketAddress);
   if (!submission) {

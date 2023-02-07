@@ -1,8 +1,10 @@
-import type { Review, User } from "@prisma/client";
-import { TracerEvent } from "pinekit/types";
-import type { ReviewSearch } from "~/domain/review";
+import type { User } from "@prisma/client";
+import type { TracerEvent } from "pinekit/types";
+import { LaborMarket__factory } from "~/contracts";
+import type { ReviewContract, ReviewDoc, ReviewSearch } from "~/domain/review";
+import { ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";
-import { prisma } from "./prisma.server";
+import { nodeProvider } from "./node.server";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
@@ -42,64 +44,47 @@ const searchParams = (params: ReviewSearch): Parameters<typeof mongo.reviews.fin
  * @param {String} id - The ID of the review.
  * @returns - The Submission or null if not found.
  */
-export const findSubmission = async (id: string, laborMarketAddress: string) => {
+export const findReview = async (id: string, laborMarketAddress: string) => {
   return mongo.reviews.findOne({ valid: true, laborMarketAddress, id });
 };
 
 /**
- * Counts the number of Submissions on a particular service request.
- * @param {SubmissionSearch} params - The search parameters.
- * @returns {number} - The number of submissions that match the search.
+ * Counts the number of reviews on a particular submission.
+ * @param {submissionId} params - The submission to count reviews for.
+ * @returns {number} - The number of reviews that match the search.
  */
-export const countSubmissionsOnServiceRequest = async (serviceRequestId: string) => {
-  return mongo.submissions.countDocuments({ serviceRequestId, valid: true });
+export const countReviewsOnSubmission = async (submissionId: string) => {
+  return mongo.reviews.countDocuments({ submissionId, valid: true });
 };
 
-// /**
-//  * Create a new SubmissionDoc from a TracerEvent.
-//  */
-// export const indexSubmission = async (event: TracerEvent) => {
-//   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
-//   const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
-//   const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
-//   const appData = await fetchIpfsJson(submission.uri)
-//     .then(SubmissionFormSchema.parse)
-//     .catch(() => null);
+/**
+ * Create a new ReviewDoc from a TracerEvent.
+ */
+export const indexReview = async (event: TracerEvent) => {
+  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const { submissionId, score, requestId } = ReviewSchema.parse(event.decoded.inputs);
+  const review = await contract.review(submissionId, score, requestId);
 
-//   const isValid = appData !== null;
-//   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-//   const doc: Omit<SubmissionDoc, "reviewCount"> = {
-//     id: submissionId,
-//     laborMarketAddress: event.contract.address,
-//     serviceRequestId: requestId,
-//     valid: isValid,
-//     reviewed: submission.reviewed,
-//     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
-//     indexedAt: new Date(),
-//     configuration: {
-//       serviceProvider: submission.serviceProvider,
-//       uri: submission.uri,
-//     },
-//     appData,
-//   };
+  const doc: Omit<ReviewDoc, "reviewCount"> = {
+    id: submissionId,
+    laborMarketAddress: event.contract.address,
+    submissionId: submissionId,
+    score: score,
+    indexedAt: new Date(),
+  };
 
-//   if (isValid) {
-//     await mongo.serviceRequests.updateOne(
-//       { id: doc.serviceRequestId },
-//       {
-//         $inc: {
-//           submissionCount: 1,
-//         },
-//       }
-//     );
-//   }
+  await mongo.serviceRequests.updateOne(
+    { id: doc.submissionId },
+    {
+      $inc: {
+        reviewCount: 1,
+      },
+    }
+  );
 
-//   return mongo.submissions.updateOne(
-//     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-//     { $set: doc, $setOnInsert: { reviewCount: 0 } },
-//     { upsert: true }
-//   );
-// };
+  return mongo.reviews.updateOne({ id: doc.id, laborMarketAddress: doc.laborMarketAddress }, { upsert: true });
+};
+
 // /**
 //  * Prepare a new Submission for writing to chain
 //  * @param {string} laborMarketAddress - The labor market address the submission belongs to
@@ -107,19 +92,16 @@ export const countSubmissionsOnServiceRequest = async (serviceRequestId: string)
 //  * @param {SubmissionForm} form - the service request the submission is being submitted for
 //  * @returns {SubmissionContract} - The prepared submission
 //  */
-// export const prepareSubmission = async (
+// export const prepareReview = async (
 //   user: User,
 //   laborMarketAddress: string,
-//   serviceRequestId: string,
-//   form: SubmissionForm
-// ): Promise<SubmissionContract> => {
-//   const metadata = SubmissionFormSchema.parse(form); // Prune extra fields from form
-//   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
-//   // parse for type safety
-//   const contractData = SubmissionContractSchema.parse({
+//   submissionId: string,
+//   score: number
+// ): Promise<ReviewContract> => {
+//   const contractData = ReviewSchema.parse({
 //     laborMarketAddress: laborMarketAddress,
-//     serviceRequestId: serviceRequestId,
-//     uri: cid,
+//     submissionId: submissionId,
+//     score: score,
 //   });
 //   return contractData;
-//};
+// };

@@ -25,13 +25,8 @@ const ReviewDocSchema = z.object({
   id: z.string().describe("The request id"),
   laborMarketAddress: EvmAddressSchema,
   submissionId: z.string(),
-  valid: z.boolean(),
+  score: z.number(),
   indexedAt: z.date(),
-  configuration: z.object({
-    serviceProvider: EvmAddressSchema,
-    uri: z.string(),
-  }),
-  appData: ReviewMetadataSchema.nullable(),
 });
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
