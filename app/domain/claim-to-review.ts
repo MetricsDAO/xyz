@@ -13,9 +13,10 @@ export const ClaimToReviewContractSchema = z.object({
 });
 
 export const ClaimToReviewEventSchema = z.object({
-  requestId: z.string(),
-  signalAmount: z.string(),
   signaler: EvmAddressSchema,
+  requestId: z.string(),
+  quantity: z.string(),
+  signalAmount: z.string(),
 });
 
 export type ClaimToReviewForm = z.infer<typeof ClaimToReviewFormSchema>;
