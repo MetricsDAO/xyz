@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
+import type { LaborMarketDoc, ServiceRequestDoc, SubmissionDoc } from "~/domain";
 import env from "~/env.server";
 
 const client = new MongoClient(env.MONGODB_URI);
@@ -10,7 +10,7 @@ const db = client.db(env.PINE_SUBSCRIBER);
 
 const laborMarkets = db.collection<LaborMarketDoc>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
-const submissions = db.collection("submissions");
+const submissions = db.collection<SubmissionDoc>("submissions");
 
 laborMarkets.createIndex({ "appData.title": "text" });
 

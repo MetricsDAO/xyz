@@ -6,7 +6,7 @@ import { useMachine } from "@xstate/react";
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
@@ -26,7 +26,6 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
-import type { ServiceRequest, SubmissionIndexer } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -41,27 +40,30 @@ import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
-  contractId: z.string(),
+  submissionId: z.string(),
 });
 
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
-  const { laborMarketAddress, contractId } = paramsSchema.parse(data.params);
+  const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  params.submissionId = contractId;
-  const reviews = await searchReviews(params);
+  const reviews = await searchReviews({ ...params, submissionId });
 
-  const submission = await findSubmission(laborMarketAddress, contractId);
+  const submission = await findSubmission(submissionId, laborMarketAddress);
   if (!submission) {
-    throw notFound({ contractId });
+    throw notFound({ submissionId });
   }
 
   return typedjson({ submission, reviews, params }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
+
+export type ChallengeSubmissonProps = {
+  submission: UseDataFunctionReturn<typeof loader>["submission"];
+};
 
 export default function ChallengeSubmission() {
   const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
@@ -81,7 +83,7 @@ export default function ChallengeSubmission() {
     <Container className="py-16 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-10">
         <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-semibold">{submission.title}</h1>
+          <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <ReviewQuestionDrawerButton
@@ -93,14 +95,12 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge url="u/id" address={submission.creatorId as `0x${string}`} balance={200} />
+            <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} balance={200} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submission.createdAt.toString())}</Badge>
+            <Badge>{fromNow(submission.indexedAt.toString())}</Badge>
           </DetailItem>
-          <DetailItem title="Overall Score">
-            <ScoreBadge score={submission.score} />
-          </DetailItem>
+          <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">
             {true ? (
               <div className="inline-flex items-center justify-center text-sm border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
@@ -331,23 +331,23 @@ function ReviewQuestionDrawerButton({
   );
 }
 
-function AnalyzeDescription({ submission }: { submission: SubmissionIndexer }) {
+function AnalyzeDescription({ submission }: ChallengeSubmissonProps) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
-        <a href={submission.description} className="text-blue-600 text-sm flex flex-row items-center">
-          {submission.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+        <a href={submission.appData?.description} className="text-blue-600 text-sm flex flex-row items-center">
+          {submission.appData?.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
         </a>
       </div>
     </>
   );
 }
 
-function BrainstormDescription({ submission }: { submission: SubmissionIndexer }) {
+function BrainstormDescription({ submission }: ChallengeSubmissonProps) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
     </>
   );
 }
