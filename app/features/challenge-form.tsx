@@ -1,3 +1,4 @@
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 import { useParams } from "@remix-run/react";
 import { Field, ValidatedInput, ValidatedTextarea, ValidatedSelect, Error, ValidatedCombobox } from "~/components";
@@ -135,7 +136,46 @@ function BrainstormTextArea() {
 function AnalyticsTextArea() {
   return (
     <>
-      <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?</h2>
+      <div className="flex flex-col md:flex-row md:items-center">
+        <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?</h2>
+        <div className="group">
+          <InformationCircleIcon className="h-5 w-5 text-neutral-400 ml-1" />
+          <div className="absolute z-30 hidden group-hover:block rounded-lg border-2 p-5 bg-blue-100 space-y-6 text-sm max-w-lg">
+            <p className="font-bold">Be specific:</p>
+            <div className="text-gray-500 space-y-3">
+              <p>"How many people actively use Sushi?"</p>
+              <p>
+                The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person? Are we
+                talking Ethereum? What about Polygon?
+              </p>
+              <p className="font-medium italic">
+                UPDATE: How many addresses actively use the SUSHI token on Ethereum?{" "}
+              </p>
+            </div>
+            <p className="font-bold">Define metrics:</p>
+            <div className="text-gray-500 space-y-3">
+              <p>
+                What is “active“? What is “use”? These terms can (and will) mean different things to different people.
+                It doesn't matter what definition you use as long as you communicate your expectations. Alternatively,
+                you can ask for the metric to be defined as part of the question.
+              </p>
+              <p className="font-medium italic">UPDATE: How many addresses have transferred SUSHI on Ethereum?</p>
+            </div>
+            <div className="space-y-3">
+              <p className="font-bold">Specify time boundaries:</p>
+              <div className="text-gray-500 space-y-3">
+                <p>
+                  We still haven't fully defined “active”. Specifying time makes the result easier to understand, don't
+                  rely on the person answering the question to specify time for you if you didn’t ask them to.
+                </p>
+                <p className="font-medium italic">
+                  UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <Field>
         <ValidatedTextarea
           name="description"
