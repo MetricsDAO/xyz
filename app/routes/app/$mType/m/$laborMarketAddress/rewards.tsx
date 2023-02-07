@@ -33,13 +33,14 @@ export default function MarketplaceIdRewards() {
               <p className="text-xs text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
               <ChallengePoolBadges pools={laborMarket.serviceRequestRewardPools} tokens={tokens} />
             </Card>
-            <Card className="p-4 space-y-2">
+            {/* MVP Hide */}
+            {/* <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Avg. Challenge Pool</p>
               <p className="text-xs text-gray-500">
                 AVERAGE REWARD POOL VALUE FOR ACTIVE CHALLENGES IN THIS CHALLENGE MARKETPLACE
               </p>
-              <RewardBadge amount={100} token="USD" rMETRIC={50} />
-            </Card>
+              <RewardBadge amount={"100"} token="USD" rMETRIC={50} />
+            </Card> */}
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Reward Curve</p>
               <p className="text-xs text-gray-500">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
@@ -50,11 +51,12 @@ export default function MarketplaceIdRewards() {
                 </p>
               </div>
             </Card>
-            <Card className="p-4 space-y-2">
+            {/* MVP Hide */}
+            {/* <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Reward Tokens</p>
               <p className="text-xs text-gray-500">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
-              <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /> */}</p>
-            </Card>
+              <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /></p>
+            </Card> */}
           </div>
         </div>
       </main>

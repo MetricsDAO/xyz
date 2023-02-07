@@ -21,6 +21,9 @@ import { useHasPerformed } from "~/hooks/use-has-claimed";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { dateHasPassed } from "~/utils/date";
+import { fromTokenAmount } from "~/utils/helpers";
+import { listTokens } from "~/services/tokens.server";
+import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -39,14 +42,16 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   }
 
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
+  const tokens = await listTokens();
 
   // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = 0;
-  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects }, { status: 200 });
+  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
+    useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -61,6 +66,8 @@ export default function ServiceRequest() {
     serviceRequestId: serviceRequest.id,
     action: "HAS_SUBMITTED",
   });
+
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
 
   return (
     <Container className="py-16 px-10">
@@ -128,7 +135,11 @@ export default function ServiceRequest() {
           )}
         </div>
         <DetailItem title="Reward Pool">
-          <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
+          <RewardBadge
+            amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+            token={token?.symbol ?? ""}
+            rMETRIC={REPUTATION_REWARD_POOL}
+          />
         </DetailItem>
         <DetailItem title="Submissions">
           <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
@@ -156,9 +167,10 @@ export default function ServiceRequest() {
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>
         <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants">
+        {/* MVP Hide */}
+        {/* <TabNavLink to="./participants">
           Participants <span className="text-gray-400">(99)</span>
-        </TabNavLink>
+        </TabNavLink> */}
       </TabNav>
 
       <Outlet />
