@@ -26,7 +26,6 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreNumToLabel } from "~/components/score";
-import type { ServiceRequest, SubmissionDoc, SubmissionIndexer } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -41,21 +40,20 @@ import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
-  contractId: z.string(),
+  submissionId: z.string(),
 });
 
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
-  const { laborMarketAddress, contractId } = paramsSchema.parse(data.params);
+  const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  params.submissionId = contractId;
-  const reviews = await searchReviews(params);
+  const reviews = await searchReviews({ ...params, submissionId });
 
-  const submission = await findSubmission(contractId, laborMarketAddress);
+  const submission = await findSubmission(submissionId, laborMarketAddress);
   if (!submission) {
-    throw notFound({ contractId });
+    throw notFound({ submissionId });
   }
 
   return typedjson({ submission, reviews, params }, { status: 200 });

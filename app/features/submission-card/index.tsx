@@ -4,7 +4,7 @@ import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import type { ChallengeSubmissonProps } from "app/routes/app/$mType/m/$laborMarketAddress.s/$contractId";
+import type { ChallengeSubmissonProps } from "~/routes/app/$mType/m/$laborMarketAddress.s/$submissionId";
 
 export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   const { mType } = useParams();
@@ -51,7 +51,7 @@ function BrainstormInfo({ submission }: ChallengeSubmissonProps) {
 function AnalyticsInfo({ submission }: ChallengeSubmissonProps) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
-      {submission.su} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+      {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
     </main>
   );
 }
