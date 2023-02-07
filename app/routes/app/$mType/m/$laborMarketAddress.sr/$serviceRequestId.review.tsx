@@ -18,6 +18,7 @@ import { findServiceRequest } from "~/services/service-request.server";
 import { claimToReviewDate } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -144,7 +145,11 @@ export default function ClaimToReview() {
           </p>
         </div>
         <div className="flex flex-wrap gap-5">
-          <Button type="submit">Claim to Review</Button>
+          <ConnectWalletWrapper>
+            <Button type="submit">
+              <span>Claim to Review</span>
+            </Button>
+          </ConnectWalletWrapper>
           <Button variant="cancel">Cancel</Button>
         </div>
       </ValidatedForm>
