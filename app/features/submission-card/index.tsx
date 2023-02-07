@@ -13,7 +13,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={$path("/app/:mType/m/:laborMarketAddress/s/:contractId", {
+        to={$path("/app/:mType/m/:laborMarketAddress/s/:submissionId", {
           mType: mType,
           laborMarketAddress: submission.laborMarketAddress,
           contractId: submission.id,
