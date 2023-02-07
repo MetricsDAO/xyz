@@ -179,9 +179,6 @@ function ClaimButton() {
   );
   invariant(state.context.contractData, "Contract data should be defined");
 
-  // DEBUG
-  // console.log("state", state.context, state.value);
-
   const onWriteSuccess = (result: SendTransactionResult) => {
     transitionModal();
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
