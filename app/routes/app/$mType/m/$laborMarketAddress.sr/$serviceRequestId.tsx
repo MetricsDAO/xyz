@@ -17,10 +17,11 @@ import { UserBadge } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
-import { useHasPerformed } from "~/hooks/use-has-claimed";
+import { useHasPerformed } from "~/hooks/use-has-performed";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { dateHasPassed } from "~/utils/date";
+import { useReviewSignals } from "~/hooks/use-review-signals";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -62,27 +63,39 @@ export default function ServiceRequest() {
     action: "HAS_SUBMITTED",
   });
 
+  const reviewSignal = useReviewSignals({
+    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    serviceRequestId: serviceRequest.id,
+  });
+
+  const showSubmit = hasClaimedToSubmit && !hasSubmitted;
+  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted;
+  // Must not have any remaining reviews left (or initial of 0). TODO: check badge as well
+  const showClaimToReview = reviewSignal?.remainder.eq(0);
+
   return (
     <Container className="py-16 px-10">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
-          <Button variant="cancel" size="lg" asChild>
-            <ConnectWalletWrapper>
-              <Button size="lg" asChild>
-                <Link
-                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
-                    mType: mType,
-                    laborMarketAddress: serviceRequest.address,
-                    serviceRequestId: serviceRequest.id,
-                  })}
-                >
-                  Claim to Review
-                </Link>
-              </Button>
-            </ConnectWalletWrapper>
-          </Button>
-          {!hasClaimedToSubmit && !hasSubmitted && (
+          {showClaimToReview && (
+            <Button variant="cancel" size="lg" asChild>
+              <ConnectWalletWrapper>
+                <Button size="lg" asChild>
+                  <Link
+                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
+                      mType: mType,
+                      laborMarketAddress: serviceRequest.address,
+                      serviceRequestId: serviceRequest.id,
+                    })}
+                  >
+                    Claim to Review
+                  </Link>
+                </Button>
+              </ConnectWalletWrapper>
+            </Button>
+          )}
+          {showClaimToSubmit && (
             <Button variant="primary" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
@@ -100,7 +113,7 @@ export default function ServiceRequest() {
             </Button>
           )}
           <Button variant="primary" size="lg" asChild>
-            {hasClaimedToSubmit && (
+            {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
                   <Link
