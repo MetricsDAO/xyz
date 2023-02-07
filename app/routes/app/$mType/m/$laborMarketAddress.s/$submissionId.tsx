@@ -88,8 +88,8 @@ export default function ChallengeSubmission() {
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <ReviewQuestionDrawerButton
-          requestId={"0"}
-          submissionId={"0"}
+          requestId={submission.serviceRequestId}
+          submissionId={submission.id}
           laborMarketAddress={submission.laborMarketAddress}
         />
       </section>
@@ -189,10 +189,8 @@ function ReviewQuestionDrawerButton({
   submissionId: string;
 }) {
   const user = useOptionalUser();
-  const [open, setOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selected, setSelected] = useState<number>(50);
-  const [scoreSelectionOpen, setScoreSelectionOpen] = useState(true);
+  const [selected, setSelected] = useState<number>(2);
+  const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);
 
   const [state, send] = useMachine(reviewSubmissionMachine, {
     actions: {
@@ -226,20 +224,24 @@ function ReviewQuestionDrawerButton({
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
+  console.log("state", state.context.contractData);
+
   return (
     <>
       <ConnectWalletWrapper>
         <Button
           size="lg"
           onClick={() => {
-            user && setOpen(true);
+            user && setScoreSelectionOpen(true);
           }}
-          asChild
         >
           <span>Review & Score</span>
         </Button>
       </ConnectWalletWrapper>
-      <Drawer open={isModalOpen && !state.matches("transactionWait")} onClose={() => setIsModalOpen(false)}>
+      <Drawer
+        open={scoreSelectionOpen && !state.matches("transactionWait")}
+        onClose={() => setScoreSelectionOpen(false)}
+      >
         {scoreSelectionOpen && (
           <div className="flex flex-col mx-auto space-y-10 px-2">
             <div className="space-y-3">
@@ -252,36 +254,36 @@ function ReviewQuestionDrawerButton({
             <div className="flex flex-col space-y-3">
               <Button
                 variant="outline"
-                onClick={() => setSelected(100)}
+                onClick={() => setSelected(4)}
                 className={clsx("hover:bg-green-200", {
-                  "bg-green-200": selected === 100,
+                  "bg-green-200": selected === 4,
                 })}
               >
                 Great
               </Button>
               <Button
                 variant="outline"
-                onClick={() => setSelected(75)}
+                onClick={() => setSelected(3)}
                 className={clsx("hover:bg-blue-200", {
-                  "bg-blue-200": selected === 75,
+                  "bg-blue-200": selected === 3,
                 })}
               >
                 Good
               </Button>
               <Button
                 variant="outline"
-                onClick={() => setSelected(50)}
+                onClick={() => setSelected(2)}
                 className={clsx("hover:bg-gray-200", {
-                  "bg-gray-200": selected === 50,
+                  "bg-gray-200": selected === 2,
                 })}
               >
                 Average
               </Button>
               <Button
                 variant="outline"
-                onClick={() => setSelected(25)}
+                onClick={() => setSelected(1)}
                 className={clsx("hover:bg-orange-200", {
-                  "bg-orange-200": selected === 25,
+                  "bg-orange-200": selected === 1,
                 })}
               >
                 Bad
@@ -297,7 +299,7 @@ function ReviewQuestionDrawerButton({
               </Button>
             </div>
             <div className="flex gap-2 w-full">
-              <Button variant="cancel" fullWidth onClick={() => setIsModalOpen(false)}>
+              <Button variant="cancel" fullWidth onClick={() => setScoreSelectionOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleReviewSubmission} fullWidth>
