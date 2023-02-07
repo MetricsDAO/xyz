@@ -89,6 +89,12 @@ const ServiceRequestDocSchema = z.object({
     uri: z.string(),
   }),
   submissionCount: z.number(),
+  claimsToSubmit: z.array(
+    z.object({
+      signaler: EvmAddressSchema,
+      signalAmount: z.string(),
+    })
+  ),
   appData: ServiceRequestMetaSchema.nullable(),
 });
 

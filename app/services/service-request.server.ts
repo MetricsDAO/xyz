@@ -2,13 +2,13 @@ import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import { ClaimToSubmitEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
 import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
-import { prisma } from "./prisma.server";
 
 /**
  * Returns an array of ServiceRequestDoc for a given Service Request.
@@ -92,7 +92,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<ServiceRequestDoc, "submissionCount"> = {
+  const doc: Omit<ServiceRequestDoc, "submissionCount" | "claimsToSubmit"> = {
     id: requestId,
     address: event.contract.address,
     valid: isValid,
@@ -122,7 +122,16 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
-    { $set: doc, $setOnInsert: { submissionCount: 0 } },
+    { $set: doc, $setOnInsert: { submissionCount: 0, claimsToSubmit: [] } },
     { upsert: true }
+  );
+};
+
+export const indexClaimToSubmit = async (event: TracerEvent) => {
+  const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
+
+  return mongo.serviceRequests.updateOne(
+    { address: event.contract.address, id: inputs.requestId },
+    { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };

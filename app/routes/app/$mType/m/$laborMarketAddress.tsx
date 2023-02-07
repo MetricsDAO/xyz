@@ -74,7 +74,7 @@ export default function Marketplace() {
         <main className="flex-1">
           <TabNav className="mb-10">
             <TabNavLink to="" end>
-              {`Challenges (${laborMarket?.serviceRequestCount} )`}
+              {`Challenges (${laborMarket?.serviceRequestCount})`}
             </TabNavLink>
             <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
             <TabNavLink to="./rewards">Rewards</TabNavLink>
