@@ -16,7 +16,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
         to={$path("/app/:mType/m/:laborMarketAddress/s/:submissionId", {
           mType: mType,
           laborMarketAddress: submission.laborMarketAddress,
-          contractId: submission.id,
+          submissionId: submission.id,
         })}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
