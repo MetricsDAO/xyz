@@ -48,11 +48,16 @@ const SubmissionDocSchema = z.object({
   submissionUrl: z.string().nullable(),
   indexedAt: z.date(),
   configuration: z.object({
-    requester: EvmAddressSchema,
+    serviceProvider: EvmAddressSchema,
     uri: z.string(),
   }),
   reviewCount: z.number(),
   appData: submissionMetaDataSchema.nullable(),
+});
+
+export const SubmissionEventSchema = z.object({
+  requestId: z.string(),
+  submissionId: z.string(),
 });
 
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;

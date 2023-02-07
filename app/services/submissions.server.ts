@@ -1,8 +1,8 @@
 import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
-import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, submissionMetaDataSchema } from "~/domain/submission";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
@@ -37,9 +37,9 @@ export const countSubmissions = async (params: SubmissionSearch) => {
 const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submissions.find>[0] => {
   return {
     valid: true,
-    ...(params.laborMarketAddress ? { address: params.laborMarketAddress } : {}),
-    ...(params.serviceRequestId ? { address: params.serviceRequestId } : {}),
-    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
+    ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
+    // ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
   };
 };
 
@@ -49,7 +49,7 @@ const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submiss
  * @returns - The Submission or null if not found.
  */
 export const findSubmission = async (id: string, laborMarketAddress: string) => {
-  return mongo.submissions.findOne({ id, address: laborMarketAddress, valid: true });
+  return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
 };
 
 /**
@@ -66,18 +66,16 @@ export const countSubmissionsOnServiceRequest = async (serviceRequestId: string)
  */
 export const indexSubmission = async (event: TracerEvent) => {
   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
-  const requestId = z.string().parse(event.decoded.inputs.requestId);
-  const submission = await contract.serviceSubmissions(requestId, { blockTag: event.block.number });
+  const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
+  const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
   const appData = await fetchIpfsJson(submission.uri)
     .then(submissionMetaDataSchema.parse)
     .catch(() => null);
 
-  const currentSubmissionCount = await countSubmissionsOnServiceRequest(requestId);
-
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "reviewCount"> = {
-    id: (currentSubmissionCount + 1).toString(),
+    id: submissionId,
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
     valid: isValid,
@@ -85,7 +83,7 @@ export const indexSubmission = async (event: TracerEvent) => {
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
-      requester: submission.serviceProvider,
+      serviceProvider: submission.serviceProvider,
       uri: submission.uri,
     },
     appData,

@@ -4,7 +4,7 @@ import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import type { ChallengeSubmissonProps } from "app/routes/app/$mType/m/$laborMarketAddress.s/$contractId";
+import type { ChallengeSubmissonProps } from "~/routes/app/$mType/m/$laborMarketAddress.s/$submissionId";
 
 export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   const { mType } = useParams();
@@ -13,10 +13,10 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={$path("/app/:mType/m/:laborMarketAddress/s/:contractId", {
+        to={$path("/app/:mType/m/:laborMarketAddress/s/:submissionId", {
           mType: mType,
           laborMarketAddress: submission.laborMarketAddress,
-          contractId: submission.id,
+          submissionId: submission.id,
         })}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
@@ -33,7 +33,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.indexedAt)} by </span>
-        <UserBadge url="u/id" address={submission.configuration.requester as `0x${string}`} balance={200} />
+        <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} balance={200} />
       </div>
     </Card>
   );
@@ -51,7 +51,7 @@ function BrainstormInfo({ submission }: ChallengeSubmissonProps) {
 function AnalyticsInfo({ submission }: ChallengeSubmissonProps) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
-      {submission.su} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+      {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
     </main>
   );
 }
