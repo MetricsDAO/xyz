@@ -94,11 +94,11 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       <section>
         <h4 className="font-semibold mb-4">Challenge Rewards</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Field>
+          {/*Hidden for mvp <Field>
             <Label>Reward Token Allowlist</Label>
             <ValidatedSelect name="tokenAllowlist" options={tokens.map((t) => ({ label: t.name, value: t.symbol }))} />
             <Error name="tokenAllowlist" />
-          </Field>
+        </Field>*/}
           <Field>
             <Label>Reward Curve</Label>
             <ValidatedSelect name="rewardCurve" options={[{ label: "Reward by overall score", value: "delegates" }]} />
