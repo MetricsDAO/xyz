@@ -51,7 +51,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
   const result = await validator.validate(await request.formData());
   const { laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
