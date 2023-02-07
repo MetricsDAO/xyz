@@ -51,7 +51,6 @@ export default function ServiceRequest() {
   invariant(mType, "marketplace type must be specified");
 
   const deadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
-  console.log("DEADLINE PAST", deadlinePassed);
 
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.address as `0x${string}`,
