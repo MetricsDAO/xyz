@@ -5,6 +5,7 @@ import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
