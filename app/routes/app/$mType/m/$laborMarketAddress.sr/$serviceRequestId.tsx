@@ -53,7 +53,7 @@ export default function ServiceRequest() {
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.address as `0x${string}`,
     serviceRequestId: serviceRequest.id,
-    action: "HAS_CLAIMED",
+    action: "HAS_SIGNALED",
   });
 
   const hasSubmitted = useHasPerformed({
