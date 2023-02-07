@@ -2,14 +2,13 @@ import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
-import { ClaimToReviewEventSchema } from "~/domain/claim-to-review";
+import { ClaimToSubmitEventSchema, ClaimToReviewEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
 import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
-import { prisma } from "./prisma.server";
 
 /**
  * Returns an array of ServiceRequestDoc for a given Service Request.
@@ -34,7 +33,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
 
 /**
  * Convenience function to share the search parameters between search and count.
- * @param {LaborMarketSearch} params - The search parameters.
+ * @param {ServiceRequestSearch} params - The search parameters.
  * @returns criteria to find labor market in MongoDb
  */
 const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
@@ -93,7 +92,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<ServiceRequestDoc, "submissionCount" | "claimsToReview"> = {
+  const doc: Omit<ServiceRequestDoc, "submissionCount" | "claimsToSubmit" | "claimsToReview"> = {
     id: requestId,
     address: event.contract.address,
     valid: isValid,
@@ -124,6 +123,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
     { $set: doc, $setOnInsert: { submissionCount: 0, claimsToReview: [] } },
+    { $set: doc, $setOnInsert: { submissionCount: 0, claimsToSubmit: [], claimsToReview: [] } },
     { upsert: true }
   );
 };
@@ -134,5 +134,15 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   return mongo.serviceRequests.updateOne(
     { address: event.contract.address, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
+      );
+};
+
+export const indexClaimToSubmit = async (event: TracerEvent) => {
+  const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
+
+  return mongo.serviceRequests.updateOne(
+    { address: event.contract.address, id: inputs.requestId },
+    { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
+
   );
 };

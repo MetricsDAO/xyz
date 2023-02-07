@@ -90,6 +90,12 @@ const ServiceRequestDocSchema = z.object({
   }),
   submissionCount: z.number(),
   claimsToReview: z.array(
+      z.object({
+      signaler: EvmAddressSchema,
+      signalAmount: z.string(),
+    })
+  );
+  claimsToSubmit: z.array(
     z.object({
       signaler: EvmAddressSchema,
       signalAmount: z.string(),

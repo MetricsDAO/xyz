@@ -1,9 +1,11 @@
-import { LaborMarketNetwork as LaborMarketNetworkAbi, LaborMarket as LaborMarketAbi } from "labor-markets-abi";
+import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
+import * as pine from "pinekit";
 import env from "~/env.server";
 import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
 import * as pine from "pinekit";
-import { indexClaimToReview, indexServiceRequest } from "~/services/service-request.server";
+import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
+import { indexSubmission } from "~/services/submissions.server";
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),
@@ -36,8 +38,17 @@ worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
   return indexServiceRequest(event);
 });
 
+
 worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
   return indexClaimToReview(event);
+});
+
+worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
+  return indexSubmission(event);
+});
+
+worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
+  return indexClaimToSubmit(event);
 });
 
 worker.run();

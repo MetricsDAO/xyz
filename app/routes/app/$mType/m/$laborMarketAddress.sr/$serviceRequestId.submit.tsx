@@ -15,6 +15,7 @@ import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submis
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
+import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
@@ -25,6 +26,9 @@ const submissionMachine = createBlockchainTransactionStateMachine<SubmissionCont
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
+  const user = await getUser(request);
+  invariant(user, "You must be logged in to create a marketplace");
+
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
   invariant(serviceRequest, "service request must exist");
@@ -32,7 +36,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedSubmission = prepareSubmission(laborMarketAddress, result.data);
+  const preparedSubmission = await prepareSubmission(user, laborMarketAddress, serviceRequestId, result.data);
   return typedjson({ preparedSubmission });
 };
 
@@ -40,7 +44,6 @@ export default function SubmitQuestion() {
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { mType } = useParams();
-
   const [state, send] = useMachine(submissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
@@ -67,6 +70,7 @@ export default function SubmitQuestion() {
   }, [actionData, send]);
 
   const onWriteSuccess = (result: SendTransactionResult) => {
+    console.log("onWriteSuccess", result);
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
