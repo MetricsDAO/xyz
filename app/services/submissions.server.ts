@@ -1,16 +1,12 @@
+import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
-import type { ServiceRequestDoc } from "~/domain/service-request";
-import { ServiceRequestMetaSchema } from "~/domain/service-request";
 import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
-import { SubmissionFormSchema, submissionMetaDataSchema } from "~/domain/submission";
-import { SubmissionContractSchema } from "~/domain/submission";
-import { fromUnixTimestamp } from "~/utils/date";
+import { SubmissionContractSchema, submissionMetaDataSchema } from "~/domain/submission";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
-import type { User } from "@prisma/client";
 
 /**
  * Returns an array of SubmissionDoc for a given Service Request.
@@ -72,9 +68,12 @@ export const indexSubmission = async (event: TracerEvent) => {
   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
   const requestId = z.string().parse(event.decoded.inputs.requestId);
   const submission = await contract.serviceSubmissions(requestId, { blockTag: event.block.number });
+  console.log("SUBMISSION", submission, submission.uri);
   const appData = await fetchIpfsJson(submission.uri)
     .then(submissionMetaDataSchema.parse)
     .catch(() => null);
+
+  console.log("APP DATA", appData);
 
   const currentSubmissionCount = await countSubmissionsOnServiceRequest(requestId);
   console.log("CURRENT SUBMISSION COUNT", currentSubmissionCount);
@@ -127,9 +126,8 @@ export const prepareSubmission = async (
   serviceRequestId: string,
   form: SubmissionForm
 ): Promise<SubmissionContract> => {
-  // TODO: upload data to ipfs
   const metadata = submissionMetaDataSchema.parse(form); // Prune extra fields from form
-  const cid = await uploadJsonToIpfs(user, metadata);
+  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
   console.log("CID", cid);
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({

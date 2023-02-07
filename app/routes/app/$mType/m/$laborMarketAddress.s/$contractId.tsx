@@ -6,7 +6,7 @@ import { useMachine } from "@xstate/react";
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
@@ -62,6 +62,10 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
+
+export type ChallengeSubmissonProps = {
+  submission: UseDataFunctionReturn<typeof loader>["submission"];
+};
 
 export default function ChallengeSubmission() {
   const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
@@ -325,7 +329,7 @@ function ReviewQuestionDrawerButton({
   );
 }
 
-function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
+function AnalyzeDescription({ submission }: ChallengeSubmissonProps) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
@@ -338,7 +342,7 @@ function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
   );
 }
 
-function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
+function BrainstormDescription({ submission }: ChallengeSubmissonProps) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>

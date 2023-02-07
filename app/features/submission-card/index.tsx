@@ -1,18 +1,12 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import type { Submission } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import type { SubmissionDoc } from "~/domain";
+import type { ChallengeSubmissonProps } from "app/routes/app/$mType/m/$laborMarketAddress.s/$contractId";
 
-type Props = {
-  submission: SubmissionDoc;
-  totalReviews: number;
-};
-
-export function SubmissionCard({ submission, totalReviews }: Props) {
+export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -34,7 +28,7 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
         <div className="flex flex-col items-center gap-2">
           {/* hard coded for now */}
           <Score score={2} />
-          <p className="text-xs text-gray-500 text-center">{totalReviews} reviews</p>
+          <p className="text-xs text-gray-500 text-center">{submission.reviewCount} reviews</p>
         </div>
       </Link>
       <div className="flex flex-wrap items-center text-xs">
@@ -45,7 +39,7 @@ export function SubmissionCard({ submission, totalReviews }: Props) {
   );
 }
 
-function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
+function BrainstormInfo({ submission }: ChallengeSubmissonProps) {
   return (
     <main className="space-y-2 flex-1">
       <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
@@ -54,10 +48,10 @@ function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
   );
 }
 
-function AnalyticsInfo({ submission }: { submission: SubmissionDoc }) {
+function AnalyticsInfo({ submission }: ChallengeSubmissonProps) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
-      {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+      {submission.su} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
     </main>
   );
 }

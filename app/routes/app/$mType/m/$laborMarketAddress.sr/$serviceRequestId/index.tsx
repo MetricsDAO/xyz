@@ -4,15 +4,15 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson } from "remix-typedjson";
+import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
-import type { SubmissionSearch } from "~/domain/submission";
-import { SubmissionContract, SubmissionSearchSchema } from "~/domain/submission";
+import { SubmissionSearchSchema } from "~/domain/submission";
 import { SubmissionCard } from "~/features/submission-card";
 import { searchSubmissions } from "~/services/submissions.server";
 
@@ -27,8 +27,11 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   return typedjson({ submissions });
 };
 
-export default function ChallengeIdSubmissions() {
-  const { submissions } = useTypedLoaderData<typeof loader>();
+export type ChallengeSubmissonProps = {
+  submissions: UseDataFunctionReturn<typeof loader>["submissions"];
+};
+
+export default function ChallengeIdSubmissions({ submissions }: ChallengeSubmissonProps) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -41,9 +44,9 @@ export default function ChallengeIdSubmissions() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
-        {/* {submissions.map((s) => {
-          return <SubmissionCard key={s._id} submission={s} totalReviews={s.reviews.length} />;
-        })} */}
+        {submissions?.map((s) => {
+          return <SubmissionCard key={s.id} submission={s} />;
+        })}
       </main>
 
       <aside className="md:w-1/4 text-sm">
