@@ -55,6 +55,11 @@ const SubmissionDocSchema = z.object({
   appData: submissionMetaDataSchema.nullable(),
 });
 
+export const SubmissionEventSchema = z.object({
+  requestId: z.string(),
+  submissionId: z.string(),
+});
+
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof submissionMetaDataSchema>;

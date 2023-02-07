@@ -3,6 +3,7 @@ import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, submissionMetaDataSchema } from "~/domain/submission";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
@@ -66,8 +67,8 @@ export const countSubmissionsOnServiceRequest = async (serviceRequestId: string)
  */
 export const indexSubmission = async (event: TracerEvent) => {
   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
-  const requestId = z.string().parse(event.decoded.inputs.requestId);
-  const submission = await contract.serviceSubmissions(requestId, { blockTag: event.block.number });
+  const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
+  const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
   console.log("SUBMISSION", submission, submission.uri);
   const appData = await fetchIpfsJson(submission.uri)
     .then(submissionMetaDataSchema.parse)
