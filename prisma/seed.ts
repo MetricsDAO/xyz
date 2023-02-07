@@ -1,7 +1,6 @@
 import { fakeLaborMarket, fakeReview, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
-import { upsertSubmission } from "~/services/submissions.server";
 import type { ServiceRequest, Submission } from "@prisma/client";
 import { upsertReview } from "~/services/review-service.server";
 
@@ -83,8 +82,8 @@ async function main() {
 
   // await seedLaborMarkets();
   // await seedServiceRequests(await prisma.laborMarket.findMany());
-  await seedSubmissions(await prisma.serviceRequest.findMany());
-  await seedReviews(await prisma.submission.findMany());
+  // await seedSubmissions(await prisma.serviceRequest.findMany());
+  // await seedReviews(await prisma.submission.findMany());
 }
 
 // async function seedLaborMarkets() {
@@ -112,33 +111,33 @@ async function main() {
 //   }
 // }
 
-async function seedSubmissions(serviceRequests: ServiceRequest[]) {
-  for (const serviceRequest of serviceRequests) {
-    // create 3 fake submissions for each Service Request in Prisma
-    for (let i = 0; i < 3; i++) {
-      const submission = fakeSubmission({
-        laborMarketAddress: serviceRequest.laborMarketAddress,
-        serviceRequestId: serviceRequest.contractId,
-      });
-      await upsertSubmission(submission);
-    }
-  }
-}
+// async function seedSubmissions(serviceRequests: ServiceRequest[]) {
+//   for (const serviceRequest of serviceRequests) {
+//     // create 3 fake submissions for each Service Request in Prisma
+//     for (let i = 0; i < 3; i++) {
+//       const submission = fakeSubmission({
+//         laborMarketAddress: serviceRequest.laborMarketAddress,
+//         serviceRequestId: serviceRequest.contractId,
+//       });
+//       await upsertSubmission(submission);
+//     }
+//   }
+// }
 
-async function seedReviews(allSubmissions: Submission[]) {
-  for (const submission of allSubmissions) {
-    // create 3 fake reviews for each submission in Prisma
-    for (let i = 0; i < 3; i++) {
-      await upsertReview(
-        fakeReview({
-          serviceRequestId: submission.serviceRequestId,
-          laborMarketAddress: submission.laborMarketAddress,
-          submissionId: submission.contractId,
-        })
-      );
-    }
-  }
-}
+// async function seedReviews(allSubmissions: Submission[]) {
+//   for (const submission of allSubmissions) {
+//     // create 3 fake reviews for each submission in Prisma
+//     for (let i = 0; i < 3; i++) {
+//       await upsertReview(
+//         fakeReview({
+//           serviceRequestId: submission.serviceRequestId,
+//           laborMarketAddress: submission.laborMarketAddress,
+//           submissionId: submission.contractId,
+//         })
+//       );
+//     }
+//   }
+// }
 
 main()
   .then(async () => {

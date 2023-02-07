@@ -33,7 +33,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
 
 /**
  * Convenience function to share the search parameters between search and count.
- * @param {LaborMarketSearch} params - The search parameters.
+ * @param {ServiceRequestSearch} params - The search parameters.
  * @returns criteria to find labor market in MongoDb
  */
 const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
