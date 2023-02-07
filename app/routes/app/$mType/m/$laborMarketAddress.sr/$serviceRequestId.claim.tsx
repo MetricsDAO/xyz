@@ -15,26 +15,27 @@ import type { ClaimToSubmitPrepared } from "~/domain";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { useOptionalUser } from "~/hooks/use-user";
 import { findServiceRequest } from "~/services/service-request.server";
-import { getUser, getUserId } from "~/services/session.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
-  const user = await getUserId(request);
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
   if (!serviceRequest) {
     throw notFound({ id: serviceRequestId });
   }
 
-  return typedjson({ serviceRequest, user }, { status: 200 });
+  return typedjson({ serviceRequest }, { status: 200 });
 };
 
 const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
 
 export default function ClaimToSubmit() {
-  const { serviceRequest, user } = useTypedLoaderData<typeof loader>();
+  const user = useOptionalUser();
+
+  const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,7 +55,7 @@ export default function ClaimToSubmit() {
   });
 
   const handleClaimToSubmit = () => {
-    if (user !== undefined) {
+    if (user) {
       send({ type: "RESET_TRANSACTION" });
       send({
         type: "PREPARE_TRANSACTION_READY",
