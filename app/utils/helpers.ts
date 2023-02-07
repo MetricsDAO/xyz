@@ -13,8 +13,8 @@ export const truncateAddress = (address: string) => {
 const DECIMALS = 6;
 
 /**
- * Standardized way of parsing token string amount. An amount of 1 is 1e18 units.
- * @param amount string amount that cannot be less than 1e-18
+ * Standardized way of parsing token string amount
+ * @param amount string amount
  * @returns {BigNumber}
  */
 export const parseTokenAmount = (amount: string) => {
@@ -22,7 +22,8 @@ export const parseTokenAmount = (amount: string) => {
 };
 
 /**
- * Convert BigNumber amount to string with {DECIMALS} number of decimal places
+ * Convert smallest denomination of a string number to a fractional amount.
+ * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display.
  * @param amount BigNumber amount in smallest denomination
  * @returns {string}
  */
