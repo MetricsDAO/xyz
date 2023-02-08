@@ -28,7 +28,7 @@ function CustomConnectButton() {
           );
         }
 
-        if (chain.unsupported) {
+        if (chain.unsupported || chain.name === "Ethereum") {
           return (
             <Button variant="danger" onClick={openChainModal}>
               Switch Chain
