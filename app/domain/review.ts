@@ -8,6 +8,7 @@ export const ReviewSearchSchema = z.object({
   first: z.number().default(10),
   page: z.number().default(1),
   submissionId: z.string().optional(),
+  laborMarketAddress: EvmAddressSchema.optional(),
 });
 
 export const ReviewSchema = z.object({
@@ -17,5 +18,27 @@ export const ReviewSchema = z.object({
   submissionId: z.string(),
 });
 
+export const ReviewFormSchema = ReviewSchema.pick({
+  score: true,
+});
+
+export const ReviewEventSchema = z.object({
+  submissionId: z.string(),
+  reviewer: z.string(),
+  reviewScore: z.string(),
+  requestId: z.string(),
+});
+
+const ReviewDocSchema = z.object({
+  submissionId: z.string(),
+  laborMarketAddress: EvmAddressSchema,
+  serviceRequestId: z.string(),
+  score: z.string(),
+  reviewer: z.string(),
+  indexedAt: z.date(),
+});
+
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
 export type ReviewContract = z.infer<typeof ReviewSchema>;
+export type ReviewDoc = z.infer<typeof ReviewDocSchema>;
+export type ReviewForm = z.infer<typeof ReviewFormSchema>;

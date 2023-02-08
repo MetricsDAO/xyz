@@ -2,11 +2,11 @@ import clsx from "clsx";
 import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/constants";
 
 type Props = {
-  score: number;
+  score: string;
 };
 
 export function Score({ score }: Props) {
-  const label = scoreNumToLabel(score);
+  const label = scoreToLabel(score);
 
   return (
     <div className={clsx(SCORE_COLOR_SECONDARY[label], "rounded-lg h-9 flex text-sm w-fit")}>
@@ -16,8 +16,8 @@ export function Score({ score }: Props) {
   );
 }
 
-export function ScoreBadge({ score }: { score: number }) {
-  const label = scoreNumToLabel(score);
+export function ScoreBadge({ score }: { score: string }) {
+  const label = scoreToLabel(score);
   return (
     <div className={clsx(SCORE_COLOR_SECONDARY[label], "flex rounded-full items-center pr-1 h-8 w-fit")}>
       <div className={clsx(SCORE_COLOR[label], "flex rounded-full px-2 gap-x-1 items-center py-1 h-8")}>
@@ -28,6 +28,17 @@ export function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-export function scoreNumToLabel(score: number) {
-  return score >= 90 ? "Great" : score >= 70 ? "Good" : score >= 45 ? "Average" : score >= 25 ? "Bad" : "Spam";
+export function scoreToLabel(score: number | string) {
+  if (typeof score === "string") {
+    return score === "4"
+      ? "Great"
+      : score === "3"
+      ? "Good"
+      : score === "2"
+      ? "Average"
+      : score === "0"
+      ? "Bad"
+      : "Spam";
+  }
+  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 0 ? "Bad" : "Spam";
 }

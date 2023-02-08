@@ -1,58 +1,108 @@
-import type { Review } from "@prisma/client";
-import type { ReviewSearch } from "~/domain/review";
-import { prisma } from "./prisma.server";
+import type { TracerEvent } from "pinekit/types";
+import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
+import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
+import { mongo } from "./mongo.server";
 
 /**
- * Returns an array of Reviews for a given ReviewSearch.
- * @param {ReviewSearch} params - The search parameters.
+ * Returns an array of ReviewDoc for a given Submission.
  */
 export const searchReviews = async (params: ReviewSearch) => {
-  return prisma.review.findMany({
-    where: {
-      score: {
-        in: params.score,
-      },
-      submissionId: params.submissionId,
-    },
-    orderBy: {
-      [params.sortBy]: params.order,
-    },
-    take: params.first,
-    skip: params.first * (params.page - 1),
-  });
+  return mongo.reviews
+    .find(searchParams(params))
+    .sort({ [params.sortBy]: params.order })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
 };
 
 /**
- * Creates or updates a new review. This is only really used by the indexer.
- * @param {Review} review - The review to create.
+ * Counts the number of reviews that match a given ReviewSearch.
+ * @param {ReviewSearch} params - The search parameters.
+ * @returns {number} - The number of reviews that match the search.
  */
-export const upsertReview = async (review: Review) => {
-  const { id, ...data } = review;
-  const newReview = await prisma.review.upsert({
-    where: { id },
-    update: data,
-    create: {
-      id,
-      ...data,
-    },
-  });
-  return newReview;
+export const countReviews = async (params: ReviewSearch) => {
+  return mongo.reviews.countDocuments(searchParams(params));
 };
 
 /**
- * Counts the number of Reviews that match the given Submissions.
- * @param {string[]} submissionIds - The submisions to search.
- * @returns {number} - The number of reviews in the given submissions.
+ * Convenience function to share the search parameters between search and count.
+ * @param {ReviewSearch} params - The search parameters.
+ * @returns criteria to find review in MongoDb
  */
-export const countReviews = async (submissionIds: string[]) => {
-  if (submissionIds.length === 0) {
-    return 0;
-  }
-  return prisma.review.count({
-    where: {
-      submissionId: {
-        in: submissionIds,
+const searchParams = (params: ReviewSearch): Parameters<typeof mongo.reviews.find>[0] => {
+  return {
+    ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
+    ...(params.submissionId ? { submissionId: params.submissionId } : {}),
+  };
+};
+
+/**
+ * Finds a review by its ID.
+ * @param {String} id - The ID of the review.
+ * @returns - The Submission or null if not found.
+ */
+export const findReview = async (id: string, laborMarketAddress: string) => {
+  return mongo.reviews.findOne({ valid: true, laborMarketAddress, id });
+};
+
+/**
+ * Counts the number of reviews on a particular submission.
+ * @param {submissionId} params - The submission to count reviews for.
+ * @returns {number} - The number of reviews that match the search.
+ */
+export const countReviewsOnSubmission = async (submissionId: string) => {
+  return mongo.reviews.countDocuments({ submissionId, valid: true });
+};
+
+/**
+ * Create a new ReviewDoc from a TracerEvent.
+ */
+export const indexReview = async (event: TracerEvent) => {
+  const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
+
+  const doc: Omit<ReviewDoc, "reviewCount"> = {
+    laborMarketAddress: event.contract.address,
+    serviceRequestId: requestId,
+    submissionId: submissionId,
+    score: reviewScore,
+    reviewer: reviewer,
+    indexedAt: new Date(),
+  };
+
+  await mongo.submissions.updateOne(
+    { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
+    {
+      $inc: {
+        reviewCount: 1,
       },
-    },
+    }
+  );
+
+  return mongo.reviews.updateOne(
+    { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId },
+    { $set: doc },
+    { upsert: true }
+  );
+};
+
+/**
+ * Prepare a new Submission for writing to chain
+ * @param {string} laborMarketAddress - The labor market address the submission belongs to
+ * @param {string} serviceRequestId - The service request the submission belongs to
+ * @param {SubmissionForm} form - the service request the submission is being submitted for
+ * @returns {ReviewContract} - The prepared submission
+ */
+export const prepareReview = async (
+  laborMarketAddress: string,
+  submissionId: string,
+  requestId: string,
+  form: ReviewForm
+): Promise<ReviewContract> => {
+  const contractData = ReviewSchema.parse({
+    laborMarketAddress: laborMarketAddress,
+    requestId: requestId,
+    submissionId: submissionId,
+    score: form.score,
   });
+  return contractData;
 };

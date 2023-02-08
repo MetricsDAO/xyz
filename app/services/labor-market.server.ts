@@ -65,7 +65,7 @@ export async function indexLaborMarket(event: TracerEvent) {
     .catch(() => null);
 
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<LaborMarketDoc, "serviceRequestCount"> = {
+  const doc: Omit<LaborMarketDoc, "serviceRequestCount" | "serviceRequestRewardPools"> = {
     address: event.contract.address,
     valid: appData !== null,
     indexedAt: new Date(),
@@ -97,7 +97,7 @@ export async function indexLaborMarket(event: TracerEvent) {
 
   return mongo.laborMarkets.updateOne(
     { address: doc.address },
-    { $set: doc, $setOnInsert: { serviceRequestCount: 0 } },
+    { $set: doc, $setOnInsert: { serviceRequestCount: 0, serviceRequestRewardPools: [] } },
     { upsert: true }
   );
 }

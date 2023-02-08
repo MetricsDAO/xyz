@@ -35,12 +35,8 @@ export const SubmissionIndexerSchema = z.object({
   description: z.string(),
 });
 
-export const submissionMetaDataSchema = SubmissionFormSchema.extend({
-  submissionUrl: z.string().optional(),
-});
-
 const SubmissionDocSchema = z.object({
-  id: z.string().describe("The request id"),
+  id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   valid: z.boolean(),
@@ -52,7 +48,7 @@ const SubmissionDocSchema = z.object({
     uri: z.string(),
   }),
   reviewCount: z.number(),
-  appData: submissionMetaDataSchema.nullable(),
+  appData: SubmissionFormSchema.nullable(),
 });
 
 export const SubmissionEventSchema = z.object({
@@ -62,6 +58,6 @@ export const SubmissionEventSchema = z.object({
 
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
-export type SubmissionForm = z.infer<typeof submissionMetaDataSchema>;
+export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;

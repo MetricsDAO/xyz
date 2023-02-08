@@ -8,7 +8,7 @@ export function RewardBadge({
   rMETRIC,
   variant = "default",
 }: {
-  amount: number;
+  amount: string | number;
   token: string;
   rMETRIC: number;
   variant?: Variant;

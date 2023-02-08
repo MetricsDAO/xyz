@@ -18,10 +18,13 @@ import { RewardBadge } from "~/components/reward-badge";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
 import { useHasPerformed } from "~/hooks/use-has-performed";
+import { useReviewSignals } from "~/hooks/use-review-signals";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
+import { listTokens } from "~/services/tokens.server";
+import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
-import { useReviewSignals } from "~/hooks/use-review-signals";
+import { fromTokenAmount } from "~/utils/helpers";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -40,14 +43,16 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   }
 
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
+  const tokens = await listTokens();
 
   // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = 0;
-  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects }, { status: 200 });
+  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
+    useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -63,6 +68,7 @@ export default function ServiceRequest() {
     action: "HAS_SUBMITTED",
   });
 
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
   const reviewSignal = useReviewSignals({
     laborMarketAddress: serviceRequest.address as `0x${string}`,
     serviceRequestId: serviceRequest.id,
@@ -133,7 +139,7 @@ export default function ServiceRequest() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} balance={200} />
+          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} />
         </DetailItem>
         <div className="flex space-x-4">
           {serviceRequestProjects && (
@@ -141,7 +147,11 @@ export default function ServiceRequest() {
           )}
         </div>
         <DetailItem title="Reward Pool">
-          <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
+          <RewardBadge
+            amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+            token={token?.symbol ?? ""}
+            rMETRIC={REPUTATION_REWARD_POOL}
+          />
         </DetailItem>
         <DetailItem title="Submissions">
           <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
@@ -169,9 +179,10 @@ export default function ServiceRequest() {
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>
         <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants">
+        {/* MVP Hide */}
+        {/* <TabNavLink to="./participants">
           Participants <span className="text-gray-400">(99)</span>
-        </TabNavLink>
+        </TabNavLink> */}
       </TabNav>
 
       <Outlet />

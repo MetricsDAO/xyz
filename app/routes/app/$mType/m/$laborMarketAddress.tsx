@@ -13,6 +13,7 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
+import { listTokens } from "~/services/tokens.server";
 
 export const loader = async (data: DataFunctionArgs) => {
   invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
@@ -27,7 +28,9 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
 
-  return typedjson({ laborMarket, laborMarketProjects });
+  const tokens = await listTokens();
+
+  return typedjson({ laborMarket, laborMarketProjects, tokens });
 };
 
 export default function Marketplace() {
@@ -59,7 +62,7 @@ export default function Marketplace() {
           <Detail>
             {laborMarket?.configuration.owner ? (
               <DetailItem title="Sponsor">
-                <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} balance={200} />
+                <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} />
               </DetailItem>
             ) : (
               <></>
