@@ -107,8 +107,7 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
           </div>
         </div>
         <p className="text-gray-400 italic">
-          Rewards will be distributed to the top 10% of authors based on the Aggressive reward curve set for the
-          challenge marketplace
+          Rewards are distributed based on overall submission scores. Higher scores are rewarded more.
         </p>
       </section>
     </>
