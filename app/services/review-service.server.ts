@@ -80,7 +80,7 @@ export const indexReview = async (event: TracerEvent) => {
 
   return mongo.reviews.updateOne(
     { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId, reviewer: doc.reviewer },
-    { $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp), $set: doc } },
+    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
     { upsert: true }
   );
 };
