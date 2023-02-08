@@ -15,7 +15,6 @@ import type { ClaimToSubmitPrepared } from "~/domain";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { useOptionalUser } from "~/hooks/use-user";
 import { findServiceRequest } from "~/services/service-request.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
@@ -33,8 +32,6 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
 
 export default function ClaimToSubmit() {
-  const user = useOptionalUser();
-
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
 
@@ -55,17 +52,15 @@ export default function ClaimToSubmit() {
   });
 
   const handleClaimToSubmit = () => {
-    if (user) {
-      send({ type: "RESET_TRANSACTION" });
-      send({
-        type: "PREPARE_TRANSACTION_READY",
-        data: {
-          laborMarketAddress: serviceRequest.address,
-          serviceRequestId: serviceRequest.id,
-        },
-      });
-      setIsModalOpen(true);
-    }
+    send({ type: "RESET_TRANSACTION" });
+    send({
+      type: "PREPARE_TRANSACTION_READY",
+      data: {
+        laborMarketAddress: serviceRequest.address,
+        serviceRequestId: serviceRequest.id,
+      },
+    });
+    setIsModalOpen(true);
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
