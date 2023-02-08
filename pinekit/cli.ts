@@ -22,11 +22,12 @@ program
       : LaborMarketNetwork.address;
     const res = await pine.createTracer({
       namespace: env.PINE_NAMESPACE,
-      version: "0.0.1",
+      version: "2.0.0",
       blockchain: {
         name: "polygon",
         network: "mainnet",
       },
+      fromBlock: 39064248,
       contracts: [
         { name: "LaborMarketNetwork", addresses: [laborMarketNetworkAddress], schema: LaborMarketNetwork.abi },
         {

@@ -15,6 +15,7 @@ export interface TracerContract {
 }
 
 export interface TracerConfig {
+  fromBlock: number;
   namespace: string;
   version: string;
   blockchain: {
