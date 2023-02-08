@@ -2,6 +2,7 @@ import type { TracerEvent } from "pinekit/types";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";
+import { nodeProvider } from "./node.server";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
@@ -60,13 +61,15 @@ export const countReviewsOnSubmission = async (submissionId: string) => {
 export const indexReview = async (event: TracerEvent) => {
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
 
+  const blockTimestamp = (await nodeProvider.getBlock(event.block.number)).timestamp;
+
   const doc: Omit<ReviewDoc, "reviewCount"> = {
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
     submissionId: submissionId,
     score: reviewScore,
     reviewer: reviewer,
-    indexedAt: new Date(),
+    blockTimestamp: new Date(blockTimestamp * 1000),
   };
 
   await mongo.submissions.updateOne(

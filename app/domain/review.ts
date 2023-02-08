@@ -35,7 +35,7 @@ const ReviewDocSchema = z.object({
   serviceRequestId: z.string(),
   score: z.string(),
   reviewer: z.string(),
-  indexedAt: z.date(),
+  blockTimestamp: z.date(),
 });
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;

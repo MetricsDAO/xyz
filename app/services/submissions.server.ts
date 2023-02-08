@@ -72,6 +72,8 @@ export const indexSubmission = async (event: TracerEvent) => {
     .then(SubmissionFormSchema.parse)
     .catch(() => null);
 
+  const blockTimestamp = (await nodeProvider.getBlock(event.block.number)).timestamp;
+
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "reviewCount"> = {
@@ -81,7 +83,7 @@ export const indexSubmission = async (event: TracerEvent) => {
     valid: isValid,
     reviewed: submission.reviewed,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
-    indexedAt: new Date(),
+    blockTimestamp: new Date(blockTimestamp * 1000),
     configuration: {
       serviceProvider: submission.serviceProvider,
       uri: submission.uri,

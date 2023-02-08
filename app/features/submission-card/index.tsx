@@ -45,7 +45,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
         </div>
       </Link>
       <div className="flex flex-wrap items-center text-xs">
-        <span className="mr-1">{fromNow(submission.indexedAt)} by </span>
+        <span className="mr-1">{fromNow(submission.blockTimestamp)} by </span>
         <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
       </div>
     </Card>
