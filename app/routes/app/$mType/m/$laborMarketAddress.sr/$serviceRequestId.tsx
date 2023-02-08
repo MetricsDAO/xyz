@@ -139,7 +139,7 @@ export default function ServiceRequest() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} balance={200} />
+          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} />
         </DetailItem>
         <div className="flex space-x-4">
           {serviceRequestProjects && (

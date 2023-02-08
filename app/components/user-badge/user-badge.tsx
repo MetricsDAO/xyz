@@ -8,7 +8,7 @@ import { truncateAddress } from "~/utils/helpers";
 import { Avatar } from "../avatar";
 
 /** Renders a wallet's avatar and address or ENS name, along with their rMETRIC balance, and UserCard on hover. */
-export function UserBadge({ url, address, balance }: { url: string; address: `0x${string}`; balance: number }) {
+export function UserBadge({ url, address }: { url: string; address: `0x${string}` }) {
   const { data: ensName } = useEnsName({
     address: address,
     chainId: 1,
