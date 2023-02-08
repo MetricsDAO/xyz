@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketForm, LaborMarketContract, LaborMarketSearch, LaborMarketDoc } from "~/domain";
@@ -65,13 +65,10 @@ export async function indexLaborMarket(event: TracerEvent) {
     .then(LaborMarketMetaSchema.parse)
     .catch(() => null);
 
-  const blockTimestamp = (await nodeProvider.getBlock(event.block.number)).timestamp;
-
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<LaborMarketDoc, "serviceRequestCount" | "serviceRequestRewardPools"> = {
+  const doc: Omit<LaborMarketDoc, "serviceRequestCount" | "serviceRequestRewardPools" | "createdAtBlockTimestamp"> = {
     address: event.contract.address,
     valid: appData !== null,
-    createdAtBlockTimestamp: new Date(blockTimestamp * 1000),
     indexedAt: new Date(),
     appData,
     configuration: {
@@ -106,7 +103,7 @@ export async function indexLaborMarket(event: TracerEvent) {
       $setOnInsert: {
         serviceRequestCount: 0,
         serviceRequestRewardPools: [],
-        createdAtBlockTimestamp: doc.createdAtBlockTimestamp,
+        createdAtBlockTimestamp: new Date(event.block.timestamp),
       },
     },
     { upsert: true }

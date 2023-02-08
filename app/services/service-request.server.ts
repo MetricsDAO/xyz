@@ -92,15 +92,15 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     .then(ServiceRequestMetaSchema.parse)
     .catch(() => null);
 
-  const blockTimestamp = (await nodeProvider.getBlock(event.block.number)).timestamp;
-
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<ServiceRequestDoc, "submissionCount" | "claimsToSubmit" | "claimsToReview"> = {
+  const doc: Omit<
+    ServiceRequestDoc,
+    "submissionCount" | "claimsToSubmit" | "claimsToReview" | "createdAtBlockTimestamp"
+  > = {
     id: requestId,
     address: event.contract.address,
     valid: isValid,
-    createdAtBlockTimestamp: new Date(blockTimestamp * 1000),
     indexedAt: new Date(),
     configuration: {
       requester: serviceRequest.serviceRequester,
@@ -141,7 +141,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
         submissionCount: 0,
         claimsToSubmit: [],
         claimsToReview: [],
-        createdAtBlockTimestamp: doc.createdAtBlockTimestamp,
+        createdAtBlockTimestamp: new Date(event.block.timestamp),
       },
     },
     { upsert: true }
