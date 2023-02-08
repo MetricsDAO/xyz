@@ -95,7 +95,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
+            <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submission.indexedAt.toString())}</Badge>
@@ -142,7 +142,7 @@ export default function ChallengeSubmission() {
                         >
                           <p>{scoreToLabel(r.score)}</p>
                         </div>
-                        <UserBadge address={r.reviewer as `0x${string}`} url="" />
+                        <UserBadge address={r.reviewer as `0x${string}`} />
                       </div>
                       <p>{fromNow(r.indexedAt)}</p>
                     </div>

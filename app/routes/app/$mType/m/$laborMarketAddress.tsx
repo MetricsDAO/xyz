@@ -62,7 +62,7 @@ export default function Marketplace() {
           <Detail>
             {laborMarket?.configuration.owner ? (
               <DetailItem title="Sponsor">
-                <UserBadge url="u/id" address={laborMarket?.configuration.owner as `0x${string}`} />
+                <UserBadge address={laborMarket?.configuration.owner as `0x${string}`} />
               </DetailItem>
             ) : (
               <></>
