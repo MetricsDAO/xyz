@@ -84,7 +84,7 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={10} addressesNum={wallets ? wallets?.length : 0} />
+      <RewardsTab rewardsNum={0} addressesNum={wallets ? wallets?.length : 0} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>

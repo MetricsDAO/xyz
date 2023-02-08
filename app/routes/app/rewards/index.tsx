@@ -41,10 +41,7 @@ export default function Rewards() {
   const { wallets } = useTypedLoaderData<typeof loader>();
 
   //to be replaced
-  const rewards = [
-    { id: 123, title: "silly string" },
-    { id: 143, title: "trophy" },
-  ];
+  const rewards = [];
   const totalResults = rewards.length;
   const params = { first: 1, page: 1 };
 
