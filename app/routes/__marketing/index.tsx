@@ -91,7 +91,7 @@ export default function Index() {
               </p>
               <MarketingButton
                 label="Learn about reputation & rMETRIC"
-                link="https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/rewards/rmetric"
+                link="https://metricsdao.gitbook.io/metrics-app/rewards/rmetric"
               />
             </div>
           </InfoSection>

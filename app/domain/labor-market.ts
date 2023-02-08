@@ -83,6 +83,7 @@ const BadgePairSchema = z.object({
 const LaborMarketDocSchema = z.object({
   address: EvmAddressSchema,
   valid: z.boolean(),
+  createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
   configuration: z.object({
     marketUri: z.string(),
@@ -104,6 +105,12 @@ const LaborMarketDocSchema = z.object({
     }),
   }),
   serviceRequestCount: z.number(),
+  serviceRequestRewardPools: z.array(
+    z.object({
+      pToken: EvmAddressSchema,
+      pTokenQuantity: z.string(),
+    })
+  ),
   appData: LaborMarketMetaSchema.nullable(),
 });
 

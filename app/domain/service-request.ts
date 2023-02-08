@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { validateDate, validateTime } from "~/utils/date";
-import { parseTokenAmount } from "~/utils/helpers";
+import { toTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
 
 export const ServiceRequestSchema = z.object({
@@ -22,7 +22,7 @@ const DateSchema = z.preprocess((arg) => {
 
 const TokenAmountSchema = z.string().refine((r) => {
   try {
-    parseTokenAmount(r);
+    toTokenAmount(r);
     return true;
   } catch (e) {
     return false;
@@ -78,6 +78,7 @@ const ServiceRequestDocSchema = z.object({
   id: z.string().describe("The request id"),
   address: EvmAddressSchema,
   valid: z.boolean(),
+  createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
   configuration: z.object({
     requester: EvmAddressSchema,
@@ -89,6 +90,12 @@ const ServiceRequestDocSchema = z.object({
     uri: z.string(),
   }),
   submissionCount: z.number(),
+  claimsToReview: z.array(
+    z.object({
+      signaler: EvmAddressSchema,
+      signalAmount: z.string(),
+    })
+  ),
   claimsToSubmit: z.array(
     z.object({
       signaler: EvmAddressSchema,

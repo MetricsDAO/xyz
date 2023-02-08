@@ -7,6 +7,7 @@ import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
 import type { MarketplaceTableProps } from "~/routes/app/$mType";
 import { findProjectsBySlug } from "~/utils/helpers";
+import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
 
 export function MarketplacesListView(props: MarketplaceTableProps) {
@@ -28,7 +29,7 @@ export function MarketplacesListView(props: MarketplaceTableProps) {
   );
 }
 
-function MarketplacesTable({ marketplaces, projects }: MarketplaceTableProps) {
+function MarketplacesTable({ marketplaces, projects, tokens }: MarketplaceTableProps) {
   const { mType } = useParams();
 
   return (
@@ -36,8 +37,7 @@ function MarketplacesTable({ marketplaces, projects }: MarketplaceTableProps) {
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={2}>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
-        <Header.Column>Challenge Pool Totals</Header.Column>
-        <Header.Column>Avg. Challenge Pool</Header.Column>
+        <Header.Column span={2}>Challenge Pool Totals</Header.Column>
         <Header.Column>Active Challenges</Header.Column>
       </Header>
       {marketplaces.map((m) => {
@@ -53,18 +53,8 @@ function MarketplacesTable({ marketplaces, projects }: MarketplaceTableProps) {
                 <ProjectBadges projects={findProjectsBySlug(projects, m.appData.projectSlugs)} />
               </Row.Column>
 
-              <Row.Column>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-              </Row.Column>
-
-              <Row.Column>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
+              <Row.Column span={2}>
+                <ChallengePoolBadges pools={m.serviceRequestRewardPools} tokens={tokens} />
               </Row.Column>
 
               <Row.Column>{m.serviceRequestCount.toLocaleString()}</Row.Column>
@@ -76,7 +66,7 @@ function MarketplacesTable({ marketplaces, projects }: MarketplaceTableProps) {
   );
 }
 
-function MarketplacesCard({ marketplaces, projects }: MarketplaceTableProps) {
+function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTableProps) {
   const { mType } = useParams();
 
   return (
@@ -99,16 +89,7 @@ function MarketplacesCard({ marketplaces, projects }: MarketplaceTableProps) {
                 </div>
 
                 <div>Challenge Pool Totals</div>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
-
-                <div>Avg. Challenge Pool</div>
-                <Badge>
-                  <TokenAvatar token={{ symbol: "usdc", name: "USDC" }} />
-                  <span className="mx-1">1000 USDC</span>
-                </Badge>
+                <ChallengePoolBadges pools={m.serviceRequestRewardPools} tokens={tokens} />
 
                 <div>Active Challenges</div>
                 <div>{m.serviceRequestCount.toLocaleString()}</div>

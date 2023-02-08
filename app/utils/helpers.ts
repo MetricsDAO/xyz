@@ -1,4 +1,5 @@
 import type { Project } from "@prisma/client";
+import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
 export const truncateAddress = (address: string) => {
@@ -8,14 +9,26 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
+// MVP: only support 6 decimals for USDC
+const DECIMALS = 18;
+
 /**
- * Standardized way of parsing token string amount. An amount of 1 is 1e18 units.
- * @param amount string amount that cannot be less than 1e-18
+ * Take a string representation of an amount (to allow for really small or big numbers) and conver to BigNumber
+ * @param amount string amount
  * @returns {BigNumber}
  */
-export const parseTokenAmount = (amount: string) => {
-  // MVP: only support 6 decimals for USDC
-  return ethers.utils.parseUnits(amount, 6);
+export const toTokenAmount = (amount: string) => {
+  return ethers.utils.parseUnits(amount, DECIMALS);
+};
+
+/**
+ * Convert units to a decimal representation
+ * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001
+ * @param units string units
+ * @returns {string}
+ */
+export const fromTokenAmount = (units: string) => {
+  return ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS).toString();
 };
 
 /**

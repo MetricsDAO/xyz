@@ -92,6 +92,24 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       </section>
 
       <section>
+        <h4 className="font-semibold mb-4">Challenge Rewards</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Field>
+            <Label>Reward Token Allowlist</Label>
+            <ValidatedCombobox
+              name="tokenAllowlist"
+              options={tokens.map((t) => ({ label: t.name, value: t.symbol }))}
+            />
+            <Error name="tokenAllowlist" />
+          </Field>
+          <Field>
+            <Label>Reward Curve</Label>
+            <ValidatedSelect name="rewardCurve" options={[{ label: "Reward by overall score", value: "delegates" }]} />
+          </Field>
+        </div>
+      </section>
+
+      <section>
         <h4 className="font-semibold mb-4">Control who has permission to submit on challenges</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>

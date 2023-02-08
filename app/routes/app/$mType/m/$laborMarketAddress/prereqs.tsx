@@ -2,7 +2,7 @@ import { useRouteData } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
-import { useTokenURL } from "~/hooks/use-token-url";
+import { useTokenData } from "~/hooks/use-token-data";
 import type { findLaborMarket } from "~/services/labor-market.server";
 
 export default function MarketplaceIdPrerequesites() {
@@ -16,8 +16,8 @@ export default function MarketplaceIdPrerequesites() {
 
   invariant(laborMarket, "No labormarket found");
 
-  const maintainerURL = useTokenURL(laborMarket.configuration.maintainerBadge);
-  const delegateURL = useTokenURL(laborMarket.configuration.delegateBadge);
+  const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
+  const delegateData = useTokenData(laborMarket.configuration.delegateBadge);
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -52,9 +52,9 @@ export default function MarketplaceIdPrerequesites() {
                 <p className="font-weight-500 text-base text-[#252525]">
                   You must hold this badge to review and score submissions on challenges
                 </p>
-                <div className="text-xs text-gray-500">MDAO S4 REVIEWER BADGE</div>
+                <div className="text-xs text-gray-500">{maintainerData?.name}</div>
                 <div className="flex gap-2 items-center">
-                  <img src={maintainerURL} alt="" className="h-4 w-4" />
+                  <img src={maintainerData?.image} alt="" className="h-4 w-4" />
                   <div className="text-base text-[#252525]">{laborMarket?.configuration.maintainerBadge.token}</div>
                 </div>
               </Card>
@@ -62,9 +62,9 @@ export default function MarketplaceIdPrerequesites() {
                 <p className="font-weight-500 text-base text-[#252525]">
                   You must hold this badge to launch new challenges
                 </p>
-                <div className="text-xs text-gray-500">MDAO S4 CONTRIBUTOR BADGE</div>
+                <div className="text-xs text-gray-500">{delegateData?.name}</div>
                 <div className="flex gap-2 items-center">
-                  <img src={delegateURL} alt="" className="h-4 w-4" />
+                  <img src={delegateData?.image} alt="" className="h-4 w-4" />
                   <div className="text-base text-[#252525]">{laborMarket?.configuration.delegateBadge.token}</div>
                 </div>
               </Card>

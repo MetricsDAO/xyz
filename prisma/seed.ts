@@ -1,9 +1,4 @@
-import { fakeLaborMarket, fakeReview, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
-import { faker } from "@faker-js/faker";
-import { upsertSubmission } from "~/services/submissions.server";
-import type { ServiceRequest, Submission } from "@prisma/client";
-import { upsertReview } from "~/services/review-service.server";
 
 async function main() {
   await prisma.project.createMany({
@@ -73,71 +68,13 @@ async function main() {
   await prisma.token.createMany({
     data: [
       {
-        name: "USD Coin",
+        name: "Metrics Beta",
         networkName: "Polygon",
-        contractAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-        symbol: "USDC",
+        contractAddress: "0xe1805534B191029731907737042623e1bc6b87D8",
+        symbol: "MBETA",
       },
     ],
   });
-
-  // await seedLaborMarkets();
-  // await seedServiceRequests(await prisma.laborMarket.findMany());
-  await seedSubmissions(await prisma.serviceRequest.findMany());
-  await seedReviews(await prisma.submission.findMany());
-}
-
-// async function seedLaborMarkets() {
-//   const projectIds = (await prisma.project.findMany()).map((p) => p.id);
-//   const tokenIds = (await prisma.token.findMany()).map((t) => t.id);
-//   // create 15 fake labor markets in prisma
-//   for (let i = 0; i < 15; i++) {
-//     await upsertLaborMarket(
-//       fakeLaborMarket({
-//         projectIds: faker.helpers.arrayElements(faker.helpers.arrayElements(projectIds, 2)), // pick between 1-2 random projects
-//         tokenIds: faker.helpers.arrayElements(tokenIds), // pick a subset of random tokens
-//       })
-//     );
-//   }
-// }
-
-// create a fake service request for each labor market in Prisma
-// async function seedServiceRequests(laborMarkets: LaborMarket[]) {
-//   for (const laborMarket of laborMarkets) {
-//     await upsertServiceRequest(
-//       fakeServiceRequest({
-//         laborMarketAddress: laborMarket.address,
-//       })
-//     );
-//   }
-// }
-
-async function seedSubmissions(serviceRequests: ServiceRequest[]) {
-  for (const serviceRequest of serviceRequests) {
-    // create 3 fake submissions for each Service Request in Prisma
-    for (let i = 0; i < 3; i++) {
-      const submission = fakeSubmission({
-        laborMarketAddress: serviceRequest.laborMarketAddress,
-        serviceRequestId: serviceRequest.contractId,
-      });
-      await upsertSubmission(submission);
-    }
-  }
-}
-
-async function seedReviews(allSubmissions: Submission[]) {
-  for (const submission of allSubmissions) {
-    // create 3 fake reviews for each submission in Prisma
-    for (let i = 0; i < 3; i++) {
-      await upsertReview(
-        fakeReview({
-          serviceRequestId: submission.serviceRequestId,
-          laborMarketAddress: submission.laborMarketAddress,
-          submissionId: submission.contractId,
-        })
-      );
-    }
-  }
 }
 
 main()

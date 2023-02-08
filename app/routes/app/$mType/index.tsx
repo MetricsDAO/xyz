@@ -28,6 +28,7 @@ const validator = withZod(LaborMarketSearchSchema);
 export type MarketplaceTableProps = {
   marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
   projects: UseDataFunctionReturn<typeof loader>["projects"];
+  tokens: UseDataFunctionReturn<typeof loader>["tokens"];
 };
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
@@ -86,7 +87,7 @@ export default function MarketplaceCollection() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesListView marketplaces={marketplaces} projects={projects} />
+            <MarketplacesListView marketplaces={marketplaces} projects={projects} tokens={tokens} />
             <div className="w-fit m-auto">
               <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
             </div>

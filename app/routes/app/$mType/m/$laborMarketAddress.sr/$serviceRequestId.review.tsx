@@ -19,6 +19,7 @@ import { claimToReviewDate } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -103,13 +104,19 @@ export default function ClaimToReview() {
           <div className="space-y-2">
             <h2 className="font-semibold">Claim to Review Deadline</h2>
             <CountdownCard
-              start={serviceRequest.indexedAt}
-              end={claimToReviewDate(serviceRequest.indexedAt, serviceRequest.configuration.enforcementExpiration)}
+              start={serviceRequest.createdAtBlockTimestamp}
+              end={claimToReviewDate(
+                serviceRequest.createdAtBlockTimestamp,
+                serviceRequest.configuration.enforcementExpiration
+              )}
             />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold">Review Deadline</h2>
-            <CountdownCard start={serviceRequest.indexedAt} end={serviceRequest.configuration?.enforcementExpiration} />
+            <CountdownCard
+              start={serviceRequest.createdAtBlockTimestamp}
+              end={serviceRequest.configuration?.enforcementExpiration}
+            />
           </div>
         </div>
         <div className="space-y-2">
@@ -141,7 +148,8 @@ export default function ClaimToReview() {
             <Button variant="outline">Lock rMETRIC</Button>
           </div>*/}
           <p className="mt-2 text-gray-500 italic text-sm">
-            Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
+            Important: {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission you fail to review before
+            the deadline.
           </p>
         </div>
         <div className="flex flex-wrap gap-5">

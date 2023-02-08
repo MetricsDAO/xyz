@@ -1,8 +1,10 @@
 import type { User } from "@prisma/client";
+import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
-import { ClaimToSubmitEventSchema } from "~/domain";
+import type { LaborMarketDoc } from "~/domain";
+import { ClaimToSubmitEventSchema, ClaimToReviewEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
 import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
@@ -33,7 +35,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
 
 /**
  * Convenience function to share the search parameters between search and count.
- * @param {LaborMarketSearch} params - The search parameters.
+ * @param {ServiceRequestSearch} params - The search parameters.
  * @returns criteria to find labor market in MongoDb
  */
 const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
@@ -92,7 +94,10 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<ServiceRequestDoc, "submissionCount" | "claimsToSubmit"> = {
+  const doc: Omit<
+    ServiceRequestDoc,
+    "submissionCount" | "claimsToSubmit" | "claimsToReview" | "createdAtBlockTimestamp"
+  > = {
     id: requestId,
     address: event.contract.address,
     valid: isValid,
@@ -110,11 +115,19 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   };
 
   if (isValid) {
+    const lm = await mongo.laborMarkets.findOne({ address: doc.address });
     await mongo.laborMarkets.updateOne(
       { address: doc.address },
       {
         $inc: {
           serviceRequestCount: 1,
+        },
+        $set: {
+          serviceRequestRewardPools: calculateRewardPools(
+            lm?.serviceRequestRewardPools ?? [],
+            doc.configuration.pToken,
+            doc.configuration.pTokenQuantity
+          ),
         },
       }
     );
@@ -122,8 +135,25 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
-    { $set: doc, $setOnInsert: { submissionCount: 0, claimsToSubmit: [] } },
+    {
+      $set: doc,
+      $setOnInsert: {
+        submissionCount: 0,
+        claimsToSubmit: [],
+        claimsToReview: [],
+        createdAtBlockTimestamp: new Date(event.block.timestamp),
+      },
+    },
     { upsert: true }
+  );
+};
+
+export const indexClaimToReview = async (event: TracerEvent) => {
+  const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
+
+  return mongo.serviceRequests.updateOne(
+    { address: event.contract.address, id: inputs.requestId },
+    { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };
 
@@ -134,4 +164,22 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
     { address: event.contract.address, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
+};
+
+const calculateRewardPools = (
+  existingPools: LaborMarketDoc["serviceRequestRewardPools"],
+  pToken: string,
+  pTokenQuantity: string
+) => {
+  const newPools = [...existingPools];
+  const pool = newPools.find((pool) => pool.pToken === pToken);
+  if (pool) {
+    pool.pTokenQuantity = BigNumber.from(pool.pTokenQuantity).add(pTokenQuantity).toString();
+  } else {
+    newPools.push({
+      pToken: pToken,
+      pTokenQuantity: pTokenQuantity,
+    });
+  }
+  return newPools;
 };
