@@ -70,7 +70,6 @@ export default function SubmitQuestion() {
   }, [actionData, send]);
 
   const onWriteSuccess = (result: SendTransactionResult) => {
-    console.log("onWriteSuccess", result);
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
