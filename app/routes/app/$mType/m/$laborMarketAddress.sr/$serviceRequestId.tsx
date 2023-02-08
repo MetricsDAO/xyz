@@ -56,6 +56,9 @@ export default function ServiceRequest() {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
+  const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
+  const claimToReviewDeadlinePassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
+
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.address as `0x${string}`,
     serviceRequestId: serviceRequest.id,
@@ -75,9 +78,9 @@ export default function ServiceRequest() {
   });
 
   const showSubmit = hasClaimedToSubmit && !hasSubmitted;
-  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted;
+  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted && !claimDeadlinePassed;
   // Must not have any remaining reviews left (or initial of 0). TODO: check badge as well
-  const showClaimToReview = reviewSignal?.remainder.eq(0);
+  const showClaimToReview = reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed;
 
   return (
     <Container className="py-16 px-10">
