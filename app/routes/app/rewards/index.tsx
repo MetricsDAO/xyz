@@ -116,7 +116,7 @@ function RewardsTable({ submissions }: { submissions: SubmissionDoc[] }) {
               <p>{s.appData?.title}</p>
             </Row.Column>
             <Row.Column>--</Row.Column>
-            <Row.Column className="text-black">{fromNow(s.indexedAt)} </Row.Column>
+            <Row.Column className="text-black">{fromNow(s.createdAtBlockTimestamp)} </Row.Column>
             <Row.Column className="text-black" color="dark.3">
               --
             </Row.Column>
@@ -141,7 +141,7 @@ function RewardsCards({ submissions }: { submissions: SubmissionDoc[] }) {
             <div>Reward</div>
             <p>--</p>
             <div>Submitted</div>
-            <p className="text-black">{fromNow(s.indexedAt)} </p>
+            <p className="text-black">{fromNow(s.createdAtBlockTimestamp)} </p>
             <div>Rewarded</div>
             <p className="text-black" color="dark.3">
               --
