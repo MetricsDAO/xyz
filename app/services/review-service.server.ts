@@ -70,7 +70,7 @@ export const indexReview = async (event: TracerEvent) => {
   };
 
   await mongo.submissions.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId, reviewer: doc.reviewer },
+    { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
     {
       $inc: {
         reviewCount: 1,
