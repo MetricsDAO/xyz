@@ -5,7 +5,6 @@ import type { SubmissionContract } from "~/domain/submission";
 import type { Web3Hook } from "~/features/web3-button/types";
 
 export function useCreateSubmission({ data, onWriteSuccess }: Web3Hook<SubmissionContract>) {
-  console.log("useCreateSubmission", data);
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,

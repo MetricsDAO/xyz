@@ -17,5 +17,27 @@ export const ReviewSchema = z.object({
   submissionId: z.string(),
 });
 
+export const ReviewFormSchema = ReviewSchema.pick({
+  score: true,
+});
+
+export const ReviewEventSchema = z.object({
+  submissionId: z.string(),
+  reviewer: z.string(),
+  reviewScore: z.string(),
+  requestId: z.string(),
+});
+
+const ReviewDocSchema = z.object({
+  id: z.string().describe("The request id"),
+  laborMarketAddress: EvmAddressSchema,
+  serviceRequestId: z.string(),
+  score: z.string(),
+  reviewer: z.string(),
+  indexedAt: z.date(),
+});
+
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
 export type ReviewContract = z.infer<typeof ReviewSchema>;
+export type ReviewDoc = z.infer<typeof ReviewDocSchema>;
+export type ReviewForm = z.infer<typeof ReviewFormSchema>;

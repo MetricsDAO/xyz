@@ -11,6 +11,7 @@ const db = client.db(env.PINE_SUBSCRIBER);
 const laborMarkets = db.collection<LaborMarketDoc>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
+const reviews = db.collection("reviews");
 
 laborMarkets.createIndex({ "appData.title": "text" });
 
@@ -19,4 +20,5 @@ export const mongo = {
   laborMarkets,
   serviceRequests,
   submissions,
+  reviews,
 };

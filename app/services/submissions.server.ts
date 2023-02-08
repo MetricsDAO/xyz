@@ -3,7 +3,7 @@ import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
-import { SubmissionContractSchema, submissionMetaDataSchema } from "~/domain/submission";
+import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -69,7 +69,7 @@ export const indexSubmission = async (event: TracerEvent) => {
   const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
   const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
   const appData = await fetchIpfsJson(submission.uri)
-    .then(submissionMetaDataSchema.parse)
+    .then(SubmissionFormSchema.parse)
     .catch(() => null);
 
   const isValid = appData !== null;
@@ -119,7 +119,7 @@ export const prepareSubmission = async (
   serviceRequestId: string,
   form: SubmissionForm
 ): Promise<SubmissionContract> => {
-  const metadata = submissionMetaDataSchema.parse(form); // Prune extra fields from form
+  const metadata = SubmissionFormSchema.parse(form); // Prune extra fields from form
   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
   // parse for type safety
   const contractData = SubmissionContractSchema.parse({
