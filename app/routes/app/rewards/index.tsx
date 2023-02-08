@@ -28,21 +28,22 @@ import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { searchUserSubmissions } from "~/services/submissions.server";
+import type { SubmissionDoc } from "~/domain/submission";
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   invariant(user);
   const wallets = user.id ? await findAllWalletsForUser(user.id) : [];
-  const rewards = user.address ? await searchUserSubmissions(user.address) : [];
+  const submissions = user.address ? await searchUserSubmissions(user.address) : [];
   return typedjson({
     wallets,
-    rewards,
+    submissions,
     user,
   });
 };
 
 export default function Rewards() {
-  const { wallets, rewards } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissions } = useTypedLoaderData<typeof loader>();
   const params = { first: 1, page: 1 };
 
   return (
@@ -56,13 +57,13 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets ? wallets?.length : 0} />
+      <RewardsTab rewardsNum={submissions.length} addressesNum={wallets ? wallets?.length : 0} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={rewards} />
+            <RewardsListView submissions={submissions} />
             <div className="w-fit m-auto">
-              <Pagination page={params.page} totalPages={Math.ceil(rewards.length / params.first)} />
+              <Pagination page={params.page} totalPages={Math.ceil(submissions.length / params.first)} />
             </div>
           </div>
         </main>
@@ -74,8 +75,8 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({ rewards }: { rewards: any }) {
-  if (rewards.length === 0) {
+function RewardsListView({ submissions }: { submissions: SubmissionDoc[] }) {
+  if (submissions.length === 0) {
     return (
       <div className="flex">
         <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
@@ -87,37 +88,37 @@ function RewardsListView({ rewards }: { rewards: any }) {
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable rewards={rewards} />
+        <RewardsTable submissions={submissions} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards rewards={rewards} />
+        <RewardsCards submissions={submissions} />
       </div>
     </>
   );
 }
 
-function RewardsTable({ rewards }: { rewards: any }) {
+function RewardsTable({ submissions }: { submissions: SubmissionDoc[] }) {
   const unclaimed = true;
   return (
     <Table>
       <Header columns={6} className="mb-2">
-        <Header.Column span={2}>Challenge Title</Header.Column>
+        <Header.Column span={2}>Submission Title</Header.Column>
         <Header.Column>Reward</Header.Column>
         <Header.Column>Submitted</Header.Column>
         <Header.Column>Rewarded</Header.Column>
         <Header.Column>Status</Header.Column>
       </Header>
-      {rewards.map((r: { id: string; title: string }) => {
+      {submissions.map((s) => {
         return (
-          <Row columns={6} key={r.id}>
+          <Row columns={6} key={s.id}>
             <Row.Column span={2}>
-              <p>todo</p>
+              <p>{s.appData?.title}</p>
             </Row.Column>
-            <Row.Column>todo</Row.Column>
-            <Row.Column className="text-black">{fromNow("2022-01-01")} </Row.Column>
+            <Row.Column>--</Row.Column>
+            <Row.Column className="text-black">{fromNow(s.indexedAt)} </Row.Column>
             <Row.Column className="text-black" color="dark.3">
-              {fromNow("2022-11-01")}
+              --
             </Row.Column>
             <Row.Column>{unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}</Row.Column>
           </Row>
@@ -127,23 +128,23 @@ function RewardsTable({ rewards }: { rewards: any }) {
   );
 }
 
-function RewardsCards({ rewards }: { rewards: any }) {
+function RewardsCards({ submissions }: { submissions: SubmissionDoc[] }) {
   const unclaimed = true;
 
   return (
     <div className="space-y-4">
-      {rewards.map((r: { id: string; title: string }) => {
+      {submissions.map((s) => {
         return (
-          <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={r.id}>
-            <div>Challenge Title</div>
-            <p>todo</p>
+          <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={s.id}>
+            <div>Submission Title</div>
+            <p>{s.appData?.title}</p>
             <div>Reward</div>
-            <p>todo</p>
+            <p>--</p>
             <div>Submitted</div>
-            <p className="text-black">{fromNow("2022-01-01")} </p>
+            <p className="text-black">{fromNow(s.indexedAt)} </p>
             <div>Rewarded</div>
             <p className="text-black" color="dark.3">
-              {fromNow("2022-11-01")}{" "}
+              --
             </p>
             <div>Status</div>
             {unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}
