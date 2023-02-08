@@ -10,6 +10,7 @@ export const SubmissionSearchSchema = z.object({
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),
   laborMarketAddress: EvmAddressSchema.optional(),
+  serviceProvider: EvmAddressSchema.optional(),
 });
 
 export const SubmissionContractSchema = z.object({

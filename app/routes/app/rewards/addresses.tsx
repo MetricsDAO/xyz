@@ -24,7 +24,7 @@ import { truncateAddress } from "~/utils/helpers";
 import { namedAction } from "remix-utils";
 import { useFetcher } from "@remix-run/react";
 import { isValidationError } from "~/utils/utils";
-import { searchUserSubmissions } from "~/services/submissions.server";
+import { countSubmissions } from "~/services/submissions.server";
 import invariant from "tiny-invariant";
 
 export const addWalletValidator = withZod(WalletAddSchema);
@@ -57,18 +57,24 @@ export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
-  const submissions = await searchUserSubmissions(user.address);
+  const submissionCount = await countSubmissions({
+    serviceProvider: user.address,
+    sortBy: "createdAt",
+    order: "desc",
+    first: 0,
+    page: 0,
+  });
   const networks = await listNetworks();
   return typedjson({
     networks,
     wallets,
-    submissions,
+    submissionCount,
     user,
   });
 };
 
 export default function PayoutAddresses() {
-  const { wallets, submissions } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissionCount } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -86,7 +92,7 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={submissions.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={submissionCount} addressesNum={wallets.length} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>

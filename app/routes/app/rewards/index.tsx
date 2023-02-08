@@ -27,14 +27,20 @@ import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { searchUserSubmissions } from "~/services/submissions.server";
+import { searchSubmissions } from "~/services/submissions.server";
 import type { SubmissionDoc } from "~/domain/submission";
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
-  const submissions = await searchUserSubmissions(user.address);
+  const submissions = await searchSubmissions({
+    serviceProvider: user.address,
+    sortBy: "createdAt",
+    order: "desc",
+    first: 0,
+    page: 0,
+  });
   return typedjson({
     wallets,
     submissions,

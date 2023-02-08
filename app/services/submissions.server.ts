@@ -39,6 +39,7 @@ const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submiss
     valid: true,
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
+    ...(params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {}),
     // ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
   };
 };
@@ -128,11 +129,4 @@ export const prepareSubmission = async (
     uri: cid,
   });
   return contractData;
-};
-
-/**
- * Returns an array of SubmissionDoc for a given UserAddress
- */
-export const searchUserSubmissions = async (address: string) => {
-  return mongo.submissions.find({ "configuration.serviceProvider": address }).toArray();
 };
