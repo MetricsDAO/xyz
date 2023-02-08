@@ -25,7 +25,7 @@ import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
-import { findProjectsBySlug, fromTokenAmount } from "~/utils/helpers";
+import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -184,7 +184,9 @@ function MarketplacesChallengesTable({ serviceRequests, projects }: MarketplaceC
                 </div>
               </Row.Column>
 
-              <Row.Column>{fromTokenAmount(sr.configuration.pTokenQuantity)}</Row.Column>
+              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQuantity)} ${toTokenAbbreviation(
+                sr.configuration.pToken
+              )}`}</Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExpiration} />
               </Row.Column>
