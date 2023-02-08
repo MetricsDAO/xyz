@@ -318,7 +318,7 @@ function ReviewQuestionDrawerButton({
             <p className="text-3xl font-semibold">Review & Score</p>
             <p>
               Please confirm that you would like to give this submission a score of
-              <b>{scoreToLabel(state.context.contractData.score)}</b>.
+              <b>{` ${scoreToLabel(state.context.contractData.score)}`}</b>.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-2">
               <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>

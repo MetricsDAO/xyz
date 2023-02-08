@@ -12,7 +12,7 @@ export function ChallengePoolBadges({
 }) {
   return (
     <>
-      {pools.map((p) => {
+      {pools?.map((p) => {
         const token = tokens.find((t) => t.contractAddress === p.pToken);
         if (token) {
           return (
