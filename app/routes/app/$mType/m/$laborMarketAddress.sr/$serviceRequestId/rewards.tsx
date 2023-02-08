@@ -17,7 +17,6 @@ export default function ChallengeIdRewards() {
     throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");
   }
   const { serviceRequest, tokens } = data;
-  console.log("tokens", tokens);
   invariant(serviceRequest, "serviceRequest must be specified");
 
   return (

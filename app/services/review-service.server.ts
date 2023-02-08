@@ -17,21 +17,23 @@ export const searchReviews = async (params: ReviewSearch) => {
 
 /**
  * Counts the number of reviews that match a given ReviewSearch.
- * @param {ReviewSearch} params - The search parameters.
+ * @param {FilterParams} params - The search parameters.
  * @returns {number} - The number of reviews that match the search.
  */
-export const countReviews = async (params: ReviewSearch) => {
+export const countReviews = async (params: FilterParams) => {
   return mongo.reviews.countDocuments(searchParams(params));
 };
 
+type FilterParams = Pick<ReviewSearch, "laborMarketAddress" | "serviceRequestId" | "submissionId">;
 /**
  * Convenience function to share the search parameters between search and count.
- * @param {ReviewSearch} params - The search parameters.
+ * @param {FilterParams} params - The search parameters.
  * @returns criteria to find review in MongoDb
  */
-const searchParams = (params: ReviewSearch): Parameters<typeof mongo.reviews.find>[0] => {
+const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.find>[0] => {
   return {
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
+    ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
     ...(params.submissionId ? { submissionId: params.submissionId } : {}),
   };
 };

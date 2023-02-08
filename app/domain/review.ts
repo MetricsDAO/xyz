@@ -7,6 +7,7 @@ export const ReviewSearchSchema = z.object({
   score: z.array(z.number()).optional().describe("Filter by Likert score."),
   first: z.number().default(10),
   page: z.number().default(1),
+  serviceRequestId: z.string().optional(),
   submissionId: z.string().optional(),
   laborMarketAddress: EvmAddressSchema.optional(),
 });

@@ -42,17 +42,18 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
   const projects = await listProjects();
+  const tokens = await listTokens();
 
-  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, projects });
+  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, projects, tokens });
 };
 
 export default function MarketplaceIdChallenges() {
-  const { totalResults, params, serviceRequests, projects } = useTypedLoaderData<typeof loader>();
+  const { totalResults, params, serviceRequests, projects, tokens } = useTypedLoaderData<typeof loader>();
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
       <main className="flex-1">
         <div className="space-y-5">
-          <ChallengesListView serviceRequests={serviceRequests} projects={projects} />
+          <ChallengesListView serviceRequests={serviceRequests} projects={projects} tokens={tokens} />
           <div className="w-fit m-auto">
             <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
           </div>
@@ -150,9 +151,10 @@ function SearchAndFilter() {
 type MarketplaceChallengesTableProps = {
   serviceRequests: UseDataFunctionReturn<typeof loader>["serviceRequests"];
   projects: UseDataFunctionReturn<typeof loader>["projects"];
+  tokens: UseDataFunctionReturn<typeof loader>["tokens"];
 };
 
-function MarketplacesChallengesTable({ serviceRequests, projects }: MarketplaceChallengesTableProps) {
+function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
   const { laborMarketAddress } = useTypedLoaderData<typeof loader>();
@@ -201,7 +203,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects }: MarketplaceC
   );
 }
 
-function MarketplacesChallengesCard({ serviceRequests, projects }: MarketplaceChallengesTableProps) {
+function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
   const { laborMarketAddress, laborMarket } = useTypedLoaderData<typeof loader>();
 
   return (
@@ -213,20 +215,19 @@ function MarketplacesChallengesCard({ serviceRequests, projects }: MarketplaceCh
               to={`/app/${laborMarket?.appData?.type}/m/${laborMarketAddress}/sr/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
-              <div>Challenges</div>
+              <div>Challenge</div>
               <div className="text-sm font-medium">{sr.appData?.title}</div>
 
               <div>Chain/Project</div>
               <div className="flex">
-                <div>
-                  <DetailItem title="Chain/Project">
-                    <ProjectBadges projects={findProjectsBySlug(projects, sr.appData?.projectSlugs ?? [])} />
-                  </DetailItem>
-                </div>
+                <ProjectBadges projects={findProjectsBySlug(projects, sr.appData?.projectSlugs ?? [])} />
               </div>
 
               <div>Reward Pool</div>
-              <div>{fromTokenAmount(sr.configuration.pTokenQuantity)}</div>
+              <div>
+                {fromTokenAmount(sr.configuration.pTokenQuantity)}{" "}
+                {tokens.find((t) => t.contractAddress === sr.configuration.pToken)?.symbol}
+              </div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
                 <Countdown date={sr.configuration?.submissionExpiration} />
