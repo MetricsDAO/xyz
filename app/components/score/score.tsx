@@ -36,7 +36,7 @@ export function scoreToLabel(score: number | string) {
       ? "Good"
       : score === "2"
       ? "Average"
-      : score === "0"
+      : score === "1"
       ? "Bad"
       : "Spam";
   }

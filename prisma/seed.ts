@@ -68,12 +68,6 @@ async function main() {
   await prisma.token.createMany({
     data: [
       {
-        name: "USD Coin",
-        networkName: "Polygon",
-        contractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-        symbol: "USDC",
-      },
-      {
         name: "Metrics Beta",
         networkName: "Polygon",
         contractAddress: "0xe1805534B191029731907737042623e1bc6b87D8",

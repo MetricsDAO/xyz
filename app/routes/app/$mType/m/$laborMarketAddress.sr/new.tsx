@@ -13,6 +13,7 @@ import { Button, Container, Modal } from "~/components";
 import type { ServiceRequestContract } from "~/domain";
 import { fakeServiceRequestFormData, ServiceRequestFormSchema } from "~/domain";
 import { ChallengeForm } from "~/features/challenge-form";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { SendTransactionResult } from "~/features/web3-button/types";
@@ -50,7 +51,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
+  invariant(user, "You must be logged in to create a service request");
   const result = await validator.validate(await request.formData());
   const { laborMarketAddress } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
@@ -123,9 +124,11 @@ export default function CreateServiceRequest() {
         className="space-y-10"
       >
         <ChallengeForm validTokens={tokens} validProjects={laborMarketProjects} />
-        <Button variant="primary" type="submit">
-          Next
-        </Button>
+        <ConnectWalletWrapper>
+          <Button variant="primary" type="submit">
+            Next
+          </Button>
+        </ConnectWalletWrapper>
       </ValidatedForm>
       {state.context.contractData && (
         <Modal isOpen={modalOpen && !state.matches("transactionWait.success")} onClose={closeModal} closeButton={false}>
