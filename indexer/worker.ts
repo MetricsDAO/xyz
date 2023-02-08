@@ -13,7 +13,7 @@ const worker = pine.createWorker({
   logger: logger,
   tracer: {
     namespace: env.PINE_NAMESPACE,
-    version: "2.0.0",
+    version: "1.4.2-2",
     blockchain: { name: "polygon", network: "mainnet" },
     fromBlock: 39065447,
   },
