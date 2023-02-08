@@ -46,3 +46,22 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
     })
     .filter((p): p is Project => !!p);
 }
+
+/**
+ * Take a contract address and return the corresponing token abbreviation
+ * @param address Contract address of the token
+ * @returns {string}
+ */
+export const toTokenAbbreviation = (address: string) => {
+  switch (address) {
+    case "0xe1805534B191029731907737042623e1bc6b87D8": {
+      return "MBETA";
+    }
+    case "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": {
+      return "USDC";
+    }
+    default: {
+      console.error("Invalid contract address");
+    }
+  }
+};
