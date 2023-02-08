@@ -41,7 +41,7 @@ function CustomConnectButton() {
             <Button onClick={openAccountModal} variant="gradient">
               <div className="flex flex-row gap-2 items-center align-middle">
                 {account.ensAvatar ? (
-                  account.ensAvatar
+                  <img src={account.ensAvatar} alt="" />
                 ) : (
                   <div className="rounded-full">
                     <Jazzicon diameter={20} seed={jsNumberForAddress(account.address)} />
