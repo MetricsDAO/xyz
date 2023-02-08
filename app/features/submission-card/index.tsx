@@ -31,7 +31,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
           {/* <Score score={2} /> */}
           <div className="flex text-xs text-gray-500 items-center">
             {/*TODO: use actual data */}
-            {true ? (
+            {false ? (
               <>
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="text-zinc-800">You</p>
