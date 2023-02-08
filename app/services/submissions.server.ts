@@ -104,7 +104,7 @@ export const indexSubmission = async (event: TracerEvent) => {
   }
 
   return mongo.submissions.updateOne(
-    { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
+    { id: doc.id, laborMarketAddress: doc.laborMarketAddress, serviceRequestId: doc.serviceRequestId },
     { $set: doc, $setOnInsert: { reviewCount: 0, createdAtBlockTimestamp: doc.createdAtBlockTimestamp } },
     { upsert: true }
   );
