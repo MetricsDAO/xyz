@@ -16,7 +16,7 @@ import { Card } from "~/components/card";
 import { fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
 import { CheckCircleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { getUserId } from "~/services/session.server";
+import { getUser } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -27,22 +27,23 @@ import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { searchUserSubmissions } from "~/services/submissions.server";
 
 export const loader = async (data: DataFunctionArgs) => {
-  const user = await getUserId(data.request);
-  const wallets = user ? await findAllWalletsForUser(user) : [];
+  const user = await getUser(data.request);
+  invariant(user);
+  const wallets = user.id ? await findAllWalletsForUser(user.id) : [];
+  const rewards = user.address ? await searchUserSubmissions(user.address) : [];
   return typedjson({
     wallets,
+    rewards,
     user,
   });
 };
 
 export default function Rewards() {
-  const { wallets } = useTypedLoaderData<typeof loader>();
-
-  //to be replaced
-  const rewards = [];
-  const totalResults = rewards.length;
+  const { wallets, rewards } = useTypedLoaderData<typeof loader>();
+  console.log(rewards);
   const params = { first: 1, page: 1 };
 
   return (
@@ -62,7 +63,7 @@ export default function Rewards() {
           <div className="space-y-5">
             <RewardsListView rewards={rewards} />
             <div className="w-fit m-auto">
-              <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
+              <Pagination page={params.page} totalPages={Math.ceil(rewards.length / params.first)} />
             </div>
           </div>
         </main>
@@ -112,9 +113,9 @@ function RewardsTable({ rewards }: { rewards: any }) {
         return (
           <Row columns={6} key={r.id}>
             <Row.Column span={2}>
-              <p>{r.title}</p>
+              <p>todo</p>
             </Row.Column>
-            <Row.Column>20 SOL</Row.Column>
+            <Row.Column>todo</Row.Column>
             <Row.Column className="text-black">{fromNow("2022-01-01")} </Row.Column>
             <Row.Column className="text-black" color="dark.3">
               {fromNow("2022-11-01")}
@@ -136,9 +137,9 @@ function RewardsCards({ rewards }: { rewards: any }) {
         return (
           <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={r.id}>
             <div>Challenge Title</div>
-            <p>{r.title}</p>
+            <p>todo</p>
             <div>Reward</div>
-            <p>20 SOL</p>
+            <p>todo</p>
             <div>Submitted</div>
             <p className="text-black">{fromNow("2022-01-01")} </p>
             <div>Rewarded</div>

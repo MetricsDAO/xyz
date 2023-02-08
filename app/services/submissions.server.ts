@@ -129,3 +129,10 @@ export const prepareSubmission = async (
   });
   return contractData;
 };
+
+/**
+ * Returns an array of SubmissionDoc for a given UserAddress
+ */
+export const searchUserSubmissions = async (address: string) => {
+  return mongo.submissions.find({ "configuration.serviceProvider": address }).toArray();
+};
