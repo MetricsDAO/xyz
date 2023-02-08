@@ -1,5 +1,4 @@
 import { faker } from "@faker-js/faker";
-import type { Review } from "@prisma/client";
 import type { ServiceRequest, ServiceRequestIndexer } from "~/domain";
 import type { LaborMarket } from "~/domain";
 import type { SubmissionIndexer } from "~/domain/submission";
@@ -64,21 +63,6 @@ export const fakeSubmission = (data: Partial<SubmissionIndexer>): SubmissionInde
     creatorId: faker.datatype.uuid(),
     laborMarketAddress: faker.finance.ethereumAddress(),
     score: 10,
-    ...data,
-  };
-};
-
-export const fakeReview = (data: Partial<Review>): Review => {
-  return {
-    id: faker.datatype.uuid(),
-    contractId: faker.datatype.number().toString(),
-    serviceRequestId: faker.datatype.uuid(),
-    laborMarketAddress: faker.finance.ethereumAddress(),
-    comment: faker.random.words(3),
-    score: 10,
-    createdAt: faker.date.past(),
-    creatorId: faker.datatype.uuid(),
-    submissionId: faker.datatype.uuid(),
     ...data,
   };
 };

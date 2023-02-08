@@ -44,11 +44,9 @@ export default function MarketplaceIdRewards() {
             <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Reward Curve</p>
               <p className="text-xs text-gray-500">HOW ALL CHALLENGE REWARD POOLS ARE DISTRIBUTED</p>
-              <div className="flex flex-row items-center space-x-3 mt-1">
-                <Badge>Aggresive</Badge>
-                <p className="text-xs">
-                  Rewards the top 10% of submissions for each challenge. Winners are determined through peer review
-                </p>
+              <div className="flex flex-row items-center space-x-3 mt-1 text-sm text-gray-600">
+                <span className="bg-blue-100 text-blue-600 rounded px-1">Reward by Overall Score</span>
+                <p>Rewards are distributed based on overall submission scores. Higher scores are rewarded more.</p>
               </div>
             </Card>
             {/* MVP Hide */}
