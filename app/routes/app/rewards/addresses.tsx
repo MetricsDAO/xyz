@@ -56,8 +56,8 @@ export async function action({ request }: ActionArgs) {
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   invariant(user);
-  const wallets = user.id ? await findAllWalletsForUser(user.id) : [];
-  const rewards = user.address ? await searchUserSubmissions(user.address) : [];
+  const wallets = await findAllWalletsForUser(user.id);
+  const rewards = await searchUserSubmissions(user.address);
   const networks = await listNetworks();
   return typedjson({
     networks,
@@ -86,7 +86,7 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets ? wallets?.length : 0} />
+      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>

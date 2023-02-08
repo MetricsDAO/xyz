@@ -32,9 +32,9 @@ import type { SubmissionDoc } from "~/domain/submission";
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
-  invariant(user);
-  const wallets = user.id ? await findAllWalletsForUser(user.id) : [];
-  const submissions = user.address ? await searchUserSubmissions(user.address) : [];
+  invariant(user, "Could not find user, please sign in");
+  const wallets = await findAllWalletsForUser(user.id);
+  const submissions = await searchUserSubmissions(user.address);
   return typedjson({
     wallets,
     submissions,
@@ -57,7 +57,7 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={submissions.length} addressesNum={wallets ? wallets?.length : 0} />
+      <RewardsTab rewardsNum={submissions.length} addressesNum={wallets.length} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
