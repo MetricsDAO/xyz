@@ -2,6 +2,8 @@ export const REPUTATION_TOKEN_ID = 4;
 
 export const REPUTATION_REWARD_POOL = 5000;
 
+export const REPUTATION_SIGNAL_STAKE = 5;
+
 export const SCORE_COLOR = {
   Great: "bg-lime-100",
   Good: "bg-blue-200",
