@@ -17,10 +17,14 @@ import { UserBadge } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
-import { useHasPerformed } from "~/hooks/use-has-claimed";
+import { useHasPerformed } from "~/hooks/use-has-performed";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { dateHasPassed } from "~/utils/date";
+import { fromTokenAmount } from "~/utils/helpers";
+import { listTokens } from "~/services/tokens.server";
+import { REPUTATION_REWARD_POOL } from "~/utils/constants";
+import { useReviewSignals } from "~/hooks/use-review-signals";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -39,14 +43,16 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   }
 
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
+  const tokens = await listTokens();
 
   // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
   const numOfReviews = 0;
-  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects }, { status: 200 });
+  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
+    useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -62,27 +68,40 @@ export default function ServiceRequest() {
     action: "HAS_SUBMITTED",
   });
 
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const reviewSignal = useReviewSignals({
+    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    serviceRequestId: serviceRequest.id,
+  });
+
+  const showSubmit = hasClaimedToSubmit && !hasSubmitted;
+  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted;
+  // Must not have any remaining reviews left (or initial of 0). TODO: check badge as well
+  const showClaimToReview = reviewSignal?.remainder.eq(0);
+
   return (
     <Container className="py-16 px-10">
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
-          <Button variant="cancel" size="lg" asChild>
-            <ConnectWalletWrapper>
-              <Button size="lg" asChild>
-                <Link
-                  to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
-                    mType: mType,
-                    laborMarketAddress: serviceRequest.address,
-                    serviceRequestId: serviceRequest.id,
-                  })}
-                >
-                  Claim to Review
-                </Link>
-              </Button>
-            </ConnectWalletWrapper>
-          </Button>
-          {!hasClaimedToSubmit && !hasSubmitted && (
+          {showClaimToReview && (
+            <Button variant="cancel" size="lg" asChild>
+              <ConnectWalletWrapper>
+                <Button size="lg" asChild>
+                  <Link
+                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
+                      mType: mType,
+                      laborMarketAddress: serviceRequest.address,
+                      serviceRequestId: serviceRequest.id,
+                    })}
+                  >
+                    Claim to Review
+                  </Link>
+                </Button>
+              </ConnectWalletWrapper>
+            </Button>
+          )}
+          {showClaimToSubmit && (
             <Button variant="primary" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
@@ -100,7 +119,7 @@ export default function ServiceRequest() {
             </Button>
           )}
           <Button variant="primary" size="lg" asChild>
-            {hasClaimedToSubmit && (
+            {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
                   <Link
@@ -120,7 +139,7 @@ export default function ServiceRequest() {
       </header>
       <Detail className="mb-6 flex flex-wrap gap-y-2">
         <DetailItem title="Sponsor">
-          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} balance={200} />
+          <UserBadge url="u/id" address={laborMarket.configuration.owner as `0x${string}`} />
         </DetailItem>
         <div className="flex space-x-4">
           {serviceRequestProjects && (
@@ -128,7 +147,11 @@ export default function ServiceRequest() {
           )}
         </div>
         <DetailItem title="Reward Pool">
-          <RewardBadge amount={100} token="SOL" rMETRIC={5000} />
+          <RewardBadge
+            amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+            token={token?.symbol ?? ""}
+            rMETRIC={REPUTATION_REWARD_POOL}
+          />
         </DetailItem>
         <DetailItem title="Submissions">
           <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
@@ -156,9 +179,10 @@ export default function ServiceRequest() {
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>
         <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants">
+        {/* MVP Hide */}
+        {/* <TabNavLink to="./participants">
           Participants <span className="text-gray-400">(99)</span>
-        </TabNavLink>
+        </TabNavLink> */}
       </TabNav>
 
       <Outlet />

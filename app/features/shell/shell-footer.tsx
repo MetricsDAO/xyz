@@ -1,5 +1,5 @@
 const links = [
-  { link: "https://app.gitbook.com/o/x38XyrjrJ4RgJMWHzzYs/s/yJ5gG696yyXu2fE7csz1/", label: "Documentation" },
+  { link: "https://metricsdao.gitbook.io/metrics-app/", label: "Documentation" },
   {
     link: "https://github.com/MetricsDAO/xyz/issues/new?assignees=gnomadic&labels=triage&template=public_issue.yaml&title=%5Bpublic+report%5D%3A+",
     label: "Report a Bug",
