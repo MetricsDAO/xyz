@@ -10,25 +10,25 @@ export const truncateAddress = (address: string) => {
 };
 
 // MVP: only support 6 decimals for USDC
-const DECIMALS = 6;
+const DECIMALS = 18;
 
 /**
- * Standardized way of parsing token string amount
+ * Take a string representation of an amount (to allow for really small or big numbers) and conver to BigNumber
  * @param amount string amount
  * @returns {BigNumber}
  */
-export const parseTokenAmount = (amount: string) => {
+export const toTokenAmount = (amount: string) => {
   return ethers.utils.parseUnits(amount, DECIMALS);
 };
 
 /**
- * Convert smallest denomination of a string number to a fractional amount.
- * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display.
- * @param amount BigNumber amount in smallest denomination
+ * Convert units to a decimal representation
+ * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001
+ * @param units string units
  * @returns {string}
  */
-export const fromTokenAmount = (amount: string) => {
-  return ethers.FixedNumber.fromValue(BigNumber.from(amount), DECIMALS).toString();
+export const fromTokenAmount = (units: string) => {
+  return ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS).toString();
 };
 
 /**
