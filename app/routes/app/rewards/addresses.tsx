@@ -55,7 +55,7 @@ export async function action({ request }: ActionArgs) {
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
-  invariant(user);
+  invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
   const rewards = await searchUserSubmissions(user.address);
   const networks = await listNetworks();
