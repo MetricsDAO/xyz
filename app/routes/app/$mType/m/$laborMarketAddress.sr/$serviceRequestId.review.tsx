@@ -18,6 +18,7 @@ import { findServiceRequest } from "~/services/service-request.server";
 import { claimToReviewDate } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
+import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -146,7 +147,8 @@ export default function ClaimToReview() {
             <Button variant="outline">Lock rMETRIC</Button>
           </div>*/}
           <p className="mt-2 text-gray-500 italic text-sm">
-            Important: 5 rMETRIC will be slashed for each submission you fail to review before the deadline.
+            Important: {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission you fail to review before
+            the deadline.
           </p>
         </div>
         <div className="flex flex-wrap gap-5">

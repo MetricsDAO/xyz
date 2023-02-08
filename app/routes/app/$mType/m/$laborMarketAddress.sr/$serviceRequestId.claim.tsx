@@ -15,6 +15,7 @@ import type { ClaimToSubmitPrepared } from "~/domain";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
+import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
@@ -110,12 +111,12 @@ export default function ClaimToSubmit() {
         <h2 className="font-semibold">Lock rMETRIC</h2>
         <div className="flex flex-col md:flex-row gap-2 md:items-center">
           <p className="text-sm">
-            You must lock <Badge>50</Badge> rMETRIC to claim
+            You must lock <Badge>{REPUTATION_SIGNAL_STAKE}</Badge> rMETRIC to claim
           </p>
-          <Button variant="outline">Lock rMETRIC</Button>
         </div>
         <p className="mt-2 text-gray-500 italic text-sm">
-          Important: If you don't submit before the deadline, all 50 of your locked rMETRIC will be slashed.
+          Important: If you don't submit before the deadline, all {REPUTATION_SIGNAL_STAKE} of your locked rMETRIC will
+          be slashed.
         </p>
       </div>
       <div className="flex flex-wrap gap-5">

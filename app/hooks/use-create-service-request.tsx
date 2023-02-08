@@ -4,7 +4,7 @@ import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { ServiceRequestContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
 import { unixTimestamp } from "~/utils/date";
-import { parseTokenAmount } from "~/utils/helpers";
+import { toTokenAmount } from "~/utils/helpers";
 
 type Props = Web3Hook<ServiceRequestContract>;
 
@@ -18,7 +18,7 @@ export function useCreateServiceRequest({ data, onWriteSuccess }: Props) {
     },
     args: [
       data.pTokenAddress as `0x${string}`,
-      parseTokenAmount(data.pTokenQuantity),
+      toTokenAmount(data.pTokenQuantity),
       BigNumber.from(unixTimestamp(data.signalExpiration)),
       BigNumber.from(unixTimestamp(data.submissionExpiration)),
       BigNumber.from(unixTimestamp(data.enforcementExpiration)),
