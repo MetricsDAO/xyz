@@ -1,5 +1,4 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import type { Submission } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
