@@ -29,5 +29,5 @@ export function ScoreBadge({ score }: { score: number }) {
 }
 
 export function scoreNumToLabel(score: number) {
-  return score >= 90 ? "Great" : score >= 70 ? "Good" : score >= 45 ? "Average" : score >= 25 ? "Bad" : "Spam";
+  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 0 ? "Bad" : "Spam";
 }

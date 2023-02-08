@@ -1,7 +1,8 @@
 import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
-import type { ReviewContract, ReviewDoc, ReviewSearch } from "~/domain/review";
+import type { ReviewContract, ReviewForm, ReviewSearch, ReviewDoc } from "~/domain/review";
+import { ReviewEventSchema } from "~/domain/review";
 import { ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -62,19 +63,20 @@ export const countReviewsOnSubmission = async (submissionId: string) => {
  */
 export const indexReview = async (event: TracerEvent) => {
   const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
-  const { submissionId, score, requestId } = ReviewSchema.parse(event.decoded.inputs);
-  const review = await contract.review(submissionId, score, requestId);
+  const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
+  // const review = await contract.review(requestId, submissionId, reviewScore);
 
   const doc: Omit<ReviewDoc, "reviewCount"> = {
     id: submissionId,
     laborMarketAddress: event.contract.address,
-    submissionId: submissionId,
-    score: score,
+    serviceRequestId: requestId,
+    score: reviewScore,
+    reviewer: reviewer,
     indexedAt: new Date(),
   };
 
-  await mongo.serviceRequests.updateOne(
-    { id: doc.submissionId },
+  await mongo.submissions.updateOne(
+    { id: doc.id },
     {
       $inc: {
         reviewCount: 1,
@@ -82,26 +84,27 @@ export const indexReview = async (event: TracerEvent) => {
     }
   );
 
-  return mongo.reviews.updateOne({ id: doc.id, laborMarketAddress: doc.laborMarketAddress }, { upsert: true });
+  return mongo.reviews.updateOne({ id: doc.id }, { $set: doc }, { upsert: true });
 };
 
-// /**
-//  * Prepare a new Submission for writing to chain
-//  * @param {string} laborMarketAddress - The labor market address the submission belongs to
-//  * @param {string} serviceRequestId - The service request the submission belongs to
-//  * @param {SubmissionForm} form - the service request the submission is being submitted for
-//  * @returns {SubmissionContract} - The prepared submission
-//  */
-// export const prepareReview = async (
-//   user: User,
-//   laborMarketAddress: string,
-//   submissionId: string,
-//   score: number
-// ): Promise<ReviewContract> => {
-//   const contractData = ReviewSchema.parse({
-//     laborMarketAddress: laborMarketAddress,
-//     submissionId: submissionId,
-//     score: score,
-//   });
-//   return contractData;
-// };
+/**
+ * Prepare a new Submission for writing to chain
+ * @param {string} laborMarketAddress - The labor market address the submission belongs to
+ * @param {string} serviceRequestId - The service request the submission belongs to
+ * @param {SubmissionForm} form - the service request the submission is being submitted for
+ * @returns {ReviewContract} - The prepared submission
+ */
+export const prepareReview = async (
+  laborMarketAddress: string,
+  submissionId: string,
+  requestId: string,
+  form: ReviewForm
+): Promise<ReviewContract> => {
+  const contractData = ReviewSchema.parse({
+    laborMarketAddress: laborMarketAddress,
+    requestId: requestId,
+    submissionId: submissionId,
+    score: form.score,
+  });
+  return contractData;
+};

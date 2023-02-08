@@ -21,6 +21,7 @@ import {
   Detail,
   DetailItem,
   Drawer,
+  Modal,
   UserBadge,
   ValidatedSelect,
 } from "~/components";
@@ -191,6 +192,7 @@ function ReviewQuestionDrawerButton({
   const user = useOptionalUser();
   const [selected, setSelected] = useState<number>(2);
   const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [state, send] = useMachine(reviewSubmissionMachine, {
     actions: {
@@ -217,7 +219,7 @@ function ReviewQuestionDrawerButton({
         score: selected,
       },
     });
-    setScoreSelectionOpen(false);
+    setIsModalOpen(true);
   };
 
   const onWriteSuccess = (result: SendTransactionResult) => {
@@ -308,22 +310,24 @@ function ReviewQuestionDrawerButton({
             </div>
           </div>
         )}
-        {state.context.contractData && !scoreSelectionOpen && (
+      </Drawer>
+      {state.context.contractData && isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
           <div className="space-y-5">
             <p className="text-3xl font-semibold">Review & Score</p>
             <p>
-              Please confirm that you would like to give this submission a score of{" "}
+              Please confirm that you would like to give this submission a score of
               <b>{scoreNumToLabel(state.context.contractData.score)}</b>.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-2">
-              <Button variant="cancel" size="md" fullWidth onClick={() => setScoreSelectionOpen(true)}>
+              <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>
                 Back
               </Button>
               <ReviewSubmissionWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
             </div>
           </div>
-        )}
-      </Drawer>
+        </Modal>
+      )}
     </>
   );
 }
