@@ -1,5 +1,4 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import type { Submission } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
@@ -46,7 +45,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.indexedAt)} by </span>
-        <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
+        <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
       </div>
     </Card>
   );

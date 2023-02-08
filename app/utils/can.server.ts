@@ -1,7 +1,7 @@
-import type { LaborMarket, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { forbidden } from "remix-utils";
 
-type CanObject = LaborMarket | User;
+type CanObject = User; // | LaborMarket
 type CanAction = "read" | "write" | "delete" | "execute";
 
 /**
