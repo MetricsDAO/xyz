@@ -60,7 +60,7 @@ export const countReviewsOnSubmission = async (submissionId: string) => {
 export const indexReview = async (event: TracerEvent) => {
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
 
-  const doc: Omit<ReviewDoc, "reviewCount"> = {
+  const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
     submissionId: submissionId,
@@ -79,8 +79,8 @@ export const indexReview = async (event: TracerEvent) => {
   );
 
   return mongo.reviews.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId },
-    { $set: doc },
+    { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId, reviewer: doc.reviewer },
+    { $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp), $set: doc } },
     { upsert: true }
   );
 };

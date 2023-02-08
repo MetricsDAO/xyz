@@ -102,13 +102,19 @@ export default function ClaimToReview() {
           <div className="space-y-2">
             <h2 className="font-semibold">Claim to Review Deadline</h2>
             <CountdownCard
-              start={serviceRequest.indexedAt}
-              end={claimToReviewDate(serviceRequest.indexedAt, serviceRequest.configuration.enforcementExpiration)}
+              start={serviceRequest.createdAtBlockTimestamp}
+              end={claimToReviewDate(
+                serviceRequest.createdAtBlockTimestamp,
+                serviceRequest.configuration.enforcementExpiration
+              )}
             />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold">Review Deadline</h2>
-            <CountdownCard start={serviceRequest.indexedAt} end={serviceRequest.configuration?.enforcementExpiration} />
+            <CountdownCard
+              start={serviceRequest.createdAtBlockTimestamp}
+              end={serviceRequest.configuration?.enforcementExpiration}
+            />
           </div>
         </div>
         <div className="space-y-2">
