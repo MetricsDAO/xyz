@@ -63,7 +63,7 @@ export const LaborMarketContractSchema = LaborMarketFormSchema.extend({
 // Used for searching and filtering marketplaces.
 export const LaborMarketSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z.enum(["title", "serviceRequests"]).default("title").describe("Sort by column."),
+  sortBy: z.enum(["createdAtBlockTimestamp", "title"]).default("createdAtBlockTimestamp").describe("Sort by column."),
   type: z.enum(["brainstorm", "analyze"]).describe("Type of the labor market (MDAO specific)."),
   order: z.enum(["asc", "desc"]).default("desc").describe("Order of the results."),
   project: z.array(z.string()).optional().describe("Project slugs to filter by."),

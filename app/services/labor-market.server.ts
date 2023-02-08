@@ -14,7 +14,7 @@ import { nodeProvider } from "./node.server";
 export const searchLaborMarkets = async (params: LaborMarketSearch) => {
   return mongo.laborMarkets
     .find(searchParams(params))
-    .sort({ [params.sortBy]: params.order })
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
