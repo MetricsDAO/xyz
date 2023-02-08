@@ -27,7 +27,7 @@ program
         name: "polygon",
         network: "mainnet",
       },
-      fromBlock: 39064248,
+      fromBlock: 39065447,
       contracts: [
         { name: "LaborMarketNetwork", addresses: [laborMarketNetworkAddress], schema: LaborMarketNetwork.abi },
         {

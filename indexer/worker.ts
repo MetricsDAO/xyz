@@ -15,7 +15,7 @@ const worker = pine.createWorker({
     namespace: env.PINE_NAMESPACE,
     version: "2.0.0",
     blockchain: { name: "polygon", network: "mainnet" },
-    fromBlock: 39064248,
+    fromBlock: 39065447,
   },
 });
 
