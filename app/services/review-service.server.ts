@@ -70,6 +70,7 @@ export const indexReview = async (event: TracerEvent) => {
     score: reviewScore,
     reviewer: reviewer,
     blockTimestamp: new Date(blockTimestamp * 1000),
+    indexedAt: new Date(),
   };
 
   await mongo.submissions.updateOne(

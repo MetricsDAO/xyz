@@ -84,6 +84,7 @@ export const indexSubmission = async (event: TracerEvent) => {
     reviewed: submission.reviewed,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     blockTimestamp: new Date(blockTimestamp * 1000),
+    indexedAt: new Date(),
     configuration: {
       serviceProvider: submission.serviceProvider,
       uri: submission.uri,

@@ -101,6 +101,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     address: event.contract.address,
     valid: isValid,
     blockTimestamp: new Date(blockTimestamp * 1000),
+    indexedAt: new Date(),
     configuration: {
       requester: serviceRequest.serviceRequester,
       uri: serviceRequest.uri,

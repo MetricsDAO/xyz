@@ -72,6 +72,7 @@ export async function indexLaborMarket(event: TracerEvent) {
     address: event.contract.address,
     valid: appData !== null,
     blockTimestamp: new Date(blockTimestamp * 1000),
+    indexedAt: new Date(),
     appData,
     configuration: {
       owner: config.owner,
