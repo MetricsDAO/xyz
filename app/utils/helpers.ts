@@ -1,6 +1,7 @@
-import type { Project } from "@prisma/client";
+import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import invariant from "tiny-invariant";
 
 export const truncateAddress = (address: string) => {
   if (address.length < 10) {
@@ -50,18 +51,11 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
 /**
  * Take a contract address and return the corresponing token abbreviation
  * @param address Contract address of the token
+ * @param tokens List of tokens in the app
  * @returns {string}
  */
-export const toTokenAbbreviation = (address: string) => {
-  switch (address) {
-    case "0xe1805534B191029731907737042623e1bc6b87D8": {
-      return "MBETA";
-    }
-    case "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": {
-      return "USDC";
-    }
-    default: {
-      console.error("Invalid contract address");
-    }
-  }
+export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
+  const tokenMatch = tokens.find((t) => t.contractAddress === address);
+  invariant(tokenMatch, "Could not match token contract address to a token");
+  return tokenMatch.symbol;
 };

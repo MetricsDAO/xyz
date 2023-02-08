@@ -141,7 +141,7 @@ export default function CreateServiceRequest() {
                   Approve the app to transfer{" "}
                   <b className="text-neutral-800">
                     {`${state.context.contractData.pTokenQuantity}
-                    ${toTokenAbbreviation(state.context.contractData.pTokenAddress)}`}
+                    ${toTokenAbbreviation(state.context.contractData.pTokenAddress, tokens)}`}
                   </b>{" "}
                   on your behalf
                 </p>
@@ -168,7 +168,8 @@ export default function CreateServiceRequest() {
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
                 <p>{`Approving ${state.context.contractData.pTokenQuantity} ${toTokenAbbreviation(
-                  state.context.contractData.pTokenAddress
+                  state.context.contractData.pTokenAddress,
+                  tokens
                 )}`}</p>
               </div>
             )}
@@ -196,7 +197,8 @@ export default function CreateServiceRequest() {
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
                 <p>{`Transferring ${state.context.contractData.pTokenQuantity} ${toTokenAbbreviation(
-                  state.context.contractData.pTokenAddress
+                  state.context.contractData.pTokenAddress,
+                  tokens
                 )}`}</p>
               </div>
             )}
