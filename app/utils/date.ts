@@ -58,7 +58,16 @@ export function dateHasPassed(date: Date) {
   return dayjs(date).diff() < 0;
 }
 
+/**
+ * Returns a number between 0 and 100 representing how much time (in scale of seconds) has passed between start and end
+ * @param start
+ * @param end
+ * @returns {number} between 0 and 100
+ */
 export function progressTime(start: Date, end: Date): number {
+  if (dateHasPassed(end)) {
+    return 100;
+  }
   const denominator = dayjs(end).diff(start, "seconds");
   const numerator = dayjs(Date.now()).diff(start, "seconds");
   return Math.min(100, (numerator / denominator) * 100);
