@@ -78,7 +78,7 @@ const ServiceRequestDocSchema = z.object({
   id: z.string().describe("The request id"),
   address: EvmAddressSchema,
   valid: z.boolean(),
-  blockTimestamp: z.date(),
+  createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
   configuration: z.object({
     requester: EvmAddressSchema,

@@ -69,7 +69,7 @@ export const indexReview = async (event: TracerEvent) => {
     submissionId: submissionId,
     score: reviewScore,
     reviewer: reviewer,
-    blockTimestamp: new Date(blockTimestamp * 1000),
+    createdAtBlockTimestamp: new Date(blockTimestamp * 1000),
     indexedAt: new Date(),
   };
 

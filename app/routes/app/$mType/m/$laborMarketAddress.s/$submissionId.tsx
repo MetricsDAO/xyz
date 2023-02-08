@@ -98,7 +98,7 @@ export default function ChallengeSubmission() {
             <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submission.blockTimestamp.toString())}</Badge>
+            <Badge>{fromNow(submission.createdAtBlockTimestamp.toString())}</Badge>
           </DetailItem>
           <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">
@@ -144,7 +144,7 @@ export default function ChallengeSubmission() {
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} url="" />
                       </div>
-                      <p>{fromNow(r.blockTimestamp)}</p>
+                      <p>{fromNow(r.createdAtBlockTimestamp)}</p>
                     </div>
                   </Card>
                 );

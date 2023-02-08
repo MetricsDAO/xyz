@@ -71,7 +71,7 @@ export async function indexLaborMarket(event: TracerEvent) {
   const doc: Omit<LaborMarketDoc, "serviceRequestCount" | "serviceRequestRewardPools"> = {
     address: event.contract.address,
     valid: appData !== null,
-    blockTimestamp: new Date(blockTimestamp * 1000),
+    createdAtBlockTimestamp: new Date(blockTimestamp * 1000),
     indexedAt: new Date(),
     appData,
     configuration: {
@@ -101,7 +101,14 @@ export async function indexLaborMarket(event: TracerEvent) {
 
   return mongo.laborMarkets.updateOne(
     { address: doc.address },
-    { $set: doc, $setOnInsert: { serviceRequestCount: 0, serviceRequestRewardPools: [] } },
+    {
+      $set: doc,
+      $setOnInsert: {
+        serviceRequestCount: 0,
+        serviceRequestRewardPools: [],
+        createdAtBlockTimestamp: doc.createdAtBlockTimestamp,
+      },
+    },
     { upsert: true }
   );
 }

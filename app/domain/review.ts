@@ -35,7 +35,7 @@ const ReviewDocSchema = z.object({
   serviceRequestId: z.string(),
   score: z.string(),
   reviewer: z.string(),
-  blockTimestamp: z.date(),
+  createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
 });
 

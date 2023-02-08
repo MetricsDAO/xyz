@@ -100,7 +100,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     id: requestId,
     address: event.contract.address,
     valid: isValid,
-    blockTimestamp: new Date(blockTimestamp * 1000),
+    createdAtBlockTimestamp: new Date(blockTimestamp * 1000),
     indexedAt: new Date(),
     configuration: {
       requester: serviceRequest.serviceRequester,
@@ -135,7 +135,15 @@ export const indexServiceRequest = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { address: doc.address, id: doc.id },
-    { $set: doc, $setOnInsert: { submissionCount: 0, claimsToSubmit: [], claimsToReview: [] } },
+    {
+      $set: doc,
+      $setOnInsert: {
+        submissionCount: 0,
+        claimsToSubmit: [],
+        claimsToReview: [],
+        createdAtBlockTimestamp: doc.createdAtBlockTimestamp,
+      },
+    },
     { upsert: true }
   );
 };

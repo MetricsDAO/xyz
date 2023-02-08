@@ -83,7 +83,7 @@ export const indexSubmission = async (event: TracerEvent) => {
     valid: isValid,
     reviewed: submission.reviewed,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
-    blockTimestamp: new Date(blockTimestamp * 1000),
+    createdAtBlockTimestamp: new Date(blockTimestamp * 1000),
     indexedAt: new Date(),
     configuration: {
       serviceProvider: submission.serviceProvider,
@@ -105,7 +105,7 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   return mongo.submissions.updateOne(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-    { $set: doc, $setOnInsert: { reviewCount: 0 } },
+    { $set: doc, $setOnInsert: { reviewCount: 0, createdAtBlockTimestamp: doc.createdAtBlockTimestamp } },
     { upsert: true }
   );
 };

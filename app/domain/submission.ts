@@ -42,7 +42,7 @@ const SubmissionDocSchema = z.object({
   valid: z.boolean(),
   reviewed: z.boolean(),
   submissionUrl: z.string().nullable(),
-  blockTimestamp: z.date(),
+  createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
   configuration: z.object({
     serviceProvider: EvmAddressSchema,
