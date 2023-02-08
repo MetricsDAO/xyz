@@ -5,12 +5,14 @@ import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { notFound } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Button, Container, Modal } from "~/components";
 import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { MarketplaceForm } from "~/features/marketplace-form";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
 import type { SendTransactionResult } from "~/features/web3-button/types";
@@ -104,9 +106,11 @@ export default function CreateMarketplace() {
           </h1>
           <MarketplaceForm projects={projects} tokens={tokens} />
           <div className="flex space-x-4 mt-6">
-            <Button size="lg" type="submit">
-              {transition.state === "submitting" ? "Loading..." : "Next"}
-            </Button>
+            <ConnectWalletWrapper>
+              <Button size="lg" type="submit">
+                {transition.state === "submitting" ? "Loading..." : "Next"}
+              </Button>
+            </ConnectWalletWrapper>
           </div>
         </ValidatedForm>
       </div>

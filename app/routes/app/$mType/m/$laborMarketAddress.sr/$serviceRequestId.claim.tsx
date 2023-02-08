@@ -12,6 +12,7 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import type { ClaimToSubmitPrepared } from "~/domain";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
@@ -19,7 +20,7 @@ import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
-export const loader = async ({ params }: DataFunctionArgs) => {
+export const loader = async ({ params, request }: DataFunctionArgs) => {
   const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
   if (!serviceRequest) {
@@ -120,7 +121,11 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <Button onClick={handleClaimToSubmit}>Claim to Submit</Button>
+        <ConnectWalletWrapper>
+          <Button onClick={handleClaimToSubmit}>
+            <span> Claim to Submit</span>
+          </Button>
+        </ConnectWalletWrapper>
         <Button variant="cancel">Cancel</Button>
       </div>
       <div className="invisible"></div>
