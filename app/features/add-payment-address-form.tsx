@@ -26,7 +26,7 @@ export function AddPaymentAddressForm({ networks }: { networks: Network[] }) {
         <ValidatedSelect
           name="payment.networkName"
           options={networks.map((n) => ({
-            value: n.name.toLocaleLowerCase(),
+            value: n.name,
             label: <SelectLabel network={n} />,
             selectedLabel: (
               <div className="flex gap-2 items-center">
