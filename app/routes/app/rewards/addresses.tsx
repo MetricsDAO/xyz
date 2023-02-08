@@ -57,18 +57,18 @@ export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions(user.address);
+  const submissions = await searchUserSubmissions(user.address);
   const networks = await listNetworks();
   return typedjson({
     networks,
     wallets,
-    rewards,
+    submissions,
     user,
   });
 };
 
 export default function PayoutAddresses() {
-  const { wallets, rewards } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissions } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -86,7 +86,7 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={submissions.length} addressesNum={wallets.length} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
