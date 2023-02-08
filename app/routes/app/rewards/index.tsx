@@ -43,7 +43,6 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Rewards() {
   const { wallets, rewards } = useTypedLoaderData<typeof loader>();
-  console.log(rewards);
   const params = { first: 1, page: 1 };
 
   return (
