@@ -24,7 +24,6 @@ import {
   UserBadge,
   ValidatedSelect,
 } from "~/components";
-import { RewardBadge } from "~/components/reward-badge";
 import { scoreToLabel } from "~/components/score";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
@@ -95,7 +94,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge url="u/id" address={submission.configuration.serviceProvider as `0x${string}`} />
+            <UserBadge url="" address={submission.configuration.serviceProvider as `0x${string}`} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submission.indexedAt.toString())}</Badge>
@@ -113,7 +112,7 @@ export default function ChallengeSubmission() {
           </DetailItem>
           {isWinner && (
             <DetailItem title="Winner">
-              <RewardBadge amount={50} token="SOL" rMETRIC={5000} variant="winner" />
+              {/*<RewardBadge amount={} token={} rMETRIC={REPUTATION_REWARD_POOL} variant="winner" />*/}
             </DetailItem>
           )}
         </Detail>

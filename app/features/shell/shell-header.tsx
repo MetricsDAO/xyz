@@ -19,7 +19,7 @@ const userLinks = [
     link: $path("/app/rewards"),
     label: (
       <span>
-        Rewards <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>
+        Rewards {/*TODO: actual data <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>*/}
       </span>
     ),
   },
