@@ -1,19 +1,26 @@
 import { useRouteData } from "remix-utils";
-import { Avatar } from "~/components/avatar";
+import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
+import { useTokenData } from "~/hooks/use-token-data";
+import type { findLaborMarket } from "~/services/labor-market.server";
 import type { findServiceRequest } from "~/services/service-request.server";
 
 export default function ServiceIdPrereqs() {
-  const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
-    "routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId"
-  );
+  const data = useRouteData<{
+    serviceRequest: Awaited<ReturnType<typeof findServiceRequest>>;
+    laborMarket: Awaited<ReturnType<typeof findLaborMarket>>;
+  }>("routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId");
   if (!data) {
     throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");
   }
 
-  const { serviceRequest } = data;
+  const { laborMarket } = data;
+
+  invariant(laborMarket, "No labormarket found");
+
+  const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
 
   return (
     <section>
@@ -25,12 +32,12 @@ export default function ServiceIdPrereqs() {
         <Card className="p-5">
           <h3 className="font-medium mb-4">You must hold this much rMETRIC to enter submissions for this challenge</h3>
           <Detail>
-            {/* <DetailItem title="Min Balance">
-              <Badge>{serviceRequest?.laborMarket.submitRepMin} rMETRIC</Badge>
+            <DetailItem title="Min Balance">
+              <Badge>{laborMarket?.configuration.reputationParams.submitMin} rMETRIC</Badge>
             </DetailItem>
             <DetailItem title="Max Balance">
-              <Badge>{serviceRequest?.laborMarket.submitRepMax} rMETRIC</Badge>
-            </DetailItem> */}
+              <Badge>{laborMarket?.configuration.reputationParams.submitMax} rMETRIC</Badge>
+            </DetailItem>
           </Detail>
         </Card>
 
@@ -39,11 +46,11 @@ export default function ServiceIdPrereqs() {
             You must hold this badge to review and score submissions on this challenge
           </h3>
           <Detail>
-            <DetailItem title="MDAO S4 Reviewer Badge">
-              <Badge className="pl-2 flex space-x-1">
-                <Avatar />
-                <span>{serviceRequest?.address}</span>
-              </Badge>
+            <DetailItem title={maintainerData?.name}>
+              <div className="flex gap-2 items-center">
+                <img src={maintainerData?.image} alt="" className="h-4 w-4" />
+                <div className="text-base text-[#252525]">{laborMarket?.configuration.maintainerBadge.token}</div>
+              </div>
             </DetailItem>
           </Detail>
         </Card>
