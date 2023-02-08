@@ -2,7 +2,6 @@ import { fakeLaborMarket, fakeReview, fakeSubmission } from "~/utils/fakes";
 import { prisma } from "~/services/prisma.server";
 import { faker } from "@faker-js/faker";
 import type { ServiceRequest, Submission } from "@prisma/client";
-import { upsertReview } from "~/services/review-service.server";
 
 async function main() {
   await prisma.project.createMany({

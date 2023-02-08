@@ -26,8 +26,8 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
           <AnalyticsInfo submission={submission} />
         )}
         <div className="flex flex-col items-center gap-2">
-          {/* hard coded for now */}
-          <Score score={2} />
+          {/* MVP hide */}
+          {/* <Score score={"2"} /> */}
           <p className="text-xs text-gray-500 text-center">{submission.reviewCount} reviews</p>
         </div>
       </Link>

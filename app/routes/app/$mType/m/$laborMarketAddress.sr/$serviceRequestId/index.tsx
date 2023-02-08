@@ -29,7 +29,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
     laborMarketAddress: params.laborMarketAddress,
     serviceRequestId: params.serviceRequestId,
   });
-  console.log("Submissions", submissions);
   return typedjson({ submissions });
 };
 

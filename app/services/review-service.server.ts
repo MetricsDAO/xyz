@@ -1,11 +1,7 @@
-import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
-import { LaborMarket__factory } from "~/contracts";
-import type { ReviewContract, ReviewForm, ReviewSearch, ReviewDoc } from "~/domain/review";
-import { ReviewEventSchema } from "~/domain/review";
-import { ReviewSchema } from "~/domain/review";
+import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
+import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";
-import { nodeProvider } from "./node.server";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
@@ -35,7 +31,7 @@ export const countReviews = async (params: ReviewSearch) => {
  */
 const searchParams = (params: ReviewSearch): Parameters<typeof mongo.reviews.find>[0] => {
   return {
-    valid: true,
+    ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.submissionId ? { submissionId: params.submissionId } : {}),
   };
 };
@@ -62,21 +58,19 @@ export const countReviewsOnSubmission = async (submissionId: string) => {
  * Create a new ReviewDoc from a TracerEvent.
  */
 export const indexReview = async (event: TracerEvent) => {
-  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
-  // const review = await contract.review(requestId, submissionId, reviewScore);
 
   const doc: Omit<ReviewDoc, "reviewCount"> = {
-    id: submissionId,
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
+    submissionId: submissionId,
     score: reviewScore,
     reviewer: reviewer,
     indexedAt: new Date(),
   };
 
   await mongo.submissions.updateOne(
-    { id: doc.id },
+    { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId, reviewer: doc.reviewer },
     {
       $inc: {
         reviewCount: 1,
@@ -84,7 +78,11 @@ export const indexReview = async (event: TracerEvent) => {
     }
   );
 
-  return mongo.reviews.updateOne({ id: doc.id }, { $set: doc }, { upsert: true });
+  return mongo.reviews.updateOne(
+    { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId },
+    { $set: doc },
+    { upsert: true }
+  );
 };
 
 /**

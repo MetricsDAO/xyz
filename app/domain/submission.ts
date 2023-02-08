@@ -36,7 +36,7 @@ export const SubmissionIndexerSchema = z.object({
 });
 
 const SubmissionDocSchema = z.object({
-  id: z.string().describe("The request id"),
+  id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   valid: z.boolean(),

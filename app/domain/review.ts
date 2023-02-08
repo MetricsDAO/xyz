@@ -8,6 +8,7 @@ export const ReviewSearchSchema = z.object({
   first: z.number().default(10),
   page: z.number().default(1),
   submissionId: z.string().optional(),
+  laborMarketAddress: EvmAddressSchema.optional(),
 });
 
 export const ReviewSchema = z.object({
@@ -29,7 +30,7 @@ export const ReviewEventSchema = z.object({
 });
 
 const ReviewDocSchema = z.object({
-  id: z.string().describe("The request id"),
+  submissionId: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   score: z.string(),

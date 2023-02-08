@@ -12,7 +12,6 @@ import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
 import {
-  Avatar,
   Badge,
   Button,
   Card,
@@ -26,7 +25,7 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
-import { ScoreBadge, scoreNumToLabel } from "~/components/score";
+import { scoreToLabel } from "~/components/score";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -50,8 +49,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  const reviews = await searchReviews({ ...params, submissionId });
-  console.log("reviews", reviews);
+  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress });
 
   const submission = await findSubmission(submissionId, laborMarketAddress);
   if (!submission) {
@@ -79,7 +77,7 @@ export default function ChallengeSubmission() {
     }
   };
 
-  const isWinner = true;
+  const isWinner = false;
 
   return (
     <Container className="py-16 px-10">
@@ -126,24 +124,20 @@ export default function ChallengeSubmission() {
             <div className="w-full border-spacing-4 border-separate space-y-5">
               {reviews.map((r) => {
                 return (
-                  <Card asChild key={r.id}>
+                  <Card asChild key={r._id.toString()}>
                     <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                         <div
                           className={clsx(
-                            SCORE_COLOR[scoreNumToLabel(r.score)],
+                            SCORE_COLOR[scoreToLabel(r.score)],
                             "flex w-24 h-12 justify-center items-center rounded-lg"
                           )}
                         >
-                          <p>{scoreNumToLabel(r.score)}</p>
+                          <p>{scoreToLabel(r.score)}</p>
                         </div>
-                        <Avatar />
-                        <p className="font-medium">user.ETH</p>
-                        <Badge>
-                          <p>400 rMETRIC</p>
-                        </Badge>
+                        <UserBadge address={r.reviewer as `0x${string}`} url="" balance={5} />
                       </div>
-                      <p>{fromNow(r.createdAt)}</p>
+                      <p>{fromNow(r.indexedAt)}</p>
                     </div>
                   </Card>
                 );
@@ -317,7 +311,7 @@ function ReviewQuestionDrawerButton({
             <p className="text-3xl font-semibold">Review & Score</p>
             <p>
               Please confirm that you would like to give this submission a score of
-              <b>{scoreNumToLabel(state.context.contractData.score)}</b>.
+              <b>{scoreToLabel(state.context.contractData.score)}</b>.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-2">
               <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>

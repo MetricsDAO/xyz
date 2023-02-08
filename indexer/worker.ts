@@ -51,7 +51,6 @@ worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
-  console.log("RequestReviewed", event);
   return indexReview(event);
 });
 
