@@ -26,7 +26,7 @@ import { findLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
-import { findProjectsBySlug, fromTokenAmount } from "~/utils/helpers";
+import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -187,10 +187,10 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 </div>
               </Row.Column>
 
-              <Row.Column className="overflow-scroll">
-                {fromTokenAmount(sr.configuration.pTokenQuantity)}{" "}
-                {tokens.find((t) => t.contractAddress === sr.configuration.pToken)?.symbol}
-              </Row.Column>
+              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQuantity)} ${toTokenAbbreviation(
+                sr.configuration.pToken,
+                tokens
+              )}`}</Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExpiration} />
               </Row.Column>

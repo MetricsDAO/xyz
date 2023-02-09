@@ -98,7 +98,7 @@ export default function ChallengeSubmission() {
             <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submission.createdAtBlockTimestamp.toString())}</Badge>
+            <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
           </DetailItem>
           <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">

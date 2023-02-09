@@ -1,4 +1,4 @@
-import type { Project } from "@prisma/client";
+import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 
@@ -46,3 +46,13 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
     })
     .filter((p): p is Project => !!p);
 }
+
+/**
+ * Take a contract address and return the corresponing token abbreviation
+ * @param address Contract address of the token
+ * @param tokens List of tokens in the app
+ * @returns {string}
+ */
+export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
+  return tokens.find((t) => t.contractAddress === address)?.symbol;
+};
