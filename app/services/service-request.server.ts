@@ -41,7 +41,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
 const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
   return {
     valid: true,
-    ...(params.laborMarket ? { address: params.laborMarket } : {}),
+    ...(params.laborMarket ? { laborMarketAddress: params.laborMarket } : {}),
     ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
     ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
   };
@@ -53,7 +53,7 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
-  return mongo.serviceRequests.findOne({ id, address: laborMarketAddress, valid: true });
+  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress, valid: true });
 };
 
 /**
@@ -99,7 +99,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     "submissionCount" | "claimsToSubmit" | "claimsToReview" | "createdAtBlockTimestamp"
   > = {
     id: requestId,
-    address: event.contract.address,
+    laborMarketAddress: event.contract.address,
     valid: isValid,
     indexedAt: new Date(),
     configuration: {
@@ -115,9 +115,9 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   };
 
   if (isValid) {
-    const lm = await mongo.laborMarkets.findOne({ address: doc.address });
+    const lm = await mongo.laborMarkets.findOne({ address: doc.laborMarketAddress });
     await mongo.laborMarkets.updateOne(
-      { address: doc.address },
+      { address: doc.laborMarketAddress },
       {
         $inc: {
           serviceRequestCount: 1,
@@ -134,7 +134,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
   }
 
   return mongo.serviceRequests.updateOne(
-    { address: doc.address, id: doc.id },
+    { laborMarketAddress: doc.laborMarketAddress, id: doc.id },
     {
       $set: doc,
       $setOnInsert: {
@@ -152,7 +152,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
 
   return mongo.serviceRequests.updateOne(
-    { address: event.contract.address, id: inputs.requestId },
+    { laborMarketAddress: event.contract.address, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };
@@ -161,7 +161,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
   const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
 
   return mongo.serviceRequests.updateOne(
-    { address: event.contract.address, id: inputs.requestId },
+    { laborMarketAddress: event.contract.address, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };

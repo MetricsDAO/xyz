@@ -60,20 +60,20 @@ export default function ServiceRequest() {
   const claimToReviewDeadlinePassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
 
   const hasClaimedToSubmit = useHasPerformed({
-    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
     serviceRequestId: serviceRequest.id,
     action: "HAS_SIGNALED",
   });
 
   const hasSubmitted = useHasPerformed({
-    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
     serviceRequestId: serviceRequest.id,
     action: "HAS_SUBMITTED",
   });
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
   const reviewSignal = useReviewSignals({
-    laborMarketAddress: serviceRequest.address as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
     serviceRequestId: serviceRequest.id,
   });
 
@@ -94,7 +94,7 @@ export default function ServiceRequest() {
                   <Link
                     to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
                       mType: mType,
-                      laborMarketAddress: serviceRequest.address,
+                      laborMarketAddress: serviceRequest.laborMarketAddress,
                       serviceRequestId: serviceRequest.id,
                     })}
                   >
@@ -111,7 +111,7 @@ export default function ServiceRequest() {
                   <Link
                     to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
                       mType: mType,
-                      laborMarketAddress: serviceRequest.address,
+                      laborMarketAddress: serviceRequest.laborMarketAddress,
                       serviceRequestId: serviceRequest.id,
                     })}
                   >
@@ -128,7 +128,7 @@ export default function ServiceRequest() {
                   <Link
                     to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
                       mType: mType,
-                      laborMarketAddress: serviceRequest.address,
+                      laborMarketAddress: serviceRequest.laborMarketAddress,
                       serviceRequestId: serviceRequest.id,
                     })}
                   >

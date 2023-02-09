@@ -76,7 +76,7 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
  */
 const ServiceRequestDocSchema = z.object({
   id: z.string().describe("The request id"),
-  address: EvmAddressSchema,
+  laborMarketAddress: EvmAddressSchema,
   valid: z.boolean(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
