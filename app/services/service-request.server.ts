@@ -76,7 +76,7 @@ export const prepareServiceRequest = async (user: User, laborMarketAddress: stri
     uri: cid,
     enforcementExpiration: parseDatetime(form.reviewEndDate, form.reviewEndTime),
     submissionExpiration: parseDatetime(form.endDate, form.endTime),
-    signalExpiration: parseDatetime(form.startDate, form.startTime),
+    signalExpiration: parseDatetime(form.endDate, form.endTime),
   });
   return contractData;
 };
