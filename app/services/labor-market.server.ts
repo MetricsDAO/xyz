@@ -1,5 +1,4 @@
 import type { User } from "@prisma/client";
-import { BigNumber, ethers } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketForm, LaborMarketContract, LaborMarketSearch, LaborMarketDoc } from "~/domain";
@@ -40,6 +39,7 @@ const searchParams = (params: LaborMarketSearch): Parameters<typeof mongo.laborM
     "appData.type": params.type,
     ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
     ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
+    ...(params.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: params.token } } } } : {}),
   };
 };
 /**
