@@ -11,6 +11,7 @@ import { z } from "zod";
 import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
+import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
@@ -111,9 +112,9 @@ function Brainstorm({
   contractData: SubmissionContract | undefined;
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<EthersError>();
   const onPrepareTransactionError = (error: EthersError) => {
-    setError(error.reason ?? "Something went wrong");
+    setError(error);
   };
   return (
     <Container className="py-16 mx-auto`">
@@ -163,7 +164,7 @@ function Brainstorm({
             <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
               <div className="space-y-8">
                 <p>Please confirm that you would like to submit this idea.</p>
-                {error && <p className="text-red-500">{error}</p>}
+                {error && <RPCError error={error} />}
                 <div className="flex flex-col sm:flex-row justify-center gap-5">
                   <CreateSubmissionWeb3Button
                     data={contractData}

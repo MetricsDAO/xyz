@@ -5,7 +5,6 @@ import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedActionData, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { notFound } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
@@ -14,8 +13,9 @@ import type { LaborMarketContract, LaborMarketForm } from "~/domain";
 import { fakeLaborMarketNew, LaborMarketFormSchema } from "~/domain";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { MarketplaceForm } from "~/features/marketplace-form";
+import { RPCError } from "~/features/rpc-error";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
-import type { SendTransactionResult } from "~/features/web3-button/types";
+import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
@@ -97,6 +97,11 @@ export default function CreateMarketplace() {
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
+  };
+
   return (
     <Container className="py-16">
       <div className="max-w-2xl mx-auto">
@@ -118,8 +123,13 @@ export default function CreateMarketplace() {
         <Modal title="Create Marketplace?" isOpen={modalOpen} onClose={closeModal}>
           <div className="space-y-8">
             <p>Please confirm that you would like to create a new marketplace.</p>
+            {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <CreateLaborMarketWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              <CreateLaborMarketWeb3Button
+                data={state.context.contractData}
+                onWriteSuccess={onWriteSuccess}
+                onPrepareTransactionError={onPrepareTransactionError}
+              />
               <Button variant="cancel" size="md" onClick={closeModal}>
                 Cancel
               </Button>

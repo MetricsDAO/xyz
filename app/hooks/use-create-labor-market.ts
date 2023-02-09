@@ -12,7 +12,11 @@ import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
 import { REPUTATION_REWARD_POOL, REPUTATION_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
 
-export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMarketContract>) {
+export function useCreateLaborMarket({
+  data,
+  onWriteSuccess,
+  onPrepareTransactionError,
+}: Web3Hook<LaborMarketContract>) {
   const { config } = usePrepareContractWrite({
     address: LaborMarketNetwork.address,
     abi: LaborMarketNetwork.abi,
@@ -48,6 +52,9 @@ export function useCreateLaborMarket({ data, onWriteSuccess }: Web3Hook<LaborMar
         },
       },
     ],
+    onError(err) {
+      onPrepareTransactionError?.(err);
+    },
   });
 
   const { write } = useContractWrite({

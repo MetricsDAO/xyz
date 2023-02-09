@@ -29,7 +29,9 @@ import { scoreToLabel } from "~/components/score";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { RPCError } from "~/features/rpc-error";
 import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
+import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useOptionalUser } from "~/hooks/use-user";
 import { searchReviews } from "~/services/review-service.server";
@@ -227,7 +229,10 @@ function ReviewQuestionDrawerButton({
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
   };
 
-  console.log("state", state.context.contractData);
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
+  };
 
   return (
     <>
@@ -320,11 +325,16 @@ function ReviewQuestionDrawerButton({
               Please confirm that you would like to give this submission a score of
               <b>{` ${scoreToLabel(state.context.contractData.score)}`}</b>.
             </p>
+            {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-2">
               <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>
                 Back
               </Button>
-              <ReviewSubmissionWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              <ReviewSubmissionWeb3Button
+                data={state.context.contractData}
+                onWriteSuccess={onWriteSuccess}
+                onPrepareTransactionError={onPrepareTransactionError}
+              />
             </div>
           </div>
         </Modal>

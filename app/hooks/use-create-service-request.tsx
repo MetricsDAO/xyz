@@ -8,7 +8,7 @@ import { toTokenAmount } from "~/utils/helpers";
 
 type Props = Web3Hook<ServiceRequestContract>;
 
-export function useCreateServiceRequest({ data, onWriteSuccess }: Props) {
+export function useCreateServiceRequest({ data, onWriteSuccess, onPrepareTransactionError }: Props) {
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
@@ -24,6 +24,9 @@ export function useCreateServiceRequest({ data, onWriteSuccess }: Props) {
       BigNumber.from(unixTimestamp(data.enforcementExpiration)),
       data.uri,
     ],
+    onError(err) {
+      onPrepareTransactionError?.(err);
+    },
   });
   const { write } = useContractWrite({
     ...config,
