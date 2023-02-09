@@ -1,6 +1,8 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import type { ServiceRequestDoc } from "~/domain";
+import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
   if (address.length < 10) {
@@ -56,3 +58,7 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
 export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.symbol;
 };
+
+export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
+  return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
+}

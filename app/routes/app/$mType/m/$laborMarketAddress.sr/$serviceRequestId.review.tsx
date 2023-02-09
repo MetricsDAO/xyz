@@ -15,11 +15,12 @@ import { ClaimToReviewFormSchema } from "~/domain";
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
-import { claimToReviewDate } from "~/utils/date";
+import { claimDate } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
+import { claimToReviewDeadline } from "~/utils/helpers";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -103,13 +104,7 @@ export default function ClaimToReview() {
         <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold">Claim to Review Deadline</h2>
-            <CountdownCard
-              start={serviceRequest.createdAtBlockTimestamp}
-              end={claimToReviewDate(
-                serviceRequest.createdAtBlockTimestamp,
-                serviceRequest.configuration.enforcementExpiration
-              )}
-            />
+            <CountdownCard start={serviceRequest.createdAtBlockTimestamp} end={claimToReviewDeadline(serviceRequest)} />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold">Review Deadline</h2>
