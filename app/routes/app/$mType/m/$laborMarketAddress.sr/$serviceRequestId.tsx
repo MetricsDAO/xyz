@@ -77,7 +77,7 @@ export default function ServiceRequest() {
     serviceRequestId: serviceRequest.id,
   });
 
-  const showSubmit = hasClaimedToSubmit && !hasSubmitted;
+  const showSubmit = hasClaimedToSubmit;
   const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted && !claimDeadlinePassed;
   // Must not have any remaining reviews left (or initial of 0). TODO: check badge as well
   const showClaimToReview = reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed;
