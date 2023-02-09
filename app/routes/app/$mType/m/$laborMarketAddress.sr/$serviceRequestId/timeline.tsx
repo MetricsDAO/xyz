@@ -2,6 +2,7 @@ import { useRouteData } from "remix-utils";
 import { CountdownCard } from "~/components/countdown-card";
 import type { findServiceRequest } from "~/services/service-request.server";
 import { claimDate, dateHasPassed } from "~/utils/date";
+import { claimToReviewDeadline } from "~/utils/helpers";
 
 export default function ServiceIdTimeline() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
@@ -21,7 +22,7 @@ export default function ServiceIdTimeline() {
     { label: "submission deadline", time: serviceRequest.configuration?.submissionExpiration },
     {
       label: "claim to review deadline",
-      time: claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration?.enforcementExpiration),
+      time: claimToReviewDeadline(serviceRequest),
     },
     { label: "review deadline & winners", time: serviceRequest.configuration?.enforcementExpiration },
   ];

@@ -67,6 +67,7 @@ export const prepareServiceRequest = async (user: User, laborMarketAddress: stri
   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
 
   const currentDate = new Date();
+  //calculates the claim to submit deadline, which is 75% of the submission deadline
   const signalDeadline = claimDate(currentDate, parseDatetime(form.endDate, form.endTime));
 
   // parse for type safety
