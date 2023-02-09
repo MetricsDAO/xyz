@@ -7,7 +7,7 @@ import type { LaborMarketDoc } from "~/domain";
 import { ClaimToSubmitEventSchema, ClaimToReviewEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
-import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
+import { claimDate, fromUnixTimestamp, parseDatetime } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -66,6 +66,9 @@ export const prepareServiceRequest = async (user: User, laborMarketAddress: stri
   const metadata = ServiceRequestMetaSchema.parse(form); // Prune extra fields from form
   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
 
+  const currentDate = new Date();
+  const signalDeadline = claimDate(currentDate, parseDatetime(form.endDate, form.endTime));
+
   // parse for type safety
   const contractData = ServiceRequestContractSchema.parse({
     laborMarketAddress: laborMarketAddress,
@@ -76,7 +79,7 @@ export const prepareServiceRequest = async (user: User, laborMarketAddress: stri
     uri: cid,
     enforcementExpiration: parseDatetime(form.reviewEndDate, form.reviewEndTime),
     submissionExpiration: parseDatetime(form.endDate, form.endTime),
-    signalExpiration: parseDatetime(form.endDate, form.endTime),
+    signalExpiration: signalDeadline,
   });
   return contractData;
 };

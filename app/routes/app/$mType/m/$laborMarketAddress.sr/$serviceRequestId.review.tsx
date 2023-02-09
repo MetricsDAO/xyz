@@ -15,7 +15,7 @@ import { ClaimToReviewFormSchema } from "~/domain";
 import type { SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
-import { claimToReviewDate } from "~/utils/date";
+import { claimDate } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -105,7 +105,7 @@ export default function ClaimToReview() {
             <h2 className="font-semibold">Claim to Review Deadline</h2>
             <CountdownCard
               start={serviceRequest.createdAtBlockTimestamp}
-              end={claimToReviewDate(
+              end={claimDate(
                 serviceRequest.createdAtBlockTimestamp,
                 serviceRequest.configuration.enforcementExpiration
               )}

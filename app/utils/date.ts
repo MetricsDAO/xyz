@@ -73,6 +73,6 @@ export function progressTime(start: Date, end: Date): number {
   return Math.min(100, (numerator / denominator) * 100);
 }
 
-export function claimToReviewDate(createdAt: Date, enforcementExpiration: Date) {
-  return new Date((enforcementExpiration.valueOf() - createdAt.valueOf()) * 0.75 + createdAt.valueOf());
+export function claimDate(createdAt: Date, expiration: Date) {
+  return new Date((expiration.valueOf() - createdAt.valueOf()) * 0.75 + createdAt.valueOf());
 }
