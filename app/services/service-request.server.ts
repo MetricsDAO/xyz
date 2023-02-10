@@ -18,7 +18,7 @@ import { nodeProvider } from "./node.server";
 export const searchServiceRequests = async (params: ServiceRequestSearch) => {
   return mongo.serviceRequests
     .find(searchParams(params))
-    .sort({ [params.sortBy]: params.order })
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
@@ -43,6 +43,7 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
     valid: true,
     ...(params.laborMarket ? { address: params.laborMarket } : {}),
     ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.language ? { "appData.language": { $in: params.language } } : {}),
     ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
   };
 };

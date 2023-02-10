@@ -1,8 +1,6 @@
 import { Link, useParams } from "@remix-run/react";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import { TokenAvatar } from "~/components/avatar";
-import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
 import type { MarketplaceTableProps } from "~/routes/app/$mType";
