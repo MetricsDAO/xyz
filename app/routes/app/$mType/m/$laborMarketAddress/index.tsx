@@ -103,7 +103,6 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
           { label: "Title", value: "appData.title" },
           { label: "Submit Deadline", value: "configuration.submissionExpiration" },
           { label: "Review Deadline", value: "configuration.enforcementExpiration" },
-          // { label: "Reward Pool", value: "reward" },
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
