@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { useRef } from "react";
 import { z } from "zod";
 import { Checkbox } from "~/components/checkbox";
@@ -28,7 +28,11 @@ import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { searchSubmissions } from "~/services/submissions.server";
-import type { SubmissionDoc } from "~/domain/submission";
+import { SubmissionDoc, SubmissionSearchSchema } from "~/domain/submission";
+import { Label } from "~/components";
+import { listTokens } from "~/services/tokens.server";
+
+const validator = withZod(SubmissionSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
@@ -41,15 +45,17 @@ export const loader = async (data: DataFunctionArgs) => {
     first: 0,
     page: 0,
   });
+  const tokens = await listTokens();
   return typedjson({
     wallets,
     submissions,
     user,
+    tokens,
   });
 };
 
 export default function Rewards() {
-  const { wallets, submissions } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissions, tokens } = useTypedLoaderData<typeof loader>();
   const params = { first: 1, page: 1 };
 
   return (
@@ -264,21 +270,31 @@ function ClaimButton() {
     </>
   );
 }
+
 function SearchAndFilter() {
-  const ref = useRef<HTMLFormElement>(null);
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleChange = () => {
+    if (formRef.current) {
+      submit(formRef.current, { replace: true });
+    }
+  };
   return (
     <ValidatedForm
-      formRef={ref}
+      formRef={formRef}
       method="get"
       noValidate
-      validator={withZod(z.any())}
+      validator={validator}
+      onChange={handleChange}
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
       <Input placeholder="Search" name="q" iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />} />
       <p className="text-lg font-semibold">Filter:</p>
-      <p>Status</p>
+      <Label size="md">Status</Label>
       <Checkbox value="unclaimed" label="Unclaimed" />
       <Checkbox value="claimed" label="Claimed" />
+      <Label>Reward Token</Label>
       <Combobox
         placeholder="Select option"
         options={[
@@ -287,6 +303,7 @@ function SearchAndFilter() {
           { label: "USD", value: "USD" },
         ]}
       />
+      <Label>Challenge Marketplace</Label>
       <Combobox
         placeholder="Select option"
         options={[
