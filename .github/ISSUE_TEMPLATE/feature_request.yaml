@@ -1,0 +1,28 @@
+name: Bug Report
+description: Request a Feature
+title: "[feature]: "
+labels: ["triage"]
+assignees:
+  - gnomadic
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The application and experience can only get better with your suggestions for improvements!  Please share your thoughts and ideas for improvements we can make and be as specific as possible. Thank you!
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Improvement description
+      description: Tell us what you'd like to see, and what happens today
+      placeholder: It would be nice to have back buttons!
+      value: "Issue Description"
+    validations:
+      required: true
+  # - type: checkboxes
+  #   id: terms
+  #   attributes:
+  #     label: Code of Conduct
+  #     description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+  #     options:
+  #       - label: I agree to follow this project's Code of Conduct
+  #         required: true
