@@ -131,10 +131,18 @@ export const ServiceRequestSearchSchema = z.object({
   page: z.number().default(1),
   laborMarket: z.string().optional(),
   q: z.string().optional(),
-  sortBy: z.enum(["title"]).default("title"),
+  sortBy: z
+    .enum([
+      "createdAtBlockTimestamp",
+      "appData.title",
+      "configuration.submissionExpiration",
+      "configuration.enforcementExpiration",
+    ])
+    .default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   token: z.string().optional(),
-  project: z.string().optional(),
+  project: z.array(z.string()).optional(),
+  language: z.array(z.string()).optional(),
   first: z.number().default(12),
 });
 

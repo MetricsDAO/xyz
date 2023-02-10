@@ -1,4 +1,5 @@
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
+import type { Project, Token } from "@prisma/client";
 import { Link, useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
@@ -26,7 +27,7 @@ import { findLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
-import { findProjectsBySlug, fromTokenAmount } from "~/utils/helpers";
+import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -61,13 +62,13 @@ export default function MarketplaceIdChallenges() {
         </div>
       </main>
       <aside className="md:w-1/5">
-        <SearchAndFilter />
+        <SearchAndFilter tokens={tokens} projects={projects} />
       </aside>
     </section>
   );
 }
 
-function SearchAndFilter() {
+function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Project[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -98,16 +99,17 @@ function SearchAndFilter() {
         onChange={handleChange}
         size="sm"
         options={[
-          { label: "Title", value: "title" },
-          { label: "Submit Deadline", value: "submit" },
-          { label: "Review Deadline", value: "review" },
-          { label: "Reward Pool", value: "reward" },
+          { label: "New", value: "createdAtBlockTimestamp" },
+          { label: "Title", value: "appData.title" },
+          { label: "Submit Deadline", value: "configuration.submissionExpiration" },
+          { label: "Review Deadline", value: "configuration.enforcementExpiration" },
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
-      <p>I am able to:</p>
+      {/* MVP Hide */}
+      {/* <p>I am able to:</p>
       <Checkbox id="submit_checkbox" name="permission" value="submit" label="Submit" />
-      <Checkbox id="review_checkbox" name="permission" value="review" label="Review" />
+      <Checkbox id="review_checkbox" name="permission" value="review" label="Review" /> */}
       <Field>
         <Label>Reward Token</Label>
         <ValidatedCombobox
@@ -115,11 +117,7 @@ function SearchAndFilter() {
           placeholder="Select option"
           name="reward"
           size="sm"
-          options={[
-            { label: "Solana", value: "Solana" },
-            { label: "Ethereum", value: "Ethereum" },
-            { label: "USD", value: "USD" },
-          ]}
+          options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
         />
       </Field>
       <Field>
@@ -129,10 +127,7 @@ function SearchAndFilter() {
           placeholder="Select option"
           name="project"
           size="sm"
-          options={[
-            { label: "Solana", value: "Solana" },
-            { label: "Ethereum", value: "Ethereum" },
-          ]}
+          options={projects.map((p) => ({ value: p.slug, label: p.name }))}
         />
       </Field>
       <Field>
@@ -142,7 +137,7 @@ function SearchAndFilter() {
           placeholder="Select option"
           name="language"
           size="sm"
-          options={[{ label: "English", value: "English" }]}
+          options={[{ label: "English", value: "english" }]}
         />
       </Field>
     </ValidatedForm>
@@ -187,10 +182,10 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 </div>
               </Row.Column>
 
-              <Row.Column className="overflow-scroll">
-                {fromTokenAmount(sr.configuration.pTokenQuantity)}{" "}
-                {tokens.find((t) => t.contractAddress === sr.configuration.pToken)?.symbol}
-              </Row.Column>
+              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQuantity)} ${toTokenAbbreviation(
+                sr.configuration.pToken,
+                tokens
+              )}`}</Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExpiration} />
               </Row.Column>

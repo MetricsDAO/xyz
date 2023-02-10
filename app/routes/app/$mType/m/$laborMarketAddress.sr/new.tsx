@@ -26,6 +26,7 @@ import { listTokens } from "~/services/tokens.server";
 import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
+import { toTokenAbbreviation } from "~/utils/helpers";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
@@ -138,7 +139,11 @@ export default function CreateServiceRequest() {
               <div className="space-y-6 text-sm text-center text-stone-500">
                 <p>
                   Approve the app to transfer{" "}
-                  <b className="text-neutral-800">{state.context.contractData.pTokenQuantity}</b> "token" on your behalf
+                  <b className="text-neutral-800">
+                    {`${state.context.contractData.pTokenQuantity}
+                    ${toTokenAbbreviation(state.context.contractData.pTokenAddress, tokens)}`}
+                  </b>{" "}
+                  on your behalf
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-2">
                   <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
@@ -162,7 +167,10 @@ export default function CreateServiceRequest() {
                   alt=""
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
-                <p>Approving {state.context.contractData.pTokenQuantity} "token"</p>
+                <p>{`Approving ${state.context.contractData.pTokenQuantity} ${toTokenAbbreviation(
+                  state.context.contractData.pTokenAddress,
+                  tokens
+                )}`}</p>
               </div>
             )}
             {state.matches("transactionPrepared.preapprove.success") && (
@@ -188,7 +196,10 @@ export default function CreateServiceRequest() {
                   alt=""
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
-                <p>Transferring {state.context.contractData.pTokenQuantity} "token"</p>
+                <p>{`Transferring ${state.context.contractData.pTokenQuantity} ${toTokenAbbreviation(
+                  state.context.contractData.pTokenAddress,
+                  tokens
+                )}`}</p>
               </div>
             )}
           </div>
