@@ -4,13 +4,13 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 /**
  * Get a relative description of a date , e.g. "2 days ago"
  * @param time
  */
 export function fromNow(time: string | number | Date) {
-  dayjs.extend(relativeTime);
   return dayjs(time).fromNow();
 }
 
