@@ -40,5 +40,5 @@ export function scoreToLabel(score: number | string) {
       ? "Bad"
       : "Spam";
   }
-  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 0 ? "Bad" : "Spam";
+  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 1 ? "Bad" : "Spam";
 }
