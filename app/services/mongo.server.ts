@@ -14,6 +14,7 @@ const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");
 
 laborMarkets.createIndex({ "appData.title": "text" });
+serviceRequests.createIndex({ "appData.title": "text" });
 
 export const mongo = {
   db,
