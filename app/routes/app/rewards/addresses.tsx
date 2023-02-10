@@ -59,10 +59,6 @@ export const loader = async (data: DataFunctionArgs) => {
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
     serviceProvider: user.address,
-    sortBy: "createdAt",
-    order: "desc",
-    first: 0,
-    page: 0,
   });
   const networks = await listNetworks();
   return typedjson({
