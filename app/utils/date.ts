@@ -5,12 +5,24 @@ import duration from "dayjs/plugin/duration";
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 
+/**
+ * Get a relative description of a date , e.g. "2 days ago"
+ * @param time
+ */
 export function fromNow(time: string | number | Date) {
   dayjs.extend(relativeTime);
   return dayjs(time).fromNow();
 }
 
-export function countDown(date: Date | string) {
+/**
+ * If a date is in the future, return a countdown like "14d 6h 26m", otherwise return a relative description of the date like "2 days ago"
+ * @param date
+ */
+export function countDown(date: Date) {
+  if (dateHasPassed(date)) {
+    return fromNow(date);
+  }
+
   const duration = dayjs(date).diff(new Date(), "minute");
   if (dayjs(date).diff(dayjs(), "month") >= 1) {
     return dayjs.duration(duration, "minute").format("M[m] D[d] H[h]");
