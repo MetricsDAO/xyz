@@ -1,6 +1,5 @@
 import { Link, useSubmit } from "@remix-run/react";
 import { useRef } from "react";
-import { z } from "zod";
 import { Checkbox } from "~/components/checkbox";
 import { Pagination } from "~/components/pagination/pagination";
 import { Modal } from "~/components/modal";
@@ -28,22 +27,24 @@ import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { searchSubmissions } from "~/services/submissions.server";
-import { SubmissionDoc, SubmissionSearchSchema } from "~/domain/submission";
+import type { SubmissionDoc } from "~/domain/submission";
+import { SubmissionSearchSchema } from "~/domain/submission";
 import { Label } from "~/components";
 import { listTokens } from "~/services/tokens.server";
+import type { Token } from "@prisma/client";
+import { getParamsOrFail } from "remix-params-helper";
 
 const validator = withZod(SubmissionSearchSchema);
 
-export const loader = async (data: DataFunctionArgs) => {
-  const user = await getUser(data.request);
+export const loader = async ({ request }: DataFunctionArgs) => {
+  const user = await getUser(request);
   invariant(user, "Could not find user, please sign in");
+  const url = new URL(request.url);
+  const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
   const submissions = await searchSubmissions({
+    ...search,
     serviceProvider: user.address,
-    sortBy: "createdAt",
-    order: "desc",
-    first: 0,
-    page: 0,
   });
   const tokens = await listTokens();
   return typedjson({
@@ -51,12 +52,12 @@ export const loader = async (data: DataFunctionArgs) => {
     submissions,
     user,
     tokens,
+    search,
   });
 };
 
 export default function Rewards() {
-  const { wallets, submissions, tokens } = useTypedLoaderData<typeof loader>();
-  const params = { first: 1, page: 1 };
+  const { wallets, submissions, tokens, search } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -75,12 +76,12 @@ export default function Rewards() {
           <div className="space-y-5">
             <RewardsListView submissions={submissions} />
             <div className="w-fit m-auto">
-              <Pagination page={params.page} totalPages={Math.ceil(submissions.length / params.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(submissions.length / search.first)} />
             </div>
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter />
+          <SearchAndFilter tokens={tokens} />
         </aside>
       </section>
     </Container>
@@ -271,7 +272,7 @@ function ClaimButton() {
   );
 }
 
-function SearchAndFilter() {
+function SearchAndFilter({ tokens }: { tokens: Token[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -297,20 +298,16 @@ function SearchAndFilter() {
       <Label>Reward Token</Label>
       <Combobox
         placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-          { label: "USD", value: "USD" },
-        ]}
+        options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
       />
-      <Label>Challenge Marketplace</Label>
+      {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
       <Combobox
         placeholder="Select option"
         options={[
           { label: "Solana", value: "Solana" },
           { label: "Ethereum", value: "Ethereum" },
         ]}
-      />
+      />*/}
     </ValidatedForm>
   );
 }
