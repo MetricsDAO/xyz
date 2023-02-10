@@ -1,22 +1,36 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
 dayjs.extend(customParseFormat);
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
+/**
+ * Get a relative description of a date , e.g. "2 days ago"
+ * @param time
+ */
 export function fromNow(time: string | number | Date) {
-  dayjs.extend(relativeTime);
   return dayjs(time).fromNow();
 }
 
-export function countDown(date: Date | string) {
-  const duration = dayjs(date).diff();
-  if (dayjs(date).diff(dayjs(), "month") >= 1) {
-    return dayjs(duration).format("M[m] D[d] h[h]");
-  } else if (dayjs(date).diff(dayjs(), "day") >= 1) {
-    return dayjs(duration).format("D[d] h[h] m[m]");
+/**
+ * If a date is in the future, return a countdown like "14d 6h 26m", otherwise return a relative description of the date like "2 days ago"
+ * @param date
+ */
+export function countDown(date: Date) {
+  if (dateHasPassed(date)) {
+    return fromNow(date);
   }
 
-  return dayjs(duration).format("h[h] m[m] s[s]");
+  const duration = dayjs(date).diff(new Date(), "minute");
+  if (dayjs(date).diff(dayjs(), "month") >= 1) {
+    return dayjs.duration(duration, "minute").format("M[m] D[d] H[h]");
+  } else if (dayjs(date).diff(dayjs(), "day") >= 1) {
+    return dayjs.duration(duration, "minute").format("D[d] H[h] m[m]");
+  }
+
+  return dayjs.duration(duration, "minute").format("H[h] m[m] s[s]");
 }
 
 /**
@@ -56,12 +70,21 @@ export function dateHasPassed(date: Date) {
   return dayjs(date).diff() < 0;
 }
 
+/**
+ * Returns a number between 0 and 100 representing how much time (in scale of seconds) has passed between start and end
+ * @param start
+ * @param end
+ * @returns {number} between 0 and 100
+ */
 export function progressTime(start: Date, end: Date): number {
-  const denominator = dayjs(end).diff(start, "hours");
-  const numerator = dayjs(Date.now()).diff(start, "hours") * 100;
-  return Math.min(100, numerator / denominator);
+  if (dateHasPassed(end)) {
+    return 100;
+  }
+  const denominator = dayjs(end).diff(start, "seconds");
+  const numerator = dayjs(Date.now()).diff(start, "seconds");
+  return Math.min(100, (numerator / denominator) * 100);
 }
 
-export function claimToReviewDate(createdAt: Date, enforcementExpiration: Date) {
-  return new Date((enforcementExpiration.valueOf() - createdAt.valueOf()) * 0.75 + createdAt.valueOf());
+export function claimDate(createdAt: Date, expiration: Date) {
+  return new Date((expiration.valueOf() - createdAt.valueOf()) * 0.75 + createdAt.valueOf());
 }

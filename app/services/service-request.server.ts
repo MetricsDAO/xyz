@@ -7,7 +7,7 @@ import type { LaborMarketDoc } from "~/domain";
 import { ClaimToSubmitEventSchema, ClaimToReviewEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request";
-import { fromUnixTimestamp, parseDatetime } from "~/utils/date";
+import { claimDate, fromUnixTimestamp, parseDatetime } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -18,7 +18,7 @@ import { nodeProvider } from "./node.server";
 export const searchServiceRequests = async (params: ServiceRequestSearch) => {
   return mongo.serviceRequests
     .find(searchParams(params))
-    .sort({ [params.sortBy]: params.order })
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
@@ -43,6 +43,7 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
     valid: true,
     ...(params.laborMarket ? { address: params.laborMarket } : {}),
     ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.language ? { "appData.language": { $in: params.language } } : {}),
     ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
   };
 };
@@ -66,6 +67,10 @@ export const prepareServiceRequest = async (user: User, laborMarketAddress: stri
   const metadata = ServiceRequestMetaSchema.parse(form); // Prune extra fields from form
   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
 
+  const currentDate = new Date();
+  //calculates the claim to submit deadline, which is 75% of the submission deadline
+  const signalDeadline = claimDate(currentDate, parseDatetime(form.endDate, form.endTime));
+
   // parse for type safety
   const contractData = ServiceRequestContractSchema.parse({
     laborMarketAddress: laborMarketAddress,
@@ -76,7 +81,7 @@ export const prepareServiceRequest = async (user: User, laborMarketAddress: stri
     uri: cid,
     enforcementExpiration: parseDatetime(form.reviewEndDate, form.reviewEndTime),
     submissionExpiration: parseDatetime(form.endDate, form.endTime),
-    signalExpiration: parseDatetime(form.startDate, form.startTime),
+    signalExpiration: signalDeadline,
   });
   return contractData;
 };

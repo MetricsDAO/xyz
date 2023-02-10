@@ -20,11 +20,12 @@ import { ProjectBadges } from "~/features/project-badges";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
-import { dateHasPassed } from "~/utils/date";
-import { fromTokenAmount } from "~/utils/helpers";
+import { claimDate, dateHasPassed } from "~/utils/date";
+import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { useReviewSignals } from "~/hooks/use-review-signals";
+import { countReviews } from "~/services/review-service.server";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -45,8 +46,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
   const tokens = await listTokens();
 
-  // const submissionIds = serviceRequest.submissions.map((s) => s.contractId);
-  const numOfReviews = 0;
+  const numOfReviews = await countReviews({ laborMarketAddress, serviceRequestId });
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 
@@ -57,7 +57,7 @@ export default function ServiceRequest() {
   invariant(mType, "marketplace type must be specified");
 
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
-  const claimToReviewDeadlinePassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
+  const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.address as `0x${string}`,

@@ -1,6 +1,8 @@
-import type { Project } from "@prisma/client";
+import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
+import type { ServiceRequestDoc } from "~/domain";
+import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
   if (address.length < 10) {
@@ -9,7 +11,6 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-// MVP: only support 6 decimals for USDC
 const DECIMALS = 18;
 
 /**
@@ -45,4 +46,18 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
       return projects.find((p) => p.slug === slug);
     })
     .filter((p): p is Project => !!p);
+}
+
+/**
+ * Take a contract address and return the corresponing token abbreviation
+ * @param address Contract address of the token
+ * @param tokens List of tokens in the app
+ * @returns {string}
+ */
+export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
+  return tokens.find((t) => t.contractAddress === address)?.symbol;
+};
+
+export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
+  return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
 }

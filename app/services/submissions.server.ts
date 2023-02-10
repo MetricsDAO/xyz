@@ -92,7 +92,7 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   if (isValid) {
     await mongo.serviceRequests.updateOne(
-      { id: doc.serviceRequestId },
+      { address: doc.laborMarketAddress, id: doc.serviceRequestId },
       {
         $inc: {
           submissionCount: 1,
