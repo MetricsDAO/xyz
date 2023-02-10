@@ -1,6 +1,6 @@
 name: Bug Report
 description: File a bug report
-title: "[public report]: "
+title: "[issue]: "
 labels: ["triage"]
 assignees:
   - gnomadic
