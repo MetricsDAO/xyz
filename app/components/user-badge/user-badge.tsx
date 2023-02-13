@@ -31,7 +31,7 @@ export function UserBadge({ address }: { address: `0x${string}` }) {
         {ensAvatarUrl ? <Avatar src={ensAvatarUrl} /> : <UserCircleIcon height={16} width={16} />}
         <p className="text-sm">{ensName ?? truncateAddress(address)}</p>
       </div>
-      <p className="text-xs px-1">{reputationBalance ? reputationBalance.toNumber() : "?"} rMETRIC</p>
+      <p className="text-xs px-1">{reputationBalance ? reputationBalance.toNumber().toLocaleString() : "?"} rMETRIC</p>
     </div>
   );
 }
