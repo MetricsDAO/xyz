@@ -1,4 +1,3 @@
-import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { ClaimToReviewContract } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
@@ -7,12 +6,9 @@ import type { Web3Hook } from "./types";
 
 export function ClaimToReviewWeb3Button(props: Web3Hook<ClaimToReviewContract>) {
   const { write } = useClaimToReview(props);
-  const { chain } = useNetwork();
 
   const onClick = () => {
-    if (chain?.name !== "Ethereum") {
-      write?.();
-    }
+    write?.();
   };
 
   return (

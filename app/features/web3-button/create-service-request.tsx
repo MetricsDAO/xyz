@@ -7,12 +7,9 @@ import type { Web3Hook } from "./types";
 
 export function CreateServiceRequestWeb3Button(props: Web3Hook<ServiceRequestContract>) {
   const { write } = useCreateServiceRequest(props);
-  const { chain } = useNetwork();
 
   const onClick = () => {
-    if (chain?.name !== "Ethereum") {
-      write?.();
-    }
+    write?.();
   };
 
   return (

@@ -7,12 +7,9 @@ import type { Web3Hook } from "./types";
 
 export function CreateLaborMarketWeb3Button(props: Web3Hook<LaborMarketContract>) {
   const { write } = useCreateLaborMarket(props);
-  const { chain } = useNetwork();
 
   const onClick = () => {
-    if (chain?.name !== "Ethereum") {
-      write?.();
-    }
+    write?.();
   };
 
   return (

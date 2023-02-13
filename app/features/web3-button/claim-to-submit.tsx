@@ -7,12 +7,9 @@ import type { Web3Hook } from "./types";
 
 export function ClaimToSubmitWeb3Button(props: Web3Hook<ClaimToSubmitPrepared>) {
   const { write } = useClaimToSubmit(props);
-  const { chain } = useNetwork();
 
   const onClick = () => {
-    if (chain?.name !== "Ethereum") {
-      write?.();
-    }
+    write?.();
   };
 
   return (

@@ -1,4 +1,3 @@
-import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { ApproveERC20ContractData } from "~/hooks/use-approve-erc20";
 import { useApproveERC20 } from "~/hooks/use-approve-erc20";
@@ -7,12 +6,9 @@ import type { Web3Hook } from "./types";
 
 export function ApproveERC20TransferWeb3Button(props: Web3Hook<ApproveERC20ContractData>) {
   const { write } = useApproveERC20(props);
-  const { chain } = useNetwork();
 
   const onClick = () => {
-    if (chain?.name !== "Ethereum") {
-      write?.();
-    }
+    write?.();
   };
 
   return (
