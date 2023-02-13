@@ -59,7 +59,7 @@ export default function ClaimToSubmit() {
     send({
       type: "PREPARE_TRANSACTION_READY",
       data: {
-        laborMarketAddress: serviceRequest.address,
+        laborMarketAddress: serviceRequest.laborMarketAddress,
         serviceRequestId: serviceRequest.id,
       },
     });
