@@ -3,8 +3,8 @@ import type { ServiceRequestContract } from "~/domain";
 import { useCreateServiceRequest } from "~/hooks/use-create-service-request";
 import type { Web3Hook } from "./types";
 
-export function CreateServiceRequestWeb3Button({ data, onWriteSuccess }: Web3Hook<ServiceRequestContract>) {
-  const { write } = useCreateServiceRequest({ data, onWriteSuccess });
+export function CreateServiceRequestWeb3Button(props: Web3Hook<ServiceRequestContract>) {
+  const { write } = useCreateServiceRequest(props);
 
   const onClick = () => {
     write?.();

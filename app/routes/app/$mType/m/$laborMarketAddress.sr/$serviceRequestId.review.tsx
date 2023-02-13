@@ -12,15 +12,15 @@ import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import type { ClaimToReviewContract, ClaimToReviewForm } from "~/domain";
 import { ClaimToReviewFormSchema } from "~/domain";
-import type { SendTransactionResult } from "~/features/web3-button/types";
+import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
-import { claimDate } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline } from "~/utils/helpers";
+import { RPCError } from "~/features/rpc-error";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -70,6 +70,11 @@ export default function ClaimToReview() {
 
   const onWriteSuccess = (result: SendTransactionResult) => {
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
+
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
   };
 
   return (
@@ -166,8 +171,15 @@ export default function ClaimToReview() {
             <p>
               Please confirm that you would like to claim {state.context.contractData.quantity} submissions to review.
             </p>
+            {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <ClaimToReviewWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              {!error && (
+                <ClaimToReviewWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
               <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>

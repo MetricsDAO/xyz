@@ -13,7 +13,9 @@ import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import type { ClaimToSubmitPrepared } from "~/domain";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { RPCError } from "~/features/rpc-error";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
+import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
@@ -66,6 +68,11 @@ export default function ClaimToSubmit() {
 
   const onWriteSuccess = (result: SendTransactionResult) => {
     send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
+  };
+
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
   };
 
   return (
@@ -137,8 +144,15 @@ export default function ClaimToSubmit() {
         >
           <div className="space-y-8">
             <p>Please confirm that you would like to claim a submission.</p>
+            {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <ClaimToSubmitWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              {!error && (
+                <ClaimToSubmitWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
               <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>

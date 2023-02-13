@@ -3,8 +3,8 @@ import type { ReviewContract } from "~/domain";
 import { useReviewSubmission } from "~/hooks/use-review-submission";
 import type { Web3Hook } from "./types";
 
-export function ReviewSubmissionWeb3Button({ data, onWriteSuccess }: Web3Hook<ReviewContract>) {
-  const { write } = useReviewSubmission({ data, onWriteSuccess });
+export function ReviewSubmissionWeb3Button(props: Web3Hook<ReviewContract>) {
+  const { write } = useReviewSubmission(props);
 
   const onClick = () => {
     write?.();

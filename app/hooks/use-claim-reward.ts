@@ -7,7 +7,7 @@ export type ClaimRewardContractData = { laborMarketAddress: string; submissionId
 
 type Props = Web3Hook<ClaimRewardContractData>;
 
-export function useClaimReward({ data, onWriteSuccess }: Props) {
+export function useClaimReward({ data, onWriteSuccess, onPrepareTransactionError }: Props) {
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
@@ -17,6 +17,9 @@ export function useClaimReward({ data, onWriteSuccess }: Props) {
       data.payoutAddress as `0x${string}`,
       "0x0000000000000000000000000000000000000000",
     ],
+    onError(err) {
+      onPrepareTransactionError?.(err);
+    },
   });
   const { write } = useContractWrite({
     ...config,
