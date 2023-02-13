@@ -33,10 +33,10 @@ export default function ServiceIdPrereqs() {
           <h3 className="font-medium mb-4">You must hold this much rMETRIC to enter submissions for this challenge</h3>
           <Detail>
             <DetailItem title="Min Balance">
-              <Badge>{laborMarket?.configuration.reputationParams.submitMin} rMETRIC</Badge>
+              <Badge>{laborMarket.configuration.reputationParams.submitMin} rMETRIC</Badge>
             </DetailItem>
             <DetailItem title="Max Balance">
-              <Badge>{laborMarket?.configuration.reputationParams.submitMax} rMETRIC</Badge>
+              <Badge>{laborMarket.configuration.reputationParams.submitMax} rMETRIC</Badge>
             </DetailItem>
           </Detail>
         </Card>
@@ -49,7 +49,7 @@ export default function ServiceIdPrereqs() {
             <DetailItem title={maintainerData?.name}>
               <div className="flex gap-2 items-center">
                 <img src={maintainerData?.image} alt="" className="h-4 w-4" />
-                <div className="text-base text-[#252525]">{laborMarket?.configuration.maintainerBadge.token}</div>
+                <p className="text-base text-[#252525]">{`${laborMarket.configuration.maintainerBadge.token} #${laborMarket.configuration.maintainerBadge.tokenId}`}</p>
               </div>
             </DetailItem>
           </Detail>
