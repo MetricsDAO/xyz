@@ -26,7 +26,7 @@ function ConnectWalletWrapper(props: { children: React.ReactNode }) {
           );
         }
 
-        if (chain.unsupported) {
+        if (chain.unsupported || chain.name === "Ethereum") {
           return (
             <Slot
               {...props}
