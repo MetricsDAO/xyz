@@ -5,8 +5,8 @@ import { useApproveERC20 } from "~/hooks/use-approve-erc20";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
-export function ApproveERC20TransferWeb3Button({ data, onWriteSuccess }: Web3Hook<ApproveERC20ContractData>) {
-  const { write } = useApproveERC20({ data, onWriteSuccess });
+export function ApproveERC20TransferWeb3Button(props: Web3Hook<ApproveERC20ContractData>) {
+  const { write } = useApproveERC20(props);
   const { chain } = useNetwork();
 
   const onClick = () => {

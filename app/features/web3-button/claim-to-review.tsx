@@ -5,8 +5,8 @@ import { useClaimToReview } from "~/hooks/use-claim-to-review";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
-export function ClaimToReviewWeb3Button({ data, onWriteSuccess }: Web3Hook<ClaimToReviewContract>) {
-  const { write } = useClaimToReview({ data, onWriteSuccess });
+export function ClaimToReviewWeb3Button(props: Web3Hook<ClaimToReviewContract>) {
+  const { write } = useClaimToReview(props);
   const { chain } = useNetwork();
 
   const onClick = () => {

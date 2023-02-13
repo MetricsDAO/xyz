@@ -37,13 +37,13 @@ export default function MarketplaceIdPrerequesites() {
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">{laborMarket?.configuration.reputationParams.submitMin} rMETRIC</div>
+                      <div className="normal-case">{laborMarket.configuration.reputationParams.submitMin} rMETRIC</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     <Badge>
-                      <div className="normal-case">{laborMarket?.configuration.reputationParams.submitMax} rMETRIC</div>
+                      <div className="normal-case">{laborMarket.configuration.reputationParams.submitMax} rMETRIC</div>
                     </Badge>
                   </div>
                 </div>
@@ -55,7 +55,7 @@ export default function MarketplaceIdPrerequesites() {
                 <div className="text-xs text-gray-500">{maintainerData?.name}</div>
                 <div className="flex gap-2 items-center">
                   <img src={maintainerData?.image} alt="" className="h-4 w-4" />
-                  <div className="text-base text-[#252525]">{laborMarket?.configuration.maintainerBadge.token}</div>
+                  <p className="text-base text-[#252525]">{`${laborMarket.configuration.maintainerBadge.token} #${laborMarket.configuration.maintainerBadge.tokenId}`}</p>
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
@@ -65,7 +65,7 @@ export default function MarketplaceIdPrerequesites() {
                 <div className="text-xs text-gray-500">{delegateData?.name}</div>
                 <div className="flex gap-2 items-center">
                   <img src={delegateData?.image} alt="" className="h-4 w-4" />
-                  <div className="text-base text-[#252525]">{laborMarket?.configuration.delegateBadge.token}</div>
+                  <p className="text-base text-[#252525]">{`${laborMarket.configuration.delegateBadge.token} #${laborMarket.configuration.delegateBadge.tokenId}`}</p>
                 </div>
               </Card>
             </div>

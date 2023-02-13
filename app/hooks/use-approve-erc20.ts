@@ -8,7 +8,11 @@ export type ApproveERC20ContractData = {
   amount: string;
 };
 
-export function useApproveERC20({ data, onWriteSuccess }: Web3Hook<ApproveERC20ContractData>) {
+export function useApproveERC20({
+  data,
+  onWriteSuccess,
+  onPrepareTransactionError,
+}: Web3Hook<ApproveERC20ContractData>) {
   const { config } = usePrepareContractWrite({
     address: data.ERC20address as `0x${string}`,
     abi: [
@@ -27,6 +31,9 @@ export function useApproveERC20({ data, onWriteSuccess }: Web3Hook<ApproveERC20C
     ],
     functionName: "approve",
     args: [data.spender, toTokenAmount(data.amount)],
+    onError(err) {
+      onPrepareTransactionError?.(err);
+    },
   });
   const { write } = useContractWrite({
     ...config,

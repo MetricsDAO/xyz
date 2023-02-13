@@ -5,8 +5,8 @@ import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
-export function ClaimToSubmitWeb3Button({ data, onWriteSuccess }: Web3Hook<ClaimToSubmitPrepared>) {
-  const { write } = useClaimToSubmit({ data, onWriteSuccess });
+export function ClaimToSubmitWeb3Button(props: Web3Hook<ClaimToSubmitPrepared>) {
+  const { write } = useClaimToSubmit(props);
   const { chain } = useNetwork();
 
   const onClick = () => {

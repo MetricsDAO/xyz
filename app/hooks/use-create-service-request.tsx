@@ -8,14 +8,11 @@ import { toTokenAmount } from "~/utils/helpers";
 
 type Props = Web3Hook<ServiceRequestContract>;
 
-export function useCreateServiceRequest({ data, onWriteSuccess }: Props) {
+export function useCreateServiceRequest({ data, onWriteSuccess, onPrepareTransactionError }: Props) {
   const { config } = usePrepareContractWrite({
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "submitRequest",
-    overrides: {
-      gasLimit: BigNumber.from(1000000), // TODO: What do we do here?
-    },
     args: [
       data.pTokenAddress as `0x${string}`,
       toTokenAmount(data.pTokenQuantity),
@@ -24,6 +21,9 @@ export function useCreateServiceRequest({ data, onWriteSuccess }: Props) {
       BigNumber.from(unixTimestamp(data.enforcementExpiration)),
       data.uri,
     ],
+    onError(err) {
+      onPrepareTransactionError?.(err);
+    },
   });
   const { write } = useContractWrite({
     ...config,

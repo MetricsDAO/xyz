@@ -5,8 +5,8 @@ import { useClaimReward } from "~/hooks/use-claim-reward";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
-export function ClaimRewardWeb3Button({ data, onWriteSuccess }: Web3Hook<ClaimRewardContractData>) {
-  const { write } = useClaimReward({ data, onWriteSuccess });
+export function ClaimRewardWeb3Button(props: Web3Hook<ClaimRewardContractData>) {
+  const { write } = useClaimReward(props);
   const { chain } = useNetwork();
 
   const onClick = () => {

@@ -5,8 +5,8 @@ import { useCreateSubmission } from "~/hooks/use-create-submission";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
-export function CreateSubmissionWeb3Button({ data, onWriteSuccess }: Web3Hook<SubmissionContract>) {
-  const { write } = useCreateSubmission({ data, onWriteSuccess });
+export function CreateSubmissionWeb3Button(props: Web3Hook<SubmissionContract>) {
+  const { write } = useCreateSubmission(props);
   const { chain } = useNetwork();
 
   const onClick = () => {

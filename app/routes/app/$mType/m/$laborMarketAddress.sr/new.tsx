@@ -16,7 +16,7 @@ import { ChallengeForm } from "~/features/challenge-form";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
-import type { SendTransactionResult } from "~/features/web3-button/types";
+import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
@@ -27,6 +27,7 @@ import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { toTokenAbbreviation } from "~/utils/helpers";
+import { RPCError } from "~/features/rpc-error";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
@@ -111,6 +112,11 @@ export default function CreateServiceRequest() {
     setModalOpen(false);
   };
 
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
+  };
+
   return (
     <Container className="max-w-3xl my-10 space-y-10">
       {mType === "brainstorm" ? <BrainstormHeader /> : <AnalyticsHeader />}
@@ -178,14 +184,18 @@ export default function CreateServiceRequest() {
                 <p className="text-sm text-center text-stone-500 max-w-xs">
                   Confirm you would like to launch this challenge and transfer funds.
                 </p>
+                {error && <RPCError error={error} />}
                 <div className="flex flex-col sm:flex-row justify-center gap-2">
                   <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
                     Cancel
                   </Button>
-                  <CreateServiceRequestWeb3Button
-                    data={state.context.contractData}
-                    onWriteSuccess={onCreateServiceRequestWriteSuccess}
-                  />
+                  {!error && (
+                    <CreateServiceRequestWeb3Button
+                      data={state.context.contractData}
+                      onWriteSuccess={onCreateServiceRequestWriteSuccess}
+                      onPrepareTransactionError={onPrepareTransactionError}
+                    />
+                  )}
                 </div>
               </div>
             )}

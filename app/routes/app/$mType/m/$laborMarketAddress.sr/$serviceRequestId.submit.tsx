@@ -11,8 +11,9 @@ import { z } from "zod";
 import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
+import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
-import type { SendTransactionResult } from "~/features/web3-button/types";
+import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
@@ -111,6 +112,10 @@ function Brainstorm({
   contractData: SubmissionContract | undefined;
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
+  };
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -159,8 +164,15 @@ function Brainstorm({
             <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
               <div className="space-y-8">
                 <p>Please confirm that you would like to submit this idea.</p>
+                {error && <RPCError error={error} />}
                 <div className="flex flex-col sm:flex-row justify-center gap-5">
-                  <CreateSubmissionWeb3Button data={contractData} onWriteSuccess={onWriteSuccess} />
+                  {!error && (
+                    <CreateSubmissionWeb3Button
+                      data={contractData}
+                      onWriteSuccess={onWriteSuccess}
+                      onPrepareTransactionError={onPrepareTransactionError}
+                    />
+                  )}
                   <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
                     Cancel
                   </Button>
