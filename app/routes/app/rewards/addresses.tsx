@@ -17,14 +17,15 @@ import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
-import { getUserId, requireUser } from "~/services/session.server";
-import { listTokens } from "~/services/tokens.server";
+import { getUser, requireUser } from "~/services/session.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
 import { namedAction } from "remix-utils";
 import { useFetcher } from "@remix-run/react";
 import { isValidationError } from "~/utils/utils";
+import { countSubmissions } from "~/services/submissions.server";
+import invariant from "tiny-invariant";
 
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
@@ -53,20 +54,23 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const loader = async (data: DataFunctionArgs) => {
-  const user = await getUserId(data.request);
-  const wallets = user ? await findAllWalletsForUser(user) : [];
-  const tokens = await listTokens();
+  const user = await getUser(data.request);
+  invariant(user, "Could not find user, please sign in");
+  const wallets = await findAllWalletsForUser(user.id);
+  const submissionCount = await countSubmissions({
+    serviceProvider: user.address,
+  });
   const networks = await listNetworks();
   return typedjson({
-    tokens,
     networks,
     wallets,
+    submissionCount,
     user,
   });
 };
 
 export default function PayoutAddresses() {
-  const { wallets } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissionCount } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -84,7 +88,7 @@ export default function PayoutAddresses() {
           </p>
         </section>
       </div>
-      <RewardsTab rewardsNum={10} addressesNum={wallets ? wallets?.length : 0} />
+      <RewardsTab rewardsNum={submissionCount} addressesNum={wallets.length} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>
@@ -148,8 +152,8 @@ function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
             className="grid grid-cols-2 lg:grid-cols-5 gap-y-3 gap-x-1 items-center px-2 py-5"
             key={wallet.address}
           >
-            <div className="lg:hidden">Chain/Project</div>
-            <p>project</p>
+            <div className="lg:hidden">Chain</div>
+            <p>{wallet.chain.name}</p>
             <div className="lg:hidden">Address</div>
             <div className="lg:col-span-2 flex flex-row items-center gap-x-2">
               <p className="text-black">{truncateAddress(wallet.address)}</p>

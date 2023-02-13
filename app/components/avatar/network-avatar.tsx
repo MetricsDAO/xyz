@@ -8,7 +8,7 @@ export function NetworkAvatar({ network, ...avatarProps }: Props) {
   return (
     <Avatar
       {...avatarProps}
-      src={`/img/icons/project-icons/${network.name}.svg`}
+      src={`/img/icons/project-icons/${network.name.toLocaleLowerCase()}.svg`}
       alt={`${network.name} logo`}
       fallback={network.name.at(0)?.toUpperCase()}
     />

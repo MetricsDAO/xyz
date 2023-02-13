@@ -22,23 +22,26 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
 
 /**
  * Counts the number of Submissions that match a given SubmissionSearch.
- * @param {SubmissionSearch} params - The search parameters.
+ * @param {FilterParams} params - The search parameters.
  * @returns {number} - The number of submissions that match the search.
  */
-export const countSubmissions = async (params: SubmissionSearch) => {
+export const countSubmissions = async (params: FilterParams) => {
   return mongo.submissions.countDocuments(searchParams(params));
 };
+
+type FilterParams = Pick<SubmissionSearch, "laborMarketAddress" | "serviceRequestId" | "serviceProvider">;
 
 /**
  * Convenience function to share the search parameters between search and count.
  * @param {SubmissionSearch} params - The search parameters.
  * @returns criteria to find labor market in MongoDb
  */
-const searchParams = (params: SubmissionSearch): Parameters<typeof mongo.submissions.find>[0] => {
+const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions.find>[0] => {
   return {
     valid: true,
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
+    ...(params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {}),
     // ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
   };
 };
