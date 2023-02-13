@@ -1,18 +1,25 @@
+import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { ApproveERC20ContractData } from "~/hooks/use-approve-erc20";
 import { useApproveERC20 } from "~/hooks/use-approve-erc20";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
 export function ApproveERC20TransferWeb3Button({ data, onWriteSuccess }: Web3Hook<ApproveERC20ContractData>) {
   const { write } = useApproveERC20({ data, onWriteSuccess });
+  const { chain } = useNetwork();
 
   const onClick = () => {
-    write?.();
+    if (chain?.name !== "Ethereum") {
+      write?.();
+    }
   };
 
   return (
-    <Button size="md" type="button" onClick={onClick} fullWidth>
-      Approve
-    </Button>
+    <ConnectWalletWrapper>
+      <Button asChild size="md" type="button" onClick={onClick} fullWidth>
+        <span> Approve </span>
+      </Button>
+    </ConnectWalletWrapper>
   );
 }
