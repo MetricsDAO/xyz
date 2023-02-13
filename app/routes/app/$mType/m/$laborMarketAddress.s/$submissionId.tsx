@@ -330,11 +330,13 @@ function ReviewQuestionDrawerButton({
               <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>
                 Back
               </Button>
-              <ReviewSubmissionWeb3Button
-                data={state.context.contractData}
-                onWriteSuccess={onWriteSuccess}
-                onPrepareTransactionError={onPrepareTransactionError}
-              />
+              {!error && (
+                <ReviewSubmissionWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
             </div>
           </div>
         </Modal>

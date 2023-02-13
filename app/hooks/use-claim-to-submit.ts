@@ -9,9 +9,6 @@ export function useClaimToSubmit({ data, onWriteSuccess, onPrepareTransactionErr
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signal",
-    overrides: {
-      gasLimit: BigNumber.from(1000000), // TODO: What do we do here?
-    },
     args: [BigNumber.from(data.serviceRequestId)],
     onError(err) {
       onPrepareTransactionError?.(err);

@@ -146,11 +146,13 @@ export default function ClaimToSubmit() {
             <p>Please confirm that you would like to claim a submission.</p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <ClaimToSubmitWeb3Button
-                data={state.context.contractData}
-                onWriteSuccess={onWriteSuccess}
-                onPrepareTransactionError={onPrepareTransactionError}
-              />
+              {!error && (
+                <ClaimToSubmitWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
               <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>

@@ -189,11 +189,13 @@ export default function CreateServiceRequest() {
                   <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
                     Cancel
                   </Button>
-                  <CreateServiceRequestWeb3Button
-                    data={state.context.contractData}
-                    onWriteSuccess={onCreateServiceRequestWriteSuccess}
-                    onPrepareTransactionError={onPrepareTransactionError}
-                  />
+                  {!error && (
+                    <CreateServiceRequestWeb3Button
+                      data={state.context.contractData}
+                      onWriteSuccess={onCreateServiceRequestWriteSuccess}
+                      onPrepareTransactionError={onPrepareTransactionError}
+                    />
+                  )}
                 </div>
               </div>
             )}

@@ -173,11 +173,13 @@ export default function ClaimToReview() {
             </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <ClaimToReviewWeb3Button
-                data={state.context.contractData}
-                onWriteSuccess={onWriteSuccess}
-                onPrepareTransactionError={onPrepareTransactionError}
-              />
+              {!error && (
+                <ClaimToReviewWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
               <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
                 Cancel
               </Button>

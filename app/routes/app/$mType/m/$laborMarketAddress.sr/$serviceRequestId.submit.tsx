@@ -166,11 +166,13 @@ function Brainstorm({
                 <p>Please confirm that you would like to submit this idea.</p>
                 {error && <RPCError error={error} />}
                 <div className="flex flex-col sm:flex-row justify-center gap-5">
-                  <CreateSubmissionWeb3Button
-                    data={contractData}
-                    onWriteSuccess={onWriteSuccess}
-                    onPrepareTransactionError={onPrepareTransactionError}
-                  />
+                  {!error && (
+                    <CreateSubmissionWeb3Button
+                      data={contractData}
+                      onWriteSuccess={onWriteSuccess}
+                      onPrepareTransactionError={onPrepareTransactionError}
+                    />
+                  )}
                   <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
                     Cancel
                   </Button>

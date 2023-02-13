@@ -125,11 +125,13 @@ export default function CreateMarketplace() {
             <p>Please confirm that you would like to create a new marketplace.</p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
-              <CreateLaborMarketWeb3Button
-                data={state.context.contractData}
-                onWriteSuccess={onWriteSuccess}
-                onPrepareTransactionError={onPrepareTransactionError}
-              />
+              {!error && (
+                <CreateLaborMarketWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
               <Button variant="cancel" size="md" onClick={closeModal}>
                 Cancel
               </Button>
