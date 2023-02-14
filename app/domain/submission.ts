@@ -63,3 +63,4 @@ export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
+export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
