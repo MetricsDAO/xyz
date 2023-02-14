@@ -10,6 +10,7 @@ import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/di
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 import {
   Badge,
@@ -25,7 +26,7 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
-import { scoreToLabel } from "~/components/score";
+import { ScoreBadge } from "~/components/score";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -35,9 +36,11 @@ import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useOptionalUser } from "~/hooks/use-user";
 import { searchReviews } from "~/services/review-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
-import { fromNow } from "~/utils/date";
+import { dateHasPassed, fromNow } from "~/utils/date";
+import { overallScore, scoreToLabel } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({
@@ -58,7 +61,10 @@ export const loader = async (data: DataFunctionArgs) => {
     throw notFound({ submissionId });
   }
 
-  return typedjson({ submission, reviews, params }, { status: 200 });
+  const serviceRequest = await findServiceRequest(submission.serviceRequestId, submission.laborMarketAddress);
+  invariant(serviceRequest, "Service request not found");
+
+  return typedjson({ submission, reviews, params, serviceRequest }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
@@ -68,7 +74,7 @@ export type ChallengeSubmissonProps = {
 };
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, serviceRequest } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const { mType } = useParams();
@@ -80,6 +86,7 @@ export default function ChallengeSubmission() {
   };
 
   const isWinner = false;
+  const reviewDeadlinePassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
 
   return (
     <Container className="py-16 px-10">
@@ -102,9 +109,11 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
           </DetailItem>
-          <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
+          <DetailItem title="Overall Score">
+            {reviewDeadlinePassed ? <ScoreBadge score={overallScore(submission)} /> : <Badge>Pending</Badge>}
+          </DetailItem>
           <DetailItem title="Reviews">
-            {true ? (
+            {false ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="font-medium">{`You + ${reviews.length} reviewers`}</p>

@@ -4,9 +4,9 @@ import { Card, Score, UserBadge } from "~/components";
 import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import type { ChallengeSubmissonProps } from "~/routes/app/$mType/m/$laborMarketAddress.s/$submissionId";
+import type { SubmissionDoc } from "~/domain";
 
-export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
+export function SubmissionCard({ submission, score }: { submission: SubmissionDoc; score?: number }) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -26,8 +26,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
           <AnalyticsInfo submission={submission} />
         )}
         <div className="flex flex-col items-center gap-2">
-          {/* MVP HIDE */}
-          {/* <Score score={2} /> */}
+          {score ? <Score score={score} /> : null}
           <div className="flex text-xs text-gray-500 items-center">
             {/*TODO: use actual data */}
             {false ? (
@@ -51,7 +50,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   );
 }
 
-function BrainstormInfo({ submission }: ChallengeSubmissonProps) {
+function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
   return (
     <main className="space-y-2 flex-1">
       <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
@@ -60,7 +59,7 @@ function BrainstormInfo({ submission }: ChallengeSubmissonProps) {
   );
 }
 
-function AnalyticsInfo({ submission }: ChallengeSubmissonProps) {
+function AnalyticsInfo({ submission }: { submission: SubmissionDoc }) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
       {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />

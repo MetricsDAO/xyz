@@ -5,8 +5,8 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson } from "remix-typedjson";
-import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
+import { useRouteData } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Checkbox } from "~/components/checkbox";
@@ -15,7 +15,10 @@ import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { SubmissionCard } from "~/features/submission-card";
+import type { findServiceRequest } from "~/services/service-request.server";
 import { searchSubmissions } from "~/services/submissions.server";
+import { dateHasPassed } from "~/utils/date";
+import { overallScore } from "~/utils/helpers";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -32,11 +35,16 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   return typedjson({ submissions });
 };
 
-export type ChallengeSubmissonProps = {
-  submissions: UseDataFunctionReturn<typeof loader>["submissions"];
-};
-
 export default function ChallengeIdSubmissions() {
+  const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
+    "routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId"
+  );
+  if (!data) {
+    throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");
+  }
+  const { serviceRequest } = data;
+  invariant(serviceRequest, "serviceRequest is required");
+
   const { submissions } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -47,11 +55,15 @@ export default function ChallengeIdSubmissions() {
     }
   };
 
+  const reviewDeadlinePassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
+
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
         {submissions?.map((s) => {
-          return <SubmissionCard key={s.id} submission={s} />;
+          return (
+            <SubmissionCard key={s.id} submission={s} score={reviewDeadlinePassed ? overallScore(s) : undefined} />
+          );
         })}
       </main>
 

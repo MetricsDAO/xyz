@@ -1,6 +1,7 @@
 import type { TracerEvent } from "pinekit/types";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
+import { scoreToNum } from "~/utils/helpers";
 import { mongo } from "./mongo.server";
 
 /**
@@ -48,15 +49,6 @@ export const findReview = async (id: string, laborMarketAddress: string) => {
 };
 
 /**
- * Counts the number of reviews on a particular submission.
- * @param {submissionId} params - The submission to count reviews for.
- * @returns {number} - The number of reviews that match the search.
- */
-export const countReviewsOnSubmission = async (submissionId: string) => {
-  return mongo.reviews.countDocuments({ submissionId, valid: true });
-};
-
-/**
  * Create a new ReviewDoc from a TracerEvent.
  */
 export const indexReview = async (event: TracerEvent) => {
@@ -76,6 +68,7 @@ export const indexReview = async (event: TracerEvent) => {
     {
       $inc: {
         reviewCount: 1,
+        sumOfReviewScores: scoreToNum(doc.score),
       },
     }
   );

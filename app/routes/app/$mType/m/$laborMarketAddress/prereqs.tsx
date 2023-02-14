@@ -4,6 +4,7 @@ import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { useTokenData } from "~/hooks/use-token-data";
 import type { findLaborMarket } from "~/services/labor-market.server";
+import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function MarketplaceIdPrerequesites() {
   const data = useRouteData<{ laborMarket: Awaited<ReturnType<typeof findLaborMarket>> }>(
@@ -37,14 +38,18 @@ export default function MarketplaceIdPrerequesites() {
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">{laborMarket.configuration.reputationParams.submitMin} rMETRIC</div>
+                      <div className="normal-case">
+                        {laborMarket.configuration.reputationParams.submitMin.toLocaleString()} rMETRIC
+                      </div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
-                    <Badge>
-                      <div className="normal-case">{laborMarket.configuration.reputationParams.submitMax} rMETRIC</div>
-                    </Badge>
+                    {isUnlimitedSubmitRepMax(laborMarket) ? (
+                      <Badge>Unlimited</Badge>
+                    ) : (
+                      <Badge>{laborMarket.configuration.reputationParams.submitMax} rMETRIC</Badge>
+                    )}
                   </div>
                 </div>
               </Card>

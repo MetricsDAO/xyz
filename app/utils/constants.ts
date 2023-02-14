@@ -10,7 +10,7 @@ export const SCORE_COLOR = {
   Average: "bg-neutral-200",
   Bad: "bg-orange-200",
   Spam: "bg-rose-200",
-};
+} as const;
 
 export const SCORE_COLOR_SECONDARY = {
   Great: "bg-lime-500",
@@ -18,4 +18,4 @@ export const SCORE_COLOR_SECONDARY = {
   Average: "bg-zinc-500",
   Bad: "bg-amber-500",
   Spam: "bg-rose-400",
-};
+} as const;

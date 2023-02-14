@@ -1,7 +1,6 @@
 import type { Project, Token } from "@prisma/client";
-import { BigNumber } from "ethers";
-import { ethers } from "ethers";
-import type { ServiceRequestDoc } from "~/domain";
+import { BigNumber, ethers } from "ethers";
+import type { LaborMarketDoc, ServiceRequestDoc, SubmissionDoc } from "~/domain";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -60,4 +59,53 @@ export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
 
 export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
   return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
+}
+
+/**
+ * Converts a string score ("4") or number score (4) to a label ("Great")
+ * @param score
+ * @returns
+ */
+export function scoreToLabel(score: number | string) {
+  if (typeof score === "string") {
+    score = scoreToNum(score);
+  }
+  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 1 ? "Bad" : "Spam";
+}
+
+/**
+ * Converts a string score ("4") to a number score (4)
+ * @param score
+ * @returns
+ */
+export function scoreToNum(score: string) {
+  return score === "4" ? 4 : score === "3" ? 3 : score === "2" ? 2 : score === "1" ? 1 : 0;
+}
+
+/**
+ *  Caclulate the overall score for a submission. The average of all the scores rounded up to the nearest integer.
+ * @param {submissionDoc} submission
+ * @returns {number} score
+ */
+export function overallScore(submission: SubmissionDoc): number {
+  return Math.round(submission.sumOfReviewScores / submission.reviewCount);
+}
+
+/**
+ * Display a BigNumber balance as a locale string if possible. Otherwise as an unformatted string.
+ * @param {BigNumber} balance
+ * @returns {string} locale string representation of the balance
+ */
+export function displayBalance(balance: BigNumber): string {
+  try {
+    return balance.toNumber().toLocaleString();
+  } catch {
+    // exceptional for numbers to fall outside the range of Number.MAX_SAFE_INTEGER.
+    // Instead of checking in advance with something like balance.lte(Number.MAX_SAFE_INTEGER), use try/catch
+    return balance.toString();
+  }
+}
+
+export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
+  return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }
