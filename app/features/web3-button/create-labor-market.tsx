@@ -1,4 +1,3 @@
-import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { LaborMarketContract } from "~/domain";
 import { useCreateLaborMarket } from "~/hooks/use-create-labor-market";

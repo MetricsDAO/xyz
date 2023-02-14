@@ -1,4 +1,3 @@
-import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { useCreateSubmission } from "~/hooks/use-create-submission";

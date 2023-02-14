@@ -1,4 +1,3 @@
-import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { ServiceRequestContract } from "~/domain";
 import { useCreateServiceRequest } from "~/hooks/use-create-service-request";

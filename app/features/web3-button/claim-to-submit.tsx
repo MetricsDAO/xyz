@@ -1,4 +1,3 @@
-import { useNetwork } from "wagmi";
 import { Button } from "~/components";
 import type { ClaimToSubmitPrepared } from "~/domain";
 import { useClaimToSubmit } from "~/hooks/use-claim-to-submit";

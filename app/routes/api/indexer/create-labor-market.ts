@@ -1,5 +1,4 @@
 import type { ActionFunction, DataFunctionArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
 import { LaborMarketSchema } from "~/domain";
 import env from "~/env.server";
 import { forbidden } from "remix-utils";
