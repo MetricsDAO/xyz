@@ -25,6 +25,17 @@ export const SubmissionFormSchema = z.object({
   submissionUrl: z.string().optional(),
 });
 
+export const SubmissionIndexerSchema = z.object({
+  id: z.string(),
+  contractId: z.string(),
+  score: z.number(),
+  serviceRequestId: z.string(),
+  laborMarketAddress: EvmAddressSchema,
+  creatorId: z.string(),
+  title: z.string(),
+  description: z.string(),
+});
+
 const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
