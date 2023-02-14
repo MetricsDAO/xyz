@@ -13,7 +13,7 @@ export function CreateSubmissionWeb3Button(props: Web3Hook<SubmissionContract>) 
 
   return (
     <ConnectWalletWrapper>
-      <Button asChild size="md" type="button" onClick={onClick}>
+      <Button size="md" type="button" onClick={onClick}>
         <span> Submit </span>
       </Button>
     </ConnectWalletWrapper>

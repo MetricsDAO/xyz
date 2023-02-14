@@ -13,7 +13,7 @@ export function ClaimToSubmitWeb3Button(props: Web3Hook<ClaimToSubmitPrepared>) 
 
   return (
     <ConnectWalletWrapper>
-      <Button asChild size="md" type="button" onClick={onClick}>
+      <Button size="md" type="button" onClick={onClick}>
         <span> Claim </span>
       </Button>
     </ConnectWalletWrapper>

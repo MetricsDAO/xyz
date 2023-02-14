@@ -13,7 +13,7 @@ export function CreateLaborMarketWeb3Button(props: Web3Hook<LaborMarketContract>
 
   return (
     <ConnectWalletWrapper>
-      <Button asChild size="md" type="button" onClick={onClick}>
+      <Button size="md" type="button" onClick={onClick}>
         <span> Create </span>
       </Button>
     </ConnectWalletWrapper>
