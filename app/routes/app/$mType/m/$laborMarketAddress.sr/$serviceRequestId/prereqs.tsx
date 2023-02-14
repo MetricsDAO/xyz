@@ -6,6 +6,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { useTokenData } from "~/hooks/use-token-data";
 import type { findLaborMarket } from "~/services/labor-market.server";
 import type { findServiceRequest } from "~/services/service-request.server";
+import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function ServiceIdPrereqs() {
   const data = useRouteData<{
@@ -36,7 +37,11 @@ export default function ServiceIdPrereqs() {
               <Badge>{laborMarket.configuration.reputationParams.submitMin} rMETRIC</Badge>
             </DetailItem>
             <DetailItem title="Max Balance">
-              <Badge>{laborMarket.configuration.reputationParams.submitMax} rMETRIC</Badge>
+              {isUnlimitedSubmitRepMax(laborMarket) ? (
+                <Badge>Unlimited</Badge>
+              ) : (
+                <Badge>{laborMarket.configuration.reputationParams.submitMax} rMETRIC</Badge>
+              )}
             </DetailItem>
           </Detail>
         </Card>
