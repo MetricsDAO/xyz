@@ -9,7 +9,7 @@ export function useClaimToReview({ data, onWriteSuccess, onPrepareTransactionErr
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signalReview",
-    args: [BigNumber.from(1), BigNumber.from(data.quantity)],
+    args: [BigNumber.from(data.serviceRequestId), BigNumber.from(data.quantity)],
     onError(err) {
       onPrepareTransactionError?.(err);
     },
