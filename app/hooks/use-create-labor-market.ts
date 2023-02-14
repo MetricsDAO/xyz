@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import {
   LaborMarket,
   LaborMarketNetwork,
@@ -48,7 +48,7 @@ export function useCreateLaborMarket({
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
           signalStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
           submitMin: BigNumber.from(data.submitRepMin),
-          submitMax: BigNumber.from(data.submitRepMax),
+          submitMax: BigNumber.from(data.submitRepMax !== undefined ? data.submitRepMax : ethers.constants.MaxUint256),
         },
       },
     ],

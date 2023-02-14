@@ -13,9 +13,7 @@ export function ClaimRewardWeb3Button(props: Web3Hook<ClaimRewardContractData>) 
 
   return (
     <ConnectWalletWrapper>
-      <Button onClick={onClick}>
-        <span> Claim</span>
-      </Button>
+      <Button onClick={onClick}>Claim</Button>
     </ConnectWalletWrapper>
   );
 }

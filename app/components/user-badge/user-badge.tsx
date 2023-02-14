@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { ReputationToken } from "labor-markets-abi";
 import { useContractRead, useEnsAvatar, useEnsName } from "wagmi";
 import { REPUTATION_TOKEN_ID } from "~/utils/constants";
-import { truncateAddress } from "~/utils/helpers";
+import { displayBalance, truncateAddress } from "~/utils/helpers";
 import { Avatar } from "../avatar";
 
 /** Renders a wallet's avatar and address or ENS name, along with their rMETRIC balance, and UserCard on hover. */
@@ -31,7 +31,7 @@ export function UserBadge({ address }: { address: `0x${string}` }) {
         {ensAvatarUrl ? <Avatar src={ensAvatarUrl} /> : <UserCircleIcon height={16} width={16} />}
         <p className="text-sm">{ensName ?? truncateAddress(address)}</p>
       </div>
-      <p className="text-xs px-1">{reputationBalance ? reputationBalance?.toNumber().toLocaleString() : "?"} rMETRIC</p>
+      <p className="text-xs px-1">{reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC</p>
     </div>
   );
 }

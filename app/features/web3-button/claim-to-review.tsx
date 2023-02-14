@@ -14,7 +14,7 @@ export function ClaimToReviewWeb3Button(props: Web3Hook<ClaimToReviewContract>) 
   return (
     <ConnectWalletWrapper>
       <Button size="md" type="button" onClick={onClick}>
-        <span>Claim to Review </span>
+        Claim to Review
       </Button>
     </ConnectWalletWrapper>
   );

@@ -1,5 +1,6 @@
 import { Slot } from "@radix-ui/react-slot";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useApproveERC20 } from "~/hooks/use-approve-erc20";
 
 // https://www.rainbowkit.com/docs/custom-connect-button
 function ConnectWalletWrapper(props: { children: React.ReactNode }) {
