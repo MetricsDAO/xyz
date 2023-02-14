@@ -6,10 +6,11 @@ import { useMachine } from "@xstate/react";
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
+import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 import {
   Badge,
@@ -26,6 +27,7 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { scoreToLabel } from "~/components/score";
+import type { LaborMarketDoc, SubmissionDoc } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -33,7 +35,9 @@ import { RPCError } from "~/features/rpc-error";
 import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useOptionalUser } from "~/hooks/use-user";
+import { findLaborMarket } from "~/services/labor-market.server";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
@@ -57,18 +61,16 @@ export const loader = async (data: DataFunctionArgs) => {
   if (!submission) {
     throw notFound({ submissionId });
   }
+  const laborMarket = await findLaborMarket(laborMarketAddress);
+  invariant(laborMarket, "Labor market not found");
 
-  return typedjson({ submission, reviews, params }, { status: 200 });
+  return typedjson({ submission, reviews, params, laborMarket }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
-export type ChallengeSubmissonProps = {
-  submission: UseDataFunctionReturn<typeof loader>["submission"];
-};
-
 export default function ChallengeSubmission() {
-  const { submission, reviews, params } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const { mType } = useParams();
@@ -88,11 +90,7 @@ export default function ChallengeSubmission() {
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
-        <ReviewQuestionDrawerButton
-          requestId={submission.serviceRequestId}
-          submissionId={submission.id}
-          laborMarketAddress={submission.laborMarketAddress}
-        />
+        <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
@@ -133,7 +131,7 @@ export default function ChallengeSubmission() {
             <div className="w-full border-spacing-4 border-separate space-y-5">
               {reviews.map((r) => {
                 return (
-                  <Card asChild key={r._id.toString()}>
+                  <Card asChild key={r.reviewer}>
                     <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                         <div
@@ -184,13 +182,11 @@ export default function ChallengeSubmission() {
 }
 
 function ReviewQuestionDrawerButton({
-  laborMarketAddress,
-  requestId,
-  submissionId,
+  submission,
+  laborMarket,
 }: {
-  laborMarketAddress: string;
-  requestId: string;
-  submissionId: string;
+  submission: SubmissionDoc;
+  laborMarket: LaborMarketDoc;
 }) {
   const user = useOptionalUser();
   const [selected, setSelected] = useState<number>(2);
@@ -216,9 +212,9 @@ function ReviewQuestionDrawerButton({
     send({
       type: "PREPARE_TRANSACTION_READY",
       data: {
-        laborMarketAddress: laborMarketAddress,
-        submissionId: submissionId,
-        requestId: requestId,
+        laborMarketAddress: submission.laborMarketAddress,
+        submissionId: submission.id,
+        requestId: submission.serviceRequestId,
         score: selected,
       },
     });
@@ -234,18 +230,27 @@ function ReviewQuestionDrawerButton({
     setError(error);
   };
 
+  const maintainerBadgeTokenBalance = useTokenBalance({
+    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
+    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
+  });
+
+  const hasMaintainerBadge = maintainerBadgeTokenBalance?.gt(0);
+
   return (
     <>
-      <ConnectWalletWrapper>
-        <Button
-          size="lg"
-          onClick={() => {
-            user && setScoreSelectionOpen(true);
-          }}
-        >
-          <span>Review & Score</span>
-        </Button>
-      </ConnectWalletWrapper>
+      {hasMaintainerBadge && (
+        <ConnectWalletWrapper>
+          <Button
+            size="lg"
+            onClick={() => {
+              user && setScoreSelectionOpen(true);
+            }}
+          >
+            <span>Review & Score</span>
+          </Button>
+        </ConnectWalletWrapper>
+      )}
       <Drawer
         open={scoreSelectionOpen && !state.matches("transactionWait")}
         onClose={() => setScoreSelectionOpen(false)}
@@ -345,7 +350,7 @@ function ReviewQuestionDrawerButton({
   );
 }
 
-function AnalyzeDescription({ submission }: ChallengeSubmissonProps) {
+function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
@@ -358,7 +363,7 @@ function AnalyzeDescription({ submission }: ChallengeSubmissonProps) {
   );
 }
 
-function BrainstormDescription({ submission }: ChallengeSubmissonProps) {
+function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
