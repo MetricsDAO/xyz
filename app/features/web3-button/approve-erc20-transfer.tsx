@@ -12,7 +12,7 @@ export function ApproveERC20TransferWeb3Button(props: Web3Hook<ApproveERC20Contr
   };
 
   return (
-    <ConnectWalletWrapper>
+    <ConnectWalletWrapper onClick={onClick}>
       <Button size="md" type="button" onClick={onClick} fullWidth>
         Approve
       </Button>

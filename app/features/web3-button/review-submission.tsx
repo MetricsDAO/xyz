@@ -12,8 +12,8 @@ export function ReviewSubmissionWeb3Button(props: Web3Hook<ReviewContract>) {
   };
 
   return (
-    <ConnectWalletWrapper>
-      <Button size="md" type="button" onClick={onClick} fullWidth>
+    <ConnectWalletWrapper onClick={onClick}>
+      <Button size="md" type="button" fullWidth>
         <span>Submit Score</span>
       </Button>
     </ConnectWalletWrapper>

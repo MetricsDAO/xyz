@@ -12,8 +12,8 @@ export function CreateServiceRequestWeb3Button(props: Web3Hook<ServiceRequestCon
   };
 
   return (
-    <ConnectWalletWrapper>
-      <Button size="md" type="button" onClick={onClick}>
+    <ConnectWalletWrapper onClick={onClick}>
+      <Button size="md" type="button">
         Launch
       </Button>
     </ConnectWalletWrapper>
