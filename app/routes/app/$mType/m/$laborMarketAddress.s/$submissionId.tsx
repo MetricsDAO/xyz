@@ -168,13 +168,16 @@ export default function ChallengeSubmission() {
                 name="sortBy"
                 size="sm"
                 onChange={handleChange}
-                options={[{ label: "Created At", value: "createdAt" }]}
+                options={[
+                  { label: "Created At", value: "createdAt" },
+                  { label: "Score", value: "score" },
+                ]}
               />
-              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
-              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
-              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
-              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
-              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
+              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="4" label="Great" />
+              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="3" label="Good" />
+              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="2" label="Average" />
+              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="1" label="Bad" />
+              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="0" label="Spam" />
             </ValidatedForm>
           </aside>
         </div>
