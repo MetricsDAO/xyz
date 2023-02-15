@@ -128,8 +128,8 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <ConnectWalletWrapper>
-          <Button onClick={handleClaimToSubmit}>
+        <ConnectWalletWrapper onClick={handleClaimToSubmit}>
+          <Button>
             <span> Claim to Submit</span>
           </Button>
         </ConnectWalletWrapper>

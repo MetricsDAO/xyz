@@ -1,7 +1,7 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import type { ServiceRequestDoc } from "~/domain";
+import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -60,4 +60,23 @@ export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
 
 export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
   return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
+}
+
+/**
+ * Display a BigNumber balance as a locale string if possible. Otherwise as an unformatted string.
+ * @param {BigNumber} balance
+ * @returns {string} locale string representation of the balance
+ */
+export function displayBalance(balance: BigNumber): string {
+  try {
+    return balance.toNumber().toLocaleString();
+  } catch {
+    // exceptional for numbers to fall outside the range of Number.MAX_SAFE_INTEGER.
+    // Instead of checking in advance with something like balance.lte(Number.MAX_SAFE_INTEGER), use try/catch
+    return balance.toString();
+  }
+}
+
+export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
+  return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }

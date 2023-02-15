@@ -17,7 +17,7 @@ export const LaborMarketSchema = z.object({
     }),
   ]),
   submitRepMin: zfd.numeric(z.number()),
-  submitRepMax: zfd.numeric(z.number()),
+  submitRepMax: zfd.numeric(z.number().optional()),
   reviewBadgerAddress: EvmAddressSchema,
   reviewBadgerTokenId: z.string().min(1, "Required"),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
@@ -92,10 +92,10 @@ const LaborMarketDocSchema = z.object({
     delegateBadge: BadgePairSchema,
     reputationBadge: BadgePairSchema,
     reputationParams: z.object({
-      rewardPool: z.number(),
-      signalStake: z.number(),
-      submitMin: z.number(),
-      submitMax: z.number(),
+      rewardPool: z.string(),
+      signalStake: z.string(),
+      submitMin: z.string(),
+      submitMax: z.string(),
     }),
     modules: z.object({
       network: EvmAddressSchema,

@@ -1,6 +1,7 @@
 import { Button } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { useCreateSubmission } from "~/hooks/use-create-submission";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
 export function CreateSubmissionWeb3Button(props: Web3Hook<SubmissionContract>) {
@@ -11,8 +12,10 @@ export function CreateSubmissionWeb3Button(props: Web3Hook<SubmissionContract>) 
   };
 
   return (
-    <Button size="md" type="button" onClick={onClick} fullWidth>
-      Submit
-    </Button>
+    <ConnectWalletWrapper onClick={onClick}>
+      <Button size="md" type="button">
+        <span> Submit </span>
+      </Button>
+    </ConnectWalletWrapper>
   );
 }

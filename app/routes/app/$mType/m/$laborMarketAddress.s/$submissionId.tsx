@@ -36,7 +36,6 @@ import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submis
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
-import { useOptionalUser } from "~/hooks/use-user";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { searchReviews } from "~/services/review-service.server";
 import { findSubmission } from "~/services/submissions.server";
@@ -188,7 +187,6 @@ function ReviewQuestionDrawerButton({
   submission: SubmissionDoc;
   laborMarket: LaborMarketDoc;
 }) {
-  const user = useOptionalUser();
   const [selected, setSelected] = useState<number>(2);
   const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -240,13 +238,12 @@ function ReviewQuestionDrawerButton({
   return (
     <>
       {hasMaintainerBadge && (
-        <ConnectWalletWrapper>
-          <Button
-            size="lg"
-            onClick={() => {
-              user && setScoreSelectionOpen(true);
-            }}
-          >
+        <ConnectWalletWrapper
+          onClick={() => {
+            setScoreSelectionOpen(true);
+          }}
+        >
+          <Button size="lg">
             <span>Review & Score</span>
           </Button>
         </ConnectWalletWrapper>
