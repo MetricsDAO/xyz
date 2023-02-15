@@ -31,7 +31,7 @@ import type { SubmissionDoc } from "~/domain/submission";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { Label } from "~/components";
 import { listTokens } from "~/services/tokens.server";
-import type { Token } from "@prisma/client";
+import type { Token, Wallet } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
 
 const validator = withZod(SubmissionSearchSchema);
@@ -74,7 +74,7 @@ export default function Rewards() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView submissions={submissions} />
+            <RewardsListView submissions={submissions} wallets={wallets} />
             <div className="w-fit m-auto">
               <Pagination page={search.page} totalPages={Math.ceil(submissions.length / search.first)} />
             </div>
@@ -88,7 +88,7 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({ submissions }: { submissions: SubmissionDoc[] }) {
+function RewardsListView({ submissions, wallets }: { submissions: SubmissionDoc[]; wallets: Wallet[] }) {
   if (submissions.length === 0) {
     return (
       <div className="flex">
@@ -101,17 +101,17 @@ function RewardsListView({ submissions }: { submissions: SubmissionDoc[] }) {
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable submissions={submissions} />
+        <RewardsTable submissions={submissions} wallets={wallets} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards submissions={submissions} />
+        <RewardsCards submissions={submissions} wallets={wallets} />
       </div>
     </>
   );
 }
 
-function RewardsTable({ submissions }: { submissions: SubmissionDoc[] }) {
+function RewardsTable({ submissions, wallets }: { submissions: SubmissionDoc[]; wallets: Wallet[] }) {
   const unclaimed = true;
   return (
     <Table>
@@ -133,7 +133,9 @@ function RewardsTable({ submissions }: { submissions: SubmissionDoc[] }) {
             <Row.Column className="text-black" color="dark.3">
               --
             </Row.Column>
-            <Row.Column>{unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}</Row.Column>
+            <Row.Column>
+              {unclaimed ? <ClaimButton submission={s} wallets={wallets} /> : <Button variant="cancel">View Tx</Button>}
+            </Row.Column>
           </Row>
         );
       })}
@@ -141,7 +143,7 @@ function RewardsTable({ submissions }: { submissions: SubmissionDoc[] }) {
   );
 }
 
-function RewardsCards({ submissions }: { submissions: SubmissionDoc[] }) {
+function RewardsCards({ submissions, wallets }: { submissions: SubmissionDoc[]; wallets: Wallet[] }) {
   const unclaimed = true;
 
   return (
@@ -160,7 +162,7 @@ function RewardsCards({ submissions }: { submissions: SubmissionDoc[] }) {
               --
             </p>
             <div>Status</div>
-            {unclaimed ? <ClaimButton /> : <Button variant="cancel">View Tx</Button>}
+            {unclaimed ? <ClaimButton submission={s} wallets={wallets} /> : <Button variant="cancel">View Tx</Button>}
           </Card>
         );
       })}
@@ -169,17 +171,20 @@ function RewardsCards({ submissions }: { submissions: SubmissionDoc[] }) {
 }
 
 const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>();
-function ClaimButton() {
+function ClaimButton({ submission, wallets }: { submission: SubmissionDoc; wallets: Wallet[] }) {
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
+  //TODO: actual data
+  const networkName = "Polygon";
+  const wallet = wallets.find((w) => w.networkName === networkName);
+
   const [state, send] = useMachine(
     machine.withContext({
-      // Should have this by now
       contractData: {
-        laborMarketAddress: "0x0000000000000000000000000000000000000000",
-        payoutAddress: "0x0000000000000000000000000000000000000000",
-        submissionId: "0",
+        laborMarketAddress: submission.laborMarketAddress,
+        payoutAddress: wallet?.address ?? "",
+        submissionId: submission.id,
       },
     }),
     {
@@ -220,33 +225,48 @@ function ClaimButton() {
     <>
       <Button onClick={openConfirmedModal}>Claim</Button>
       <Modal isOpen={confirmedModalOpen} onClose={closeConfirmedModal} title="Claim your reward!">
-        <div className="space-y-5 mt-5">
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-              <p className="text-yellow-700 text-2xl ml-2">10 SOL</p>
-            </div>
-            <div className="flex border-solid border rounded-md border-trueGray-200">
-              <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">SOL</p>
-              <div className="flex items-center p-3">
-                <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
-                <p className="text-sm text-gray-600">0xs358437485395889094</p>
+        {wallet ? (
+          <div className="space-y-5 mt-5">
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
+                <p className="text-yellow-700 text-2xl ml-2">todo TBD</p>
               </div>
+              <div className="flex border-solid border rounded-md border-trueGray-200">
+                <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
+                  {networkName}
+                </p>
+                <div className="flex items-center p-3">
+                  <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
+                  <p className="text-sm text-gray-600">
+                    {wallet?.address && wallet?.address.length < 30
+                      ? wallet?.address
+                      : `${wallet?.address.slice(0, 16)}...${wallet?.address.slice(-14)}`}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs">
+                To change or update this address head to{" "}
+                <Link to="/app/rewards/addresses" className="text-blue-600">
+                  Payout Addresses
+                </Link>
+              </p>
             </div>
-            <p className="text-xs">
-              To change or update this address head to{" "}
-              <Link to="/app/rewards/addresses" className="text-blue-600">
-                Payout Addresses
-              </Link>
-            </p>
+            <div className="flex gap-2 justify-end">
+              <Button variant="cancel" onClick={closeConfirmedModal}>
+                Cancel
+              </Button>
+              <ClaimRewardWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+            </div>
           </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={closeConfirmedModal}>
-              Cancel
-            </Button>
-            <ClaimRewardWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
-          </div>
-        </div>
+        ) : (
+          <p className="my-5">
+            No address found for <b>{networkName}</b>. To add an address head to{" "}
+            <Link to="/app/rewards/addresses" className="text-blue-600">
+              Payout Addresses
+            </Link>
+          </p>
+        )}
       </Modal>
       <Modal isOpen={successModalOpen} onClose={closeSuccessModal}>
         <div className="mx-auto space-y-7">
