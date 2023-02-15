@@ -1,6 +1,7 @@
 import { Button } from "~/components";
 import type { ClaimToReviewContract } from "~/domain";
 import { useClaimToReview } from "~/hooks/use-claim-to-review";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
 export function ClaimToReviewWeb3Button(props: Web3Hook<ClaimToReviewContract>) {
@@ -11,8 +12,10 @@ export function ClaimToReviewWeb3Button(props: Web3Hook<ClaimToReviewContract>) 
   };
 
   return (
-    <Button size="md" type="button" onClick={onClick}>
-      Claim to Review
-    </Button>
+    <ConnectWalletWrapper onClick={onClick}>
+      <Button size="md" type="button">
+        Claim to Review
+      </Button>
+    </ConnectWalletWrapper>
   );
 }

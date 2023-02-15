@@ -20,7 +20,7 @@ import { ProjectBadges } from "~/features/project-badges";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
-import { claimDate, dateHasPassed } from "~/utils/date";
+import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";

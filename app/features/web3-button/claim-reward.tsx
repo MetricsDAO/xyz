@@ -1,6 +1,7 @@
 import { Button } from "~/components";
 import type { ClaimRewardContractData } from "~/hooks/use-claim-reward";
 import { useClaimReward } from "~/hooks/use-claim-reward";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
 export function ClaimRewardWeb3Button(props: Web3Hook<ClaimRewardContractData>) {
@@ -10,5 +11,9 @@ export function ClaimRewardWeb3Button(props: Web3Hook<ClaimRewardContractData>) 
     write?.();
   };
 
-  return <Button onClick={onClick}>Claim</Button>;
+  return (
+    <ConnectWalletWrapper onClick={onClick}>
+      <Button onClick={onClick}>Claim</Button>
+    </ConnectWalletWrapper>
+  );
 }

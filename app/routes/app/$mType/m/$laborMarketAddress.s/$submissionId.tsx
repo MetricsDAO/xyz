@@ -236,13 +236,12 @@ function ReviewQuestionDrawerButton({
 
   return (
     <>
-      <ConnectWalletWrapper>
-        <Button
-          size="lg"
-          onClick={() => {
-            user && setScoreSelectionOpen(true);
-          }}
-        >
+      <ConnectWalletWrapper
+        onClick={() => {
+          setScoreSelectionOpen(true);
+        }}
+      >
+        <Button size="lg">
           <span>Review & Score</span>
         </Button>
       </ConnectWalletWrapper>

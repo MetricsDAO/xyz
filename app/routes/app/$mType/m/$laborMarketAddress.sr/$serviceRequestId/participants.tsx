@@ -1,7 +1,6 @@
 import { useRouteData } from "remix-utils";
-import { Badge, Card, UserBadge } from "~/components";
+import { Badge } from "~/components";
 import type { findServiceRequest } from "~/services/service-request.server";
-import { fromNow } from "~/utils/date";
 
 export default function ServiceIdParticipants() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
@@ -10,7 +9,6 @@ export default function ServiceIdParticipants() {
   if (!data) {
     throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");
   }
-  const { serviceRequest } = data;
 
   return (
     <section className="space-y-7">

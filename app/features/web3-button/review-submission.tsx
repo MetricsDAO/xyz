@@ -1,6 +1,7 @@
 import { Button } from "~/components";
 import type { ReviewContract } from "~/domain";
 import { useReviewSubmission } from "~/hooks/use-review-submission";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";
 
 export function ReviewSubmissionWeb3Button(props: Web3Hook<ReviewContract>) {
@@ -11,8 +12,10 @@ export function ReviewSubmissionWeb3Button(props: Web3Hook<ReviewContract>) {
   };
 
   return (
-    <Button size="md" type="button" onClick={onClick} fullWidth>
-      Submit Score
-    </Button>
+    <ConnectWalletWrapper onClick={onClick}>
+      <Button size="md" type="button" fullWidth>
+        <span>Submit Score</span>
+      </Button>
+    </ConnectWalletWrapper>
   );
 }
