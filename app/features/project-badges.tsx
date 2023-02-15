@@ -2,13 +2,14 @@ import type { Project } from "@prisma/client";
 import { useState } from "react";
 import { Badge, ProjectAvatar } from "~/components";
 
+const MAX = 3;
+
 export function ProjectBadges({ projects }: { projects: Project[] }) {
   const [allIcons, setAllIcons] = useState<boolean>(false);
-  const max = 3;
-  const surplus = projects.length - max;
+  const surplus = projects.length - MAX;
   return (
     <div className="flex flex-wrap gap-2">
-      {projects.slice(0, max).map((p) => {
+      {projects.slice(0, MAX).map((p) => {
         return (
           <Badge key={p.id} className="pl-2">
             <ProjectAvatar project={p} />
@@ -20,7 +21,7 @@ export function ProjectBadges({ projects }: { projects: Project[] }) {
         <div onClick={() => setAllIcons(!allIcons)} className="flex flex-wrap gap-2 cursor-pointer">
           {allIcons ? (
             <>
-              {projects.slice(max).map((p) => {
+              {projects.slice(MAX).map((p) => {
                 return (
                   <Badge key={p.id} className="pl-2">
                     <ProjectAvatar project={p} />
