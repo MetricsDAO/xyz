@@ -67,7 +67,7 @@ export default function Marketplace() {
             ) : (
               <></>
             )}
-            <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} max={3} />}</DetailItem>
+            <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
         <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
