@@ -22,9 +22,7 @@ export function SegmentedRadio({
             key={option.value}
             value={option.value}
             className={({ checked }) =>
-              clsx(
-                checked ? "bg-[#EDEDED]" : "bg-white", "border-2 rounded-md py-3 px-10 cursor-pointer"
-              )
+              clsx(checked ? "bg-[#EDEDED]" : "bg-white", "border-2 rounded-md py-3 px-10 cursor-pointer")
             }
           >
             {option.label}
