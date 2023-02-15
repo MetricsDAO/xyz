@@ -21,6 +21,9 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
+import { Link, useParams } from "@remix-run/react";
+import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -40,6 +43,8 @@ const validator = withZod(ClaimToReviewFormSchema);
 export default function ClaimToReview() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   const [state, send] = useMachine(claimToSubmitMachine, {
     actions: {
@@ -158,7 +163,17 @@ export default function ClaimToReview() {
               <span>Claim to Review</span>
             </Button>
           </ConnectWalletWrapper>
-          <Button variant="cancel">Cancel</Button>
+          <Button variant="cancel" asChild>
+            <Link
+              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
+                mType: mType,
+                laborMarketAddress: serviceRequest.laborMarketAddress,
+                serviceRequestId: serviceRequest.id,
+              })}
+            >
+              Cancel
+            </Link>
+          </Button>
         </div>
       </ValidatedForm>
       {state.context.contractData && (
