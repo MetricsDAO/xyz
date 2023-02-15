@@ -118,24 +118,14 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
 
 function BrainstormTextArea() {
   const [value, setValue] = useState<string>();
-  console.log("value", value);
   return (
     <>
       <p>{value}</p>
       <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
       <MDEditor value={value} onChange={setValue} />
       <MDEditor.Markdown source={value} />
-      <Field>
-        <ValidatedTextarea
-          name="description"
-          onChange={(e) => setValue(e.target.value)}
-          rows={7}
-          placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
-
-    Example: What are the most important questions to answer about user behavior on Ethereum?"
-        />
-        <Error name="description" />
-      </Field>
+      <input type="hidden" name="description" value={value} />
+      <Error name="description" />
     </>
   );
 }
