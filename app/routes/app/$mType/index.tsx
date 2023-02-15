@@ -118,9 +118,8 @@ export default function MarketplaceCollection() {
                 size="sm"
                 onChange={handleChange}
                 options={[
-                  { label: "Trending", value: "trending" },
-                  { label: "Active Challenges", value: "serviceRequests" },
-                  { label: "Chain/Project", value: "project" },
+                  { label: "Active Challenges", value: "serviceRequestCount" },
+                  { label: "New", value: "createdAtBlockTimestamp" },
                 ]}
               />
             </Field>
@@ -138,7 +137,7 @@ export default function MarketplaceCollection() {
                 onChange={handleChange}
                 placeholder="Select option"
                 size="sm"
-                options={tokens.map((token) => ({ label: token.name, value: token.symbol }))}
+                options={tokens.map((token) => ({ label: token.name, value: token.contractAddress }))}
               />
             </Field>
 
