@@ -21,6 +21,7 @@ import { findServiceRequest } from "~/services/service-request.server";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
@@ -38,6 +39,7 @@ const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubm
 export default function ClaimToSubmit() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
