@@ -1,4 +1,4 @@
-import { useParams } from "@remix-run/react";
+import { Link, useParams } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
@@ -20,6 +20,8 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { findServiceRequest } from "~/services/service-request.server";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { $path } from "remix-routes";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
@@ -37,6 +39,7 @@ const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubm
 export default function ClaimToSubmit() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
+  invariant(mType, "marketplace type must be specified");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -133,7 +136,17 @@ export default function ClaimToSubmit() {
             <span> Claim to Submit</span>
           </Button>
         </ConnectWalletWrapper>
-        <Button variant="cancel">Cancel</Button>
+        <Button variant="cancel" asChild>
+          <Link
+            to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
+              mType: mType,
+              laborMarketAddress: serviceRequest.laborMarketAddress,
+              serviceRequestId: serviceRequest.id,
+            })}
+          >
+            Cancel
+          </Link>
+        </Button>
       </div>
       <div className="invisible"></div>
       {state.context.contractData && (
