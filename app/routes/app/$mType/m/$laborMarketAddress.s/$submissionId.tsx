@@ -350,7 +350,12 @@ function AnalyzeDescription({ submission }: ChallengeSubmissonProps) {
     <>
       <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
-        <a href={submission.appData?.description} className="text-blue-600 text-sm flex flex-row items-center">
+        <a
+          href={submission.appData?.description}
+          target="_blank"
+          className="text-blue-600 text-sm flex flex-row items-center"
+          rel="noreferrer"
+        >
           {submission.appData?.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
         </a>
       </div>
