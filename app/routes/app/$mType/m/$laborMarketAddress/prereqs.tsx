@@ -38,9 +38,7 @@ export default function MarketplaceIdPrerequesites() {
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
                     <Badge>
-                      <div className="normal-case">
-                        {laborMarket.configuration.reputationParams.submitMin.toLocaleString()} rMETRIC
-                      </div>
+                      <div className="normal-case">{laborMarket.configuration.reputationParams.submitMin} rMETRIC</div>
                     </Badge>
                   </div>
                   <div className="flex flex-col">

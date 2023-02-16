@@ -64,9 +64,9 @@ export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
 /**
  * Converts a string score ("4") or number score (4) to a label ("Great")
  * @param score
- * @returns
+ * @returns {string} label
  */
-export function scoreToLabel(score: number | string) {
+export function scoreToLabel(score: number | string): string {
   if (typeof score === "string") {
     score = scoreToNum(score);
   }
@@ -76,9 +76,9 @@ export function scoreToLabel(score: number | string) {
 /**
  * Converts a string score ("4") to a number score (4)
  * @param score
- * @returns
+ * @returns {number} score
  */
-export function scoreToNum(score: string) {
+export function scoreToNum(score: string): number {
   return score === "4" ? 4 : score === "3" ? 3 : score === "2" ? 2 : score === "1" ? 1 : 0;
 }
 
