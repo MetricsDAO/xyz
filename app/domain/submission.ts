@@ -63,9 +63,20 @@ const RewardsSchema = SubmissionDocSchema.extend({
   sr: z.array(ServiceRequestDocSchema),
 });
 
+export const RewardsSearchSchema = z.object({
+  q: z.string().optional().describe("Search query."),
+  sortBy: z.enum(["sr[0].appData.title", "createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  first: z.number().default(10),
+  page: z.number().default(1),
+  token: z.array(z.string()).optional(),
+  serviceProvider: EvmAddressSchema.optional(),
+});
+
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type RewardsDoc = z.infer<typeof RewardsSchema>;
+export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;

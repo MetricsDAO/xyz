@@ -3,10 +3,10 @@ import { useRef } from "react";
 import { Checkbox } from "~/components/checkbox";
 import { Pagination } from "~/components/pagination/pagination";
 import { Modal } from "~/components/modal";
-import { Input } from "~/components/input";
+import { ValidatedInput } from "~/components/input";
 import { Button } from "~/components/button";
 import { useState } from "react";
-import { Combobox } from "~/components/combobox";
+import { ValidatedCombobox } from "~/components/combobox";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/container";
@@ -28,22 +28,22 @@ import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { searchUserSubmissions } from "~/services/submissions.server";
 import type { RewardsDoc } from "~/domain/submission";
-import { SubmissionSearchSchema } from "~/domain/submission";
-import { Label } from "~/components";
+import { RewardsSearchSchema } from "~/domain/submission";
+import { Field, Label, ValidatedSelect } from "~/components";
 import { listTokens } from "~/services/tokens.server";
 import type { Token, Wallet } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
 import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
 
-const validator = withZod(SubmissionSearchSchema);
+const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await getUser(request);
   invariant(user, "Could not find user, please sign in");
   const url = new URL(request.url);
-  const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
+  const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions(user.address);
+  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
   const tokens = await listTokens();
   return typedjson({
     wallets,
@@ -56,7 +56,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
 export default function Rewards() {
   const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
-  const reviewedRewards = rewards; //.filter((r) => dateHasPassed(r.sr.configuration.enforcementExpiration));
+  const reviewedRewards = rewards.filter((r) => dateHasPassed(r.sr[0].configuration.enforcementExpiration));
 
   return (
     <Container className="py-16 px-10">
@@ -123,7 +123,7 @@ function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
       </Header>
       {rewards.map((r) => {
         return (
-          <Row columns={6} key={r.id}>
+          <Row columns={6} key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}>
             <Row.Column span={2}>
               <p>{r.sr[0].appData?.title}</p>
             </Row.Column>
@@ -153,7 +153,10 @@ function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
     <div className="space-y-4">
       {rewards.map((r) => {
         return (
-          <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={r.id}>
+          <Card
+            className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5"
+            key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}
+          >
             <div>Challenge Title</div>
             <p>{r.sr[0].appData?.title}</p>
             <div>Reward</div>
@@ -182,7 +185,6 @@ function ClaimButton({ reward, wallets, tokens }: { reward: RewardsDoc; wallets:
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  //TODO: actual data
   const tokenAbrev = toTokenAbbreviation(reward.sr[0].configuration.pToken, tokens);
   const networkName = toNetworkName(reward.sr[0].configuration.pToken, tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);
@@ -313,19 +315,38 @@ function SearchAndFilter({ tokens }: { tokens: Token[] }) {
     <ValidatedForm
       formRef={formRef}
       method="get"
-      noValidate
       validator={validator}
       onChange={handleChange}
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
-      <Input placeholder="Search" name="q" iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />} />
+      <ValidatedInput
+        placeholder="Search"
+        name="q"
+        iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+      />
+      <Field>
+        <Label>Sort by</Label>
+        <ValidatedSelect
+          placeholder="Select option"
+          name="sortBy"
+          size="sm"
+          onChange={handleChange}
+          options={[
+            { label: "Challenge Title", value: "sr[0].appData.title" },
+            { label: "Submitted", value: "createdAtBlockTimestamp" },
+          ]}
+        />
+      </Field>
       <p className="text-lg font-semibold">Filter:</p>
       <Label size="md">Status</Label>
       <Checkbox value="unclaimed" label="Unclaimed" />
       <Checkbox value="claimed" label="Claimed" />
       <Label>Reward Token</Label>
-      <Combobox
+      <ValidatedCombobox
         placeholder="Select option"
+        name="token"
+        onChange={handleChange}
+        size="sm"
         options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
       />
       {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
