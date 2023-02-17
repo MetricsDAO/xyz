@@ -58,6 +58,16 @@ export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.symbol;
 };
 
+/**
+ * Take a contract address and return the corresponing network name
+ * @param address Contract address of the token
+ * @param tokens List of tokens in the app
+ * @returns {string}
+ */
+export const toNetworkName = (address: string, tokens: Token[]) => {
+  return tokens.find((t) => t.contractAddress === address)?.networkName;
+};
+
 export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
   return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
 }

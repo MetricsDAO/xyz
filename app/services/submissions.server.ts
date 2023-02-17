@@ -7,6 +7,7 @@ import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submiss
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
+import type { RewardsDoc } from "~/domain/submission";
 
 /**
  * Returns an array of SubmissionDoc for a given Service Request.
@@ -131,4 +132,40 @@ export const prepareSubmission = async (
     uri: cid,
   });
   return contractData;
+};
+
+/**
+ * Returns an array of SubmissionDoc for a given Service Request.
+ */
+export const searchUserSubmissions = async (address: string) => {
+  return (
+    mongo.submissions
+      .aggregate([
+        { $match: { "configuration.serviceProvider": address } },
+        {
+          $lookup: {
+            from: "serviceRequests",
+            let: {
+              sr_id: "$serviceRequestId",
+              m_addr: "$laborMarketAddress",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
+                  },
+                },
+              },
+            ],
+            as: "sr",
+          },
+        },
+      ])
+      /*.find(searchParams(params))
+    .sort({ [params.sortBy]: params.order })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)*/
+      .toArray() //as Promise<RewardsDoc[]>
+  );
 };

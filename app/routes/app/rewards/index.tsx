@@ -12,7 +12,7 @@ import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/container";
 import RewardsTab from "~/features/rewards-tab";
 import { Card } from "~/components/card";
-import { fromNow } from "~/utils/date";
+import { dateHasPassed, fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
 import { CheckCircleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { getUser } from "~/services/session.server";
@@ -26,13 +26,14 @@ import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { searchSubmissions } from "~/services/submissions.server";
-import type { SubmissionDoc } from "~/domain/submission";
+import { searchUserSubmissions } from "~/services/submissions.server";
+import type { RewardsDoc } from "~/domain/submission";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { Label } from "~/components";
 import { listTokens } from "~/services/tokens.server";
 import type { Token, Wallet } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
+import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -42,14 +43,11 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
-  const submissions = await searchSubmissions({
-    ...search,
-    serviceProvider: user.address,
-  });
+  const rewards = await searchUserSubmissions(user.address);
   const tokens = await listTokens();
   return typedjson({
     wallets,
-    submissions,
+    rewards,
     user,
     tokens,
     search,
@@ -57,7 +55,8 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function Rewards() {
-  const { wallets, submissions, tokens, search } = useTypedLoaderData<typeof loader>();
+  const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
+  const reviewedRewards = rewards; //.filter((r) => dateHasPassed(r.sr.configuration.enforcementExpiration));
 
   return (
     <Container className="py-16 px-10">
@@ -70,13 +69,13 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={submissions.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={reviewedRewards.length} addressesNum={wallets.length} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView submissions={submissions} wallets={wallets} />
+            <RewardsListView rewards={reviewedRewards} wallets={wallets} tokens={tokens} />
             <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(submissions.length / search.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(reviewedRewards.length / search.first)} />
             </div>
           </div>
         </main>
@@ -88,8 +87,8 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({ submissions, wallets }: { submissions: SubmissionDoc[]; wallets: Wallet[] }) {
-  if (submissions.length === 0) {
+function RewardsListView({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
+  if (rewards.length === 0) {
     return (
       <div className="flex">
         <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
@@ -101,40 +100,44 @@ function RewardsListView({ submissions, wallets }: { submissions: SubmissionDoc[
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable submissions={submissions} wallets={wallets} />
+        <RewardsTable rewards={rewards} wallets={wallets} tokens={tokens} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards submissions={submissions} wallets={wallets} />
+        <RewardsCards rewards={rewards} wallets={wallets} tokens={tokens} />
       </div>
     </>
   );
 }
 
-function RewardsTable({ submissions, wallets }: { submissions: SubmissionDoc[]; wallets: Wallet[] }) {
+function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
   const unclaimed = true;
   return (
     <Table>
       <Header columns={6} className="mb-2">
-        <Header.Column span={2}>Submission Title</Header.Column>
+        <Header.Column span={2}>Challenge Title</Header.Column>
         <Header.Column>Reward</Header.Column>
         <Header.Column>Submitted</Header.Column>
         <Header.Column>Rewarded</Header.Column>
         <Header.Column>Status</Header.Column>
       </Header>
-      {submissions.map((s) => {
+      {rewards.map((r) => {
         return (
-          <Row columns={6} key={s.id}>
+          <Row columns={6} key={r.id}>
             <Row.Column span={2}>
-              <p>{s.appData?.title}</p>
+              <p>{r.sr[0].appData?.title}</p>
             </Row.Column>
             <Row.Column>--</Row.Column>
-            <Row.Column className="text-black">{fromNow(s.createdAtBlockTimestamp)} </Row.Column>
+            <Row.Column className="text-black">{fromNow(r.createdAtBlockTimestamp)} </Row.Column>
             <Row.Column className="text-black" color="dark.3">
               --
             </Row.Column>
             <Row.Column>
-              {unclaimed ? <ClaimButton submission={s} wallets={wallets} /> : <Button variant="cancel">View Tx</Button>}
+              {unclaimed ? (
+                <ClaimButton reward={r} wallets={wallets} tokens={tokens} />
+              ) : (
+                <Button variant="cancel">View Tx</Button>
+              )}
             </Row.Column>
           </Row>
         );
@@ -143,26 +146,30 @@ function RewardsTable({ submissions, wallets }: { submissions: SubmissionDoc[]; 
   );
 }
 
-function RewardsCards({ submissions, wallets }: { submissions: SubmissionDoc[]; wallets: Wallet[] }) {
+function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
   const unclaimed = true;
 
   return (
     <div className="space-y-4">
-      {submissions.map((s) => {
+      {rewards.map((r) => {
         return (
-          <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={s.id}>
-            <div>Submission Title</div>
-            <p>{s.appData?.title}</p>
+          <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5" key={r.id}>
+            <div>Challenge Title</div>
+            <p>{r.sr[0].appData?.title}</p>
             <div>Reward</div>
             <p>--</p>
             <div>Submitted</div>
-            <p className="text-black">{fromNow(s.createdAtBlockTimestamp)} </p>
+            <p className="text-black">{fromNow(r.createdAtBlockTimestamp)} </p>
             <div>Rewarded</div>
             <p className="text-black" color="dark.3">
               --
             </p>
             <div>Status</div>
-            {unclaimed ? <ClaimButton submission={s} wallets={wallets} /> : <Button variant="cancel">View Tx</Button>}
+            {unclaimed ? (
+              <ClaimButton reward={r} wallets={wallets} tokens={tokens} />
+            ) : (
+              <Button variant="cancel">View Tx</Button>
+            )}
           </Card>
         );
       })}
@@ -171,20 +178,21 @@ function RewardsCards({ submissions, wallets }: { submissions: SubmissionDoc[]; 
 }
 
 const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>();
-function ClaimButton({ submission, wallets }: { submission: SubmissionDoc; wallets: Wallet[] }) {
+function ClaimButton({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   //TODO: actual data
-  const networkName = "Polygon";
+  const tokenAbrev = toTokenAbbreviation(reward.sr[0].configuration.pToken, tokens);
+  const networkName = toNetworkName(reward.sr[0].configuration.pToken, tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);
 
   const [state, send] = useMachine(
     machine.withContext({
       contractData: {
-        laborMarketAddress: submission.laborMarketAddress,
+        laborMarketAddress: reward.laborMarketAddress,
         payoutAddress: wallet?.address ?? "",
-        submissionId: submission.id,
+        submissionId: reward.id,
       },
     }),
     {
@@ -230,7 +238,7 @@ function ClaimButton({ submission, wallets }: { submission: SubmissionDoc; walle
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">todo TBD</p>
+                <p className="text-yellow-700 text-2xl ml-2">{`todo ${tokenAbrev}`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">
                 <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
