@@ -102,19 +102,6 @@ export default function Index() {
                   <p className="text-sm sm:text-base">For any blockchain or protocol with curated data.</p>
                 </div>
               </div>
-              <div className="mx-auto">
-                <div className="bg-[url(/img/marketing/partner-core-right.png)] bg-cover bg-no-repeat rounded-3xl text-white text-base max-w-xs px-5 pt-7 pb-16 space-y-5">
-                  <img src="/img/marketing/partner-butterfly.png" alt="" />
-                  <div className="space-y-1">
-                    <p className="text-xl sm:text-2xl font-bold">Data Readiness</p>
-                    <p className="text-lg sm:text-xl">Starts at $20,000</p>
-                  </div>
-                  <p className="text-sm sm:text-base">
-                    Unlock potential adoption, usage, and analytics for your project with community curated data.
-                  </p>
-                  <p className="text-sm sm:text-base">For any blockchain or protocol in need of data curation.</p>
-                </div>
-              </div>
             </div>
           </section>
           <section id="testimony" className="py-16 h-screen justify-center flex flex-col items-center px-8">
