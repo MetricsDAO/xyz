@@ -125,7 +125,7 @@ function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
         return (
           <Row columns={6} key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}>
             <Row.Column span={2}>
-              <p>{r.sr[0].appData?.title}</p>
+              <p>{r.sr[0]?.appData?.title}</p>
             </Row.Column>
             <Row.Column>--</Row.Column>
             <Row.Column className="text-black">{fromNow(r.createdAtBlockTimestamp)} </Row.Column>
@@ -158,7 +158,7 @@ function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
             key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}
           >
             <div>Challenge Title</div>
-            <p>{r.sr[0].appData?.title}</p>
+            <p>{r.sr[0]?.appData?.title}</p>
             <div>Reward</div>
             <p>--</p>
             <div>Submitted</div>
@@ -185,8 +185,8 @@ function ClaimButton({ reward, wallets, tokens }: { reward: RewardsDoc; wallets:
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const tokenAbrev = toTokenAbbreviation(reward.sr[0].configuration.pToken, tokens);
-  const networkName = toNetworkName(reward.sr[0].configuration.pToken, tokens);
+  const tokenAbrev = toTokenAbbreviation(reward.sr[0]?.configuration.pToken ?? "", tokens);
+  const networkName = toNetworkName(reward.sr[0]?.configuration.pToken ?? "", tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);
 
   const [state, send] = useMachine(
