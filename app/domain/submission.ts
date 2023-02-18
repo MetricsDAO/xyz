@@ -4,7 +4,7 @@ import { EvmAddressSchema } from "./address";
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
   sortBy: z.enum(["title", "description", "createdAt", "reviews", "creatorId"]).default("createdAt"),
-  order: z.enum(["asc", "desc"]).default("asc"),
+  order: z.enum(["asc", "desc"]).default("desc"),
   score: z.number().optional(),
   first: z.number().default(10),
   page: z.number().default(1),

@@ -191,10 +191,7 @@ export default function ServiceRequest() {
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>
         <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        {/* MVP Hide */}
-        {/* <TabNavLink to="./participants">
-          Participants <span className="text-gray-400">(99)</span>
-        </TabNavLink> */}
+        <TabNavLink to="./participants">Participants {/*<span className="text-gray-400">(99)</span>*/}</TabNavLink>
       </TabNav>
 
       <Outlet />
