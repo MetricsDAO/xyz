@@ -18,7 +18,6 @@ export default function ServiceIdTimeline() {
 
   const times = [
     { label: "claim to submit deadline", time: serviceRequest.configuration?.signalExpiration },
-    { label: "submissions open", time: serviceRequest.createdAtBlockTimestamp },
     { label: "submission deadline", time: serviceRequest.configuration?.submissionExpiration },
     {
       label: "claim to review deadline",

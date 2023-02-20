@@ -43,8 +43,6 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
   language: true,
   projectSlugs: true,
 }).extend({
-  startDate: InputDateSchema,
-  startTime: InputTimeSchema,
   endDate: InputDateSchema,
   endTime: InputTimeSchema,
   reviewEndDate: InputDateSchema,
@@ -116,8 +114,6 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     description: faker.lorem.paragraphs(2),
     language: "english",
     projectSlugs: [],
-    startDate: dayjs(startDate).format("YYYY-MM-DD"),
-    startTime: dayjs(startDate).format("HH:mm"),
     endDate: dayjs(endDate).format("YYYY-MM-DD"),
     endTime: dayjs(endDate).format("HH:mm"),
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
