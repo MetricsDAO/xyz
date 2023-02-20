@@ -7,7 +7,7 @@ export function createLaborMarket(data: LaborMarket) {
   });
 }
 
-export function createServiceRequest(data: ServiceRequestIndexer) {
+export function openNewServiceRequest(data: ServiceRequestIndexer) {
   fetch("/api/indexer/create-service-request", {
     method: "POST",
     body: JSON.stringify(data),

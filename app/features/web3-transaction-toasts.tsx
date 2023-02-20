@@ -1,4 +1,5 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { duration } from "dayjs";
 import toast from "react-hot-toast";
 
 export const defaultNotifyTransactionActions = {
@@ -40,6 +41,23 @@ export const defaultNotifyTransactionActions = {
     toast.dismiss("waiting-on-transaction");
     toast.error("Transaction failed");
   },
+};
+
+export const notifyTransactionIndexing = (transactionHash?: string) => {
+  toast.loading(
+    (t) => {
+      return (
+        <>
+          <div> Indexing... It might take a moment to appear </div>
+          <PolygonscanLink transactionHash={transactionHash} />
+          <button onClick={() => toast.dismiss(t.id)} className="flex items-center px-3">
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </>
+      );
+    },
+    { id: "waiting-on-indexing", duration: 10000 }
+  );
 };
 
 const PolygonscanLink = ({ transactionHash }: { transactionHash?: string }) => {

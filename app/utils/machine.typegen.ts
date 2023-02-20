@@ -32,6 +32,7 @@ export interface Typegen0 {
   };
   eventsCausingActions: {
     devAutoIndex: "done.invoke.wait-for-transaction";
+    redirect: "done.invoke.wait-for-transaction";
     notifyTransactionFailure: "error.platform.wait-for-transaction";
     notifyTransactionSuccess: "done.invoke.wait-for-transaction";
     notifyTransactionWait: "SUBMIT_TRANSACTION";

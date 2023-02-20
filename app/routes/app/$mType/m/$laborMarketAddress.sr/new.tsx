@@ -1,9 +1,9 @@
-import { useParams } from "@remix-run/react";
+import { useNavigate, useParams } from "@remix-run/react";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
-import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { redirect, typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import { badRequest, notFound } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
@@ -17,17 +17,17 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
-import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { defaultNotifyTransactionActions, notifyTransactionIndexing } from "~/features/web3-transaction-toasts";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { toTokenAbbreviation } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
+import { $path } from "remix-routes";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ laborMarketAddress: z.string() });
@@ -66,17 +66,21 @@ export default function CreateServiceRequest() {
   const { mType } = useParams();
   const { defaultValues, tokens, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+  const navigate = useNavigate();
 
   const [state, send] = useMachine(serviceRequestMachine, {
     actions: {
       ...defaultNotifyTransactionActions,
-      devAutoIndex: (context) => {
-        if (window.ENV.DEV_AUTO_INDEX) {
-          invariant(context.contractData, "Contract data is required");
-          createServiceRequest({
-            ...context.contractData,
-            contractId: "1", // hardcoding to 1 for now. Doesn't seem to be a way to get this out of the receipt
-          });
+      redirect: () => {
+        invariant(state.context.contractData, "Contract data is required");
+        navigate(
+          $path("/app/:mType/m/:laborMarketAddress", {
+            mType: mType,
+            laborMarketAddress: state.context.contractData.laborMarketAddress,
+          })
+        );
+        if (state.context.transactionHash !== undefined) {
+          notifyTransactionIndexing(state.context.transactionHash);
         }
       },
     },

@@ -122,7 +122,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
               },
             },
             success: {
-              entry: ["notifyTransactionSuccess", "devAutoIndex"],
+              entry: ["notifyTransactionSuccess", "devAutoIndex", "redirect"],
             },
             failure: {
               entry: ["notifyTransactionFailure"],
@@ -161,6 +161,7 @@ export const createBlockchainTransactionStateMachine = <T>() => {
         notifyTransactionSuccess: () => {},
         notifyTransactionFailure: () => {},
         devAutoIndex: () => {},
+        redirect: () => {},
       },
     }
   );
