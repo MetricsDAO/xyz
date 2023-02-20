@@ -1,5 +1,6 @@
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useParams, useSubmit } from "@remix-run/react";
+import { useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
@@ -72,11 +73,17 @@ export default function ChallengeSubmission() {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const { mType } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleChange = () => {
     if (formRef.current) {
       submit(formRef.current, { replace: true });
     }
+  };
+
+  const setOrder = (str: "asc" | "desc") => {
+    searchParams.set("order", str);
+    setSearchParams(searchParams);
   };
 
   const isWinner = false;
@@ -133,7 +140,7 @@ export default function ChallengeSubmission() {
             <div className="w-full border-spacing-4 border-separate space-y-5">
               {reviews.map((r) => {
                 return (
-                  <Card asChild key={r._id.toString()}>
+                  <Card asChild key={`${r.laborMarketAddress}${r.serviceRequestId}${r.submissionId}${r.reviewer}`}>
                     <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
                         <div
@@ -162,16 +169,30 @@ export default function ChallengeSubmission() {
               onChange={handleChange}
               className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
             >
-              <ValidatedSelect
-                placeholder="Select option"
-                name="sortBy"
-                size="sm"
-                onChange={handleChange}
-                options={[
-                  { label: "Created At", value: "createdAtBlockTimestamp" },
-                  { label: "Score", value: "score" },
-                ]}
-              />
+              <div className="flex gap-2 w-full items-center">
+                <div className="flex-1">
+                  <ValidatedSelect
+                    placeholder="Select option"
+                    name="sortBy"
+                    size="sm"
+                    onChange={handleChange}
+                    options={[
+                      { label: "Created At", value: "createdAtBlockTimestamp" },
+                      { label: "Score", value: "score" },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <ChevronUpIcon
+                    className={clsx("h-4 w-4 cursor-pointer", { "text-sky-500": searchParams.get("order") === "asc" })}
+                    onClick={() => setOrder("asc")}
+                  />
+                  <ChevronDownIcon
+                    className={clsx("h-4 w-4 cursor-pointer", { "text-sky-500": searchParams.get("order") === "desc" })}
+                    onClick={() => setOrder("desc")}
+                  />
+                </div>
+              </div>
               <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="4" label="Great" />
               <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="3" label="Good" />
               <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="2" label="Average" />
