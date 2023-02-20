@@ -162,14 +162,13 @@ export default function ChallengeSubmission() {
               onChange={handleChange}
               className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
             >
-              {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
               <ValidatedSelect
                 placeholder="Select option"
                 name="sortBy"
                 size="sm"
                 onChange={handleChange}
                 options={[
-                  { label: "Created At", value: "createdAt" },
+                  { label: "Created At", value: "createdAtBlockTimestamp" },
                   { label: "Score", value: "score" },
                 ]}
               />
