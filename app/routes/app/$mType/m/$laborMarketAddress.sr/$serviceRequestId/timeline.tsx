@@ -1,7 +1,7 @@
 import { useRouteData } from "remix-utils";
 import { CountdownCard } from "~/components/countdown-card";
 import type { findServiceRequest } from "~/services/service-request.server";
-import { claimDate, dateHasPassed } from "~/utils/date";
+import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline } from "~/utils/helpers";
 
 export default function ServiceIdTimeline() {
