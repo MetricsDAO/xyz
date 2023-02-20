@@ -25,7 +25,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
         ) : (
           <AnalyticsInfo submission={submission} />
         )}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 md:mr-7 md:ml-24">
           {/* MVP HIDE */}
           {/* <Score score={2} /> */}
           <div className="flex text-xs text-gray-500 items-center">
@@ -53,7 +53,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
 
 function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
   return (
-    <main className="space-y-2 flex-1">
+    <main className="space-y-2 flex-1 break-words text-ellipsis overflow-hidden max-h-96">
       <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
       <section className="text-gray-900">{submission.appData?.description}</section>
     </main>

@@ -350,7 +350,9 @@ function ReviewQuestionDrawerButton({
 function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
+        {submission.appData?.description}
+      </p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
         <a
           href={submission.appData?.description}
@@ -368,7 +370,9 @@ function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
 function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
-      <p className="text-gray-500 max-w-2xl text-sm">{submission.appData?.description}</p>
+      <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
+        {submission.appData?.description}
+      </p>
     </>
   );
 }
