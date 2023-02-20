@@ -33,6 +33,7 @@ export const defaultNotifyTransactionActions = {
         );
       },
       {
+        id: "transaction-success",
         duration: 15000,
       }
     );
@@ -56,7 +57,7 @@ export const notifyTransactionIndexing = (transactionHash?: string) => {
         </>
       );
     },
-    { id: "waiting-on-indexing", duration: 10000 }
+    { id: "waiting-on-indexing", duration: 15000 }
   );
 };
 

@@ -1,4 +1,4 @@
-import { useParams } from "@remix-run/react";
+import { useNavigate, useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
@@ -45,6 +45,7 @@ export default function SubmitQuestion() {
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { mType } = useParams();
+  const navigate = useNavigate();
   const [state, send] = useMachine(submissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
@@ -55,6 +56,16 @@ export default function SubmitQuestion() {
       },
       notifyTransactionFailure: () => {
         defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+      redirect: () => {
+        invariant(state.context.contractData, "Contract data is required");
+        navigate(
+          $path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
+            mType: mType,
+            laborMarketAddress: state.context.contractData.laborMarketAddress,
+            serviceRequestId: state.context.contractData.serviceRequestId,
+          })
+        );
       },
     },
   });
@@ -328,4 +339,10 @@ function Analyze({
       </div>
     </Container>
   );
+}
+function $path(
+  arg0: string,
+  arg1: { mType: string | undefined; laborMarketAddress: any; serviceRequestId: any }
+): import("react-router").To {
+  throw new Error("Function not implemented.");
 }

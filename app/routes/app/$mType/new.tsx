@@ -1,5 +1,5 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
-import { useParams, useTransition } from "@remix-run/react";
+import { useNavigate, useParams, useTransition } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
@@ -16,15 +16,14 @@ import { MarketplaceForm } from "~/features/marketplace-form";
 import { RPCError } from "~/features/rpc-error";
 import { CreateLaborMarketWeb3Button } from "~/features/web3-button/create-labor-market";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
-import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { defaultNotifyTransactionActions, notifyTransactionIndexing } from "~/features/web3-transaction-toasts";
 import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { createLaborMarket } from "~/utils/fetch";
-import { removeLeadingZeros } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
+import { $path } from "remix-routes";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
@@ -55,21 +54,19 @@ export default function CreateMarketplace() {
   const { projects, tokens, defaultValues } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
   const { mType } = useParams();
+  const navigate = useNavigate();
 
   const [state, send] = useMachine(machine, {
     actions: {
       ...defaultNotifyTransactionActions,
-      devAutoIndex: (context) => {
-        // Create marketplace in the database as a dx side-effect
-        if (window.ENV.DEV_AUTO_INDEX) {
-          invariant(context.contractData, "Contract data is required");
-          invariant(context.transactionReceipt, "Transaction receipt is required");
-          // fire and forget
-          createLaborMarket({
-            ...context.contractData,
-            address: removeLeadingZeros(context.transactionReceipt.logs[0]?.topics[1] as string), // The labor market created address
-            sponsorAddress: context.contractData.userAddress,
-          });
+      redirect: () => {
+        navigate(
+          $path("/app/:mType", {
+            mType: mType,
+          })
+        );
+        if (state.context.transactionHash !== undefined) {
+          notifyTransactionIndexing(state.context.transactionHash);
         }
       },
     },

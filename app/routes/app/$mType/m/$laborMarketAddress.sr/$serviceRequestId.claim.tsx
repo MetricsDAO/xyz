@@ -1,4 +1,4 @@
-import { Link, useParams } from "@remix-run/react";
+import { Link, useNavigate, useParams } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
@@ -40,6 +40,7 @@ export default function ClaimToSubmit() {
   const { serviceRequest } = useTypedLoaderData<typeof loader>();
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -53,6 +54,16 @@ export default function ClaimToSubmit() {
       },
       notifyTransactionFailure: () => {
         defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+      redirect: () => {
+        invariant(state.context.contractData, "Contract data is required");
+        navigate(
+          $path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
+            mType: mType,
+            laborMarketAddress: serviceRequest.laborMarketAddress,
+            serviceRequestId: serviceRequest.id,
+          })
+        );
       },
     },
   });

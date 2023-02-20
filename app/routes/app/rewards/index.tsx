@@ -1,4 +1,4 @@
-import { Link, useSubmit } from "@remix-run/react";
+import { Link, useNavigate, useParams, useSubmit } from "@remix-run/react";
 import { useRef } from "react";
 import { Checkbox } from "~/components/checkbox";
 import { Pagination } from "~/components/pagination/pagination";
@@ -33,6 +33,7 @@ import { Label } from "~/components";
 import { listTokens } from "~/services/tokens.server";
 import type { Token } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
+import { $path } from "remix-routes";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -172,6 +173,8 @@ const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>
 function ClaimButton() {
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const { mType } = useParams();
+  const navigate = useNavigate();
 
   const [state, send] = useMachine(
     machine.withContext({
@@ -185,6 +188,9 @@ function ClaimButton() {
     {
       actions: {
         ...defaultNotifyTransactionActions,
+        redirect: () => {
+          navigate($path("/app/rewards"));
+        },
       },
     }
   );

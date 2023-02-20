@@ -1,5 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useParams, useSubmit } from "@remix-run/react";
+import { useNavigate, useParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
@@ -42,6 +42,7 @@ import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { $path } from "remix-routes";
 
 const paramsSchema = z.object({
   laborMarketAddress: z.string(),
@@ -190,6 +191,8 @@ function ReviewQuestionDrawerButton({
   const [selected, setSelected] = useState<number>(2);
   const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const { mType } = useParams();
 
   const [state, send] = useMachine(reviewSubmissionMachine, {
     actions: {
@@ -201,6 +204,16 @@ function ReviewQuestionDrawerButton({
       },
       notifyTransactionFailure: () => {
         defaultNotifyTransactionActions.notifyTransactionFailure();
+      },
+      redirect: () => {
+        invariant(state.context.contractData, "Contract data is required");
+        navigate(
+          $path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
+            mType: mType,
+            laborMarketAddress: submission.laborMarketAddress,
+            serviceRequestId: submission.serviceRequestId,
+          })
+        );
       },
     },
   });
