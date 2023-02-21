@@ -34,6 +34,8 @@ import { listTokens } from "~/services/tokens.server";
 import type { Token, Wallet } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
 import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
+import type { EthersError } from "~/features/web3-button/types";
+import { RPCError } from "~/features/rpc-error";
 
 const validator = withZod(RewardsSearchSchema);
 
@@ -231,6 +233,11 @@ function ClaimButton({ reward, wallets, tokens }: { reward: RewardsDoc; wallets:
     setSuccessModalOpen(false);
   }
 
+  const [error, setError] = useState<EthersError>();
+  const onPrepareTransactionError = (error: EthersError) => {
+    setError(error);
+  };
+
   return (
     <>
       <Button onClick={openConfirmedModal}>Claim</Button>
@@ -262,11 +269,18 @@ function ClaimButton({ reward, wallets, tokens }: { reward: RewardsDoc; wallets:
                 </Link>
               </p>
             </div>
+            {error && <RPCError error={error} />}
             <div className="flex gap-2 justify-end">
               <Button variant="cancel" onClick={closeConfirmedModal}>
                 Cancel
               </Button>
-              <ClaimRewardWeb3Button data={state.context.contractData} onWriteSuccess={onWriteSuccess} />
+              {!error && (
+                <ClaimRewardWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
             </div>
           </div>
         ) : (
