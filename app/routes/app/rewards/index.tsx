@@ -73,7 +73,7 @@ export default function Rewards() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={reviewedRewards} wallets={wallets} tokens={tokens} />
+            <RewardsListView rewards={reviewedRewards as RewardsDoc[]} wallets={wallets} tokens={tokens} />
             <div className="w-fit m-auto">
               <Pagination page={search.page} totalPages={Math.ceil(reviewedRewards.length / search.first)} />
             </div>
