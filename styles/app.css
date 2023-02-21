@@ -6,6 +6,14 @@
   html {
     @apply antialiased;
   }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
 }
 
 @layer components {
