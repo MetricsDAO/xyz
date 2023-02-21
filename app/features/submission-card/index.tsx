@@ -1,12 +1,12 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link, useParams } from "@remix-run/react";
-import { Card, Score, UserBadge } from "~/components";
-import { fromNow } from "~/utils/date";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
-import type { ChallengeSubmissonProps } from "~/routes/app/$mType/m/$laborMarketAddress.s/$submissionId";
+import { Card, UserBadge } from "~/components";
+import type { SubmissionDoc } from "~/domain";
+import { fromNow } from "~/utils/date";
 
-export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
+export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
 
@@ -25,7 +25,7 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
         ) : (
           <AnalyticsInfo submission={submission} />
         )}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 md:mr-7 md:ml-24">
           {/* MVP HIDE */}
           {/* <Score score={2} /> */}
           <div className="flex text-xs text-gray-500 items-center">
@@ -51,16 +51,16 @@ export function SubmissionCard({ submission }: ChallengeSubmissonProps) {
   );
 }
 
-function BrainstormInfo({ submission }: ChallengeSubmissonProps) {
+function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
   return (
-    <main className="space-y-2 flex-1">
+    <main className="space-y-2 flex-1 break-words text-ellipsis overflow-hidden max-h-96">
       <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
       <section className="text-gray-900">{submission.appData?.description}</section>
     </main>
   );
 }
 
-function AnalyticsInfo({ submission }: ChallengeSubmissonProps) {
+function AnalyticsInfo({ submission }: { submission: SubmissionDoc }) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
       {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
