@@ -7,6 +7,7 @@ import type {
   SubmissionDoc,
   SubmissionForm,
   SubmissionSearch,
+  SubmissionWithReviewsDoc,
 } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
@@ -144,7 +145,7 @@ export const prepareSubmission = async (
  */
 export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {
   return mongo.submissions
-    .aggregate([
+    .aggregate<SubmissionWithReviewsDoc>([
       {
         $match: {
           $and: [

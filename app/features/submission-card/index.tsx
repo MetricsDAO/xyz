@@ -3,13 +3,18 @@ import type { User } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Card, UserBadge } from "~/components";
-import type { SubmissionWithReviewsDoc } from "~/domain";
+import type { LaborMarketDoc, SubmissionWithReviewsDoc } from "~/domain";
+import { useUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
 
-export function SubmissionCard({ submission, user }: { submission: SubmissionWithReviewsDoc; user: User | null }) {
-  const { mType } = useParams();
-  invariant(mType, "marketplace type must be specified");
-
+export function SubmissionCard({
+  submission,
+  laborMarket,
+}: {
+  laborMarket: LaborMarketDoc;
+  submission: SubmissionWithReviewsDoc;
+}) {
+  const user = useUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
   return (
@@ -18,7 +23,7 @@ export function SubmissionCard({ submission, user }: { submission: SubmissionWit
         to={`/app/market/${submission.laborMarketAddress}/submission/${submission.id}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
-        {mType === "brainstorm" ? (
+        {laborMarket.appData?.type === "brainstorm" ? (
           <BrainstormInfo submission={submission} />
         ) : (
           <AnalyticsInfo submission={submission} />
