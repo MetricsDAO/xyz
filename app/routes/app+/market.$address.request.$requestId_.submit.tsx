@@ -22,7 +22,7 @@ import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 
 const validator = withZod(SubmissionFormSchema);
-const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
+const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 const submissionMachine = createBlockchainTransactionStateMachine<SubmissionContract>();
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
@@ -30,14 +30,14 @@ export const action = async ({ request, params }: ActionArgs) => {
   const user = await getUser(request);
   invariant(user, "You must be logged in to create a marketplace");
 
-  const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  const { requestId, address } = paramsSchema.parse(params);
+  const serviceRequest = await findServiceRequest(requestId, address);
   invariant(serviceRequest, "service request must exist");
 
   const result = await validator.validate(await request.formData());
   if (result.error) return validationError(result.error);
 
-  const preparedSubmission = await prepareSubmission(user, laborMarketAddress, serviceRequestId, result.data);
+  const preparedSubmission = await prepareSubmission(user, address, requestId, result.data);
   return typedjson({ preparedSubmission });
 };
 

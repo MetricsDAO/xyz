@@ -1,4 +1,4 @@
-import { Link, useParams } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
@@ -21,23 +21,28 @@ import { findServiceRequest } from "~/services/service-request.server";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import invariant from "tiny-invariant";
+import { findLaborMarket } from "~/services/labor-market.server";
 
-const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
+const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
-  const { serviceRequestId, laborMarketAddress } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  const { requestId, address } = paramsSchema.parse(params);
+  const serviceRequest = await findServiceRequest(requestId, address);
+  const laborMarket = await findLaborMarket(address);
   if (!serviceRequest) {
-    throw notFound({ id: serviceRequestId });
+    throw notFound({ id: requestId });
+  }
+  if (!laborMarket) {
+    throw notFound({ address });
   }
 
-  return typedjson({ serviceRequest }, { status: 200 });
+  return typedjson({ serviceRequest, laborMarket }, { status: 200 });
 };
 
 const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
 
 export default function ClaimToSubmit() {
-  const { serviceRequest } = useTypedLoaderData<typeof loader>();
-  const { mType } = useParams();
+  const { serviceRequest, laborMarket } = useTypedLoaderData<typeof loader>();
+  const mType = laborMarket.appData?.type;
   invariant(mType, "marketplace type must be specified");
 
   const [isModalOpen, setIsModalOpen] = useState(false);

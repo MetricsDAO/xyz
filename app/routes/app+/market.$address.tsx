@@ -41,7 +41,7 @@ export default function Marketplace() {
         <div className="flex flex-wrap gap-5">
           <ConnectWalletWrapper>
             <Button size="lg" asChild>
-              <Link to={`/app/market/${laborMarket.address}/launch`}>Launch Challenge</Link>
+              <Link to={`/app/market/${laborMarket.address}/request/new`}>Launch Challenge</Link>
             </Button>
           </ConnectWalletWrapper>
         </div>

@@ -63,9 +63,10 @@ export const action = async ({ request, params }: ActionArgs) => {
 };
 
 export default function CreateServiceRequest() {
-  const { mType } = useParams();
-  const { defaultValues, tokens, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const { defaultValues, tokens, laborMarketProjects, laborMarket } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
+  const mType = laborMarket.appData?.type;
+  invariant(mType, "Labor Market must have a type");
 
   const [state, send] = useMachine(serviceRequestMachine, {
     actions: {
@@ -130,7 +131,7 @@ export default function CreateServiceRequest() {
         validator={validator}
         className="space-y-10"
       >
-        <ChallengeForm validTokens={tokens} validProjects={laborMarketProjects} />
+        <ChallengeForm validTokens={tokens} validProjects={laborMarketProjects} mType={mType} />
         <ConnectWalletWrapper>
           <Button variant="primary" type="submit">
             Next
