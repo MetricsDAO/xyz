@@ -1,7 +1,13 @@
 import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
-import type { SubmissionContract, SubmissionDoc, SubmissionForm, SubmissionSearch } from "~/domain/submission";
+import type {
+  RewardsSearch,
+  SubmissionContract,
+  SubmissionDoc,
+  SubmissionForm,
+  SubmissionSearch,
+} from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
@@ -174,7 +180,55 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
         },
       },
     ])
-    .sort({ [params.sortBy]: params.order })
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
+};
+
+/**
+ * Returns an array of Submissions with their Service Request for a given user
+ */
+export const searchUserSubmissions = async (params: RewardsSearch) => {
+  return mongo.submissions
+    .aggregate([
+      {
+        $match: {
+          $and: [
+            { "configuration.serviceProvider": params.serviceProvider },
+            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "serviceRequests",
+          let: {
+            sr_id: "$serviceRequestId",
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$id", "$$sr_id"] },
+                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                    params.token
+                      ? {
+                          serviceRequestRewardPools: { $elemMatch: { "$configuration.pToken": { $in: params.token } } },
+                        }
+                      : {},
+                  ],
+                },
+              },
+            },
+          ],
+          as: "sr",
+        },
+      },
+    ])
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
