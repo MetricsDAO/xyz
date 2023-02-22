@@ -132,3 +132,50 @@ export const prepareSubmission = async (
   });
   return contractData;
 };
+
+/**
+ * Returns an array of Submissions with their Reviews for a given Service Request.
+ */
+export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {
+  return mongo.submissions
+    .aggregate([
+      {
+        $match: {
+          $and: [
+            params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {},
+            params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {},
+            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          let: {
+            sr_id: "$serviceRequestId",
+            m_addr: "$laborMarketAddress",
+            s_id: "$id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$submissionId", "$$s_id"] },
+                    { $eq: ["$id", "$$sr_id"] },
+                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "reviews",
+        },
+      },
+    ])
+    .sort({ [params.sortBy]: params.order })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
+};

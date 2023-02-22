@@ -30,7 +30,7 @@ export const ReviewEventSchema = z.object({
   requestId: z.string(),
 });
 
-const ReviewDocSchema = z.object({
+export const ReviewDocSchema = z.object({
   submissionId: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),

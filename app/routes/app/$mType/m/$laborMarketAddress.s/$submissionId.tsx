@@ -38,6 +38,7 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { searchReviews } from "~/services/review-service.server";
+import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
@@ -51,10 +52,12 @@ const paramsSchema = z.object({
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
+  const user = await getUser(data.request);
   const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress });
+  const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
 
   const submission = await findSubmission(submissionId, laborMarketAddress);
   if (!submission) {
@@ -63,13 +66,13 @@ export const loader = async (data: DataFunctionArgs) => {
   const laborMarket = await findLaborMarket(laborMarketAddress);
   invariant(laborMarket, "Labor market not found");
 
-  return typedjson({ submission, reviews, params, laborMarket }, { status: 200 });
+  return typedjson({ submission, reviews, params, laborMarket, reviewedByUser }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket, reviewedByUser } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const { mType } = useParams();
@@ -101,10 +104,10 @@ export default function ChallengeSubmission() {
           </DetailItem>
           <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">
-            {true ? (
+            {reviewedByUser ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
-                <p className="font-medium">{`You + ${reviews.length} reviewers`}</p>
+                <p className="font-medium">{`You + ${reviews.length} reviews`}</p>
               </div>
             ) : (
               <Badge>{reviews.length}</Badge>

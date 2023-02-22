@@ -13,9 +13,11 @@ import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
+import type { SubmissionWithReviewsDoc } from "~/domain/submission";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { SubmissionCard } from "~/features/submission-card";
-import { searchSubmissions } from "~/services/submissions.server";
+import { getUser } from "~/services/session.server";
+import { searchSubmissionsWithReviews } from "~/services/submissions.server";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -24,12 +26,13 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   invariant(params.laborMarketAddress, "laborMarketAddress is required");
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissions({
+  const submissions = await searchSubmissionsWithReviews({
     ...search,
     laborMarketAddress: params.laborMarketAddress,
     serviceRequestId: params.serviceRequestId,
   });
-  return typedjson({ submissions });
+  const user = await getUser(request);
+  return typedjson({ submissions, user });
 };
 
 export type ChallengeSubmissonProps = {
@@ -37,7 +40,7 @@ export type ChallengeSubmissonProps = {
 };
 
 export default function ChallengeIdSubmissions() {
-  const { submissions } = useTypedLoaderData<typeof loader>();
+  const { submissions, user } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -51,7 +54,7 @@ export default function ChallengeIdSubmissions() {
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
         {submissions?.map((s) => {
-          return <SubmissionCard key={s.id} submission={s} />;
+          return <SubmissionCard key={s.id} submission={s as SubmissionWithReviewsDoc} user={user} />;
         })}
       </main>
 
