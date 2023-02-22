@@ -13,7 +13,6 @@ import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submiss
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
-import type { RewardsDoc } from "~/domain/submission";
 
 /**
  * Returns an array of SubmissionDoc for a given Service Request.
@@ -232,5 +231,5 @@ export const searchUserSubmissions = async (params: RewardsSearch) => {
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
-    .toArray(); //as Promise<RewardsDoc[]>
+    .toArray();
 };
