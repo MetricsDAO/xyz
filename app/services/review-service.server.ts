@@ -9,7 +9,7 @@ import { mongo } from "./mongo.server";
 export const searchReviews = async (params: ReviewSearch) => {
   return mongo.reviews
     .find(searchParams(params))
-    .sort({ [params.sortBy]: params.order })
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
@@ -24,7 +24,7 @@ export const countReviews = async (params: FilterParams) => {
   return mongo.reviews.countDocuments(searchParams(params));
 };
 
-type FilterParams = Pick<ReviewSearch, "laborMarketAddress" | "serviceRequestId" | "submissionId">;
+type FilterParams = Pick<ReviewSearch, "laborMarketAddress" | "serviceRequestId" | "submissionId" | "score">;
 /**
  * Convenience function to share the search parameters between search and count.
  * @param {FilterParams} params - The search parameters.
@@ -35,6 +35,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
     ...(params.submissionId ? { submissionId: params.submissionId } : {}),
+    ...(params.score ? { score: { $in: params.score } } : {}),
   };
 };
 
