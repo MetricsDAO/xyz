@@ -103,8 +103,8 @@
     "wagmi": "^0.10.11-cjs",
     "winston": "^3.8.2",
     "xstate": "^4.35.2",
-    "zod": "^3.19.1",
-    "zod-form-data": "^1.2.4"
+    "zod": "^3.20.6",
+    "zod-form-data": "^2.0.0"
   },
   "devDependencies": {
     "remix-flat-routes": "^0.5.7",

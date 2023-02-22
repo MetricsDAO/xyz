@@ -30,7 +30,6 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
   description: true,
   type: true,
   projectSlugs: true,
-  rewardTokens: true,
 });
 
 export const LaborMarketFormSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
@@ -71,8 +70,8 @@ export const LaborMarketSearchSchema = zfd.formData({
   order: z.enum(["asc", "desc"]).default("desc").describe("Order of the results."),
   project: z.array(z.string()).optional().describe("Project slugs to filter by."),
   token: z.array(z.string()).optional().describe("Token symbols to filter by."),
-  page: z.number().min(1).default(1).describe("Page number."),
-  first: z.number().min(1).max(100).default(12).describe("The number of results to return."),
+  page: z.coerce.number().min(1).default(1).describe("Page number."),
+  first: z.coerce.number().min(1).max(100).default(12).describe("The number of results to return."),
 });
 
 const BadgePairSchema = z.object({
