@@ -30,12 +30,12 @@ import { toTokenAbbreviation } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
 
 const validator = withZod(ServiceRequestFormSchema);
-const paramsSchema = z.object({ laborMarketAddress: z.string() });
+const paramsSchema = z.object({ address: z.string() });
 const serviceRequestMachine = createBlockchainTransactionStateMachine<ServiceRequestContract>();
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
-  const { laborMarketAddress } = paramsSchema.parse(params);
-  const laborMarket = await findLaborMarket(laborMarketAddress);
+  const { address } = paramsSchema.parse(params);
+  const laborMarket = await findLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");
   }
@@ -55,10 +55,10 @@ export const action = async ({ request, params }: ActionArgs) => {
   const user = await getUser(request);
   invariant(user, "You must be logged in to create a service request");
   const result = await validator.validate(await request.formData());
-  const { laborMarketAddress } = paramsSchema.parse(params);
+  const { address } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);
 
-  const preparedServiceRequest = await prepareServiceRequest(user, laborMarketAddress, result.data);
+  const preparedServiceRequest = await prepareServiceRequest(user, address, result.data);
   return typedjson({ preparedServiceRequest });
 };
 
