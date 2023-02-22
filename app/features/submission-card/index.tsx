@@ -1,6 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link, useParams } from "@remix-run/react";
-import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 import { Card, UserBadge } from "~/components";
 import type { SubmissionDoc } from "~/domain";
@@ -13,11 +12,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={$path("/app/:mType/m/:laborMarketAddress/s/:submissionId", {
-          mType: mType,
-          laborMarketAddress: submission.laborMarketAddress,
-          submissionId: submission.id,
-        })}
+        to={`/app/market/${submission.laborMarketAddress}/submission/${submission.id}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         {mType === "brainstorm" ? (
