@@ -17,13 +17,13 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
       <input type="hidden" name="type" value={mType} />
       <Field>
-        <Label size="lg">Challenge Marketplace Title</Label>
+        <Label size="lg">Challenge Marketplace Title*</Label>
         <ValidatedInput type="text" name="title" placeholder="e.g Solana Breakpoint 2023" />
         <Error name="title" />
       </Field>
 
       <Field>
-        <Label size="lg">Details</Label>
+        <Label size="lg">Details*</Label>
         <ValidatedTextarea
           name="description"
           placeholder={
@@ -37,7 +37,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       </Field>
 
       <Field>
-        <Label size="lg">Blockchain/Project(s)</Label>
+        <Label size="lg">Blockchain/Project(s)*</Label>
         <ValidatedCombobox
           placeholder="e.g Ethereum, Solana, etc..."
           name="projectSlugs"
@@ -50,7 +50,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <Field>
           <div className="flex items-center">
             <Label size="lg" className="mr-auto">
-              Who has permission to launch challenges?
+              Who has permission to launch challenges?*
             </Label>
             <p className="flex text-sm space-x-3">
               <Button variant="link" size="none" asChild>
@@ -78,12 +78,12 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         {launchAccess === "delegates" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field>
-              <Label>Badger Contract Address</Label>
+              <Label>Badger Contract Address*</Label>
               <ValidatedInput name="launch.badgerAddress" />
               <Error name="launch.badgerAddress" />
             </Field>
             <Field>
-              <Label>Badger Token ID</Label>
+              <Label>Badger Token ID*</Label>
               <ValidatedInput name="launch.badgerTokenId" />
               <Error name="launch.badgerTokenId" />
             </Field>
@@ -113,7 +113,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <h4 className="font-semibold mb-4">Control who has permission to submit on challenges</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Minimum rMETRIC Balance</Label>
+            <Label>Minimum rMETRIC Balance*</Label>
             <ValidatedInput name="submitRepMin" />
             <Error name="submitRepMin" />
           </Field>
@@ -129,12 +129,12 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <Label size="lg">Control who has permission to review challenge submissions</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Reviewer Badger Contract Address</Label>
+            <Label>Reviewer Badger Contract Address*</Label>
             <ValidatedInput type="text" name="reviewBadgerAddress" placeholder="0x..." />
             <Error name="reviewBadgerAddress" />
           </Field>
           <Field>
-            <Label>Reviewer Badger Token ID</Label>
+            <Label>Reviewer Badger Token ID*</Label>
             <ValidatedInput type="text" name="reviewBadgerTokenId" />
             <Error name="reviewBadgerTokenId" />
           </Field>

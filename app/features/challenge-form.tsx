@@ -38,7 +38,7 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
   return (
     <>
       <section className="space-y-3">
-        <h2 className="font-bold">Challenge Title</h2>
+        <h2 className="font-bold">Challenge Title*</h2>
         <Field>
           <ValidatedInput name="title" placeholder="Challenge Title" className="w-full" />
           <Error name="title" />
@@ -71,19 +71,15 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-bold">When will submissions be entered by?</h2>
-        <div className="flex flex-col md:flex-row gap-2">
-          <div className="flex-grow">
-            <Field>
-              <ValidatedInput onChange={handleSubmitDateChange} type="date" name="endDate" placeholder="End date" />
-              <Error name="endDate" />
-            </Field>
-            <Field>
-              <ValidatedInput onChange={handleSubmitTimeChange} type="time" name="endTime" placeholder="End time" />
-              <Error name="endTime" />
-            </Field>
-          </div>
-        </div>
+        <h2 className="font-bold">When will submissions be entered by?*</h2>
+        <Field>
+          <ValidatedInput onChange={handleSubmitDateChange} type="date" name="endDate" placeholder="End date" />
+          <Error name="endDate" />
+        </Field>
+        <Field>
+          <ValidatedInput onChange={handleSubmitTimeChange} type="time" name="endTime" placeholder="End time" />
+          <Error name="endTime" />
+        </Field>
         <p className="text-gray-400 italic">
           {selectedSubmitDate &&
             selectedSubmitTime &&
@@ -92,7 +88,7 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-bold">When must peer review be complete and winners selected by?</h2>
+        <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
         <Field>
           <ValidatedInput onChange={handleReviewDateChange} type="date" name="reviewEndDate" placeholder="End date" />
           <Error name="reviewEndDate" />
@@ -109,7 +105,7 @@ export function ChallengeForm({ validTokens, validProjects }: { validTokens: Tok
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-bold">Rewards</h2>
+        <h2 className="font-bold">Rewards*</h2>
         <div className="flex flex-col md:flex-row gap-2 items-baseline">
           <div className="flex-grow w-full">
             <Field>
@@ -143,7 +139,7 @@ function BrainstormTextArea() {
   return (
     <>
       <p>{value}</p>
-      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
+      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address*</h2>
       {/* <MDEditor value={value} onChange={setValue} />
       <MDEditor.Markdown source={value} /> */}
       <input type="hidden" name="description" value={value} />
@@ -156,7 +152,7 @@ function AnalyticsTextArea() {
   return (
     <>
       <div className="flex flex-col lg:flex-row lg:items-center">
-        <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?</h2>
+        <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?*</h2>
         <div className="group">
           <InformationCircleIcon className="h-5 w-5 text-neutral-400 ml-1" />
           <div className="absolute z-30 hidden group-hover:block rounded-lg border-2 p-5 bg-blue-100 space-y-6 text-sm max-w-lg">
