@@ -16,7 +16,7 @@ import { ValidatedSelect } from "~/components/select";
 import type { SubmissionWithReviewsDoc } from "~/domain/submission";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { SubmissionCard } from "~/features/submission-card";
-import { getUser } from "~/services/session.server";
+import { requireLaborMarket } from "~/services/labor-market.server";
 import { searchSubmissionsWithReviews } from "~/services/submissions.server";
 
 const validator = withZod(SubmissionSearchSchema);
@@ -26,13 +26,13 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
+  const laborMarket = await requireLaborMarket(address);
   const submissions = await searchSubmissionsWithReviews({
     ...search,
-    laborMarketAddress: address,
+    laborMarketAddress: laborMarket?.address,
     serviceRequestId: requestId,
   });
-  const user = await getUser(request);
-  return typedjson({ submissions, user });
+  return typedjson({ laborMarket, submissions });
 };
 
 export type ChallengeSubmissonProps = {
@@ -40,7 +40,7 @@ export type ChallengeSubmissonProps = {
 };
 
 export default function ChallengeIdSubmissions() {
-  const { submissions, user } = useTypedLoaderData<typeof loader>();
+  const { submissions, laborMarket } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -53,9 +53,9 @@ export default function ChallengeIdSubmissions() {
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
-        {submissions?.map((s) => {
-          return <SubmissionCard key={s.id} submission={s as SubmissionWithReviewsDoc} user={user} />;
-        })}
+        {submissions?.map((s) => (
+          <SubmissionCard key={s.id} laborMarket={laborMarket} submission={s} />
+        ))}
       </main>
 
       <aside className="md:w-1/4 text-sm">

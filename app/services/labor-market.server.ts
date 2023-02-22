@@ -118,3 +118,9 @@ export async function indexLaborMarket(event: TracerEvent) {
 export const findLaborMarket = (address: string) => {
   return mongo.laborMarkets.findOne({ address, valid: true });
 };
+
+export async function requireLaborMarket(address: string) {
+  const doc = await findLaborMarket(address);
+  if (!doc) throw new Error(`LaborMarket ${address} not found`);
+  return doc;
+}
