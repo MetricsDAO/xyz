@@ -8,7 +8,7 @@ import { typedjson } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
+import { z } from "zod";
 import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
@@ -21,15 +21,15 @@ import { searchSubmissionsWithReviews } from "~/services/submissions.server";
 
 const validator = withZod(SubmissionSearchSchema);
 
+const paramSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
-  invariant(params.serviceRequestId, "serviceRequestId is required");
-  invariant(params.laborMarketAddress, "laborMarketAddress is required");
+  const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const submissions = await searchSubmissionsWithReviews({
     ...search,
-    laborMarketAddress: params.laborMarketAddress,
-    serviceRequestId: params.serviceRequestId,
+    laborMarketAddress: address,
+    serviceRequestId: requestId,
   });
   const user = await getUser(request);
   return typedjson({ submissions, user });

@@ -1,6 +1,4 @@
-import { RewardBadge } from "~/components/reward-badge";
 import { Card } from "~/components/card";
-import { Badge } from "~/components/badge";
 import { useRouteData } from "remix-utils";
 import type { findLaborMarket } from "~/services/labor-market.server";
 import invariant from "tiny-invariant";
@@ -11,7 +9,7 @@ export default function MarketplaceIdRewards() {
   const data = useRouteData<{
     laborMarket: Awaited<ReturnType<typeof findLaborMarket>>;
     tokens: Awaited<ReturnType<typeof listTokens>>;
-  }>("routes/app/$mType/m/$laborMarketAddress");
+  }>("routes/app+/market.$address");
   if (!data) {
     throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");
   }

@@ -1,9 +1,8 @@
-import { Link, Outlet, useParams } from "@remix-run/react";
-import { $path } from "remix-routes";
+import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, notFound } from "remix-utils";
-import invariant from "tiny-invariant";
+import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -15,9 +14,10 @@ import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
+const paramsSchema = z.object({ address: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
-  invariant(data.params.laborMarketAddress, "laborMarketAddress must be specified");
-  const laborMarket = await findLaborMarket(data.params.laborMarketAddress);
+  const { address } = paramsSchema.parse(data.params);
+  const laborMarket = await findLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");
   }
@@ -27,16 +27,12 @@ export const loader = async (data: DataFunctionArgs) => {
   }
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
-
   const tokens = await listTokens();
-
   return typedjson({ laborMarket, laborMarketProjects, tokens });
 };
 
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
-  const { mType } = useParams();
-  invariant(mType, "marketplace type must be specified");
 
   return (
     <Container className="py-16 px-10">
@@ -45,14 +41,7 @@ export default function Marketplace() {
         <div className="flex flex-wrap gap-5">
           <ConnectWalletWrapper>
             <Button size="lg" asChild>
-              <Link
-                to={$path("/app/:mType/m/:laborMarketAddress/sr/new", {
-                  mType: mType,
-                  laborMarketAddress: laborMarket.address,
-                })}
-              >
-                Launch Challenge
-              </Link>
+              <Link to={`/app/market/${laborMarket.address}/launch`}>Launch Challenge</Link>
             </Button>
           </ConnectWalletWrapper>
         </div>

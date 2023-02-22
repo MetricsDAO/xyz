@@ -1,4 +1,4 @@
-import { Link, Outlet, useParams } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -10,9 +10,6 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { findServiceRequest } from "~/services/service-request.server";
-
-import { $path } from "remix-routes";
-import invariant from "tiny-invariant";
 import { UserBadge } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -28,14 +25,14 @@ import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 
-const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
+const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  const { address, requestId } = paramsSchema.parse(params);
+  const serviceRequest = await findServiceRequest(requestId, address);
   if (!serviceRequest) {
-    throw notFound({ serviceRequestId });
+    throw notFound({ requestId });
   }
-  const laborMarket = await findLaborMarket(laborMarketAddress);
+  const laborMarket = await findLaborMarket(address);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }
@@ -47,15 +44,13 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
   const tokens = await listTokens();
 
-  const numOfReviews = await countReviews({ laborMarketAddress, serviceRequestId });
+  const numOfReviews = await countReviews({ laborMarketAddress: address, serviceRequestId: requestId });
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 
 export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
     useTypedLoaderData<typeof loader>();
-  const { mType } = useParams();
-  invariant(mType, "marketplace type must be specified");
 
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
@@ -100,15 +95,7 @@ export default function ServiceRequest() {
             <Button variant="cancel" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link
-                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/review", {
-                      mType: mType,
-                      laborMarketAddress: serviceRequest.laborMarketAddress,
-                      serviceRequestId: serviceRequest.id,
-                    })}
-                  >
-                    Claim to Review
-                  </Link>
+                  <Link to={`/app/${laborMarket.address}/request/${serviceRequest.id}/review`}>Claim to Review</Link>
                 </Button>
               </ConnectWalletWrapper>
             </Button>
@@ -117,15 +104,7 @@ export default function ServiceRequest() {
             <Button variant="primary" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link
-                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/claim", {
-                      mType: mType,
-                      laborMarketAddress: serviceRequest.laborMarketAddress,
-                      serviceRequestId: serviceRequest.id,
-                    })}
-                  >
-                    Claim to Submit
-                  </Link>
+                  <Link to={`/app/${laborMarket.address}/request/${serviceRequest.id}/claim`}>Claim to Submit</Link>
                 </Button>
               </ConnectWalletWrapper>
             </Button>
@@ -134,15 +113,7 @@ export default function ServiceRequest() {
             {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link
-                    to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId/submit", {
-                      mType: mType,
-                      laborMarketAddress: serviceRequest.laborMarketAddress,
-                      serviceRequestId: serviceRequest.id,
-                    })}
-                  >
-                    Submit
-                  </Link>
+                  <Link to={`/app/${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
                 </Button>
               </ConnectWalletWrapper>
             )}

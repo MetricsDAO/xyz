@@ -107,6 +107,7 @@
     "zod-form-data": "^1.2.4"
   },
   "devDependencies": {
+    "remix-flat-routes": "^0.5.7",
     "@ladle/react": "^2.4.4",
     "@remix-run/dev": "^1.7.0",
     "@remix-run/eslint-config": "^1.7.0",

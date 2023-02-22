@@ -18,6 +18,20 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   return typedjson({ hideTermsModal: !!cookie.hideTermsModal, redirectPath: url.pathname });
 };
 
+export default function Index() {
+  const { hideTermsModal, redirectPath } = useTypedLoaderData<typeof loader>();
+  const user = useOptionalUser();
+  const showAgreeToTermsModal = !user && !hideTermsModal;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Shell>
+        <Outlet />
+      </Shell>
+      <WelcomeModal opened={showAgreeToTermsModal} redirectPath={redirectPath} />
+    </QueryClientProvider>
+  );
+}
+
 export const action = async ({ request }: ActionArgs) => {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
@@ -34,17 +48,3 @@ export const action = async ({ request }: ActionArgs) => {
     },
   });
 };
-
-export default function Index() {
-  const { hideTermsModal, redirectPath } = useTypedLoaderData<typeof loader>();
-  const user = useOptionalUser();
-  const showAgreeToTermsModal = !user && !hideTermsModal;
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Shell>
-        <Outlet />
-      </Shell>
-      <WelcomeModal opened={showAgreeToTermsModal} redirectPath={redirectPath} />
-    </QueryClientProvider>
-  );
-}

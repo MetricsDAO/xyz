@@ -6,7 +6,7 @@ import { claimToReviewDeadline } from "~/utils/helpers";
 
 export default function ServiceIdTimeline() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
-    "routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId"
+    "routes/app+/market_.$address.request.$requestId"
   );
   if (!data) {
     throw new Error("ServiceIdTimeline must be rendered under a ServiceId route");
