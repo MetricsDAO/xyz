@@ -12,7 +12,7 @@ export default function ServiceIdPrereqs() {
   const data = useRouteData<{
     serviceRequest: Awaited<ReturnType<typeof findServiceRequest>>;
     laborMarket: Awaited<ReturnType<typeof findLaborMarket>>;
-  }>("routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId");
+  }>("routes/app+/market_.$address.request.$requestId");
   if (!data) {
     throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");
   }
