@@ -1,14 +1,17 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import type { User } from "@prisma/client";
 import { Link, useParams } from "@remix-run/react";
 import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 import { Card, UserBadge } from "~/components";
-import type { SubmissionDoc } from "~/domain";
+import type { SubmissionWithReviewsDoc } from "~/domain";
 import { fromNow } from "~/utils/date";
 
-export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
+export function SubmissionCard({ submission, user }: { submission: SubmissionWithReviewsDoc; user: User | null }) {
   const { mType } = useParams();
   invariant(mType, "marketplace type must be specified");
+
+  const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
   return (
     <Card className="text-sm p-6 space-y-4">
@@ -25,12 +28,11 @@ export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
         ) : (
           <AnalyticsInfo submission={submission} />
         )}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 md:mr-7 md:ml-24">
           {/* MVP HIDE */}
           {/* <Score score={2} /> */}
           <div className="flex text-xs text-gray-500 items-center">
-            {/*TODO: use actual data */}
-            {false ? (
+            {reviewedByUser ? (
               <>
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="text-zinc-800">You</p>
@@ -39,7 +41,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
             ) : (
               <></>
             )}
-            <p>{submission.reviewCount} reviewers</p>
+            <p>{submission.reviewCount} reviews</p>
           </div>
         </div>
       </Link>
@@ -51,16 +53,16 @@ export function SubmissionCard({ submission }: { submission: SubmissionDoc }) {
   );
 }
 
-function BrainstormInfo({ submission }: { submission: SubmissionDoc }) {
+function BrainstormInfo({ submission }: { submission: SubmissionWithReviewsDoc }) {
   return (
-    <main className="space-y-2 flex-1">
+    <main className="space-y-2 flex-1 break-words text-ellipsis overflow-hidden max-h-96">
       <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
       <section className="text-gray-900">{submission.appData?.description}</section>
     </main>
   );
 }
 
-function AnalyticsInfo({ submission }: { submission: SubmissionDoc }) {
+function AnalyticsInfo({ submission }: { submission: SubmissionWithReviewsDoc }) {
   return (
     <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
       {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />

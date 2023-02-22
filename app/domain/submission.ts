@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 import { ServiceRequestDocSchema } from "./service-request";
+import { ReviewDocSchema } from "./review";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -71,6 +72,9 @@ export const RewardsSearchSchema = z.object({
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   serviceProvider: EvmAddressSchema.optional(),
+
+export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
+  reviews: z.array(ReviewDocSchema),
 });
 
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
@@ -80,3 +84,5 @@ export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type RewardsDoc = z.infer<typeof RewardsSchema>;
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
+export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;
+

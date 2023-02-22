@@ -140,10 +140,55 @@ export const prepareSubmission = async (
   return contractData;
 };
 
-type FilterRewardsParams = Pick<RewardsSearch, "serviceProvider">;
+/**
+ * Returns an array of Submissions with their Reviews for a given Service Request.
+ */
+export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {
+  return mongo.submissions
+    .aggregate([
+      {
+        $match: {
+          $and: [
+            params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {},
+            params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {},
+            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          let: {
+            sr_id: "$serviceRequestId",
+            m_addr: "$laborMarketAddress",
+            s_id: "$id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$submissionId", "$$s_id"] },
+                    { $eq: ["$id", "$$sr_id"] },
+                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "reviews",
+        },
+      },
+    ])
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
+};
 
 /**
- * Returns an array of ??? for a given user
+ * Returns an array of Submissions with their Service Request for a given user
  */
 export const searchUserSubmissions = async (params: RewardsSearch) => {
   return mongo.submissions
