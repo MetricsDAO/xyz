@@ -34,17 +34,6 @@ export default function ChallengeIdRewards() {
           </DetailItem>
         </Detail>
       </Card>
-
-      {/* MVP Hide */}
-      {/* <Card className="p-6">
-        <h3 className="font-medium mb-4">Your Projected Rewards</h3>
-        <Detail>
-          <DetailItem title="Estimated avg. rewards based on current claims to submit (may fluctuate)">
-            <RewardBadge amount={20} token="SOL" rMETRIC={100} />
-          </DetailItem>
-        </Detail>
-      </Card> */}
-
       <Card className="p-6">
         <h3 className="font-medium mb-4">Reward Curve</h3>
         <Detail>
