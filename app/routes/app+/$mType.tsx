@@ -3,7 +3,6 @@ import { Link, useParams, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
-import { getParamsOrFail } from "remix-params-helper";
 import { $params } from "remix-routes";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
@@ -35,8 +34,8 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
 
   url.searchParams.set("type", $params("/app/:mType", params).mType);
+  const searchParams = LaborMarketSearchSchema.parse(url.searchParams);
 
-  const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
   const marketplaces = await searchLaborMarkets(searchParams);
   const totalResults = await countLaborMarkets(searchParams);
   const tokens = await listTokens();

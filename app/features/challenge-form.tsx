@@ -1,7 +1,7 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 import { useParams } from "@remix-run/react";
-import MDEditor from "@uiw/react-md-editor";
+// import MDEditor from "@uiw/react-md-editor";
 import { useState } from "react";
 import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect, ValidatedTextarea } from "~/components";
 
@@ -122,8 +122,8 @@ function BrainstormTextArea() {
     <>
       <p>{value}</p>
       <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
-      <MDEditor value={value} onChange={setValue} />
-      <MDEditor.Markdown source={value} />
+      {/* <MDEditor value={value} onChange={setValue} />
+      <MDEditor.Markdown source={value} /> */}
       <input type="hidden" name="description" value={value} />
       <Error name="description" />
     </>
