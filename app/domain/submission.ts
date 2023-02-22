@@ -72,6 +72,7 @@ export const RewardsSearchSchema = z.object({
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   serviceProvider: EvmAddressSchema.optional(),
+});
 
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
   reviews: z.array(ReviewDocSchema),
@@ -85,4 +86,3 @@ export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type RewardsDoc = z.infer<typeof RewardsSchema>;
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;
-
