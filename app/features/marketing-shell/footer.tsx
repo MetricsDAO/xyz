@@ -2,6 +2,7 @@ import SocialIcons from "./social-icons";
 import { Link } from "@remix-run/react";
 import clsx from "clsx";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { Fragment } from "react";
 
 const links = [
   { link: "https://metricsdao.xyz/whitepaper", label: "Protocol" },
@@ -44,9 +45,9 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
         target="_blank"
         className="group flex flex-row items-center py-8 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
       >
-        {[1, 2, 3, 4].map(() => {
+        {[1, 2, 3, 4].map((i) => {
           return (
-            <>
+            <Fragment key={i}>
               <p>LAUNCH APP</p>
               <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
               <img
@@ -54,7 +55,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
                 alt=""
                 className="h-10 w-8 mx-5 shrink-0 hidden group-hover:block group-hover:animate-[rotateLeft_300ms_linear_1]"
               />
-            </>
+            </Fragment>
           );
         })}
         <p>LAUNCH APP</p>

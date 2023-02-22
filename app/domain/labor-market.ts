@@ -61,7 +61,7 @@ export const LaborMarketContractSchema = LaborMarketFormSchema.extend({
 });
 
 // Used for searching and filtering marketplaces.
-export const LaborMarketSearchSchema = z.object({
+export const LaborMarketSearchSchema = zfd.formData({
   q: z.string().optional().describe("Search query."),
   sortBy: z
     .enum(["createdAtBlockTimestamp", "serviceRequestCount"])
