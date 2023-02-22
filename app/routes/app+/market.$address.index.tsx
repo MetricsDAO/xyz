@@ -1,19 +1,16 @@
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
 import type { Project, Token } from "@prisma/client";
-import { Link, useParams, useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { $path } from "remix-routes";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { badRequest, notFound } from "remix-utils";
+import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { DetailItem } from "~/components";
 import { Card } from "~/components/card";
-import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Countdown } from "~/components/countdown";
 import { Field, Label } from "~/components/field";
@@ -31,22 +28,29 @@ import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/util
 
 const validator = withZod(ServiceRequestSearchSchema);
 
-const paramsSchema = z.object({ laborMarketAddress: z.string() });
+const paramsSchema = z.object({ address: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
-  const { laborMarketAddress } = paramsSchema.parse(data.params);
-  const laborMarket = await findLaborMarket(laborMarketAddress);
+  const { address } = paramsSchema.parse(data.params);
+  const laborMarket = await findLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");
   }
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
-  const paramsWithLaborMarketId = { ...params, laborMarket: laborMarketAddress };
+  const paramsWithLaborMarketId = { ...params, laborMarket: address };
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
   const projects = await listProjects();
   const tokens = await listTokens();
 
-  return typedjson({ serviceRequests, totalResults, params, laborMarketAddress, laborMarket, projects, tokens });
+  return typedjson({
+    serviceRequests,
+    totalResults,
+    params,
+    laborMarket,
+    projects,
+    tokens,
+  });
 };
 
 export default function MarketplaceIdChallenges() {
@@ -151,9 +155,8 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
-  const { mType } = useParams();
-  invariant(mType, "marketplace type must be specified");
-  const { laborMarketAddress } = useTypedLoaderData<typeof loader>();
+  const { laborMarket } = useTypedLoaderData<typeof loader>();
+  invariant(laborMarket.appData?.type, "marketplace type must be specified");
 
   return (
     <Table>
@@ -167,14 +170,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
       {serviceRequests.map((sr) => {
         return (
           <Row asChild columns={6} key={sr.id}>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
-                mType: mType,
-                laborMarketAddress: laborMarketAddress,
-                serviceRequestId: sr.id,
-              })}
-              className="text-sm font-medium"
-            >
+            <Link to={`/app/market/${laborMarket.address}/request/${sr.id}`} className="text-sm font-medium">
               <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
                 <div className="flex">
@@ -201,7 +197,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
 }
 
 function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
-  const { laborMarketAddress, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { laborMarket } = useTypedLoaderData<typeof loader>();
 
   return (
     <div className="space-y-4">
@@ -209,7 +205,7 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
         return (
           <Card asChild key={sr.id}>
             <Link
-              to={`/app/${laborMarket?.appData?.type}/m/${laborMarketAddress}/sr/${sr.id}`}
+              to={`/app/${laborMarket?.appData?.type}/m/${laborMarket.address}/sr/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenge</div>

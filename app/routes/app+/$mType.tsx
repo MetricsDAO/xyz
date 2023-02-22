@@ -4,7 +4,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { $params, $path } from "remix-routes";
+import { $params } from "remix-routes";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
@@ -73,7 +73,7 @@ export default function MarketplaceCollection() {
         <aside>
           <ConnectWalletWrapper>
             <Button size="lg" asChild>
-              <Link to={$path("/app/:mType/new", { mType: mType })}>Create Marketplace</Link>
+              <Link to={`/app/${mType}/new`}>Create Marketplace</Link>
             </Button>
           </ConnectWalletWrapper>
         </aside>

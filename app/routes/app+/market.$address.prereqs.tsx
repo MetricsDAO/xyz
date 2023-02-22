@@ -8,7 +8,7 @@ import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function MarketplaceIdPrerequesites() {
   const data = useRouteData<{ laborMarket: Awaited<ReturnType<typeof findLaborMarket>> }>(
-    "routes/app/$mType/m/$laborMarketAddress"
+    "routes/app+/market.$address"
   );
   if (!data) {
     throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");

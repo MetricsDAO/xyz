@@ -1,9 +1,8 @@
 import { Link, useParams } from "@remix-run/react";
-import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
-import type { MarketplaceTableProps } from "~/routes/app/$mType";
+import type { MarketplaceTableProps } from "~/routes/app+/$mType";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
@@ -42,10 +41,7 @@ function MarketplacesTable({ marketplaces, projects, tokens }: MarketplaceTableP
         invariant(m.appData, "appdata must be valid");
         return (
           <Row asChild columns={6} key={m.address}>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.appData.type, laborMarketAddress: m.address })}
-              className="text-sm font-medium"
-            >
+            <Link to={`/app/market/${m.address}`} className="text-sm font-medium">
               <Row.Column span={2}>{m.appData.title}</Row.Column>
               <Row.Column>
                 <ProjectBadges projects={findProjectsBySlug(projects, m.appData.projectSlugs)} />

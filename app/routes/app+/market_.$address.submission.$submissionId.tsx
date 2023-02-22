@@ -1,5 +1,6 @@
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useParams, useSubmit } from "@remix-run/react";
+import { useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
@@ -38,6 +39,7 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { searchReviews } from "~/services/review-service.server";
+import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
@@ -51,10 +53,12 @@ const paramsSchema = z.object({
 const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
+  const user = await getUser(data.request);
   const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress });
+  const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
 
   const submission = await findSubmission(submissionId, laborMarketAddress);
   if (!submission) {
@@ -63,21 +67,27 @@ export const loader = async (data: DataFunctionArgs) => {
   const laborMarket = await findLaborMarket(laborMarketAddress);
   invariant(laborMarket, "Labor market not found");
 
-  return typedjson({ submission, reviews, params, laborMarket }, { status: 200 });
+  return typedjson({ submission, reviews, params, laborMarket, reviewedByUser }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket, reviewedByUser } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const { mType } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleChange = () => {
     if (formRef.current) {
       submit(formRef.current, { replace: true });
     }
+  };
+
+  const setOrder = (str: "asc" | "desc") => {
+    searchParams.set("order", str);
+    setSearchParams(searchParams);
   };
 
   const isWinner = false;
@@ -101,10 +111,10 @@ export default function ChallengeSubmission() {
           </DetailItem>
           <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
           <DetailItem title="Reviews">
-            {true ? (
+            {reviewedByUser ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
-                <p className="font-medium">{`You + ${reviews.length} reviewers`}</p>
+                <p className="font-medium">{`You + ${reviews.length} reviews`}</p>
               </div>
             ) : (
               <Badge>{reviews.length}</Badge>
@@ -159,19 +169,35 @@ export default function ChallengeSubmission() {
               onChange={handleChange}
               className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
             >
-              {/* <Input placeholder="Search" name="search" iconLeft={<MagnifyingGlassIcon className="w-5 h-5" />} /> */}
-              <ValidatedSelect
-                placeholder="Select option"
-                name="sortBy"
-                size="sm"
-                onChange={handleChange}
-                options={[{ label: "Created At", value: "createdAt" }]}
-              />
-              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
-              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
-              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
-              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
-              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
+              <div className="flex gap-2 w-full items-center">
+                <div className="flex-1">
+                  <ValidatedSelect
+                    placeholder="Select option"
+                    name="sortBy"
+                    size="sm"
+                    onChange={handleChange}
+                    options={[
+                      { label: "Created At", value: "createdAtBlockTimestamp" },
+                      { label: "Score", value: "score" },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <ChevronUpIcon
+                    className={clsx("h-4 w-4 cursor-pointer", { "text-sky-500": searchParams.get("order") === "asc" })}
+                    onClick={() => setOrder("asc")}
+                  />
+                  <ChevronDownIcon
+                    className={clsx("h-4 w-4 cursor-pointer", { "text-sky-500": searchParams.get("order") === "desc" })}
+                    onClick={() => setOrder("desc")}
+                  />
+                </div>
+              </div>
+              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="4" label="Great" />
+              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="3" label="Good" />
+              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="2" label="Average" />
+              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="1" label="Bad" />
+              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="0" label="Spam" />
             </ValidatedForm>
           </aside>
         </div>

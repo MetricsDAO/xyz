@@ -4,7 +4,7 @@ import type { findServiceRequest } from "~/services/service-request.server";
 
 export default function ServiceIdParticipants() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
-    "routes/app/$mType/m/$laborMarketAddress.sr/$serviceRequestId"
+    "routes/app+/market_.$address.request.$requestId"
   );
   if (!data) {
     throw new Error("ServiceIdParticipants must be rendered under a ServiceId route");

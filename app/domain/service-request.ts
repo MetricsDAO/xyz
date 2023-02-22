@@ -72,7 +72,7 @@ export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
 /**
  * The schema for a ServiceRequestDocument. This should be identical to how the document is stored in mongo.
  */
-const ServiceRequestDocSchema = z.object({
+export const ServiceRequestDocSchema = z.object({
   id: z.string().describe("The request id"),
   laborMarketAddress: EvmAddressSchema,
   valid: z.boolean(),

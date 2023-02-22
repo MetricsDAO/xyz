@@ -20,7 +20,6 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { findServiceRequest } from "~/services/service-request.server";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
@@ -137,15 +136,7 @@ export default function ClaimToSubmit() {
           </Button>
         </ConnectWalletWrapper>
         <Button variant="cancel" asChild>
-          <Link
-            to={$path("/app/:mType/m/:laborMarketAddress/sr/:serviceRequestId", {
-              mType: mType,
-              laborMarketAddress: serviceRequest.laborMarketAddress,
-              serviceRequestId: serviceRequest.id,
-            })}
-          >
-            Cancel
-          </Link>
+          <Link to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}`}>Cancel</Link>
         </Button>
       </div>
       <div className="invisible"></div>
