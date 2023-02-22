@@ -1,7 +1,6 @@
 import type { TracerConfig, TracerContract, TracerEvent } from "./types";
 import type { Abi, ExtractAbiEventNames } from "abitype";
 import type { Client } from "./client";
-import envServer from "~/env.server";
 
 interface WorkerOpts {
   tracer: Omit<TracerConfig, "contracts">;

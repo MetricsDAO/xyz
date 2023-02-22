@@ -20,7 +20,6 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { findServiceRequest } from "~/services/service-request.server";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
