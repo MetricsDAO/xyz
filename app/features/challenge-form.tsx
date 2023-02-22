@@ -7,8 +7,15 @@ import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect, Valid
 import type { SetStateAction } from "react";
 import { claimDate, parseDatetime } from "~/utils/date";
 
-export function ChallengeForm({ validTokens, validProjects }: { validTokens: Token[]; validProjects: Project[] }) {
-  const { mType } = useParams();
+export function ChallengeForm({
+  validTokens,
+  validProjects,
+  mType,
+}: {
+  validTokens: Token[];
+  validProjects: Project[];
+  mType: string;
+}) {
   const [selectedSubmitDate, setSelectedSubmitDate] = useState("");
   const [selectedSubmitTime, setSelectedSubmitTime] = useState("");
 
