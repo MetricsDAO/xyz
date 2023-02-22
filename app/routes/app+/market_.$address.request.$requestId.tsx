@@ -95,7 +95,9 @@ export default function ServiceRequest() {
             <Button variant="cancel" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link to={`/app/${laborMarket.address}/request/${serviceRequest.id}/review`}>Claim to Review</Link>
+                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}>
+                    Claim to Review
+                  </Link>
                 </Button>
               </ConnectWalletWrapper>
             </Button>
@@ -104,7 +106,9 @@ export default function ServiceRequest() {
             <Button variant="primary" size="lg" asChild>
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link to={`/app/${laborMarket.address}/request/${serviceRequest.id}/claim`}>Claim to Submit</Link>
+                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/claim`}>
+                    Claim to Submit
+                  </Link>
                 </Button>
               </ConnectWalletWrapper>
             </Button>
@@ -113,7 +117,7 @@ export default function ServiceRequest() {
             {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link to={`/app/${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
+                  <Link to={`/app/market${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
                 </Button>
               </ConnectWalletWrapper>
             )}

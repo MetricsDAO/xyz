@@ -21,18 +21,23 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
-import { Link, useParams } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { findLaborMarket } from "~/services/labor-market.server";
 
-const paramsSchema = z.object({ laborMarketAddress: z.string(), serviceRequestId: z.string() });
+const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { laborMarketAddress, serviceRequestId } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(serviceRequestId, laborMarketAddress);
+  const { address, requestId } = paramsSchema.parse(params);
+  const serviceRequest = await findServiceRequest(requestId, address);
+  const laborMarket = await findLaborMarket(address);
   if (!serviceRequest) {
-    throw notFound({ serviceRequestId });
+    throw notFound({ requestId });
+  }
+  if (!laborMarket) {
+    throw notFound({ address });
   }
 
-  return typedjson({ serviceRequest }, { status: 200 });
+  return typedjson({ serviceRequest, laborMarket }, { status: 200 });
 };
 
 const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToReviewContract>();
@@ -40,9 +45,9 @@ const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToRevi
 const validator = withZod(ClaimToReviewFormSchema);
 
 export default function ClaimToReview() {
-  const { serviceRequest } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest, laborMarket } = useTypedLoaderData<typeof loader>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { mType } = useParams();
+  const mType = laborMarket.appData?.type;
   invariant(mType, "marketplace type must be specified");
 
   const [state, send] = useMachine(claimToSubmitMachine, {

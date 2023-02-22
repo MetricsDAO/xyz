@@ -46,7 +46,7 @@ import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const paramsSchema = z.object({
-  laborMarketAddress: z.string(),
+  address: z.string(),
   submissionId: z.string(),
 });
 
@@ -54,17 +54,17 @@ const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
-  const { laborMarketAddress, submissionId } = paramsSchema.parse(data.params);
+  const { address, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress });
+  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
   const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
 
-  const submission = await findSubmission(submissionId, laborMarketAddress);
+  const submission = await findSubmission(submissionId, address);
   if (!submission) {
     throw notFound({ submissionId });
   }
-  const laborMarket = await findLaborMarket(laborMarketAddress);
+  const laborMarket = await findLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
   return typedjson({ submission, reviews, params, laborMarket, reviewedByUser }, { status: 200 });
@@ -76,7 +76,8 @@ export default function ChallengeSubmission() {
   const { submission, reviews, params, laborMarket, reviewedByUser } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
-  const { mType } = useParams();
+  const mType = laborMarket.appData?.type;
+  invariant(mType, "Labor Market type is undefined");
   const [searchParams, setSearchParams] = useSearchParams();
 
   const handleChange = () => {
