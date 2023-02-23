@@ -23,7 +23,6 @@ import { findProjectsBySlug } from "~/services/projects.server";
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { createServiceRequest } from "~/utils/fetch";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { toTokenAbbreviation } from "~/utils/helpers";

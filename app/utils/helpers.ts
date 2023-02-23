@@ -32,14 +32,6 @@ export const fromTokenAmount = (units: string) => {
   return ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS).toString();
 };
 
-/**
- * Removes leading zeros from an address 0x0000000000000000000000003592fd4c9e9b4b1286d4e2b400b5386a2429cca1 => 0x3592fd4C9E9B4b1286d4E2b400B5386A2429CCa1
- * @param str
- */
-export function removeLeadingZeros(str: string): string {
-  return ethers.utils.hexStripZeros(str);
-}
-
 export function findProjectsBySlug(projects: Project[], slugs: string[]) {
   return slugs
     .map((slug) => {

@@ -21,8 +21,6 @@ import { prepareLaborMarket } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
-import { createLaborMarket } from "~/utils/fetch";
-import { removeLeadingZeros } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 
