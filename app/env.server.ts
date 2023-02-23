@@ -12,7 +12,6 @@ const envSchema = z.object({
   PINE_SUBSCRIBER: z.string(),
   SENTRY_DSN: z.string().optional(),
   QUICKNODE_URL: z.string(),
-  DEV_AUTO_INDEX: z.string().optional(),
   DEV_SKIP_IPFS_UPLOAD: z.string().optional(),
 });
 
