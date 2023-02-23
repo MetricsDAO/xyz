@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { ServiceRequest, ServiceRequestIndexer } from "~/domain";
+import type { ServiceRequest, ServiceRequestContract, ServiceRequestIndexer } from "~/domain";
 import type { LaborMarket } from "~/domain";
 import type { SubmissionIndexer } from "~/domain/submission";
 
@@ -31,14 +31,13 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestIndexer => {
+export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestContract => {
   const signal = faker.date.soon(7);
   const submission = faker.date.soon(7, signal);
   const enforcement = faker.date.soon(7, submission);
 
   return {
     id: faker.datatype.uuid(),
-    contractId: faker.datatype.number().toString(),
     title: `Service Request - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     laborMarketAddress: faker.finance.ethereumAddress(),
