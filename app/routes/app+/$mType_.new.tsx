@@ -59,19 +59,6 @@ export default function CreateMarketplace() {
   const [state, send] = useMachine(machine, {
     actions: {
       ...defaultNotifyTransactionActions,
-      devAutoIndex: (context) => {
-        // Create marketplace in the database as a dx side-effect
-        if (window.ENV.DEV_AUTO_INDEX) {
-          invariant(context.contractData, "Contract data is required");
-          invariant(context.transactionReceipt, "Transaction receipt is required");
-          // fire and forget
-          createLaborMarket({
-            ...context.contractData,
-            address: removeLeadingZeros(context.transactionReceipt.logs[0]?.topics[1] as string), // The labor market created address
-            sponsorAddress: context.contractData.userAddress,
-          });
-        }
-      },
     },
   });
   // DEBUG

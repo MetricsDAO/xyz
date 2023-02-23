@@ -71,15 +71,6 @@ export default function CreateServiceRequest() {
   const [state, send] = useMachine(serviceRequestMachine, {
     actions: {
       ...defaultNotifyTransactionActions,
-      devAutoIndex: (context) => {
-        if (window.ENV.DEV_AUTO_INDEX) {
-          invariant(context.contractData, "Contract data is required");
-          createServiceRequest({
-            ...context.contractData,
-            contractId: "1", // hardcoding to 1 for now. Doesn't seem to be a way to get this out of the receipt
-          });
-        }
-      },
     },
   });
 
