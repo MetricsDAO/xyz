@@ -24,6 +24,7 @@ import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
+import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -79,8 +80,15 @@ export default function ServiceRequest() {
     serviceRequestId: serviceRequest.id,
   });
 
+  const reputationBalance = useReputationTokenBalance();
+
   const showSubmit = hasClaimedToSubmit && !hasSubmitted;
-  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted && !claimDeadlinePassed;
+  const showClaimToSubmit =
+    !hasClaimedToSubmit &&
+    !hasSubmitted &&
+    !claimDeadlinePassed &&
+    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
+    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
   const showClaimToReview =
     reviewSignal?.remainder.eq(0) && // Must not have any remaining reviews left (or initial of 0)
     !claimToReviewDeadlinePassed &&

@@ -1,8 +1,12 @@
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
 import { useRouteData } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
+import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
+import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useTokenData } from "~/hooks/use-token-data";
 import type { findLaborMarket } from "~/services/labor-market.server";
 import type { findServiceRequest } from "~/services/service-request.server";
@@ -23,6 +27,18 @@ export default function ServiceIdPrereqs() {
 
   const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
 
+  const maintainerBadgeTokenBalance = useTokenBalance({
+    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
+    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
+  });
+
+  const reputationBalance = useReputationTokenBalance();
+
+  const canReview = maintainerBadgeTokenBalance?.gt(0);
+  const canSubmit =
+    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
+    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
+
   return (
     <section>
       <p className="text-gray-500 text-sm mb-6">
@@ -31,7 +47,18 @@ export default function ServiceIdPrereqs() {
 
       <div className="space-y-3">
         <Card className="p-5">
-          <h3 className="font-medium mb-4">You must hold this much rMETRIC to enter submissions for this challenge</h3>
+          <div className="flex justify-between">
+            <h3 className="font-medium mb-4">
+              You must hold this much rMETRIC to enter submissions for this challenge
+            </h3>
+            <CheckCircleIcon
+              className={clsx("w-5 h-5 ", {
+                hidden: reputationBalance === undefined,
+                "text-neutral-400": !canSubmit,
+                "text-lime-600": canSubmit,
+              })}
+            />
+          </div>
           <Detail>
             <DetailItem title="Min Balance">
               <Badge>{laborMarket.configuration.reputationParams.submitMin} rMETRIC</Badge>
@@ -47,9 +74,18 @@ export default function ServiceIdPrereqs() {
         </Card>
 
         <Card className="p-5">
-          <h3 className="font-medium mb-4">
-            You must hold this badge to review and score submissions on this challenge
-          </h3>
+          <div className="flex justify-between">
+            <h3 className="font-medium mb-4">
+              You must hold this badge to review and score submissions on this challenge
+            </h3>
+            <CheckCircleIcon
+              className={clsx("w-5 h-5 ", {
+                hidden: canReview === undefined,
+                "text-neutral-400": canReview === false,
+                "text-lime-600": canReview === true,
+              })}
+            />
+          </div>
           <Detail>
             <DetailItem title={maintainerData?.name}>
               <div className="flex gap-2 items-center">
