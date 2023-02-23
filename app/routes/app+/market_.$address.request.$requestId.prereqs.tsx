@@ -53,7 +53,7 @@ export default function ServiceIdPrereqs() {
             </h3>
             <CheckCircleIcon
               className={clsx("w-5 h-5 ", {
-                hidden: reputationBalance === undefined,
+                hidden: canSubmit === undefined,
                 "text-neutral-400": !canSubmit,
                 "text-lime-600": canSubmit,
               })}
