@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { ServiceRequest, ServiceRequestContract, ServiceRequestIndexer } from "~/domain";
+import type { ServiceRequest, ServiceRequestContract } from "~/domain";
 import type { LaborMarket } from "~/domain";
 import type { SubmissionIndexer } from "~/domain/submission";
 
