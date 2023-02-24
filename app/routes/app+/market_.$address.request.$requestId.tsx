@@ -4,29 +4,30 @@ import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, notFound } from "remix-utils";
 import { z } from "zod";
+import { UserBadge } from "~/components";
 import { Badge } from "~/components/badge";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
-import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { findServiceRequest } from "~/services/service-request.server";
-import { UserBadge } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
+import { TabNav, TabNavLink } from "~/components/tab-nav";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { useHasPerformed } from "~/hooks/use-has-performed";
+import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useTokenBalance } from "~/hooks/use-token-balance";
+import { useOptionalUser } from "~/hooks/use-user";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { countReviews } from "~/services/review-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
-import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
-import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
-import { useOptionalUser } from "~/hooks/use-user";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -99,7 +100,13 @@ export default function ServiceRequest() {
   const canClaimToReview = maintainerBadgeTokenBalance?.gt(0);
 
   return (
-    <Container className="py-16 px-10">
+    <Container className="pt-9 pb-16 px-10">
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+        ]}
+      />
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">

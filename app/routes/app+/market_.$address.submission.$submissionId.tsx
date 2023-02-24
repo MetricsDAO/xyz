@@ -1,7 +1,8 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useParams, useSearchParams, useSubmit } from "@remix-run/react";
+import { useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
 import clsx from "clsx";
@@ -39,6 +40,7 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { searchReviews } from "~/services/review-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
@@ -67,13 +69,17 @@ export const loader = async (data: DataFunctionArgs) => {
   const laborMarket = await findLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
-  return typedjson({ submission, reviews, params, laborMarket, reviewedByUser }, { status: 200 });
+  const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
+  invariant(serviceRequest, "Service request not found");
+
+  return typedjson({ submission, reviews, params, laborMarket, reviewedByUser, serviceRequest }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, reviewedByUser } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket, reviewedByUser, serviceRequest } =
+    useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const mType = laborMarket.appData?.type;
@@ -94,7 +100,17 @@ export default function ChallengeSubmission() {
   const isWinner = false;
 
   return (
-    <Container className="py-16 px-10">
+    <Container className="pt-9 pb-16 px-10">
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+          {
+            link: `/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`,
+            name: serviceRequest.appData?.title ?? "",
+          },
+        ]}
+      />
       <section className="flex flex-wrap gap-5 justify-between pb-10">
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
