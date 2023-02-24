@@ -28,7 +28,7 @@ type TooltipProps = {
 };
 
 export const Tooltip = ({ content, hide, children }: TooltipProps) => {
-  if (hide) return <>{children}</>;
+  if (hide) return children;
 
   return (
     <Provider delayDuration={0}>
