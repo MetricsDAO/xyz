@@ -24,6 +24,7 @@ import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -87,7 +88,13 @@ export default function ServiceRequest() {
     maintainerBadgeTokenBalance?.gt(0);
 
   return (
-    <Container className="py-16 px-10">
+    <Container className="pt-9 pb-16 px-10">
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+        ]}
+      />
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
