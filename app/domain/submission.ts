@@ -43,7 +43,6 @@ const SubmissionDocSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   valid: z.boolean(),
-  reviewed: z.boolean(),
   submissionUrl: z.string().nullable(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),

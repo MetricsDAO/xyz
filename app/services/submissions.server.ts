@@ -89,7 +89,6 @@ export const indexSubmission = async (event: TracerEvent) => {
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
     valid: isValid,
-    reviewed: submission.reviewed,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
