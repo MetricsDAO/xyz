@@ -1,9 +1,10 @@
 import { useParams } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
-import { typedjson, useTypedActionData } from "remix-typedjson";
+import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
@@ -15,6 +16,7 @@ import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { findLaborMarket } from "~/services/labor-market.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
@@ -41,7 +43,16 @@ export const action = async ({ request, params }: ActionArgs) => {
   return typedjson({ preparedSubmission });
 };
 
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { address } = paramsSchema.parse(params);
+  const laborMarket = await findLaborMarket(address);
+  invariant(laborMarket, "labormarket must exist");
+
+  return typedjson({ laborMarket }, { status: 200 });
+};
+
 export default function SubmitQuestion() {
+  const { laborMarket } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { mType } = useParams();
@@ -61,12 +72,12 @@ export default function SubmitQuestion() {
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
+      setIsModalOpen(true);
       send({ type: "RESET_TRANSACTION" });
       send({
         type: "PREPARE_TRANSACTION_READY",
         data: actionData.preparedSubmission,
       });
-      setIsModalOpen(true);
     }
   }, [actionData, send]);
 
@@ -78,7 +89,7 @@ export default function SubmitQuestion() {
     setIsModalOpen(false);
   };
 
-  if (mType === "analyze") {
+  if (laborMarket.appData?.type === "analyze") {
     return (
       <Analyze
         isModalOpen={isModalOpen && !state.matches("transactionWait")}
@@ -87,7 +98,7 @@ export default function SubmitQuestion() {
         onWriteSuccess={onWriteSuccess}
       />
     );
-  } else if (mType === "brainstorm") {
+  } else if (laborMarket.appData?.type === "brainstorm") {
     return (
       <Brainstorm
         isModalOpen={isModalOpen && !state.matches("transactionWait")}
@@ -160,8 +171,8 @@ function Brainstorm({
               <Button type="submit">Next</Button>
             </div>
           </ValidatedForm>
-          {contractData && (
-            <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
+          <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
+            {contractData && (
               <div className="space-y-8">
                 <p>Please confirm that you would like to submit this idea.</p>
                 {error && <RPCError error={error} />}
@@ -178,8 +189,18 @@ function Brainstorm({
                   </Button>
                 </div>
               </div>
-            </Modal>
-          )}
+            )}
+            {!contractData && (
+              <div className="text-sm text-center text-stone-500">
+                <img
+                  src="/img/loading-icon.png"
+                  alt=""
+                  className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
+                />
+                <p>Preparing submission...</p>
+              </div>
+            )}
+          </Modal>
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
