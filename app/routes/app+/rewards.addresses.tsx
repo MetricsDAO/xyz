@@ -174,53 +174,47 @@ function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
 function AddAddressButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), [setOpen]);
+  const { networks } = useTypedLoaderData<typeof loader>();
+  const fetcher = useFetcher<ActionResponse>();
+  useEffect(() => {
+    if (fetcher.data && !isValidationError(fetcher.data)) {
+      close();
+    }
+  }, [fetcher.data, close]);
+
   return (
     <>
       <Button className="mx-auto" onClick={() => setOpen(true)}>
         Add Address
       </Button>
       <Modal isOpen={open} onClose={close} title="Add an address" unmount>
-        <AddAddressForm onDone={close} />
+        <ValidatedForm
+          fetcher={fetcher}
+          defaultValues={{
+            payment: {
+              networkName: "Polygon",
+              address: "",
+            },
+          }}
+          method="post"
+          action="?/create"
+          name="create"
+          subaction="create"
+          validator={addWalletValidator}
+          className="space-y-5 mt-5"
+        >
+          <div className="pb-44 pt-8">
+            <AddPaymentAddressForm networks={networks} />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={close} type="button">
+              Cancel
+            </Button>
+            <Button type="submit">Save</Button>
+          </div>
+        </ValidatedForm>
       </Modal>
     </>
-  );
-}
-
-function AddAddressForm({ onDone }: { onDone: () => void }) {
-  const { networks } = useTypedLoaderData<typeof loader>();
-  const fetcher = useFetcher<ActionResponse>();
-  useEffect(() => {
-    if (fetcher.data && !isValidationError(fetcher.data)) {
-      onDone();
-    }
-  }, [fetcher.data, onDone]);
-
-  return (
-    <ValidatedForm
-      fetcher={fetcher}
-      defaultValues={{
-        payment: {
-          networkName: "Polygon",
-          address: "",
-        },
-      }}
-      method="post"
-      action="?/create"
-      name="create"
-      subaction="create"
-      validator={addWalletValidator}
-      className="space-y-5 mt-5"
-    >
-      <div className="pb-44 pt-8">
-        <AddPaymentAddressForm networks={networks} />
-      </div>
-      <div className="flex gap-2 justify-end">
-        <Button variant="cancel" onClick={onDone} type="button">
-          Cancel
-        </Button>
-        <Button type="submit">Save</Button>
-      </div>
-    </ValidatedForm>
   );
 }
 
@@ -243,7 +237,11 @@ function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
             <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
               {wallet.networkName}
             </p>
-            <p className="pl-2 overflow-clip">{wallet.address}</p>
+            <p className="pl-2">
+              {wallet?.address && wallet?.address.length < 30
+                ? wallet?.address
+                : `${wallet?.address.slice(0, 16)}...${wallet?.address.slice(-13)}`}
+            </p>
           </div>
           <ValidatedForm method="post" action="?/delete" validator={deleteWalletValidator} className="space-y-5 mt-5">
             <div className="invisible h-0 w-0">
