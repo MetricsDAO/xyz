@@ -1,4 +1,4 @@
-import { useParams } from "@remix-run/react";
+import { useParams, useTransition } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -72,12 +72,12 @@ export default function SubmitQuestion() {
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
-      setIsModalOpen(true);
       send({ type: "RESET_TRANSACTION" });
       send({
         type: "PREPARE_TRANSACTION_READY",
         data: actionData.preparedSubmission,
       });
+      setIsModalOpen(true);
     }
   }, [actionData, send]);
 
@@ -124,6 +124,7 @@ function Brainstorm({
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
   const [error, setError] = useState<EthersError>();
+  const transition = useTransition();
   const onPrepareTransactionError = (error: EthersError) => {
     setError(error);
   };
@@ -168,11 +169,11 @@ function Brainstorm({
                   </i>
                 </p>
               </section>
-              <Button type="submit">Next</Button>
+              <Button type="submit">{transition.state === "submitting" ? "Loading..." : "Next"}</Button>
             </div>
           </ValidatedForm>
-          <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
-            {contractData && (
+          {contractData && (
+            <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
               <div className="space-y-8">
                 <p>Please confirm that you would like to submit this idea.</p>
                 {error && <RPCError error={error} />}
@@ -189,18 +190,8 @@ function Brainstorm({
                   </Button>
                 </div>
               </div>
-            )}
-            {!contractData && (
-              <div className="text-sm text-center text-stone-500">
-                <img
-                  src="/img/loading-icon.png"
-                  alt=""
-                  className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
-                />
-                <p>Preparing submission...</p>
-              </div>
-            )}
-          </Modal>
+            </Modal>
+          )}
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">

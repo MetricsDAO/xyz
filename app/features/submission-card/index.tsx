@@ -1,7 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import type { User } from "@prisma/client";
-import { Link, useParams } from "@remix-run/react";
-import invariant from "tiny-invariant";
+import { Link } from "@remix-run/react";
 import { Card, UserBadge } from "~/components";
 import type { LaborMarketDoc, SubmissionWithReviewsDoc } from "~/domain";
 import { useUser } from "~/hooks/use-user";
