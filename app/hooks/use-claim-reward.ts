@@ -12,11 +12,7 @@ export function useClaimReward({ data, onWriteSuccess, onPrepareTransactionError
     address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "claim",
-    args: [
-      BigNumber.from(data.submissionId),
-      data.payoutAddress as `0x${string}`,
-      "0x0000000000000000000000000000000000000000",
-    ],
+    args: [BigNumber.from(data.submissionId), data.payoutAddress as `0x${string}`],
     onError(err) {
       onPrepareTransactionError?.(err);
     },

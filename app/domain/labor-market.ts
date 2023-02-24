@@ -95,14 +95,15 @@ const LaborMarketDocSchema = z.object({
     reputationBadge: BadgePairSchema,
     reputationParams: z.object({
       rewardPool: z.string(),
-      signalStake: z.string(),
+      provideStake: z.string(),
+      reviewStake: z.string(),
       submitMin: z.string(),
       submitMax: z.string(),
     }),
     modules: z.object({
       network: EvmAddressSchema,
       enforcement: EvmAddressSchema,
-      payment: EvmAddressSchema,
+      enforcementKey: EvmAddressSchema,
       reputation: EvmAddressSchema,
     }),
   }),
