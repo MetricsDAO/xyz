@@ -100,7 +100,7 @@ export default function ChallengeSubmission() {
   const isWinner = false;
 
   return (
-    <Container className="pt-9 pb-16 px-10">
+    <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
         crumbs={[
           { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
