@@ -1,3 +1,4 @@
+import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -35,7 +36,13 @@ export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
 
   return (
-    <Container className="py-16 px-10">
+    <Container className="pb-16 pt-9 px-10">
+      <div className="flex gap-3.5 text-stone-500 pb-12 items-center">
+        <ChevronLeftIcon className="h-4 w-4" />
+        <Link className="text-sm" to={`/app/${laborMarket.appData?.type}`}>
+          Marketplaces
+        </Link>
+      </div>
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
         <div className="flex flex-wrap gap-5">

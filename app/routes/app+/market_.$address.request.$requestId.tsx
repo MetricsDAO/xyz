@@ -24,6 +24,7 @@ import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -87,7 +88,16 @@ export default function ServiceRequest() {
     maintainerBadgeTokenBalance?.gt(0);
 
   return (
-    <Container className="py-16 px-10">
+    <Container className="pt-9 pb-16 px-10">
+      <div className="flex gap-3.5 text-stone-500 pb-12 items-center">
+        <Link className="text-sm" to={`/app/${laborMarket.appData?.type}`}>
+          Marketplaces
+        </Link>
+        <ChevronRightIcon className="h-4 w-4" />
+        <Link className="text-sm" to={`/app/market/${laborMarket.address}`}>
+          {laborMarket.appData?.title}
+        </Link>
+      </div>
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
