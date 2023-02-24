@@ -1,7 +1,8 @@
-import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
+import { useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
 import clsx from "clsx";
@@ -100,19 +101,16 @@ export default function ChallengeSubmission() {
 
   return (
     <Container className="pt-9 pb-16 px-10">
-      <div className="flex gap-3.5 text-stone-500 pb-12 items-center">
-        <Link className="text-sm" to={`/app/${laborMarket.appData?.type}`}>
-          Marketplaces
-        </Link>
-        <ChevronRightIcon className="h-4 w-4" />
-        <Link className="text-sm" to={`/app/market/${laborMarket.address}`}>
-          {laborMarket.appData?.title}
-        </Link>
-        <ChevronRightIcon className="h-4 w-4" />
-        <Link className="text-sm" to={`/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`}>
-          {serviceRequest.appData?.title}
-        </Link>
-      </div>
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+          {
+            link: `/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`,
+            name: serviceRequest.appData?.title ?? "",
+          },
+        ]}
+      />
       <section className="flex flex-wrap gap-5 justify-between pb-10">
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>

@@ -1,10 +1,10 @@
-import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
@@ -37,12 +37,7 @@ export default function Marketplace() {
 
   return (
     <Container className="pb-16 pt-9 px-10">
-      <div className="flex gap-3.5 text-stone-500 pb-12 items-center">
-        <ChevronLeftIcon className="h-4 w-4" />
-        <Link className="text-sm" to={`/app/${laborMarket.appData?.type}`}>
-          Marketplaces
-        </Link>
-      </div>
+      <Breadcrumbs crumbs={[{ link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" }]} />
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
         <div className="flex flex-wrap gap-5">
