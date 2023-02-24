@@ -25,6 +25,8 @@ import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
+import { useOptionalUser } from "~/hooks/use-user";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -82,17 +84,19 @@ export default function ServiceRequest() {
 
   const reputationBalance = useReputationTokenBalance();
 
+  const user = useOptionalUser();
+  const userSignedIn = !!user;
+
   const showSubmit = hasClaimedToSubmit && !hasSubmitted;
-  const showClaimToSubmit =
-    !hasClaimedToSubmit &&
-    !hasSubmitted &&
-    !claimDeadlinePassed &&
+  const canClaimToSubmit =
     reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
     reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
+  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted && !claimDeadlinePassed;
   const showClaimToReview =
     reviewSignal?.remainder.eq(0) && // Must not have any remaining reviews left (or initial of 0)
-    !claimToReviewDeadlinePassed &&
-    maintainerBadgeTokenBalance?.gt(0);
+    !claimToReviewDeadlinePassed;
+
+  const canClaimToReview = maintainerBadgeTokenBalance?.gt(0);
 
   return (
     <Container className="py-16 px-10">
@@ -100,26 +104,21 @@ export default function ServiceRequest() {
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
           {showClaimToReview && (
-            <Button variant="cancel" size="lg" asChild>
-              <ConnectWalletWrapper>
-                <Button size="lg" asChild>
-                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}>
-                    Claim to Review
-                  </Link>
-                </Button>
-              </ConnectWalletWrapper>
-            </Button>
+            <WalletGuardedButtonLink
+              buttonText="Claim to Review"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
+              disabled={userSignedIn && !canClaimToReview}
+              disabledTooltip="Check for Prerequisites"
+              variant="cancel"
+            />
           )}
           {showClaimToSubmit && (
-            <Button variant="primary" size="lg" asChild>
-              <ConnectWalletWrapper>
-                <Button size="lg" asChild>
-                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/claim`}>
-                    Claim to Submit
-                  </Link>
-                </Button>
-              </ConnectWalletWrapper>
-            </Button>
+            <WalletGuardedButtonLink
+              buttonText="Claim to Submit"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/claim`}
+              disabled={userSignedIn && !canClaimToSubmit}
+              disabledTooltip="Check for Prerequisites"
+            />
           )}
           <Button variant="primary" size="lg" asChild>
             {showSubmit && (
