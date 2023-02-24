@@ -88,7 +88,8 @@ export async function indexLaborMarket(event: TracerEvent) {
       },
       reputationParams: {
         rewardPool: config.reputationParams.rewardPool.toString(),
-        signalStake: config.reputationParams.signalStake.toString(),
+        provideStake: config.reputationParams.provideStake.toString(),
+        reviewStake: config.reputationParams.reviewStake.toString(),
         submitMax: config.reputationParams.submitMax.toString(),
         submitMin: config.reputationParams.submitMin.toString(),
       },
