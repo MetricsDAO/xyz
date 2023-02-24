@@ -117,6 +117,7 @@ export default function ServiceRequest() {
               disabled={userSignedIn && !canClaimToReview}
               disabledTooltip="Check for Prerequisites"
               variant="cancel"
+              size="lg"
             />
           )}
           {showClaimToSubmit && (
@@ -125,6 +126,7 @@ export default function ServiceRequest() {
               link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/claim`}
               disabled={userSignedIn && !canClaimToSubmit}
               disabledTooltip="Check for Prerequisites"
+              size="lg"
             />
           )}
           <Button variant="primary" size="lg" asChild>

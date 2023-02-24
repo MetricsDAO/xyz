@@ -17,7 +17,7 @@ type Props = {
  */
 export function WalletGuardedButtonLink({ link, buttonText, disabled, disabledTooltip, ...buttonProps }: Props) {
   return (
-    <Tooltip content={disabledTooltip} hide={!disabledTooltip}>
+    <Tooltip content={disabledTooltip} hide={!disabled || !disabledTooltip}>
       <ConnectWalletWrapper>
         <Button {...buttonProps} asChild={!disabled} disabled={disabled}>
           {!disabled ? <Link to={link}>{buttonText}</Link> : buttonText}
