@@ -1,7 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
-import { useParams } from "@remix-run/react";
-// import MDEditor from "@uiw/react-md-editor";
 import { useState } from "react";
 import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect, ValidatedTextarea } from "~/components";
 import type { SetStateAction } from "react";
@@ -142,15 +140,19 @@ export function ChallengeForm({
 }
 
 function BrainstormTextArea() {
-  const [value, setValue] = useState<string>();
   return (
     <>
-      <p>{value}</p>
-      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address*</h2>
-      {/* <MDEditor value={value} onChange={setValue} />
-      <MDEditor.Markdown source={value} /> */}
-      <input type="hidden" name="description" value={value} />
-      <Error name="description" />
+      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
+      <Field>
+        <ValidatedTextarea
+          name="description"
+          rows={7}
+          placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
+
+  Example: What are the most important questions to answer about user behavior on Ethereum?"
+        />
+        <Error name="description" />
+      </Field>
     </>
   );
 }

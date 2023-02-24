@@ -80,7 +80,7 @@
     "ethers": "^5.7.2",
     "express": "^4.18.2",
     "express-prometheus-middleware": "^1.2.0",
-    "labor-markets-abi": "1.4.3",
+    "labor-markets-abi": "1.6.0",
     "mongodb": "^4.13.0",
     "morgan": "^1.10.0",
     "nft.storage": "^7.0.0",
