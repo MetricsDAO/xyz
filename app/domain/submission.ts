@@ -50,7 +50,14 @@ const SubmissionDocSchema = z.object({
     serviceProvider: EvmAddressSchema,
     uri: z.string(),
   }),
-  reviewCount: z.number(),
+  score: z
+    .object({
+      reviewCount: z.string(),
+      reviewSum: z.string(),
+      avg: z.string(),
+      qualified: z.boolean(),
+    })
+    .optional(),
   appData: SubmissionFormSchema.nullable(),
 });
 

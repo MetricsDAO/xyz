@@ -84,7 +84,7 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<SubmissionDoc, "reviewCount" | "createdAtBlockTimestamp"> = {
+  const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
     id: submissionId,
     laborMarketAddress: event.contract.address,
     serviceRequestId: requestId,
@@ -111,7 +111,7 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   return mongo.submissions.updateOne(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-    { $set: doc, $setOnInsert: { reviewCount: 0, createdAtBlockTimestamp: new Date(event.block.timestamp) } },
+    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
     { upsert: true }
   );
 };

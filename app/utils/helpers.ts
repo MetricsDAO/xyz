@@ -1,7 +1,7 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
+import type { LaborMarketDoc, ServiceRequestDoc, SubmissionDoc } from "~/domain";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -81,4 +81,11 @@ export function displayBalance(balance: BigNumber): string {
 
 export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
+}
+
+export function overallScore(submission: SubmissionDoc) {
+  if (submission.score?.avg === undefined) {
+    return undefined;
+  }
+  return Number(submission.score.avg) / 25;
 }

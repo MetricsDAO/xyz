@@ -1,9 +1,10 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link } from "@remix-run/react";
-import { Card, UserBadge } from "~/components";
+import { Card, Score, UserBadge } from "~/components";
 import type { LaborMarketDoc, SubmissionWithReviewsDoc } from "~/domain";
 import { useUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
+import { overallScore } from "~/utils/helpers";
 
 export function SubmissionCard({
   submission,
@@ -15,6 +16,7 @@ export function SubmissionCard({
   const user = useUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
+  const score = overallScore(submission);
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
@@ -27,8 +29,7 @@ export function SubmissionCard({
           <AnalyticsInfo submission={submission} />
         )}
         <div className="flex flex-col items-center gap-2 md:mr-7 md:ml-24">
-          {/* MVP HIDE */}
-          {/* <Score score={2} /> */}
+          {score && <Score score={score} />}
           <div className="flex text-xs text-gray-500 items-center">
             {reviewedByUser ? (
               <>
@@ -39,7 +40,7 @@ export function SubmissionCard({
             ) : (
               <></>
             )}
-            <p>{submission.reviewCount} reviews</p>
+            <p>{submission.score?.reviewCount ?? 0} reviews</p>
           </div>
         </div>
       </Link>
