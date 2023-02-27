@@ -3,9 +3,9 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
-import { useField, ValidatedForm } from "remix-validated-form";
+import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { Badge, Error, Modal, ValidatedSegmentedRadio } from "~/components";
+import { Error, Modal, ValidatedSegmentedRadio } from "~/components";
 import { useMachine } from "@xstate/react";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -24,7 +24,6 @@ import { RPCError } from "~/features/rpc-error";
 import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { useOptionalUser } from "~/hooks/use-user";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -50,7 +49,6 @@ export default function ClaimToReview() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const mType = laborMarket.appData?.type;
   invariant(mType, "marketplace type must be specified");
-  const [field] = useField("quantity");
 
   const [state, send] = useMachine(claimToSubmitMachine, {
     actions: {
@@ -149,12 +147,6 @@ export default function ClaimToReview() {
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold">Lock rMETRIC</h2>
-          <div className="flex flex-col md:flex-row gap-2 md:items-center">
-            <p className="text-sm">
-              You must lock <Badge>{field * REPUTATION_SIGNAL_STAKE}</Badge> rMETRIC to claim
-            </p>
-            <Button variant="outline">Lock rMETRIC</Button>
-          </div>
           <p className="mt-2 text-gray-500 italic text-sm">
             Important: {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission you fail to review before
             the deadline.
