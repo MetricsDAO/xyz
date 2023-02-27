@@ -100,7 +100,7 @@ export default function ServiceRequest() {
   const canClaimToReview = maintainerBadgeTokenBalance?.gt(0);
 
   return (
-    <Container className="pt-9 pb-16 px-10">
+    <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
         crumbs={[
           { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
@@ -133,7 +133,7 @@ export default function ServiceRequest() {
             {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link to={`/app/market${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
+                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
                 </Button>
               </ConnectWalletWrapper>
             )}

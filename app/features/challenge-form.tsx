@@ -76,7 +76,7 @@ export function ChallengeForm({
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-bold">When will submissions be entered by?*</h2>
+        <h2 className="font-bold">When must submissions be entered by?*</h2>
         <Field>
           <ValidatedInput onChange={handleSubmitDateChange} type="date" name="endDate" placeholder="End date" />
           <Error name="endDate" />
