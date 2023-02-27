@@ -36,7 +36,7 @@ export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
 
   return (
-    <Container className="pb-16 pt-9 px-10">
+    <Container className="pb-16 pt-7 px-10">
       <Breadcrumbs crumbs={[{ link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" }]} />
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
