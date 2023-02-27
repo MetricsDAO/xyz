@@ -7,7 +7,6 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { Modal } from "~/components";
-import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
@@ -18,7 +17,6 @@ import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit"
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
-import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import invariant from "tiny-invariant";
 import { findLaborMarket } from "~/services/labor-market.server";
