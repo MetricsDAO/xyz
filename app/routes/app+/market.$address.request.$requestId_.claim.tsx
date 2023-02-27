@@ -148,7 +148,10 @@ export default function ClaimToSubmit() {
           onClose={() => setIsModalOpen(false)}
         >
           <div className="space-y-8">
-            <p>Please confirm that you would like to claim a submission.</p>
+            <p className="mt-2">Please confirm that you would like to claim a submission.</p>
+            <p>
+              This will lock <b>{laborMarket.configuration.reputationParams.provideStake} rMETRIC.</b>
+            </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
               {!error && (
