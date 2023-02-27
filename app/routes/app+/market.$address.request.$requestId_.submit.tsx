@@ -1,4 +1,4 @@
-import { useParams, useTransition } from "@remix-run/react";
+import { useTransition } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -55,7 +55,6 @@ export default function SubmitQuestion() {
   const { laborMarket } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { mType } = useParams();
   const [state, send] = useMachine(submissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
