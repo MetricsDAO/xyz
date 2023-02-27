@@ -3,9 +3,9 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
-import { ValidatedForm } from "remix-validated-form";
+import { useField, ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { Error, Modal, UserBadge, ValidatedSegmentedRadio } from "~/components";
+import { Badge, Error, Modal, ValidatedSegmentedRadio } from "~/components";
 import { useMachine } from "@xstate/react";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -50,7 +50,7 @@ export default function ClaimToReview() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const mType = laborMarket.appData?.type;
   invariant(mType, "marketplace type must be specified");
-  const user = useOptionalUser();
+  const [field] = useField("quantity");
 
   const [state, send] = useMachine(claimToSubmitMachine, {
     actions: {
@@ -149,6 +149,12 @@ export default function ClaimToReview() {
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold">Lock rMETRIC</h2>
+          <div className="flex flex-col md:flex-row gap-2 md:items-center">
+            <p className="text-sm">
+              You must lock <Badge>{field * REPUTATION_SIGNAL_STAKE}</Badge> rMETRIC to claim
+            </p>
+            <Button variant="outline">Lock rMETRIC</Button>
+          </div>
           <p className="mt-2 text-gray-500 italic text-sm">
             Important: {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission you fail to review before
             the deadline.
@@ -166,32 +172,32 @@ export default function ClaimToReview() {
         </div>
       </ValidatedForm>
       {state.context.contractData && (
-        <Modal title="Claim to Review" isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          {!state.matches("transactionWait") && (
-            <div className="space-y-8">
-              <p className="mt-2">
-                Please confirm that you would like to claim {state.context.contractData.quantity} submissions to review.
-              </p>
-              <p>
-                This will lock <b>{state.context.contractData.quantity * REPUTATION_SIGNAL_STAKE} rMETRIC.</b>
-              </p>
-              {error && <RPCError error={error} />}
-              <div className="flex flex-col sm:flex-row justify-center gap-5">
-                {!error && (
-                  <ClaimToReviewWeb3Button
-                    data={state.context.contractData}
-                    onWriteSuccess={onWriteSuccess}
-                    onPrepareTransactionError={onPrepareTransactionError}
-                  />
-                )}
-                <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
-                  Cancel
-                </Button>
-              </div>
+        <Modal
+          title="Claim to Review"
+          isOpen={isModalOpen && !state.matches("transactionWait")}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <div className="space-y-8">
+            <p className="mt-2">
+              Please confirm that you would like to claim {state.context.contractData.quantity} submissions to review.
+            </p>
+            <p>
+              This will lock <b>{state.context.contractData.quantity * REPUTATION_SIGNAL_STAKE} rMETRIC.</b>
+            </p>
+            {error && <RPCError error={error} />}
+            <div className="flex flex-col sm:flex-row justify-center gap-5">
+              {!error && (
+                <ClaimToReviewWeb3Button
+                  data={state.context.contractData}
+                  onWriteSuccess={onWriteSuccess}
+                  onPrepareTransactionError={onPrepareTransactionError}
+                />
+              )}
+              <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </Button>
             </div>
-          )}
-          {state.matches("transactionWait.loading") && <p>Loading...</p>}
-          {state.matches("transactionWait.success") && <UserBadge address={user?.address as `0x${string}`} />}
+          </div>
         </Modal>
       )}
     </Container>
