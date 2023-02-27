@@ -234,14 +234,10 @@ function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
       >
         <div className="space-y-5 mt-5">
           <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
-            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
+            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3 mr-2">
               {wallet.networkName}
             </p>
-            <p className="pl-2">
-              {wallet?.address && wallet?.address.length < 30
-                ? wallet?.address
-                : `${wallet?.address.slice(0, 16)}...${wallet?.address.slice(-13)}`}
-            </p>
+            <p className="overflow-x-auto">{wallet.address}</p>
           </div>
           <ValidatedForm method="post" action="?/delete" validator={deleteWalletValidator} className="space-y-5 mt-5">
             <div className="invisible h-0 w-0">
