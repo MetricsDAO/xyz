@@ -70,10 +70,7 @@ function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTablePr
           invariant(m.appData, "marketplace type must be specified");
           return (
             <Card asChild key={m.address}>
-              <Link
-                to={`/app/${m.appData.type}/m/${m.address}`}
-                className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
-              >
+              <Link to={`/app/market/${m.address}`} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5">
                 <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
                 <div className="text-sm font-medium">{m.appData.title}</div>
 
