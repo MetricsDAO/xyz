@@ -13,7 +13,6 @@ import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
-import type { SubmissionWithReviewsDoc } from "~/domain/submission";
 import { SubmissionSearchSchema } from "~/domain/submission";
 import { SubmissionCard } from "~/features/submission-card";
 import { requireLaborMarket } from "~/services/labor-market.server";
