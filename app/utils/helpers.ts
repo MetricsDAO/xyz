@@ -83,7 +83,13 @@ export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }
 
-export function overallScore(submission: SubmissionDoc) {
+/**
+ * Get the overall score of a submission.
+ * If it has been scored (indexed) it should just be the average. We can divide by 25 to covert it back to the 0-4 scale.
+ * @param {SubmissionDoc} submission
+ * @returns {number | undefined} the score of 0, 1, 2, 3, or 4
+ */
+export function overallScore(submission: SubmissionDoc): number | undefined {
   if (submission.score?.avg === undefined) {
     return undefined;
   }
