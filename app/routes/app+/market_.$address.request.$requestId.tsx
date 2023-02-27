@@ -133,7 +133,7 @@ export default function ServiceRequest() {
             {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link to={`/app/market${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
+                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
                 </Button>
               </ConnectWalletWrapper>
             )}

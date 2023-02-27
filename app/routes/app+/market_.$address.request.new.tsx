@@ -1,4 +1,3 @@
-import { useParams } from "@remix-run/react";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
