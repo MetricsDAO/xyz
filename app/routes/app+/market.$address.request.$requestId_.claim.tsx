@@ -124,14 +124,10 @@ export default function ClaimToSubmit() {
       </div>
       <div className="space-y-2">
         <h2 className="font-semibold">Lock rMETRIC</h2>
-        <div className="flex flex-col md:flex-row gap-2 md:items-center">
-          <p className="text-sm">
-            You must lock <Badge>{REPUTATION_SIGNAL_STAKE}</Badge> rMETRIC to claim
-          </p>
-        </div>
         <p className="mt-2 text-gray-500 italic text-sm">
-          Important: If you don't submit before the deadline, all {REPUTATION_SIGNAL_STAKE} of your locked rMETRIC will
-          be slashed.
+          Important: You must lock {laborMarket.configuration.reputationParams.provideStake} rMETRIC as defined by the
+          Marketplace. If you don’t submit before the deadline, all{" "}
+          {laborMarket.configuration.reputationParams.provideStake} of your locked rMETRIC will be slashed.
         </p>
       </div>
       <div className="flex flex-wrap gap-5">

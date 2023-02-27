@@ -148,8 +148,8 @@ export default function ClaimToReview() {
         <div className="space-y-2">
           <h2 className="font-semibold">Lock rMETRIC</h2>
           <p className="mt-2 text-gray-500 italic text-sm">
-            Important: {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission you fail to review before
-            the deadline.
+            Important: You must lock {REPUTATION_SIGNAL_STAKE} rMETRIC for each submission to commit to reviewing and{" "}
+            {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission to fail to review before the deadline.
           </p>
         </div>
         <div className="flex flex-wrap gap-5">
