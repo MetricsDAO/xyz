@@ -137,7 +137,7 @@ export default function ChallengeSubmission() {
             {reviewedByUser ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
-                <p className="font-medium">{`You + ${reviews.length} reviews`}</p>
+                <p className="font-medium">{`You${reviews.length === 1 ? "" : ` + ${reviews.length - 1} reviews`}`}</p>
               </div>
             ) : (
               <Badge>{reviews.length}</Badge>
