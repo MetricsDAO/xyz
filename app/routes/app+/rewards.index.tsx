@@ -33,9 +33,10 @@ import { Field, Label, ValidatedSelect } from "~/components";
 import { listTokens } from "~/services/tokens.server";
 import type { Token, Wallet } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
-import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
+import { fromTokenAmount, toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
 import type { EthersError } from "~/features/web3-button/types";
 import { RPCError } from "~/features/rpc-error";
+import { useGetReward } from "~/hooks/use-get-reward";
 
 const validator = withZod(RewardsSearchSchema);
 
@@ -149,36 +150,40 @@ function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
 }
 
 function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
-  const unclaimed = true;
-
   return (
     <div className="space-y-4">
       {rewards.map((r) => {
-        return (
-          <Card
-            className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5"
-            key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}
-          >
-            <div>Challenge Title</div>
-            <p>{r.sr[0]?.appData?.title}</p>
-            <div>Reward</div>
-            <p>--</p>
-            <div>Submitted</div>
-            <p className="text-black">{fromNow(r.createdAtBlockTimestamp)} </p>
-            <div>Rewarded</div>
-            <p className="text-black" color="dark.3">
-              --
-            </p>
-            <div>Status</div>
-            {unclaimed ? (
-              <ClaimButton reward={r} wallets={wallets} tokens={tokens} />
-            ) : (
-              <Button variant="cancel">View Tx</Button>
-            )}
-          </Card>
-        );
+        return <RewardCard key={`${r.laborMarketAddress}_${r.id}`} reward={r} wallets={wallets} tokens={tokens} />;
       })}
     </div>
+  );
+}
+
+function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
+  const ugr = useGetReward({ laborMarketAddress: reward.laborMarketAddress as `0x${string}`, submissionId: reward.id });
+  console.log("ugr", ugr?.[0].toString(), ugr?.[1].toString());
+  return (
+    <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
+      <div>Challenge Title</div>
+      <p>{reward.sr[0]?.appData?.title}</p>
+      <div>Reward</div>
+      <p>
+        {ugr?.[0].toString() ? fromTokenAmount(ugr?.[0].toString()) : ""} MBETA and{" "}
+        {ugr?.[1].toString() ? ugr?.[1].toString() : ""} rMetric
+      </p>
+      <div>Submitted</div>
+      <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
+      <div>Rewarded</div>
+      <p className="text-black" color="dark.3">
+        --
+      </p>
+      <div>Status</div>
+      {true ? (
+        <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
+      ) : (
+        <Button variant="cancel">View Tx</Button>
+      )}
+    </Card>
   );
 }
 
