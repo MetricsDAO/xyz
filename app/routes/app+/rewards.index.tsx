@@ -37,6 +37,7 @@ import { fromTokenAmount, toNetworkName, toTokenAbbreviation } from "~/utils/hel
 import type { EthersError } from "~/features/web3-button/types";
 import { RPCError } from "~/features/rpc-error";
 import { useGetReward } from "~/hooks/use-get-reward";
+import { useHasPerformed } from "~/hooks/use-has-performed";
 
 const validator = withZod(RewardsSearchSchema);
 
@@ -161,6 +162,11 @@ function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
 
 function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
   const ugr = useGetReward({ laborMarketAddress: reward.laborMarketAddress as `0x${string}`, submissionId: reward.id });
+  const hasClaimed = useHasPerformed({
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    id: reward.id,
+    action: "HAS_CLAIMED",
+  });
   console.log("ugr", ugr?.[0].toString(), ugr?.[1].toString());
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
@@ -168,20 +174,34 @@ function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: 
       <p>{reward.sr[0]?.appData?.title}</p>
       <div>Reward</div>
       <p>
-        {ugr?.[0].toString() ? fromTokenAmount(ugr?.[0].toString()) : ""} MBETA and{" "}
-        {ugr?.[1].toString() ? ugr?.[1].toString() : ""} rMetric
+        {hasClaimed ? (
+          "--"
+        ) : (
+          <>
+            {ugr?.[0].toString() ? fromTokenAmount(ugr?.[0].toString()) : ""} MBETA and{" "}
+            {ugr?.[1].toString() ? ugr?.[1].toString() : ""} rMetric
+          </>
+        )}
       </p>
       <div>Submitted</div>
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
       <div>Rewarded</div>
       <p className="text-black" color="dark.3">
-        --
+        {!hasClaimed ? (
+          "--"
+        ) : (
+          <>
+            {ugr?.[0].toString() ? fromTokenAmount(ugr?.[0].toString()) : ""} MBETA and{" "}
+            {ugr?.[1].toString() ? ugr?.[1].toString() : ""} rMetric
+          </>
+        )}
       </p>
       <div>Status</div>
-      {true ? (
+      {!hasClaimed ? (
         <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
       ) : (
-        <Button variant="cancel">View Tx</Button>
+        // <Button variant="cancel">View Tx</Button>
+        <></>
       )}
     </Card>
   );
