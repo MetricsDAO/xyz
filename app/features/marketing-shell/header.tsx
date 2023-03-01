@@ -55,11 +55,12 @@ export default function Header() {
       <menu className="hidden md:flex flex-row justify-between lg:gap-x-6">{items}</menu>
 
       <a
-        href="/app/analyze"
+        href="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
         target="_blank"
         className="bg-gradient-to-r to-green-300 from-sky-500 px-4 py-2 font-semibold rounded-lg"
+        rel="noreferrer"
       >
-        Launch App
+        View Bounties
       </a>
     </header>
   );
