@@ -25,25 +25,25 @@ import { listProjects } from "~/services/projects.server";
 import type { Project } from "@prisma/client";
 import { ProjectBadges } from "~/features/project-badges";
 import { RMetricBadge } from "~/features/rmetric-badge";
+import clsx from "clsx";
+import { useOptionalUser } from "~/hooks/use-user";
 
 const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  const user = await getUser(request);
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const submissions = await searchSubmissionsWithUpstream({ ...search });
   const projects = await listProjects();
   return typedjson({
     submissions,
-    user,
     search,
     projects,
   });
 };
 
 export default function Showcase() {
-  const { submissions, user, search, projects } = useTypedLoaderData<typeof loader>();
+  const { submissions, projects } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -94,6 +94,10 @@ function SearchAndFilter({ projects }: { projects: Project[] }) {
         size="sm"
         iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
+
+      {/* Need to seperate things to have these not be inputs
+      <input className="hidden" name="sortBy" value="score" />
+      <input className="hidden" name="order" value="desc" />*/}
 
       <h3 className="font-semibold">Filter</h3>
       <Checkbox name="type" label="Analyze" value="analyze" />
@@ -170,6 +174,7 @@ function SubmissionsListView({ submissions, projects }: { submissions: RewardsDo
 }
 
 function SubmissionsTable({ submissions, projects }: { submissions: RewardsDoc[]; projects: Project[] }) {
+  const user = useOptionalUser();
   return (
     <Table>
       <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
@@ -184,7 +189,9 @@ function SubmissionsTable({ submissions, projects }: { submissions: RewardsDoc[]
           <Row asChild columns={12} key={"s.contractId"}>
             <Link
               to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
-              className="text-sm text-stone-500"
+              className={clsx("text-sm text-stone-500", {
+                "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.serviceProvider,
+              })}
             >
               <Row.Column span={3}>
                 <div className="flex flex-wrap gap-1">
@@ -218,6 +225,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: RewardsDoc[]
 }
 
 function SubmissionsCard({ submissions, projects }: { submissions: RewardsDoc[]; projects: Project[] }) {
+  const user = useOptionalUser();
   return (
     <div className="space-y-4">
       {submissions.map((s) => {
@@ -225,7 +233,9 @@ function SubmissionsCard({ submissions, projects }: { submissions: RewardsDoc[];
           <Card asChild key={"s.contractId"}>
             <Link
               to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
-              className="text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
+              className={clsx("text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
+                "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.serviceProvider,
+              })}
             >
               <div className="col-span-2">
                 <div className="flex gap-1">
