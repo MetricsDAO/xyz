@@ -2,6 +2,7 @@ import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import type {
+  RewardsDoc,
   RewardsSearch,
   SubmissionContract,
   SubmissionDoc,
@@ -187,16 +188,16 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 };
 
 /**
- * Returns an array of Submissions with their Service Request for a given user
+ * Returns an array of Submissions with their Service Request and LaborMarket
  */
-export const searchUserSubmissions = async (params: RewardsSearch) => {
+export const searchSubmissionsWithUpstream = async (params: RewardsSearch) => {
   return mongo.submissions
-    .aggregate([
+    .aggregate<RewardsDoc>([
       {
         $match: {
           $and: [
-            { "configuration.serviceProvider": params.serviceProvider },
-            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+            // params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
       },
@@ -225,6 +226,24 @@ export const searchUserSubmissions = async (params: RewardsSearch) => {
             },
           ],
           as: "sr",
+        },
+      },
+      {
+        $lookup: {
+          from: "laborMarkets",
+          let: {
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$address", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "lm",
         },
       },
     ])

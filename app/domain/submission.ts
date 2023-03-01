@@ -2,6 +2,7 @@ import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 import { ServiceRequestDocSchema } from "./service-request";
 import { ReviewDocSchema } from "./review";
+import { LaborMarketDocSchema } from "./labor-market";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -61,6 +62,7 @@ export const SubmissionEventSchema = z.object({
 
 const RewardsSchema = SubmissionDocSchema.extend({
   sr: z.array(ServiceRequestDocSchema),
+  lm: z.array(LaborMarketDocSchema),
 });
 
 export const RewardsSearchSchema = z.object({
@@ -71,6 +73,9 @@ export const RewardsSearchSchema = z.object({
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   serviceProvider: EvmAddressSchema.optional(),
+  laborMarketAddress: EvmAddressSchema.optional(),
+  project: z.array(z.string()).optional(),
+  type: z.array(z.enum(["analyze", "brainstorm"])).optional(),
 });
 
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
