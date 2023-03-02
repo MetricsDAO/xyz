@@ -2,8 +2,9 @@ import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import type {
-  RewardsDoc,
+  CombinedDoc,
   RewardsSearch,
+  ShowcaseSearch,
   SubmissionContract,
   SubmissionDoc,
   SubmissionForm,
@@ -190,9 +191,9 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 /**
  * Returns an array of Submissions with their Service Request and LaborMarket
  */
-export const searchSubmissionsWithUpstream = async (params: RewardsSearch) => {
+export const searchSubmissionsRewards = async (params: RewardsSearch) => {
   return mongo.submissions
-    .aggregate<RewardsDoc>([
+    .aggregate<CombinedDoc>([
       {
         $match: {
           $and: [
@@ -250,5 +251,66 @@ export const searchSubmissionsWithUpstream = async (params: RewardsSearch) => {
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
+    .toArray();
+};
+
+/**
+ * Returns an array of Submissions with their Service Request and LaborMarket sorted by score
+ */
+export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
+  return mongo.submissions
+    .aggregate<CombinedDoc>([
+      {
+        $match: {
+          /*$and: [{ "score.avg": { $ne: null } }],*/
+        },
+      },
+      {
+        $lookup: {
+          from: "serviceRequests",
+          let: {
+            sr_id: "$serviceRequestId",
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "sr",
+        },
+      },
+      {
+        $lookup: {
+          from: "laborMarkets",
+          let: {
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$address", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "lm",
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $and: [params.type ? { $eq: ["$lm[0].appData.type", params.type] } : {}],
+          },
+        },
+      },
+    ])
+    .sort({ "score.avg": -1 })
+    .limit(5 + params.count)
     .toArray();
 };

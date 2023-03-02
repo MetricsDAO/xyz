@@ -4,11 +4,11 @@ import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
-import { Link, useSubmit } from "@remix-run/react";
+import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import { Checkbox } from "~/components/checkbox";
 import { withZod } from "@remix-validated-form/with-zod";
-import type { RewardsDoc } from "~/domain";
-import { RewardsSearchSchema } from "~/domain";
+import type { CombinedDoc } from "~/domain";
+import { ShowcaseSearchSchema } from "~/domain";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { fromNow } from "~/utils/date";
@@ -17,9 +17,8 @@ import { Card } from "~/components/card";
 import { findProjectsBySlug, truncateAddress } from "~/utils/helpers";
 import { Container } from "~/components";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { getUser } from "~/services/session.server";
 import { getParamsOrFail } from "remix-params-helper";
-import { searchSubmissionsWithUpstream } from "~/services/submissions.server";
+import { searchSubmissionsShowcase } from "~/services/submissions.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { listProjects } from "~/services/projects.server";
 import type { Project } from "@prisma/client";
@@ -28,12 +27,12 @@ import { RMetricBadge } from "~/features/rmetric-badge";
 import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
 
-const validator = withZod(RewardsSearchSchema);
+const validator = withZod(ShowcaseSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
-  const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
-  const submissions = await searchSubmissionsWithUpstream({ ...search });
+  const search = getParamsOrFail(url.searchParams, ShowcaseSearchSchema);
+  const submissions = await searchSubmissionsShowcase({ ...search });
   const projects = await listProjects();
   return typedjson({
     submissions,
@@ -43,7 +42,9 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function Showcase() {
-  const { submissions, projects } = useTypedLoaderData<typeof loader>();
+  const { submissions, projects, search } = useTypedLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
+  searchParams.set("count", String(5 + search.count));
 
   return (
     <Container className="py-16 px-10">
@@ -59,7 +60,9 @@ export default function Showcase() {
           <p className="font-semibold">Top Submissions</p>
           <hr className="bg-gray-200" />
           <SubmissionsListView submissions={submissions} projects={projects} />
-          <p className="text-md text-stone-500">{"View {count} more"}</p>
+          <Link to={`?${searchParams.toString()}`} className="text-md text-stone-500">
+            View 5 more
+          </Link>
         </div>
         <aside className="md:w-1/4 lg:w-1/5 pt-11">
           <SearchAndFilter projects={projects} />
@@ -94,10 +97,6 @@ function SearchAndFilter({ projects }: { projects: Project[] }) {
         size="sm"
         iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
-
-      {/* Need to seperate things to have these not be inputs
-      <input className="hidden" name="sortBy" value="score" />
-      <input className="hidden" name="order" value="desc" />*/}
 
       <h3 className="font-semibold">Filter</h3>
       <Checkbox name="type" label="Analyze" value="analyze" />
@@ -158,7 +157,7 @@ function SearchAndFilter({ projects }: { projects: Project[] }) {
   );
 }
 
-function SubmissionsListView({ submissions, projects }: { submissions: RewardsDoc[]; projects: Project[] }) {
+function SubmissionsListView({ submissions, projects }: { submissions: CombinedDoc[]; projects: Project[] }) {
   return (
     <>
       {/* Desktop */}
@@ -173,8 +172,9 @@ function SubmissionsListView({ submissions, projects }: { submissions: RewardsDo
   );
 }
 
-function SubmissionsTable({ submissions, projects }: { submissions: RewardsDoc[]; projects: Project[] }) {
+function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[]; projects: Project[] }) {
   const user = useOptionalUser();
+
   return (
     <Table>
       <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
@@ -197,7 +197,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: RewardsDoc[]
                 <div className="flex flex-wrap gap-1">
                   {s.appData?.title}
                   <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({"s.score.avg"})</p>
+                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
@@ -224,7 +224,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: RewardsDoc[]
   );
 }
 
-function SubmissionsCard({ submissions, projects }: { submissions: RewardsDoc[]; projects: Project[] }) {
+function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]; projects: Project[] }) {
   const user = useOptionalUser();
   return (
     <div className="space-y-4">
@@ -241,7 +241,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: RewardsDoc[];
                 <div className="flex gap-1">
                   {s.appData?.title}
                   <img alt="" src="/img/trophy.svg" width={15} />
-                  <p className="text-neutral-400 font-thin">({"s.score.avg"})</p>
+                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
