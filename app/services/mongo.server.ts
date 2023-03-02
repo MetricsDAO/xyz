@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
-import type { LaborMarketDoc, ServiceRequestDoc, SubmissionDoc, ReviewDoc } from "~/domain";
+import type { ServiceRequestDoc, SubmissionDoc, ReviewDoc } from "~/domain";
+import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
 
 const client = new MongoClient(env.MONGODB_URI);
@@ -8,7 +9,7 @@ const client = new MongoClient(env.MONGODB_URI);
 // This is useful for deploying changes to the index and having it recreate from scratch.
 const db = client.db(env.PINE_SUBSCRIBER);
 
-const laborMarkets = db.collection<LaborMarketDoc>("laborMarkets");
+const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");

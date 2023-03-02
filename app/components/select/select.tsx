@@ -2,6 +2,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { Fragment, useEffect } from "react";
+import { Controller } from "react-hook-form";
 import { usePrevious } from "react-use";
 import { useControlField, useField } from "remix-validated-form";
 
@@ -75,6 +76,13 @@ export function Select({ isError, size = "md", value, onChange, options, placeho
       )}
     </Listbox>
   );
+}
+
+/**
+ * Select input that is controlled by a react-hook-form.
+ */
+export function ControlledSelect({ onChange, ...props }: Props & { name: string }) {
+  return <Controller name={props.name} render={({ field }) => <Select {...props} {...field} />} />;
 }
 
 export function ValidatedSelect({ onChange, ...props }: Props & { name: string }) {

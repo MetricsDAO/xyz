@@ -58,7 +58,7 @@ export const loader = async (data: DataFunctionArgs) => {
   invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
-    serviceProvider: user.address,
+    serviceProvider: user.address as `0x${string}`,
   });
   const networks = await listNetworks();
   return typedjson({
@@ -201,7 +201,7 @@ function AddAddressForm({ onDone }: { onDone: () => void }) {
       defaultValues={{
         payment: {
           networkName: "Polygon",
-          address: "",
+          address: "" as `0x${string}`,
         },
       }}
       method="post"

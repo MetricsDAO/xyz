@@ -3,6 +3,7 @@ import { Link, useParams, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
+import { getParamsOrFail } from "remix-params-helper";
 import { $params } from "remix-routes";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
@@ -15,10 +16,10 @@ import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
-import { LaborMarketSearchSchema } from "~/domain/labor-market";
+import { countLaborMarkets, searchLaborMarkets } from "~/domain/labor-market/functions.server";
+import { LaborMarketSearchSchema } from "~/domain/labor-market/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { MarketplacesListView } from "~/features/marketplaces-list-view";
-import { countLaborMarkets, searchLaborMarkets } from "~/services/labor-market.server";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
@@ -32,24 +33,20 @@ export type MarketplaceTableProps = {
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
-
   url.searchParams.set("type", $params("/app/:mType", params).mType);
-  const searchParams = LaborMarketSearchSchema.parse(url.searchParams);
+  const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
 
   const marketplaces = await searchLaborMarkets(searchParams);
   const totalResults = await countLaborMarkets(searchParams);
   const tokens = await listTokens();
   const projects = await listProjects();
-  return typedjson(
-    {
-      searchParams,
-      marketplaces,
-      totalResults,
-      tokens,
-      projects,
-    },
-    { status: 200 }
-  );
+  return typedjson({
+    searchParams,
+    marketplaces,
+    totalResults,
+    tokens,
+    projects,
+  });
 };
 
 export default function MarketplaceCollection() {

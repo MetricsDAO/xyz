@@ -5,7 +5,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { Error, Modal, ValidatedSegmentedRadio } from "~/components";
+import { ValidatedError, Modal, ValidatedSegmentedRadio } from "~/components";
 import { useMachine } from "@xstate/react";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -140,7 +140,7 @@ export default function ClaimToReview() {
               { label: "100", value: "100" },
             ]}
           />
-          <Error name="quantity" />
+          <ValidatedError name="quantity" />
           <p className="text-gray-500 italic mt-2 text-sm">
             You're only required to review the minimum you commit to, but you can optionally review more
           </p>

@@ -25,7 +25,20 @@ export function Label({
   return <label className={clsx("block", labelStyles[size], className)}>{children}</label>;
 }
 
-export function Error({ name }: { name: string }) {
+export function Error({ error }: { error: string | undefined }) {
+  return (
+    <Transition
+      show={Boolean(error)}
+      enter="transition duration-200"
+      enterFrom="opacity-0 -translate-y-1"
+      enterTo="opacity-1 translate-y-0"
+    >
+      <p className="text-red-500 text-sm font-medium py-1">{error}</p>
+    </Transition>
+  );
+}
+
+export function ValidatedError({ name }: { name: string }) {
   const { error } = useField(name);
 
   return (

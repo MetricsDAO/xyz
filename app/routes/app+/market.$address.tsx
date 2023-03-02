@@ -1,5 +1,5 @@
-import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
+import { Link, Outlet } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, notFound } from "remix-utils";
 import { z } from "zod";
@@ -8,23 +8,21 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
-import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
+import { EvmAddressSchema } from "~/domain/address";
 
-const paramsSchema = z.object({ address: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema });
+
 export const loader = async (data: DataFunctionArgs) => {
-  const { address } = paramsSchema.parse(data.params);
-  const laborMarket = await findLaborMarket(address);
-  if (!laborMarket) {
-    throw notFound("Labor market not found");
-  }
-
-  if (!laborMarket.appData) {
-    throw badRequest("Labor market app data is missing");
-  }
+  const parsed = paramsSchema.safeParse(data.params);
+  if (!parsed.success) throw notFound("Labor market not found");
+  const laborMarket = await getIndexedLaborMarket(parsed.data.address);
+  if (!laborMarket) throw notFound("Labor market not found");
+  if (!laborMarket.appData) throw badRequest("Labor market app data is missing");
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
   const tokens = await listTokens();
@@ -33,7 +31,6 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
-
   return (
     <Container className="py-16 px-10">
       <section className="flex flex-wrap gap-5 justify-between pb-5">
@@ -49,9 +46,9 @@ export default function Marketplace() {
       <section className="flex flex-col space-y-7 pb-12">
         <div className="flex flex-wrap gap-x-8">
           <Detail>
-            {laborMarket?.configuration.owner ? (
+            {laborMarket.configuration.owner ? (
               <DetailItem title="Sponsor">
-                <UserBadge address={laborMarket?.configuration.owner as `0x${string}`} />
+                <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
               </DetailItem>
             ) : (
               <></>
@@ -59,14 +56,14 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
+        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket.appData.description}</p>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <TabNav className="mb-10">
             <TabNavLink to="" end>
-              {`Challenges (${laborMarket?.serviceRequestCount})`}
+              Challenges ({laborMarket.indexData.serviceRequestCount})
             </TabNavLink>
             <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
             <TabNavLink to="./rewards">Rewards</TabNavLink>

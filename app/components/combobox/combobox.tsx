@@ -99,6 +99,19 @@ export function Combobox({ size = "md", value, options, onChange, placeholder }:
   );
 }
 
+/** Combobox controlled by react-hook-form */
+export function ControlledCombobox({ onChange, ...props }: Props & { name: string }) {
+  const { getInputProps } = useField(props.name);
+  const [value, setValue] = useControlField<string[]>(props.name);
+
+  const handleChange = (value: string[]) => {
+    setValue(value);
+    onChange?.(value);
+  };
+
+  return <Combobox {...getInputProps(props)} value={value} onChange={handleChange} />;
+}
+
 export function ValidatedCombobox({ onChange, ...props }: Props & { name: string }) {
   const { getInputProps } = useField(props.name);
   const [value, setValue] = useControlField<string[]>(props.name);

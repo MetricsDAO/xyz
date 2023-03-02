@@ -4,7 +4,7 @@ import { ValidatedTextarea } from "../../components/textarea/textarea";
 import { ValidatedSelect } from "~/components/select";
 import { ValidatedCombobox } from "../../components/combobox/combobox";
 import type { Project, Token } from "@prisma/client";
-import { Error, Field, Label } from "../../components/field";
+import { ValidatedError, Field, Label } from "../../components/field";
 import { Button } from "../../components/button";
 import { useParams } from "@remix-run/react";
 
@@ -16,16 +16,17 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
     <div className="space-y-10 py-5">
       {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
       <input type="hidden" name="type" value={mType} />
+
       <Field>
         <Label size="lg">Challenge Marketplace Title*</Label>
-        <ValidatedInput type="text" name="title" placeholder="e.g Solana Breakpoint 2023" />
-        <Error name="title" />
+        <ValidatedInput type="text" name="appData.title" placeholder="e.g Solana Breakpoint 2023" />
+        <ValidatedError name="appData.title" />
       </Field>
 
       <Field>
         <Label size="lg">Details*</Label>
         <ValidatedTextarea
-          name="description"
+          name="appData.description"
           placeholder={
             mType === "brainstorm"
               ? "What’s the goal of this Brainstorm marketplace?"
@@ -33,17 +34,17 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
           }
           rows={7}
         />
-        <Error name="description" />
+        <ValidatedError name="appData.description" />
       </Field>
 
       <Field>
         <Label size="lg">Blockchain/Project(s)*</Label>
         <ValidatedCombobox
           placeholder="e.g Ethereum, Solana, etc..."
-          name="projectSlugs"
+          name="appData.projectSlugs"
           options={projects.map((p) => ({ label: p.name, value: p.slug }))}
         />
-        <Error name="projectSlugs" />
+        <ValidatedError name="appData.projectSlugs" />
       </Field>
 
       <section className="space-y-4">
@@ -72,20 +73,20 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
               { label: "Delegates only", value: "delegates" },
             ]}
           />
-          <Error name="launchAccess" />
+          <ValidatedError name="launchAccess" />
         </Field>
 
         {launchAccess === "delegates" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field>
               <Label>Badger Contract Address*</Label>
-              <ValidatedInput name="launch.badgerAddress" />
-              <Error name="launch.badgerAddress" />
+              <ValidatedInput name="configuration.delegateBadge.token" />
+              <ValidatedError name="configuration.delegateBadge.token" />
             </Field>
             <Field>
               <Label>Badger Token ID*</Label>
-              <ValidatedInput name="launch.badgerTokenId" />
-              <Error name="launch.badgerTokenId" />
+              <ValidatedInput name="configuration.delegateBadge.tokenId" />
+              <ValidatedError name="configuration.delegateBadge.tokenId" />
             </Field>
           </div>
         ) : null}
@@ -100,7 +101,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
               name="tokenAllowlist"
               options={tokens.map((t) => ({ label: t.name, value: t.symbol }))}
             />
-            <Error name="tokenAllowlist" />
+            <ValidatedError name="tokenAllowlist" />
           </Field>
           <Field>
             <Label>Reward Curve</Label>
@@ -114,13 +115,13 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
             <Label>Minimum rMETRIC Balance*</Label>
-            <ValidatedInput name="submitRepMin" />
-            <Error name="submitRepMin" />
+            <ValidatedInput name="configuration.reputationParams.submitMin" />
+            <ValidatedError name="configuration.reputationParams.submitMin" />
           </Field>
           <Field>
             <Label>Maximum rMETRIC Balance</Label>
-            <ValidatedInput name="submitRepMax" />
-            <Error name="submitRepMax" />
+            <ValidatedInput name="configuration.reputationParams.submitMin" />
+            <ValidatedError name="configuration.reputationParams.submitMin" />
           </Field>
         </div>
       </section>
@@ -130,13 +131,13 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
             <Label>Reviewer Badger Contract Address*</Label>
-            <ValidatedInput type="text" name="reviewBadgerAddress" placeholder="0x..." />
-            <Error name="reviewBadgerAddress" />
+            <ValidatedInput type="text" name="configuration.maintainerBadge.token" placeholder="0x..." />
+            <ValidatedError name="configuration.maintainerBadge.token" />
           </Field>
           <Field>
             <Label>Reviewer Badger Token ID*</Label>
-            <ValidatedInput type="text" name="reviewBadgerTokenId" />
-            <Error name="reviewBadgerTokenId" />
+            <ValidatedInput type="text" name="configuration.maintainerBadge.tokenId" />
+            <ValidatedError name="configuration.maintainerBadge.tokenId" />
           </Field>
         </div>
       </Field>
