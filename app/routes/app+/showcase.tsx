@@ -23,9 +23,9 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { listProjects } from "~/services/projects.server";
 import type { Project } from "@prisma/client";
 import { ProjectBadges } from "~/features/project-badges";
-import { RMetricBadge } from "~/features/rmetric-badge";
 import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
+import { RMetricBadge } from "~/features/rmetric-badge";
 
 const validator = withZod(ShowcaseSearchSchema);
 
