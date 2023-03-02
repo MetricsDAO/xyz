@@ -46,6 +46,13 @@ import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { UserCircleIcon } from "@heroicons/react/20/solid";
+import { BigNumber } from "ethers";
+import { ReputationToken } from "labor-markets-abi";
+import { useContractRead, useEnsAvatar, useEnsName } from "wagmi";
+import { REPUTATION_TOKEN_ID } from "~/utils/constants";
+import { displayBalance, truncateAddress } from "~/utils/helpers";
+import { Avatar } from "~/components/avatar";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -154,23 +161,23 @@ export default function ChallengeSubmission() {
       <section className="mt-3">
         <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
           <main className="flex-1">
-            <div className="w-full border-spacing-4 border-separate space-y-5">
+            <div className="w-full border-spacing-4 border-separate space-y-4">
               {reviews.map((r) => {
                 return (
                   <Card asChild key={r.reviewer}>
-                    <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
-                      <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                    <div className="flex flex-col md:flex-row gap-3 py-4 px-6 items-center space-between">
+                      <div className="flex flex-col md:flex-row items-center flex-1 gap-x-8 gap-y-2">
                         <div
                           className={clsx(
                             SCORE_COLOR[scoreToLabel(r.score)],
-                            "flex w-24 h-12 justify-center items-center rounded-lg"
+                            "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                           )}
                         >
                           <p>{scoreToLabel(r.score)}</p>
                         </div>
-                        <UserBadge address={r.reviewer as `0x${string}`} />
+                        <UserInfo address={r.reviewer as `0x${string}`} />
                       </div>
-                      <p>{fromNow(r.createdAtBlockTimestamp)}</p>
+                      <p className="text-sm">{fromNow(r.createdAtBlockTimestamp)}</p>
                     </div>
                   </Card>
                 );
@@ -306,16 +313,16 @@ function ReviewQuestionDrawerButton({
             </div>
             <div className="flex flex-col space-y-3">
               <Button
-                variant="outline"
+                variant="review"
                 onClick={() => setSelected(4)}
-                className={clsx("hover:bg-green-200", {
-                  "bg-green-200": selected === 4,
+                className={clsx("hover:bg-lime-100", {
+                  "bg-lime-100": selected === 4,
                 })}
               >
                 Great
               </Button>
               <Button
-                variant="outline"
+                variant="review"
                 onClick={() => setSelected(3)}
                 className={clsx("hover:bg-blue-200", {
                   "bg-blue-200": selected === 3,
@@ -324,16 +331,16 @@ function ReviewQuestionDrawerButton({
                 Good
               </Button>
               <Button
-                variant="outline"
+                variant="review"
                 onClick={() => setSelected(2)}
-                className={clsx("hover:bg-gray-200", {
-                  "bg-gray-200": selected === 2,
+                className={clsx("hover:bg-neutral-200", {
+                  "bg-neutral-200": selected === 2,
                 })}
               >
                 Average
               </Button>
               <Button
-                variant="outline"
+                variant="review"
                 onClick={() => setSelected(1)}
                 className={clsx("hover:bg-orange-200", {
                   "bg-orange-200": selected === 1,
@@ -342,10 +349,10 @@ function ReviewQuestionDrawerButton({
                 Bad
               </Button>
               <Button
-                variant="outline"
+                variant="review"
                 onClick={() => setSelected(0)}
-                className={clsx("hover:bg-red-200", {
-                  "bg-red-200": selected === 0,
+                className={clsx("hover:bg-rose-200", {
+                  "bg-rose-200": selected === 0,
                 })}
               >
                 Spam
@@ -417,5 +424,34 @@ function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
         {submission.appData?.description}
       </p>
     </>
+  );
+}
+
+function UserInfo({ address }: { address: `0x${string}` }) {
+  const { data: ensName } = useEnsName({
+    address: address,
+    chainId: 1,
+  });
+
+  const { data: ensAvatarUrl } = useEnsAvatar({
+    address: address as `0x${string}`,
+    chainId: 1,
+  });
+
+  const { data: reputationBalance } = useContractRead({
+    address: ReputationToken.address,
+    abi: ReputationToken.abi,
+    functionName: "balanceOf",
+    args: [address, BigNumber.from(REPUTATION_TOKEN_ID)],
+  });
+
+  return (
+    <div className="flex flex-wrap gap-2 items-center">
+      {ensAvatarUrl ? <Avatar src={ensAvatarUrl} size="sm" /> : <UserCircleIcon height={16} width={16} />}
+      <p className="text-sm font-medium">{ensName ?? truncateAddress(address)}</p>
+      <p className="text-xs py-1 px-1.5 bg-neutral-100 rounded-full text-stone-500">
+        {reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC
+      </p>
+    </div>
   );
 }
