@@ -28,7 +28,7 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
-import { ScoreBadge, scoreToLabel } from "~/components/score";
+import { scoreToLabel } from "~/components/score";
 import type { LaborMarketDoc, SubmissionDoc } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
@@ -133,7 +133,7 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
           </DetailItem>
-          <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
+          <DetailItem title="Overall Score">{/* <ScoreBadge score={"4"} />*/}</DetailItem>
           <DetailItem title="Reviews">
             {reviewedByUser ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
@@ -161,12 +161,12 @@ export default function ChallengeSubmission() {
       <section className="mt-3">
         <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
           <main className="flex-1">
-            <div className="w-full border-spacing-4 border-separate space-y-5">
+            <div className="w-full border-spacing-4 border-separate space-y-4">
               {reviews.map((r) => {
                 return (
                   <Card asChild key={r.reviewer}>
-                    <div className="flex flex-col md:flex-row gap-3 py-4 px-4 items-center space-between">
-                      <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                    <div className="flex flex-col md:flex-row gap-3 py-4 px-6 items-center space-between">
+                      <div className="flex flex-col md:flex-row items-center flex-1 gap-8">
                         <div
                           className={clsx(
                             SCORE_COLOR[scoreToLabel(r.score)],
@@ -449,7 +449,7 @@ function UserInfo({ address }: { address: `0x${string}` }) {
     <div className="flex flex-wrap gap-2 items-center">
       {ensAvatarUrl ? <Avatar src={ensAvatarUrl} size="sm" /> : <UserCircleIcon height={16} width={16} />}
       <p className="text-sm font-medium">{ensName ?? truncateAddress(address)}</p>
-      <p className="text-xs p-1 bg-neutral-100 rounded-full text-stone-500">
+      <p className="text-xs py-1 px-1.5 bg-neutral-100 rounded-full text-stone-500">
         {reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC
       </p>
     </div>
