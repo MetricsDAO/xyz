@@ -14,6 +14,7 @@ import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
+import Markdown from "markdown-to-jsx";
 
 const paramsSchema = z.object({ address: z.string() });
 export const loader = async (data: DataFunctionArgs) => {
@@ -34,6 +35,7 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const description = laborMarket?.appData?.description ? laborMarket?.appData?.description : "";
 
   return (
     <Container className="pb-16 pt-7 px-10">
@@ -61,7 +63,7 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
+        <Markdown children={description} />
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">

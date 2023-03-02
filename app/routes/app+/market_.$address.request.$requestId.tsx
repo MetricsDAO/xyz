@@ -28,6 +28,7 @@ import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
+import Markdown from "markdown-to-jsx";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -60,6 +61,8 @@ export default function ServiceRequest() {
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+
+  const description = serviceRequest.appData?.description ? serviceRequest.appData.description : "";
 
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
@@ -172,7 +175,7 @@ export default function ServiceRequest() {
       </Detail>
 
       <article className="text-gray-500 text-sm mb-20 max-w-2xl">
-        <p>{serviceRequest.appData?.description}</p>
+        <Markdown children={description} />
       </article>
 
       <TabNav className="mb-10">
