@@ -6,21 +6,20 @@ import { useAccount, useContractRead } from "wagmi";
 const ACTIONS = {
   HAS_SIGNALED: ethers.utils.id("hasSignaled"),
   HAS_SUBMITTED: ethers.utils.id("hasSubmitted"),
+  HAS_CLAIMED: ethers.utils.id("hasClaimed"),
 } as const;
+
+type Props = {
+  laborMarketAddress: `0x${string}`;
+  id: string; // Could be a service request id or submissionid
+  action: "HAS_SIGNALED" | "HAS_SUBMITTED" | "HAS_CLAIMED";
+};
 
 /**
  * * Hook to call the labor market contract and determine which actions a signed in user has performed on a service request.
  * @returns {boolean | undefined} Undefined if not logged in or during loading.
  */
-export function useHasPerformed({
-  laborMarketAddress,
-  serviceRequestId,
-  action,
-}: {
-  laborMarketAddress: `0x${string}`;
-  serviceRequestId: string;
-  action: "HAS_SIGNALED" | "HAS_SUBMITTED";
-}) {
+export function useHasPerformed({ laborMarketAddress, id, action }: Props) {
   const { address: userAddress } = useAccount();
 
   const { data } = useContractRead({
@@ -28,7 +27,7 @@ export function useHasPerformed({
     address: laborMarketAddress,
     abi: LaborMarket.abi,
     functionName: "hasPerformed",
-    args: [BigNumber.from(serviceRequestId), userAddress as `0x${string}`, ACTIONS[action] as `0x${string}`],
+    args: [BigNumber.from(id), userAddress as `0x${string}`, ACTIONS[action] as `0x${string}`],
   });
 
   return data;
