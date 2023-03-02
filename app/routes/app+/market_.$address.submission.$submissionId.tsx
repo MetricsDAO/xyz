@@ -28,7 +28,7 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
-import { scoreToLabel } from "~/components/score";
+import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { LaborMarketDoc, SubmissionDoc } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
@@ -46,6 +46,7 @@ import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import { overallScore } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -98,6 +99,7 @@ export default function ChallengeSubmission() {
   };
 
   const isWinner = false;
+  const score = overallScore(submission);
 
   return (
     <Container className="pt-7 pb-16 px-10">
@@ -126,12 +128,16 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
           </DetailItem>
-          <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
+          {score && (
+            <DetailItem title="Overall Score">
+              <ScoreBadge score={score} />
+            </DetailItem>
+          )}
           <DetailItem title="Reviews">
             {reviewedByUser ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
-                <p className="font-medium">{`You + ${reviews.length} reviews`}</p>
+                <p className="font-medium">{`You${reviews.length === 1 ? "" : ` + ${reviews.length - 1} reviews`}`}</p>
               </div>
             ) : (
               <Badge>{reviews.length}</Badge>

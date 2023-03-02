@@ -33,9 +33,12 @@ import { Field, Label, ValidatedSelect } from "~/components";
 import { listTokens } from "~/services/tokens.server";
 import type { Token, Wallet } from "@prisma/client";
 import { getParamsOrFail } from "remix-params-helper";
-import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
+import { fromTokenAmount, toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
 import type { EthersError } from "~/features/web3-button/types";
 import { RPCError } from "~/features/rpc-error";
+import { useGetReward } from "~/hooks/use-get-reward";
+import { useHasPerformed } from "~/hooks/use-has-performed";
+import { RewardBadge } from "~/components/reward-badge";
 
 const validator = withZod(RewardsSearchSchema);
 
@@ -113,72 +116,148 @@ function RewardsListView({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; 
 }
 
 function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
-  const unclaimed = true;
   return (
     <Table>
-      <Header columns={6} className="mb-2">
-        <Header.Column span={2}>Challenge Title</Header.Column>
-        <Header.Column>Reward</Header.Column>
-        <Header.Column>Submitted</Header.Column>
-        <Header.Column>Rewarded</Header.Column>
+      <Header columns={12} className="mb-2">
+        <Header.Column span={3}>Challenge Title</Header.Column>
+        <Header.Column span={3}>Reward</Header.Column>
+        <Header.Column span={2}>Submitted</Header.Column>
+        <Header.Column span={3}>Rewarded</Header.Column>
         <Header.Column>Status</Header.Column>
       </Header>
       {rewards.map((r) => {
         return (
-          <Row columns={6} key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}>
-            <Row.Column span={2}>
-              <p>{r.sr[0]?.appData?.title}</p>
-            </Row.Column>
-            <Row.Column>--</Row.Column>
-            <Row.Column className="text-black">{fromNow(r.createdAtBlockTimestamp)} </Row.Column>
-            <Row.Column className="text-black" color="dark.3">
-              --
-            </Row.Column>
-            <Row.Column>
-              {unclaimed ? (
-                <ClaimButton reward={r} wallets={wallets} tokens={tokens} />
-              ) : (
-                <Button variant="cancel">View Tx</Button>
-              )}
-            </Row.Column>
-          </Row>
+          <RewardsTableRow
+            key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}
+            reward={r}
+            wallets={wallets}
+            tokens={tokens}
+          />
         );
       })}
     </Table>
   );
 }
 
-function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
-  const unclaimed = true;
+function RewardsTableRow({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
+  const contractReward = useGetReward({
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    submissionId: reward.id,
+  });
+  const hasClaimed = useHasPerformed({
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    id: reward.id,
+    action: "HAS_CLAIMED",
+  });
+  const token = tokens.find((t) => t.contractAddress === reward.sr[0]?.configuration.pToken);
+  const showReward = contractReward !== undefined && hasClaimed === false;
+  const showRewarded = contractReward !== undefined && hasClaimed === true;
 
+  return (
+    <Row columns={12}>
+      <Row.Column span={3}>
+        <p>{reward.sr[0]?.appData?.title}</p>
+      </Row.Column>
+      <Row.Column span={3}>
+        {showReward ? (
+          <RewardBadge
+            amount={fromTokenAmount(contractReward[0].toString())}
+            token={token?.symbol ?? "Unknown Token"}
+            rMETRIC={contractReward[1].toNumber()}
+          />
+        ) : (
+          <span>--</span>
+        )}
+      </Row.Column>
+      <Row.Column span={2} className="text-black">
+        {fromNow(reward.createdAtBlockTimestamp)}{" "}
+      </Row.Column>
+      <Row.Column span={3} className="text-black" color="dark.3">
+        {showRewarded ? (
+          <RewardBadge
+            amount={fromTokenAmount(contractReward[0].toString())}
+            token={token?.symbol ?? "Unknown Token"}
+            rMETRIC={contractReward[1].toNumber()}
+          />
+        ) : (
+          <span>--</span>
+        )}
+      </Row.Column>
+      <Row.Column>
+        {hasClaimed === false ? (
+          <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
+        ) : hasClaimed === true ? (
+          <span>Claimed</span>
+        ) : (
+          <></>
+        )}
+      </Row.Column>
+    </Row>
+  );
+}
+
+function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
   return (
     <div className="space-y-4">
       {rewards.map((r) => {
-        return (
-          <Card
-            className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5"
-            key={`${r.id}${r.serviceRequestId}${r.laborMarketAddress}`}
-          >
-            <div>Challenge Title</div>
-            <p>{r.sr[0]?.appData?.title}</p>
-            <div>Reward</div>
-            <p>--</p>
-            <div>Submitted</div>
-            <p className="text-black">{fromNow(r.createdAtBlockTimestamp)} </p>
-            <div>Rewarded</div>
-            <p className="text-black" color="dark.3">
-              --
-            </p>
-            <div>Status</div>
-            {unclaimed ? (
-              <ClaimButton reward={r} wallets={wallets} tokens={tokens} />
-            ) : (
-              <Button variant="cancel">View Tx</Button>
-            )}
-          </Card>
-        );
+        return <RewardCard key={`${r.laborMarketAddress}_${r.id}`} reward={r} wallets={wallets} tokens={tokens} />;
       })}
     </div>
+  );
+}
+
+function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
+  const contractReward = useGetReward({
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    submissionId: reward.id,
+  });
+  const hasClaimed = useHasPerformed({
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    id: reward.id,
+    action: "HAS_CLAIMED",
+  });
+  const token = tokens.find((t) => t.contractAddress === reward.sr[0]?.configuration.pToken);
+  const showReward = contractReward !== undefined && hasClaimed === false;
+  const showRewarded = contractReward !== undefined && hasClaimed === true;
+  return (
+    <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
+      <div>Challenge Title</div>
+      <p>{reward.sr[0]?.appData?.title}</p>
+      <div>Reward</div>
+      <div>
+        {showReward ? (
+          <RewardBadge
+            amount={fromTokenAmount(contractReward[0].toString())}
+            token={token?.symbol ?? "Unknown Token"}
+            rMETRIC={contractReward[1].toNumber()}
+          />
+        ) : (
+          <span>--</span>
+        )}
+      </div>
+      <div>Submitted</div>
+      <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
+      <div>Rewarded</div>
+      <div className="text-black" color="dark.3">
+        {showRewarded ? (
+          <RewardBadge
+            amount={fromTokenAmount(contractReward[0].toString())}
+            token={token?.symbol ?? "Unknown Token"}
+            rMETRIC={contractReward[1].toNumber()}
+          />
+        ) : (
+          <span>--</span>
+        )}
+      </div>
+      <div>Status</div>
+      {hasClaimed === false ? (
+        <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
+      ) : hasClaimed === true ? (
+        <span>Claimed</span>
+      ) : (
+        <></>
+      )}
+    </Card>
   );
 }
 
