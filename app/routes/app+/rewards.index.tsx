@@ -38,6 +38,7 @@ import type { EthersError } from "~/features/web3-button/types";
 import { RPCError } from "~/features/rpc-error";
 import { useGetReward } from "~/hooks/use-get-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
+import { RewardBadge } from "~/components/reward-badge";
 
 const validator = withZod(RewardsSearchSchema);
 
@@ -161,46 +162,54 @@ function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
 }
 
 function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
-  const ugr = useGetReward({ laborMarketAddress: reward.laborMarketAddress as `0x${string}`, submissionId: reward.id });
+  const contractReward = useGetReward({
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    submissionId: reward.id,
+  });
   const hasClaimed = useHasPerformed({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  console.log("ugr", ugr?.[0].toString(), ugr?.[1].toString());
+  const token = tokens.find((t) => t.contractAddress === reward.sr[0]?.configuration.pToken);
+  const showReward = contractReward !== undefined && hasClaimed === false;
+  const showRewarded = contractReward !== undefined && hasClaimed === true;
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
       <p>{reward.sr[0]?.appData?.title}</p>
       <div>Reward</div>
-      <p>
-        {hasClaimed ? (
-          "--"
+      <div>
+        {showReward ? (
+          <RewardBadge
+            amount={fromTokenAmount(contractReward[0].toString())}
+            token={token?.symbol ?? "Unknown Token"}
+            rMETRIC={contractReward[1].toNumber()}
+          />
         ) : (
-          <>
-            {ugr?.[0].toString() ? fromTokenAmount(ugr?.[0].toString()) : ""} MBETA and{" "}
-            {ugr?.[1].toString() ? ugr?.[1].toString() : ""} rMetric
-          </>
+          <span>--</span>
         )}
-      </p>
+      </div>
       <div>Submitted</div>
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
       <div>Rewarded</div>
-      <p className="text-black" color="dark.3">
-        {!hasClaimed ? (
-          "--"
+      <div className="text-black" color="dark.3">
+        {showRewarded ? (
+          <RewardBadge
+            amount={fromTokenAmount(contractReward[0].toString())}
+            token={token?.symbol ?? "Unknown Token"}
+            rMETRIC={contractReward[1].toNumber()}
+          />
         ) : (
-          <>
-            {ugr?.[0].toString() ? fromTokenAmount(ugr?.[0].toString()) : ""} MBETA and{" "}
-            {ugr?.[1].toString() ? ugr?.[1].toString() : ""} rMetric
-          </>
+          <span>--</span>
         )}
-      </p>
+      </div>
       <div>Status</div>
-      {!hasClaimed ? (
+      {hasClaimed === false ? (
         <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
+      ) : hasClaimed === true ? (
+        <span>Claimed</span>
       ) : (
-        // <Button variant="cancel">View Tx</Button>
         <></>
       )}
     </Card>
