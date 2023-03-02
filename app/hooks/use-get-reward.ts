@@ -8,7 +8,7 @@ type Props = {
 };
 
 /**
- * Get the user's reputation token balance
+ * Get the user's reward for a submission
  * @returns {BigNumber | undefined} - undefined if user is not connected or still loading
  */
 export function useGetReward({ laborMarketAddress, submissionId }: Props) {
