@@ -175,7 +175,7 @@ export default function ChallengeSubmission() {
                         >
                           <p>{scoreToLabel(r.score)}</p>
                         </div>
-                        <UserInfo address={r.reviewer as `0x${string}`} />
+                        <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>
                       <p className="text-sm">{fromNow(r.createdAtBlockTimestamp)}</p>
                     </div>
@@ -313,7 +313,7 @@ function ReviewQuestionDrawerButton({
             </div>
             <div className="flex flex-col space-y-3">
               <Button
-                variant="review"
+                variant="gray"
                 onClick={() => setSelected(4)}
                 className={clsx("hover:bg-lime-100", {
                   "bg-lime-100": selected === 4,
@@ -322,7 +322,7 @@ function ReviewQuestionDrawerButton({
                 Great
               </Button>
               <Button
-                variant="review"
+                variant="gray"
                 onClick={() => setSelected(3)}
                 className={clsx("hover:bg-blue-200", {
                   "bg-blue-200": selected === 3,
@@ -331,7 +331,7 @@ function ReviewQuestionDrawerButton({
                 Good
               </Button>
               <Button
-                variant="review"
+                variant="gray"
                 onClick={() => setSelected(2)}
                 className={clsx("hover:bg-neutral-200", {
                   "bg-neutral-200": selected === 2,
@@ -340,7 +340,7 @@ function ReviewQuestionDrawerButton({
                 Average
               </Button>
               <Button
-                variant="review"
+                variant="gray"
                 onClick={() => setSelected(1)}
                 className={clsx("hover:bg-orange-200", {
                   "bg-orange-200": selected === 1,
@@ -349,7 +349,7 @@ function ReviewQuestionDrawerButton({
                 Bad
               </Button>
               <Button
-                variant="review"
+                variant="gray"
                 onClick={() => setSelected(0)}
                 className={clsx("hover:bg-rose-200", {
                   "bg-rose-200": selected === 0,
@@ -424,34 +424,5 @@ function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
         {submission.appData?.description}
       </p>
     </>
-  );
-}
-
-function UserInfo({ address }: { address: `0x${string}` }) {
-  const { data: ensName } = useEnsName({
-    address: address,
-    chainId: 1,
-  });
-
-  const { data: ensAvatarUrl } = useEnsAvatar({
-    address: address as `0x${string}`,
-    chainId: 1,
-  });
-
-  const { data: reputationBalance } = useContractRead({
-    address: ReputationToken.address,
-    abi: ReputationToken.abi,
-    functionName: "balanceOf",
-    args: [address, BigNumber.from(REPUTATION_TOKEN_ID)],
-  });
-
-  return (
-    <div className="flex flex-wrap gap-2 items-center">
-      {ensAvatarUrl ? <Avatar src={ensAvatarUrl} size="sm" /> : <UserCircleIcon height={16} width={16} />}
-      <p className="text-sm font-medium">{ensName ?? truncateAddress(address)}</p>
-      <p className="text-xs py-1 px-1.5 bg-neutral-100 rounded-full text-stone-500">
-        {reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC
-      </p>
-    </div>
   );
 }
