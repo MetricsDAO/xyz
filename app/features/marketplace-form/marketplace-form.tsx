@@ -7,6 +7,8 @@ import type { Project, Token } from "@prisma/client";
 import { Error, Field, Label } from "../../components/field";
 import { Button } from "../../components/button";
 import { useParams } from "@remix-run/react";
+import { MarkdownEditor } from "../markdown-editor/markdown.client";
+import { ClientOnly } from "remix-utils";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
   const [launchAccess] = useControlField("launch.access");
@@ -24,15 +26,13 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
 
       <Field>
         <Label size="lg">Details*</Label>
-        <ValidatedTextarea
-          name="description"
-          placeholder={
-            mType === "brainstorm"
-              ? "What’s the goal of this Brainstorm marketplace?"
-              : "What’s the goal of this Analytics marketplace?"
-          }
-          rows={7}
-        />
+        <ClientOnly>
+          {() => (
+            <div className="container overflow-auto">
+              <MarkdownEditor />
+            </div>
+          )}
+        </ClientOnly>
         <Error name="description" />
       </Field>
 

@@ -200,16 +200,13 @@ function AnalyticsTextArea() {
           </div>
         </div>
       </div>
-      <Field>
-        <ValidatedTextarea
-          name="description"
-          rows={7}
-          placeholder="Enter a question to answer, problem to solve, or tool to create. 
-
-          Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
-        />
-        <Error name="description" />
-      </Field>
+      <ClientOnly>
+        {() => (
+          <div className="container overflow-auto">
+            <MarkdownEditor />
+          </div>
+        )}
+      </ClientOnly>
     </>
   );
 }

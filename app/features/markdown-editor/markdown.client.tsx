@@ -13,5 +13,5 @@ export const MarkdownEditor = () => {
 };
 
 export function ParsedMarkdown({ text }: { text: string }) {
-  return <MDEditor.Markdown style={{ backgroundColor: "inherit", color: "gray" }} source={text} />;
+  return <MDEditor.Markdown style={{ backgroundColor: "inherit", color: "gray", fontSize: "12px" }} source={text} />;
 }
