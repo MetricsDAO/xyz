@@ -2,14 +2,7 @@ import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 // import MDEditor from "@uiw/react-md-editor";
 import { useState } from "react";
-import {
-  ValidatedError,
-  Field,
-  ValidatedCombobox,
-  ValidatedInput,
-  ValidatedSelect,
-  ValidatedTextarea,
-} from "~/components";
+import { ValidatedError, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect } from "~/components";
 import type { SetStateAction } from "react";
 import { claimDate, parseDatetime } from "~/utils/date";
 import React from "react";
@@ -208,16 +201,13 @@ function AnalyticsTextArea() {
           </div>
         </div>
       </div>
-      <Field>
-        <ValidatedTextarea
-          name="description"
-          rows={7}
-          placeholder="Enter a question to answer, problem to solve, or tool to create. 
-
-          Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
-        />
-        <ValidatedError name="description" />
-      </Field>
+      <ClientOnly>
+        {() => (
+          <div className="container overflow-auto">
+            <MarkdownEditor />
+          </div>
+        )}
+      </ClientOnly>
     </>
   );
 }

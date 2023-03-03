@@ -34,7 +34,6 @@ export const loader = async (data: DataFunctionArgs) => {
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
-  console.log("Description", description);
 
   return (
     <Container className="pb-16 pt-7 px-10">
