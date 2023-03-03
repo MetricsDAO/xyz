@@ -1,5 +1,6 @@
 import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
+import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type {
   RewardsSearch,
@@ -8,9 +9,12 @@ import type {
   SubmissionForm,
   SubmissionSearch,
   SubmissionWithReviewsDoc,
+  SubmissionWithServiceRequest,
 } from "~/domain/submission";
+import { SubmissionWithServiceRequestSchema } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
+import { utcDate } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -189,8 +193,8 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 /**
  * Returns an array of Submissions with their Service Request for a given user
  */
-export const searchUserSubmissions = async (params: RewardsSearch) => {
-  return mongo.submissions
+export const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
+  const submissionsDocs = await mongo.submissions
     .aggregate([
       {
         $match: {
@@ -227,9 +231,23 @@ export const searchUserSubmissions = async (params: RewardsSearch) => {
           as: "sr",
         },
       },
+      {
+        $unwind: "$sr",
+      },
+      ...[
+        params.isPastEnforcementExpiration
+          ? {
+              $match: {
+                $and: [{ "sr.configuration.enforcementExpiration": { $lt: utcDate() } }],
+              },
+            }
+          : {},
+      ],
     ])
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
+
+  return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
 };

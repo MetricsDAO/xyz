@@ -12,7 +12,7 @@ import { ValidatedForm } from "remix-validated-form";
 import { Container } from "~/components/container";
 import RewardsTab from "~/features/rewards-tab";
 import { Card } from "~/components/card";
-import { dateHasPassed, fromNow } from "~/utils/date";
+import { fromNow } from "~/utils/date";
 import { Header, Table, Row } from "~/components/table";
 import { CheckCircleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { getUser } from "~/services/session.server";
@@ -27,7 +27,7 @@ import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { searchUserSubmissions } from "~/services/submissions.server";
-import type { RewardsDoc } from "~/domain/submission";
+import type { SubmissionWithServiceRequest } from "~/domain/submission";
 import { RewardsSearchSchema } from "~/domain/submission";
 import { Field, Label, ValidatedSelect } from "~/components";
 import { listTokens } from "~/services/tokens.server";
@@ -61,7 +61,6 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
 export default function Rewards() {
   const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
-  const reviewedRewards = rewards.filter((r) => dateHasPassed(r.sr[0].configuration.enforcementExpiration));
 
   return (
     <Container className="py-16 px-10">
@@ -74,13 +73,13 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={reviewedRewards.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={reviewedRewards as RewardsDoc[]} wallets={wallets} tokens={tokens} />
+            <RewardsListView rewards={rewards} wallets={wallets} tokens={tokens} />
             <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(reviewedRewards.length / search.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
             </div>
           </div>
         </main>
@@ -92,7 +91,15 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
+function RewardsListView({
+  rewards,
+  wallets,
+  tokens,
+}: {
+  rewards: SubmissionWithServiceRequest[];
+  wallets: Wallet[];
+  tokens: Token[];
+}) {
   if (rewards.length === 0) {
     return (
       <div className="flex">
@@ -115,7 +122,15 @@ function RewardsListView({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; 
   );
 }
 
-function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
+function RewardsTable({
+  rewards,
+  wallets,
+  tokens,
+}: {
+  rewards: SubmissionWithServiceRequest[];
+  wallets: Wallet[];
+  tokens: Token[];
+}) {
   return (
     <Table>
       <Header columns={12} className="mb-2">
@@ -139,7 +154,15 @@ function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
   );
 }
 
-function RewardsTableRow({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
+function RewardsTableRow({
+  reward,
+  wallets,
+  tokens,
+}: {
+  reward: SubmissionWithServiceRequest;
+  wallets: Wallet[];
+  tokens: Token[];
+}) {
   const contractReward = useGetReward({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
@@ -149,14 +172,14 @@ function RewardsTableRow({ reward, wallets, tokens }: { reward: RewardsDoc; wall
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const token = tokens.find((t) => t.contractAddress === reward.sr[0]?.configuration.pToken);
+  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const showReward = contractReward !== undefined && hasClaimed === false;
   const showRewarded = contractReward !== undefined && hasClaimed === true;
 
   return (
     <Row columns={12}>
       <Row.Column span={3}>
-        <p>{reward.sr[0]?.appData?.title}</p>
+        <p>{reward.sr.appData?.title}</p>
       </Row.Column>
       <Row.Column span={3}>
         {showReward ? (
@@ -196,7 +219,15 @@ function RewardsTableRow({ reward, wallets, tokens }: { reward: RewardsDoc; wall
   );
 }
 
-function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
+function RewardsCards({
+  rewards,
+  wallets,
+  tokens,
+}: {
+  rewards: SubmissionWithServiceRequest[];
+  wallets: Wallet[];
+  tokens: Token[];
+}) {
   return (
     <div className="space-y-4">
       {rewards.map((r) => {
@@ -206,7 +237,15 @@ function RewardsCards({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wal
   );
 }
 
-function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
+function RewardCard({
+  reward,
+  wallets,
+  tokens,
+}: {
+  reward: SubmissionWithServiceRequest;
+  wallets: Wallet[];
+  tokens: Token[];
+}) {
   const contractReward = useGetReward({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
@@ -216,13 +255,13 @@ function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: 
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const token = tokens.find((t) => t.contractAddress === reward.sr[0]?.configuration.pToken);
+  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const showReward = contractReward !== undefined && hasClaimed === false;
   const showRewarded = contractReward !== undefined && hasClaimed === true;
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
-      <p>{reward.sr[0]?.appData?.title}</p>
+      <p>{reward.sr.appData?.title}</p>
       <div>Reward</div>
       <div>
         {showReward ? (
@@ -262,12 +301,20 @@ function RewardCard({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: 
 }
 
 const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>();
-function ClaimButton({ reward, wallets, tokens }: { reward: RewardsDoc; wallets: Wallet[]; tokens: Token[] }) {
+function ClaimButton({
+  reward,
+  wallets,
+  tokens,
+}: {
+  reward: SubmissionWithServiceRequest;
+  wallets: Wallet[];
+  tokens: Token[];
+}) {
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const tokenAbrev = toTokenAbbreviation(reward.sr[0]?.configuration.pToken ?? "", tokens);
-  const networkName = toNetworkName(reward.sr[0]?.configuration.pToken ?? "", tokens);
+  const tokenAbrev = toTokenAbbreviation(reward.sr.configuration.pToken ?? "", tokens);
+  const networkName = toNetworkName(reward.sr.configuration.pToken ?? "", tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);
 
   const [state, send] = useMachine(
