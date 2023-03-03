@@ -1,9 +1,8 @@
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
 import { useRouteData } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
+import { PermissionIcon } from "~/features/permission-icon";
 import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useTokenData } from "~/hooks/use-token-data";
@@ -57,13 +56,7 @@ export default function MarketplaceIdPrerequesites() {
                   <h3 className="font-medium mb-4">
                     You must hold this much rMETRIC to enter submissions on challenges
                   </h3>
-                  <CheckCircleIcon
-                    className={clsx("w-5 h-5 ", {
-                      hidden: canSubmit === undefined,
-                      "text-neutral-400": canSubmit === false,
-                      "text-lime-600": canSubmit === true,
-                    })}
-                  />
+                  <PermissionIcon isAllowed={canSubmit} />
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex flex-col">
@@ -87,13 +80,7 @@ export default function MarketplaceIdPrerequesites() {
                   <h3 className="font-medium mb-4">
                     You must hold this badge to review and score submissions on challenges
                   </h3>
-                  <CheckCircleIcon
-                    className={clsx("w-5 h-5 ", {
-                      hidden: canReview === undefined,
-                      "text-neutral-400": canReview === false,
-                      "text-lime-600": canReview === true,
-                    })}
-                  />
+                  <PermissionIcon isAllowed={canReview} />
                 </div>
                 <div className="text-xs text-gray-500">{maintainerData?.name}</div>
                 <div className="flex gap-2 items-center">
@@ -104,13 +91,7 @@ export default function MarketplaceIdPrerequesites() {
               <Card className="p-4 space-y-2">
                 <div className="flex justify-between">
                   <h3 className="font-medium mb-4">You must hold this badge to launch new challenges</h3>
-                  <CheckCircleIcon
-                    className={clsx("w-5 h-5 ", {
-                      hidden: canLaunchChallenges === undefined,
-                      "text-neutral-400": canLaunchChallenges === false,
-                      "text-lime-600": canLaunchChallenges === true,
-                    })}
-                  />
+                  <PermissionIcon isAllowed={canLaunchChallenges} />
                 </div>
                 <div className="text-xs text-gray-500">{delegateData?.name}</div>
                 <div className="flex gap-2 items-center">
