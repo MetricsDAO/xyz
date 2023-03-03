@@ -1,7 +1,7 @@
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { Link, Outlet } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { badRequest, notFound } from "remix-utils";
+import { badRequest, ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
@@ -11,6 +11,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
@@ -32,6 +33,9 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
+  console.log("Description", description);
+
   return (
     <Container className="pb-16 pt-7 px-10">
       <Breadcrumbs crumbs={[{ link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" }]} />
@@ -58,7 +62,7 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket.appData.description}</p>
+        <ClientOnly>{() => <ParsedMarkdown text={description} />}</ClientOnly>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
