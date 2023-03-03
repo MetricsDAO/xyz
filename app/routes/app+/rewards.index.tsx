@@ -26,7 +26,7 @@ import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import invariant from "tiny-invariant";
 import type { SendTransactionResult } from "@wagmi/core";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { searchSubmissionsRewards } from "~/services/submissions.server";
+import { searchUserSubmissions } from "~/services/submissions.server";
 import type { CombinedDoc } from "~/domain/submission";
 import { RewardsSearchSchema } from "~/domain/submission";
 import { Field, Label, ValidatedSelect } from "~/components";
@@ -48,7 +48,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchSubmissionsRewards({ ...search, serviceProvider: user.address });
+  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
   const tokens = await listTokens();
   return typedjson({
     wallets,

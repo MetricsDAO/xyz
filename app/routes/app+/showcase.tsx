@@ -7,7 +7,7 @@ import { ValidatedInput } from "~/components/input";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import { Checkbox } from "~/components/checkbox";
 import { withZod } from "@remix-validated-form/with-zod";
-import type { CombinedDoc } from "~/domain";
+import type { CombinedDoc, LaborMarketDoc } from "~/domain";
 import { ShowcaseSearchSchema } from "~/domain";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
@@ -26,6 +26,7 @@ import { ProjectBadges } from "~/features/project-badges";
 import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
+import { findLaborMarkets } from "~/services/labor-market.server";
 
 const validator = withZod(ShowcaseSearchSchema);
 
@@ -34,17 +35,19 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const search = getParamsOrFail(url.searchParams, ShowcaseSearchSchema);
   const submissions = await searchSubmissionsShowcase({ ...search });
   const projects = await listProjects();
+  const laborMarkets = await findLaborMarkets();
   return typedjson({
     submissions,
     search,
     projects,
+    laborMarkets,
   });
 };
 
 export default function Showcase() {
-  const { submissions, projects, search } = useTypedLoaderData<typeof loader>();
+  const { submissions, projects, search, laborMarkets } = useTypedLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
-  searchParams.set("count", String(5 + search.count));
+  searchParams.set("count", String(5 + search.count)); //todo - hide count when no more to
 
   return (
     <Container className="py-16 px-10">
@@ -65,14 +68,14 @@ export default function Showcase() {
           </Link>
         </div>
         <aside className="md:w-1/4 lg:w-1/5 pt-11">
-          <SearchAndFilter projects={projects} />
+          <SearchAndFilter projects={projects} laborMarkets={laborMarkets} />
         </aside>
       </section>
     </Container>
   );
 }
 
-function SearchAndFilter({ projects }: { projects: Project[] }) {
+function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; laborMarkets: LaborMarketDoc[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -150,7 +153,7 @@ function SearchAndFilter({ projects }: { projects: Project[] }) {
           size="sm"
           onChange={handleChange}
           placeholder="Select option"
-          options={[]}
+          options={laborMarkets.map((lm) => ({ value: lm.address, label: lm.appData?.title ?? "" }))}
         />
       </Field>
     </ValidatedForm>
@@ -211,9 +214,9 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
               <Row.Column span={2}>
                 <RMetricBadge address={s.configuration.serviceProvider as `0x${string}`} />
               </Row.Column>
-              <Row.Column span={3}>{s.sr[0]?.appData?.title}</Row.Column>
+              <Row.Column span={3}>{s.sr.appData?.title}</Row.Column>
               <Row.Column span={2}>
-                <ProjectBadges projects={findProjectsBySlug(projects, s.sr[0]?.appData?.projectSlugs ?? [])} />
+                <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
               </Row.Column>
               <Row.Column span={2}>{fromNow(s.createdAtBlockTimestamp)}</Row.Column>
             </Link>
@@ -255,9 +258,9 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
               <p>User rMETRIC</p>
               <RMetricBadge address={s.configuration.serviceProvider as `0x${string}`} />
               <p>Challenge</p>
-              <p>{s.sr[0]?.appData?.title}</p>
+              <p>{s.sr.appData?.title}</p>
               <p>Chain/Project</p>
-              <ProjectBadges projects={findProjectsBySlug(projects, s.sr[0]?.appData?.projectSlugs ?? [])} />
+              <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
               <p>Submitted</p>
               {fromNow(s.createdAtBlockTimestamp)}
             </Link>

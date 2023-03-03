@@ -67,9 +67,13 @@ export const SubmissionEventSchema = z.object({
   submissionId: z.string(),
 });
 
-const CombinedSchema = SubmissionDocSchema.extend({
+const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
   sr: z.array(ServiceRequestDocSchema),
-  lm: z.array(LaborMarketDocSchema),
+});
+
+const CombinedSchema = SubmissionDocSchema.extend({
+  sr: ServiceRequestDocSchema,
+  lm: LaborMarketDocSchema,
 });
 
 export const RewardsSearchSchema = z.object({
@@ -85,7 +89,7 @@ export const RewardsSearchSchema = z.object({
 export const ShowcaseSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
   count: z.number().default(0),
-  laborMarketAddress: EvmAddressSchema.optional(),
+  marketplace: z.array(EvmAddressSchema).optional(),
   project: z.array(z.string()).optional(),
   type: z.array(z.enum(["analyze", "brainstorm"])).optional(),
 });
@@ -99,6 +103,7 @@ export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
+export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
 export type CombinedDoc = z.infer<typeof CombinedSchema>;
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;

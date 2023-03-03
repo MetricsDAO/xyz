@@ -191,7 +191,7 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 /**
  * Returns an array of Submissions with their Service Request and LaborMarket
  */
-export const searchSubmissionsRewards = async (params: RewardsSearch) => {
+export const searchUserSubmissions = async (params: RewardsSearch) => {
   return mongo.submissions
     .aggregate<CombinedDoc>([
       {
@@ -227,24 +227,6 @@ export const searchSubmissionsRewards = async (params: RewardsSearch) => {
             },
           ],
           as: "sr",
-        },
-      },
-      {
-        $lookup: {
-          from: "laborMarkets",
-          let: {
-            m_addr: "$laborMarketAddress",
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [{ $eq: ["$address", "$$m_addr"] }],
-                },
-              },
-            },
-          ],
-          as: "lm",
         },
       },
     ])
@@ -303,12 +285,30 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
         },
       },
       {
-        $match: {
-          $expr: {
-            $and: [params.type ? { $eq: ["$lm[0].appData.type", params.type] } : {}],
-          },
-        },
+        $unwind: "$sr",
       },
+      {
+        $unwind: "$lm",
+      },
+      ...(params.type
+        ? [
+            {
+              $match: {
+                $and: [{ "lm.appData.type": { $in: params.type } }],
+              },
+            },
+          ]
+        : []),
+      ...(params.marketplace
+        ? [
+            {
+              $match: {
+                $and: [{ "lm.address": { $in: params.marketplace } }],
+              },
+            },
+          ]
+        : []),
+      //todo - score, timeframe, project
     ])
     .sort({ "score.avg": -1 })
     .limit(5 + params.count)
