@@ -118,7 +118,7 @@ function RewardsListView({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; 
 function RewardsTable({ rewards, wallets, tokens }: { rewards: RewardsDoc[]; wallets: Wallet[]; tokens: Token[] }) {
   return (
     <Table>
-      <Header columns={12} className="mb-2">
+      <Header columns={12} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={3}>Challenge Title</Header.Column>
         <Header.Column span={3}>Reward</Header.Column>
         <Header.Column span={2}>Submitted</Header.Column>
