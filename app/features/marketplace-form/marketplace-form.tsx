@@ -1,6 +1,5 @@
 import { useControlField } from "remix-validated-form";
 import { ValidatedInput } from "../../components/input/input";
-import { ValidatedTextarea } from "../../components/textarea/textarea";
 import { ValidatedSelect } from "~/components/select";
 import { ValidatedCombobox } from "../../components/combobox/combobox";
 import type { Project, Token } from "@prisma/client";

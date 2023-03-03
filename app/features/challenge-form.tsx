@@ -1,7 +1,7 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 import { useState } from "react";
-import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect, ValidatedTextarea } from "~/components";
+import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect } from "~/components";
 import type { SetStateAction } from "react";
 import { claimDate, parseDatetime } from "~/utils/date";
 import React from "react";
