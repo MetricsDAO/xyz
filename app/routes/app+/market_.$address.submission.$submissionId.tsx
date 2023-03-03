@@ -61,7 +61,6 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
 
   const submission = await findSubmission(submissionId, address);
   if (!submission) {
@@ -73,19 +72,20 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
   invariant(serviceRequest, "Service request not found");
 
-  return typedjson({ submission, reviews, params, laborMarket, reviewedByUser, serviceRequest }, { status: 200 });
+  return typedjson({ submission, reviews, params, laborMarket, user, serviceRequest }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, reviewedByUser, serviceRequest } =
-    useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket, user, serviceRequest } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const mType = laborMarket.appData?.type;
   invariant(mType, "Labor Market type is undefined");
   const [searchParams, setSearchParams] = useSearchParams();
+  const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
+  const submittedByUser = user && user.address === submission.configuration.serviceProvider;
 
   const handleChange = () => {
     if (formRef.current) {
@@ -113,12 +113,16 @@ export default function ChallengeSubmission() {
           },
         ]}
       />
-      <section className="flex flex-wrap gap-5 justify-between pb-10">
+      <section className="flex flex-wrap gap-5 justify-between pb-10 items-center">
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
-        <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+        {!submittedByUser ? (
+          <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+        ) : (
+          <p className="text-sm">Your Submission!</p>
+        )}
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
