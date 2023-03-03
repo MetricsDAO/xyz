@@ -39,7 +39,7 @@ import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { searchReviews } from "~/services/review-service.server";
+import { countUserReviews, searchReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
@@ -61,6 +61,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
+  const reviewedByUser = user && (await countUserReviews(submissionId, address, user.address)) > 0;
 
   const submission = await findSubmission(submissionId, address);
   if (!submission) {
@@ -72,19 +73,19 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
   invariant(serviceRequest, "Service request not found");
 
-  return typedjson({ submission, reviews, params, laborMarket, user, serviceRequest }, { status: 200 });
+  return typedjson({ submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, user, serviceRequest } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest } =
+    useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const mType = laborMarket.appData?.type;
   invariant(mType, "Labor Market type is undefined");
   const [searchParams, setSearchParams] = useSearchParams();
-  const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
   const submittedByUser = user && user.address === submission.configuration.serviceProvider;
 
   const handleChange = () => {
