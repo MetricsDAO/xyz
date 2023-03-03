@@ -43,16 +43,16 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
 };
 
 /**
- * Number of times a user has reviewed a submission
+ * Finds a user's review on a submission if it exists
  * @param {String} id - The ID of the submission.
  * @param {String} userAddress - The address of the user
- * @returns - the number of reviews a user has given for the submission
+ * @returns - the users submission or null if not found.
  */
-export const countUserReviews = async (id: string, laborMarketAddress: string, userAddress: string) => {
-  return mongo.reviews.countDocuments({
-    ...{ laborMarketAddress: laborMarketAddress },
-    ...{ submissionId: id },
-    ...{ reviewer: userAddress },
+export const findUserReview = async (submissionId: string, laborMarketAddress: string, userAddress: string) => {
+  return mongo.reviews.findOne({
+    laborMarketAddress,
+    submissionId,
+    reviewer: userAddress,
   });
 };
 

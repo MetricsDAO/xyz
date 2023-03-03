@@ -39,7 +39,7 @@ import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { countUserReviews, searchReviews } from "~/services/review-service.server";
+import { findUserReview, searchReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
@@ -61,7 +61,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const reviewedByUser = user && (await countUserReviews(submissionId, address, user.address)) > 0;
+  const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
 
   const submission = await findSubmission(submissionId, address);
   if (!submission) {
