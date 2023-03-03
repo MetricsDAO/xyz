@@ -46,13 +46,6 @@ import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { UserCircleIcon } from "@heroicons/react/20/solid";
-import { BigNumber } from "ethers";
-import { ReputationToken } from "labor-markets-abi";
-import { useContractRead, useEnsAvatar, useEnsName } from "wagmi";
-import { REPUTATION_TOKEN_ID } from "~/utils/constants";
-import { displayBalance, truncateAddress } from "~/utils/helpers";
-import { Avatar } from "~/components/avatar";
 
 const paramsSchema = z.object({
   address: z.string(),
