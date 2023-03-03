@@ -1,10 +1,9 @@
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
 import { useRouteData } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
+import { PermissionIcon } from "~/features/permission-icon";
 import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useTokenData } from "~/hooks/use-token-data";
@@ -51,13 +50,7 @@ export default function ServiceIdPrereqs() {
             <h3 className="font-medium mb-4">
               You must hold this much rMETRIC to enter submissions for this challenge
             </h3>
-            <CheckCircleIcon
-              className={clsx("w-5 h-5 ", {
-                hidden: canSubmit === undefined,
-                "text-neutral-400": !canSubmit,
-                "text-lime-600": canSubmit,
-              })}
-            />
+            <PermissionIcon isAllowed={canSubmit} />
           </div>
           <Detail>
             <DetailItem title="Min Balance">
@@ -78,13 +71,7 @@ export default function ServiceIdPrereqs() {
             <h3 className="font-medium mb-4">
               You must hold this badge to review and score submissions on this challenge
             </h3>
-            <CheckCircleIcon
-              className={clsx("w-5 h-5 ", {
-                hidden: canReview === undefined,
-                "text-neutral-400": canReview === false,
-                "text-lime-600": canReview === true,
-              })}
-            />
+            <PermissionIcon isAllowed={canReview} />
           </div>
           <Detail>
             <DetailItem title={maintainerData?.name}>
