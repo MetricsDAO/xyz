@@ -44,6 +44,7 @@ export function ChallengePoolBadges({
                   </Badge>
                 );
               }
+              return null;
             })}
           </div>
           <Badge className="block group-hover:hidden">{`${surplus}+`}</Badge>
