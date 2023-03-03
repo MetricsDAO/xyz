@@ -234,15 +234,15 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
       {
         $unwind: "$sr",
       },
-      ...[
-        params.isPastEnforcementExpiration
-          ? {
+      ...(params.isPastEnforcementExpiration
+        ? [
+            {
               $match: {
                 $and: [{ "sr.configuration.enforcementExpiration": { $lt: utcDate() } }],
               },
-            }
-          : {},
-      ],
+            },
+          ]
+        : []),
     ])
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
