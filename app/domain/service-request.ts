@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { claimDate, parseDatetime, validateDate, validateTime } from "~/utils/date";
+import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
 
@@ -57,7 +57,7 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
   })
   .refine((data) => validDeadlines(data.reviewEndDate, data.reviewEndTime, data.endDate, data.endTime), {
     message: "Review deadline cannot be before submission deadline.",
-    path: ["reviewEndDate"],
+    path: ["reviewEndTime"],
   });
 
 export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
