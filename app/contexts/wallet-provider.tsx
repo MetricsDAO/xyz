@@ -6,12 +6,14 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { SiweMessage } from "siwe";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
 import { mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { useOptionalUser } from "~/hooks/use-user";
 
 export declare type AuthenticationStatus = "loading" | "unauthenticated" | "authenticated";
 
@@ -46,6 +48,16 @@ function useConfigs() {
  * Return a wallet adapter for Rainbow Wallet SIWE.
  */
 function useAuthenticationAdapter() {
+  const user = useOptionalUser();
+  const account = useAccount();
+  // If the user is logged in but the account is different (e.g. they changed account in Metamask), log them out and reload the page.
+  useEffect(() => {
+    if (user?.address && user?.address !== account.address) {
+      fetch("/api/logout").then(() => {
+        window.location.reload();
+      });
+    }
+  }, [user?.address, account.address]);
   return useMemo(() => {
     return createAuthenticationAdapter({
       getNonce: async () => {
