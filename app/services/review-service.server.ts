@@ -43,6 +43,20 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
 };
 
 /**
+ * Finds a user's review on a submission if it exists
+ * @param {String} id - The ID of the submission.
+ * @param {String} userAddress - The address of the user
+ * @returns - the users submission or null if not found.
+ */
+export const findUserReview = async (submissionId: string, laborMarketAddress: string, userAddress: string) => {
+  return mongo.reviews.findOne({
+    laborMarketAddress,
+    submissionId,
+    reviewer: userAddress,
+  });
+};
+
+/**
  * Finds a review by its ID.
  * @param {String} id - The ID of the review.
  * @returns - The Submission or null if not found.
