@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect, ValidatedTextarea } from "~/components";
 import type { SetStateAction } from "react";
 import { claimDate, parseDatetime } from "~/utils/date";
+import React from "react";
+import { ClientOnly } from "remix-utils";
+import { MarkdownEditor } from "./markdown-editor/markdown.client";
 
 export function ChallengeForm({
   validTokens,
@@ -49,8 +52,8 @@ export function ChallengeForm({
           <Error name="title" />
         </Field>
       </section>
+      <section className="space-y-3">{mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}</section>
       <section className="space-y-3">
-        {mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}
         <div className="flex flex-col md:flex-row gap-2">
           <div className="flex-grow">
             <Field>
@@ -143,16 +146,13 @@ function BrainstormTextArea() {
   return (
     <>
       <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
-      <Field>
-        <ValidatedTextarea
-          name="description"
-          rows={7}
-          placeholder="Enter a prompt to source ideas on questions to answer, problems to solve, or tools to create for a specific chain/project, theme, or topic. 
-
-  Example: What are the most important questions to answer about user behavior on Ethereum?"
-        />
-        <Error name="description" />
-      </Field>
+      <ClientOnly>
+        {() => (
+          <div className="container overflow-auto">
+            <MarkdownEditor />
+          </div>
+        )}
+      </ClientOnly>
     </>
   );
 }
