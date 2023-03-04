@@ -7,6 +7,8 @@ import CustomConnectButton from "~/features/connect-button";
 import { LogoMark, LogoType } from "./logo";
 import { $path } from "remix-routes";
 import { useOptionalUser } from "~/hooks/use-user";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { ProfileMenu } from "~/components/connect-menu/dropdown";
 
 const primaryLinks = [
   //{ link: $path("/app/ecosystem"), label: "Ecosystem" },
@@ -58,7 +60,7 @@ export function AppHeader() {
   }
 
   return (
-    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-20">
+    <header className="relative h-16 bg-white ring-1 ring-black/5 flex items-center justify-between px-6 z-20">
       <div className="flex items-center">
         <Menu as="div" className="relative">
           <Menu.Button className="flex items-center mr-3 md:hidden">
@@ -89,7 +91,18 @@ export function AppHeader() {
 
       <div className="flex items-center space-x-4">
         {user ? <div className="hidden md:block">{secondaryItems}</div> : null}
-        <CustomConnectButton />
+        <DropdownMenu.Root>
+          {user ? (
+            <DropdownMenu.Trigger>
+              <CustomConnectButton />
+            </DropdownMenu.Trigger>
+          ) : (
+            <DropdownMenu.Trigger asChild>
+              <CustomConnectButton />
+            </DropdownMenu.Trigger>
+          )}
+          <ProfileMenu />
+        </DropdownMenu.Root>
       </div>
     </header>
   );
