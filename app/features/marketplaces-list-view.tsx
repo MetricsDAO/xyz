@@ -80,7 +80,11 @@ function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTablePr
                 </div>
 
                 <div>Challenge Pool Totals</div>
-                <ChallengePoolBadges pools={m.serviceRequestRewardPools} tokens={tokens} />
+                {m.serviceRequestRewardPools.length === 0 ? (
+                  <p>--</p>
+                ) : (
+                  <ChallengePoolBadges pools={m.serviceRequestRewardPools} tokens={tokens} />
+                )}
 
                 <div>Active Challenges</div>
                 <div>{m.serviceRequestCount.toLocaleString()}</div>

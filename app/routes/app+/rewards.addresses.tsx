@@ -112,7 +112,7 @@ export default function PayoutAddresses() {
 function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <Table>
-      <Header columns={12}>
+      <Header columns={12} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={2}>Chain</Header.Column>
         <Header.Column span={5}>Address</Header.Column>
         <Header.Column span={2}>Last Updated</Header.Column>

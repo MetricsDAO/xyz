@@ -67,8 +67,9 @@ export const SubmissionEventSchema = z.object({
   submissionId: z.string(),
 });
 
-const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
-  sr: z.array(ServiceRequestDocSchema),
+
+export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
+  sr: ServiceRequestDocSchema,
 });
 
 const CombinedSchema = SubmissionDocSchema.extend({
@@ -83,6 +84,7 @@ export const RewardsSearchSchema = z.object({
   first: z.number().default(10),
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
+  isPastEnforcementExpiration: z.boolean().default(true),
   serviceProvider: EvmAddressSchema.optional(),
 });
 

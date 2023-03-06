@@ -94,7 +94,7 @@ function IOUListView({ iouTokens }: { iouTokens: any }) {
 function IOUTable({ iouTokens }: { iouTokens: any }) {
   return (
     <Table>
-      <Header columns={6} className="mb-2">
+      <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column>Name</Header.Column>
         <Header.Column>Circulating</Header.Column>
         <Header.Column>Burned</Header.Column>
