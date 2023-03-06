@@ -23,11 +23,11 @@ export const Basic = () => {
 };
 
 export const Project = () => {
-  return <ProjectAvatar project={{ name: "Bitcoin", slug: "bitcoin" }} />;
+  return <ProjectAvatar project={{ name: "Ethereum", slug: "ethereum" }} />;
 };
 
 export const Token = () => {
-  return <TokenAvatar token={{ name: "Bitcoin", symbol: "BTC" }} />;
+  return <TokenAvatar token={{ name: "Ethereum", symbol: "ETH" }} />;
 };
 
 export const Group = () => {

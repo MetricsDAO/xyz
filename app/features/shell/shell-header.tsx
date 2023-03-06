@@ -5,25 +5,26 @@ import { Link, NavLink } from "@remix-run/react";
 import clsx from "clsx";
 import CustomConnectButton from "~/features/connect-button";
 import { LogoMark, LogoType } from "./logo";
+import { $path } from "remix-routes";
+import { useOptionalUser } from "~/hooks/use-user";
 
 const primaryLinks = [
-  { link: "/app/ecosystem", label: "Ecosystem" },
-  { link: "/app/brainstorm", label: "Brainstorm" },
-  { link: "/app/analyze", label: "Analyze" },
+  //{ link: $path("/app/ecosystem"), label: "Ecosystem" },
+  { link: $path("/app/:mType", { mType: "brainstorm" }), label: "Brainstorm" },
+  { link: $path("/app/:mType", { mType: "analyze" }), label: "Analyze" },
 ];
 
 const userLinks = [
   {
-    link: "/app/rewards",
+    link: $path("/app/rewards"),
     label: (
-      <span>
-        Rewards <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>
-      </span>
+      <span>Rewards {/*TODO: real data <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>*/}</span>
     ),
   },
 ];
 
 export function AppHeader() {
+  const user = useOptionalUser();
   const items = primaryLinks.map((link) => (
     <NavLink
       key={link.link}
@@ -51,11 +52,16 @@ export function AppHeader() {
     </NavLink>
   ));
 
+  let mobileItems = items;
+  if (user) {
+    mobileItems = items.concat(secondaryItems);
+  }
+
   return (
-    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-10">
-      <div className="flex items-center space-x-4">
+    <header className="relative h-16 bg-white  ring-1 ring-black/5 flex items-center justify-between px-6 z-20">
+      <div className="flex items-center">
         <Menu as="div" className="relative">
-          <Menu.Button className="md:hidden">
+          <Menu.Button className="flex items-center mr-3 md:hidden">
             <Bars3Icon className="h-5 w-5" />
           </Menu.Button>
           <Transition
@@ -68,13 +74,13 @@ export function AppHeader() {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute left-0 mt-2 w-56 origin-top-left rounded-lg bg-white shadow-lg p-4 flex flex-col space-y-3 ring-1 ring-black ring-opacity-5">
-              {items.concat(secondaryItems).map((item) => (
+              {mobileItems.map((item) => (
                 <Menu.Item key={item.key}>{item}</Menu.Item>
               ))}
             </Menu.Items>
           </Transition>
         </Menu>
-        <Link className="flex flex-row items-center gap-2" to="/">
+        <Link className="flex flex-row items-center gap-2" to="/app/analyze">
           <LogoMark className="h-5 w-5" /> <LogoType className="hidden md:block" />
         </Link>
       </div>
@@ -82,7 +88,7 @@ export function AppHeader() {
       <menu className="hidden md:flex flex-row gap-4 ml-4">{items}</menu>
 
       <div className="flex items-center space-x-4">
-        <div className="hidden md:block">{secondaryItems}</div>
+        {user ? <div className="hidden md:block">{secondaryItems}</div> : null}
         <CustomConnectButton />
       </div>
     </header>

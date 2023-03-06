@@ -18,6 +18,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "allowJs": true
+    "allowJs": true,
+    "plugins": [{ "name": "typescript-remix-routes-plugin" }]
   }
 }

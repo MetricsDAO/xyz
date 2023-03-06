@@ -3,7 +3,7 @@ import clsx from "clsx";
 import React from "react";
 
 const baseStyles =
-  "rounded-lg font-medium cursor-pointer inline-flex items-center justify-center transition-colors duration-200 ease-in-out whitespace-nowrap";
+  "rounded-lg font-medium cursor-pointer inline-flex items-center justify-center transition-colors duration-200 ease-in-out whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed";
 
 const sizeClasses = {
   sm: "h-8 px-3 text-sm",
@@ -19,6 +19,7 @@ const variantClasses = {
   outline: "border border-sky-200 text-sky-500 hover:bg-sky-100 shadow",
   danger: "bg-red-500 hover:bg-red-700 text-white",
   cancel: "bg-white ring-1 ring-black/10 hover:bg-black/5 text-gray-900",
+  gray: "border border-gray-200 text-stone-00",
 } as const;
 
 type Props = React.ComponentProps<"button"> & {

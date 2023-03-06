@@ -28,7 +28,7 @@ function CustomConnectButton() {
           );
         }
 
-        if (chain.unsupported) {
+        if (chain.unsupported || chain.name === "Ethereum") {
           return (
             <Button variant="danger" onClick={openChainModal}>
               Switch Chain
@@ -41,15 +41,15 @@ function CustomConnectButton() {
             <Button onClick={openAccountModal} variant="gradient">
               <div className="flex flex-row gap-2 items-center align-middle">
                 {account.ensAvatar ? (
-                  account.ensAvatar
+                  <img src={account.ensAvatar} className="rounded-full w-8" alt="" />
                 ) : (
                   <div className="rounded-full">
                     <Jazzicon diameter={20} seed={jsNumberForAddress(account.address)} />
                   </div>
                 )}
                 {account.ensName ? account.ensName : account.displayName}
-                {/* //TODO: later we will show metric and xmetric balances
-                      {account.displayBalance ? ` (${account.displayBalance})` : ""} */}
+                {/* //TODO: later we will show metric and xmetric balances */}
+                {account.displayBalance ? ` (${account.displayBalance})` : ""}
               </div>
             </Button>
           </div>

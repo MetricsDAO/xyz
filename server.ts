@@ -4,6 +4,8 @@ import compression from "compression";
 import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
 import prom from "express-prometheus-middleware";
+import { logger } from "~/services/logger.server";
+import { wrapExpressCreateRequestHandler } from "@sentry/remix";
 
 const app = express();
 const metricsApp = express();
@@ -29,6 +31,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+const createSentryRequestHandler = wrapExpressCreateRequestHandler(createRequestHandler);
 
 // if we're not in the primary region, then we need to make sure all
 // non-GET/HEAD/OPTIONS requests hit the primary region rather than read-only
@@ -68,7 +72,13 @@ app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y"
 // more aggressive with this caching.
 app.use(express.static("public", { maxAge: "1h" }));
 
-app.use(morgan("tiny"));
+app.use(
+  morgan("short", {
+    stream: {
+      write: (message) => logger.http(message),
+    },
+  })
+);
 
 const MODE = process.env.NODE_ENV;
 const BUILD_DIR = path.join(process.cwd(), "build");
@@ -76,10 +86,10 @@ const BUILD_DIR = path.join(process.cwd(), "build");
 app.all(
   "*",
   MODE === "production"
-    ? createRequestHandler({ build: require(BUILD_DIR) })
+    ? createSentryRequestHandler({ build: require(BUILD_DIR) })
     : (...args) => {
         purgeRequireCache();
-        const requestHandler = createRequestHandler({
+        const requestHandler = createSentryRequestHandler({
           build: require(BUILD_DIR),
           mode: MODE,
         });

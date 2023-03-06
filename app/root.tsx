@@ -1,38 +1,53 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from "@remix-run/react";
-import { useEffect } from "react";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeModules";
 import WalletProvider from "~/contexts/wallet-provider";
-
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-import { getUserId } from "./services/session.server";
+// import mdEditorStyles from "@uiw/react-md-editor/dist/mdeditor.min.css";
+import { getUser } from "./services/session.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { Toaster } from "react-hot-toast";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import env from "./env.server";
+import { Blurs } from "./features/shell";
+import { Error as ErrorBoundary } from "./components/error-boundary";
+import { withSentry } from "@sentry/remix";
+
+// add types for window.ENV
+declare global {
+  interface Window {
+    ENV: {
+      [key: string]: string;
+    };
+  }
+}
 
 export async function loader({ request }: DataFunctionArgs) {
-  const userId = await getUserId(request);
-  const sessionExists = userId ? true : false;
-  return sessionExists;
+  const user = await getUser(request);
+  return typedjson({
+    user,
+    ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN },
+  });
 }
 
 export const meta: MetaFunction = () => {
   return {
-    title: "MetricsDAO",
+    title: "MetricsDAO | The DAO for Web3 Data Analytics",
     viewport: "width=device-width, initial-scale=1.0",
     charSet: "utf-8",
     httpEquiv: "X-UA-Compatible",
     content: "IE=edge",
-    description: "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    description: "Connecting projects with the best analysts in Web3 for all data needs.",
     "og:image": "https://metricsdao.xyz/img/social.png",
-    "og:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "og:description": "Connecting projects with the best analysts in Web3 for all data needs.",
     "og:url": "https://metricsdao.xyz",
-    "og:title": "Metrics DAO",
+    "og:title": "MetricsDAO | The DAO for Web3 Data Analytics",
     "og:type": "website",
     "twitter:card": "summary_large_image",
     "twitter:domain": "metricsdao.xyz",
     "twitter:url": "https://metricsdao.xyz",
-    "twitter:title": "Metrics DAO",
-    "twitter:description": "Uniting the best analytical minds in the space to build the future of crypto analytics.",
+    "twitter:title": "MetricsDAO | The DAO for Web3 Data Analytics",
+    "twitter:description": "Connecting projects with the best analysts in Web3 for all data needs.",
     "twitter:image": "https://metricsdao.xyz/img/social.png",
   };
 };
@@ -76,64 +91,35 @@ export const links: LinksFunction = () => {
     },
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: rainbowKitStyles },
+    // { rel: "stylesheet", href: mdEditorStyles },
   ];
 };
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  useEffect(() => console.error(error), [error]);
-  return (
-    <Document title="Error!">
-      <div className="container mx-auto space-y-3 my-6 bg-[#E6E6E6] rounded-lg p-10 shadow-xl">
-        <h1 className="text-5xl">Uh oh, something broke.</h1>
-        {error.message ? <p className="hidden">{error.message}</p> : <></>}
-      </div>
-    </Document>
-  );
-}
+// export function ErrorBoundary({ error }: { error: Error }) {
+//   return (
+//     <html lang="en">
+//       <head>
+//         <title>Oh no...</title>
+//         <Links />
+//       </head>
+//       <body>
+//         <div className="w-screen h-screen flex items-center justify-center">
+//           <Blurs />
+//           <Error error={error} />
+//         </div>
+//         <Scripts />
+//       </body>
+//     </html>
+//   );
+// }
 
-export function CatchBoundary() {
-  let caught = useCatch();
+function App() {
+  const { user, ENV } = useTypedLoaderData<typeof loader>();
+  const authStatus = user ? "authenticated" : "unauthenticated";
 
-  let message;
-  switch (caught.status) {
-    case 404:
-      message = "Oops! Looks like you tried to visit a page that does not exist.";
-      break;
-
-    default:
-      throw new Error(caught.data || caught.statusText);
-  }
-
-  return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <div className="container mx-auto space-y-3 my-6 bg-[#E6E6E6] rounded-lg p-10 shadow-xl">
-        <h1 className="text-5xl">
-          {caught.status} {caught.statusText}
-        </h1>
-        <p className="text-lg text-zinc-500">{message}</p>
-      </div>
-    </Document>
-  );
-}
-
-export default function App() {
-  const sessionExists = useLoaderData<typeof loader>();
-  const authStatus = sessionExists ? "authenticated" : "unauthenticated";
-
-  return (
-    <Document>
-      <WalletProvider authStatus={authStatus}>
-        <Outlet />
-      </WalletProvider>
-    </Document>
-  );
-}
-
-function Document({ children, title }: { children: React.ReactNode; title?: string }) {
   return (
     <html lang="en">
       <head>
-        {title ? <title>{title}</title> : null}
         <Links />
         <Meta />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-8JJWLXT88P"></script>
@@ -150,12 +136,30 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         ></script>
       </head>
       <body>
-        {children}
+        <WalletProvider authStatus={authStatus}>
+          <Outlet />
+        </WalletProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Toaster />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
 }
+
+export default withSentry(App, {
+  errorBoundaryOptions: {
+    fallback: ({ error }) => (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <Blurs />
+        <ErrorBoundary error={error} />
+      </div>
+    ),
+  },
+});

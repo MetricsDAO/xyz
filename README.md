@@ -70,6 +70,34 @@ Connect to database
 - Password: get from a developer
 - Database: postgres
 
+## Indexing on-chain data
+
+Instead of reading from contracts directly we index the data into a MongoDB database for better queryability.
+
+To run the indexer locally you will need the following:
+
+- MongoDB server. The docker-compose file in the root of the project includes a mongo instance at `localhost:27017`
+- `MONGODB_URI` environment variable in `.env` is set to `mongodb://localhost:27017`
+- `PINE_API_KEY` environment variable in `.env` is set to a valid Pine API key.
+
+Create a tracer. The `--dev` flag will create a tracer pointing to dev contracts on Polygon.
+
+```sh
+yarn pine create-tracer --dev
+```
+
+Start the tracer:
+
+```sh
+yarn pine start-tracer
+```
+
+Run the indexer server:
+
+```sh
+yarn dev:indexer
+```
+
 ## Issues
 
 - There is a known issue with MetaMask where triggering a disconnect using Rainbowkit/Wagmi does not fully disconnect the wallet, and after a page refresh it will still be connected in the browser. The user can disconnect directly through their MetaMask wallet and it will fully disconnect. [https://github.com/rainbow-me/rainbowkit/issues/807](Link to report of issue here)

@@ -1,38 +1,22 @@
-import type { LaborMarket, LaborMarketNew, LaborMarketPrepared, LaborMarketSearch } from "~/domain";
+import type { User } from "@prisma/client";
+import type { TracerEvent } from "pinekit/types";
+import { LaborMarket__factory } from "~/contracts";
+import type { LaborMarketForm, LaborMarketContract, LaborMarketSearch, LaborMarketDoc } from "~/domain";
 import { LaborMarketMetaSchema } from "~/domain";
-import { uploadJsonToIpfs } from "./ipfs.server";
-import { prisma } from "./prisma.server";
+import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
+import { mongo } from "./mongo.server";
+import { nodeProvider } from "./node.server";
 
 /**
- * Returns an array of LaborMarkets for a given LaborMarketSearch.
- * @param {LaborMarketSearch} params - The search parameters.
+ * Returns an array of LaborMarketDoc for a given LaborMarketSearch.
  */
 export const searchLaborMarkets = async (params: LaborMarketSearch) => {
-  return prisma.laborMarket.findMany({
-    include: {
-      _count: {
-        select: { serviceRequests: true },
-      },
-      projects: true,
-    },
-    where: {
-      type: params.type,
-      title: { search: params.q },
-      description: { search: params.q },
-      tokens: params.token ? { some: { OR: params.token.map((symbol) => ({ symbol })) } } : undefined,
-      projects: params.project ? { some: { OR: params.project.map((slug) => ({ slug })) } } : undefined,
-    },
-    orderBy: {
-      [params.sortBy]:
-        "serviceRequests" !== params.sortBy
-          ? params.order
-          : {
-              _count: params.order,
-            },
-    },
-    take: params.first,
-    skip: params.first * (params.page - 1),
-  });
+  return mongo.laborMarkets
+    .find(searchParams(params))
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
 };
 
 /**
@@ -41,67 +25,103 @@ export const searchLaborMarkets = async (params: LaborMarketSearch) => {
  * @returns {number} - The number of LaborMarkets that match the search.
  */
 export const countLaborMarkets = async (params: LaborMarketSearch) => {
-  return prisma.laborMarket.count({
-    where: {
-      type: params.type,
-      title: { search: params.q },
-      description: { search: params.q },
-    },
-  });
+  return mongo.laborMarkets.countDocuments(searchParams(params));
 };
 
 /**
- * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
- * @param {LaborMarketNew} newLaborMarket - The LaborMarketNew to prepare.
- * @returns {LaborMarketPrepared} - The prepared LaborMarket.
+ * Convenience function to share the search parameters between search and count.
+ * @param {LaborMarketSearch} params - The search parameters.
+ * @returns criteria to find labor market in MongoDb
  */
-export const prepareLaborMarket = async (newLaborMarket: LaborMarketNew) => {
-  const metadata = LaborMarketMetaSchema.parse(newLaborMarket); // Prune extra fields from LaborMarketNew
-  const cid = await uploadJsonToIpfs(metadata);
-  const result: LaborMarketPrepared = { ...newLaborMarket, ipfsHash: cid };
+const searchParams = (params: LaborMarketSearch): Parameters<typeof mongo.laborMarkets.find>[0] => {
+  return {
+    valid: true,
+    "appData.type": params.type,
+    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
+    ...(params.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: params.token } } } } : {}),
+  };
+};
+/**
+ * Prepares a LaborMarket for writing to contract by uploading LaborMarkteMetadata to IPFS and returning a LaborMarketPrepared.
+ * @param {LaborMarketForm} form - The labor market form data to prepare.
+ * @param {User} user - The user that is creating the LaborMarket.
+ * @returns {LaborMarketContract} - The prepared LaborMarket.
+ */
+export const prepareLaborMarket = async (form: LaborMarketForm, user: User) => {
+  const metadata = LaborMarketMetaSchema.parse(form); // Prune extra fields from form
+  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
+  const result: LaborMarketContract = { ...form, ipfsHash: cid, userAddress: user.address };
   return result;
 };
 
 /**
- * Creates or updates a new LaborMarket. This is only really used by the indexer.
- * @param {LaborMarket} laborMarket - The labor market to create.
+ * Upserts a LaborMarketDoc in the index database from a Pine TracerEvent.
  */
-export const upsertLaborMarket = async (laborMarket: LaborMarket) => {
-  const { address, projectIds, tokenSymbols, ...data } = laborMarket;
-  const newLaborMarket = await prisma.laborMarket.upsert({
-    where: { address },
-    update: data,
-    create: {
-      address,
-      title: data.title,
-      description: data.description,
-      type: data.type,
-      submitRepMin: data.submitRepMin,
-      submitRepMax: data.submitRepMax,
-      rewardCurveAddress: data.rewardCurveAddress,
-      reviewBadgerAddress: data.reviewBadgerAddress,
-      reviewBadgerTokenId: data.reviewBadgerTokenId,
-      launchAccess: data.launch.access,
-      launchBadgerAddress: data.launch.access === "delegates" ? data.launch.badgerAddress : undefined,
-      launchBadgerTokenId: data.launch.access === "delegates" ? data.launch.badgerTokenId : undefined,
-      sponsorAddress: data.sponsorAddress,
-      projects: { connect: projectIds.map((id) => ({ id })) },
-      tokens: { connect: tokenSymbols.map((symbol) => ({ symbol })) },
+export async function indexLaborMarket(event: TracerEvent) {
+  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const config = await contract.configuration({ blockTag: event.block.number });
+  const appData = await fetchIpfsJson(config.marketUri)
+    .then(LaborMarketMetaSchema.parse)
+    .catch(() => null);
+
+  // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
+  const doc: Omit<LaborMarketDoc, "serviceRequestCount" | "serviceRequestRewardPools" | "createdAtBlockTimestamp"> = {
+    address: event.contract.address,
+    valid: appData !== null,
+    indexedAt: new Date(),
+    appData,
+    configuration: {
+      owner: config.owner,
+      marketUri: config.marketUri,
+      delegateBadge: {
+        token: config.delegateBadge.token,
+        tokenId: config.delegateBadge.tokenId.toString(),
+      },
+      maintainerBadge: {
+        token: config.maintainerBadge.token,
+        tokenId: config.maintainerBadge.tokenId.toString(),
+      },
+      reputationBadge: {
+        token: config.reputationBadge.token,
+        tokenId: config.reputationBadge.tokenId.toString(),
+      },
+      reputationParams: {
+        rewardPool: config.reputationParams.rewardPool.toString(),
+        provideStake: config.reputationParams.provideStake.toString(),
+        reviewStake: config.reputationParams.reviewStake.toString(),
+        submitMax: config.reputationParams.submitMax.toString(),
+        submitMin: config.reputationParams.submitMin.toString(),
+      },
+      modules: config.modules,
     },
-  });
-  return newLaborMarket;
-};
+  };
+
+  return mongo.laborMarkets.updateOne(
+    { address: doc.address },
+    {
+      $set: doc,
+      $setOnInsert: {
+        serviceRequestCount: 0,
+        serviceRequestRewardPools: [],
+        createdAtBlockTimestamp: new Date(event.block.timestamp),
+      },
+    },
+    { upsert: true }
+  );
+}
 
 /**
- * Counts the number of LaborMarkets that match a given LaborMarketSearch.
- * @param {address} params - The address to search for.
- * @returns {LaborMarket} - The Labor Market that matches the address.
+ * Find a LaborMarket by address. Only returns LaborMarkets that have valid IPFS appData..
+ * @param address - The address to search for.
+ * @returns LaborMarket - The Labor Market document that matches the address.
  */
-export const findLaborMarket = async (address: string) => {
-  return prisma.laborMarket.findFirst({
-    where: {
-      address: address,
-    },
-    include: { _count: { select: { serviceRequests: true } } },
-  });
+export const findLaborMarket = (address: string) => {
+  return mongo.laborMarkets.findOne({ address, valid: true });
 };
+
+export async function requireLaborMarket(address: string) {
+  const doc = await findLaborMarket(address);
+  if (!doc) throw new Error(`LaborMarket ${address} not found`);
+  return doc;
+}

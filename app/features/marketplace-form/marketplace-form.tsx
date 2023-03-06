@@ -6,51 +6,51 @@ import { ValidatedCombobox } from "../../components/combobox/combobox";
 import type { Project, Token } from "@prisma/client";
 import { Error, Field, Label } from "../../components/field";
 import { Button } from "../../components/button";
+import { useParams } from "@remix-run/react";
 
 export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tokens: Token[] }) {
   const [launchAccess] = useControlField("launch.access");
+  const { mType } = useParams();
 
   return (
     <div className="space-y-10 py-5">
-      <section className="space-y-1">
-        <p className="text-cyan-500 text-lg">
-          Crowdsource the best questions for crypto analysts to answer about any web3 topic
-        </p>
-        <p className="text-sm text-gray-500">
-          Control challenge permissions, set up token and blockchain/project allowlists for challenges, and define
-          reward curves
-        </p>
-      </section>
-
-      <input type="hidden" name="type" value="brainstorm" />
-
+      {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
+      <input type="hidden" name="type" value={mType} />
       <Field>
-        <Label size="lg">Challenge Marketplace Title</Label>
+        <Label size="lg">Challenge Marketplace Title*</Label>
         <ValidatedInput type="text" name="title" placeholder="e.g Solana Breakpoint 2023" />
         <Error name="title" />
       </Field>
 
       <Field>
-        <Label size="lg">Details</Label>
-        <ValidatedTextarea name="description" placeholder="What's the goal of this challenge marketplace?" rows={7} />
+        <Label size="lg">Details*</Label>
+        <ValidatedTextarea
+          name="description"
+          placeholder={
+            mType === "brainstorm"
+              ? "What’s the goal of this Brainstorm marketplace?"
+              : "What’s the goal of this Analytics marketplace?"
+          }
+          rows={7}
+        />
         <Error name="description" />
       </Field>
 
       <Field>
-        <Label size="lg">Blockchain/Project(s)</Label>
+        <Label size="lg">Blockchain/Project(s)*</Label>
         <ValidatedCombobox
           placeholder="e.g Ethereum, Solana, etc..."
-          name="projectIds"
-          options={projects.map((p) => ({ label: p.name, value: p.id }))}
+          name="projectSlugs"
+          options={projects.map((p) => ({ label: p.name, value: p.slug }))}
         />
-        <Error name="projectIds" />
+        <Error name="projectSlugs" />
       </Field>
 
       <section className="space-y-4">
         <Field>
           <div className="flex items-center">
             <Label size="lg" className="mr-auto">
-              Who has permission to launch challenges?
+              Who has permission to launch challenges?*
             </Label>
             <p className="flex text-sm space-x-3">
               <Button variant="link" size="none" asChild>
@@ -68,7 +68,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
           <ValidatedSelect
             name="launch.access"
             options={[
-              { label: "Anyone", value: "anyone" },
+              // { label: "Anyone", value: "anyone" }, // Not for MVP
               { label: "Delegates only", value: "delegates" },
             ]}
           />
@@ -78,12 +78,12 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         {launchAccess === "delegates" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Field>
-              <Label>Badger Contract Address</Label>
+              <Label>Badger Contract Address*</Label>
               <ValidatedInput name="launch.badgerAddress" />
               <Error name="launch.badgerAddress" />
             </Field>
             <Field>
-              <Label>Badger Token ID</Label>
+              <Label>Badger Token ID*</Label>
               <ValidatedInput name="launch.badgerTokenId" />
               <Error name="launch.badgerTokenId" />
             </Field>
@@ -92,17 +92,19 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
       </section>
 
       <section>
-        <Label size="lg">Challenge Rewards</Label>
+        <h4 className="font-semibold mb-4">Challenge Rewards</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Token</Label>
-            <ValidatedCombobox name="tokenSymbols" options={tokens.map((t) => ({ value: t.symbol, label: t.name }))} />
-            <Error name="tokenSymbols" />
+            <Label>Reward Token Allowlist</Label>
+            <ValidatedCombobox
+              name="tokenAllowlist"
+              options={tokens.map((t) => ({ label: t.name, value: t.symbol }))}
+            />
+            <Error name="tokenAllowlist" />
           </Field>
           <Field>
             <Label>Reward Curve</Label>
-            <ValidatedSelect name="rewardCurveAddress" options={[{ value: "linear", label: "Linear" }]} />
-            <Error name="rewardCurveAddress" />
+            <ValidatedSelect name="rewardCurve" options={[{ label: "Reward by overall score", value: "delegates" }]} />
           </Field>
         </div>
       </section>
@@ -111,7 +113,7 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <h4 className="font-semibold mb-4">Control who has permission to submit on challenges</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Minimum rMETRIC Balance</Label>
+            <Label>Minimum rMETRIC Balance*</Label>
             <ValidatedInput name="submitRepMin" />
             <Error name="submitRepMin" />
           </Field>
@@ -127,12 +129,12 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
         <Label size="lg">Control who has permission to review challenge submissions</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field>
-            <Label>Reviewer Badger Contract Address</Label>
+            <Label>Reviewer Badger Contract Address*</Label>
             <ValidatedInput type="text" name="reviewBadgerAddress" placeholder="0x..." />
             <Error name="reviewBadgerAddress" />
           </Field>
           <Field>
-            <Label>Reviewer Badger Token ID</Label>
+            <Label>Reviewer Badger Token ID*</Label>
             <ValidatedInput type="text" name="reviewBadgerTokenId" />
             <Error name="reviewBadgerTokenId" />
           </Field>
@@ -142,33 +144,31 @@ export function MarketplaceForm({ projects, tokens }: { projects: Project[]; tok
   );
 }
 
-// function ConfirmTransaction({ laborMarket, onCancel }: { laborMarket?: LaborMarketPrepared; onCancel: () => void }) {
-//   invariant(laborMarket, "laborMarket is required"); // this should never happen but just in case
+function AnalyticsDescription() {
+  return (
+    <section className="space-y-1">
+      <p className="text-cyan-500 text-lg">
+        Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+        projects launch, grow and succeed.
+      </p>
+      <p className="text-sm text-gray-500">
+        Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These parameters
+        will be applied to all challenges in this marketplace.
+      </p>
+    </section>
+  );
+}
 
-//   const navigate = useNavigate();
-
-//   const { write, isLoading } = useCreateMarketplace({
-//     data: laborMarket,
-//     onTransactionSuccess() {
-//       navigate("/app/brainstorm");
-//     },
-//     onWriteSuccess() {
-//       // TODO: toast message or some kind of feedback
-//     },
-//   });
-
-//   return (
-//     <div className="space-y-8">
-//       <Title>Confirm Transaction</Title>
-//       <Text>Please confirm that you would like to create a new marketplace.</Text>
-//       <div className="flex flex-col sm:flex-row justify-center gap-5">
-//         <Button size="md" color="brand.5" type="button" onClick={() => write?.()} loading={isLoading}>
-//           Create
-//         </Button>
-//         <Button variant="default" color="dark" size="md" onClick={onCancel}>
-//           Cancel
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// }
+function BrainstormDescription() {
+  return (
+    <section className="space-y-1">
+      <p className="text-cyan-500 text-lg">
+        Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
+      </p>
+      <p className="text-sm text-gray-500">
+        Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These parameters
+        will be applied to all challenges in this marketplace.
+      </p>
+    </section>
+  );
+}

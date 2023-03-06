@@ -2,9 +2,9 @@ import { ethers } from "ethers";
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
 
-export const EthAddressSchema = z.string().refine((address) => {
+export const EvmAddressSchema = z.string().refine((address) => {
   return ethers.utils.isAddress(address);
-}, "Must be a valid Ethereum address.");
+}, "Must be a valid EVM address.");
 
 export const SolAddressSchema = z.string().refine((address) => {
   try {

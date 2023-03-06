@@ -1,21 +1,21 @@
 import type { AvatarComponent } from "@rainbow-me/rainbowkit";
-import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
-import { RainbowKitAuthenticationProvider } from "@rainbow-me/rainbowkit";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  createAuthenticationAdapter,
+  getDefaultWallets,
+  RainbowKitAuthenticationProvider,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { SiweMessage } from "siwe";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
-import { infuraProvider } from "wagmi/providers/infura";
+import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
+import { mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { useOptionalUser } from "~/hooks/use-user";
 
-const INFURA_ID = "54fcc811bac44f99b84a04a4a3e2f998";
 export declare type AuthenticationStatus = "loading" | "unauthenticated" | "authenticated";
-
-// TODO: env var
-const IS_DEV = true;
-const DEV_CHAINS = [chain.goerli, chain.mainnet];
 
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
@@ -27,10 +27,7 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
 
 function useConfigs() {
   return useMemo(() => {
-    const { chains, provider } = configureChains(
-      [chain.polygon, ...(IS_DEV ? DEV_CHAINS : [])],
-      [infuraProvider({ apiKey: INFURA_ID }), publicProvider()]
-    );
+    const { chains, provider } = configureChains([polygon, mainnet], [publicProvider()]);
 
     const { connectors } = getDefaultWallets({
       appName: "MetricsDAO",
@@ -51,6 +48,16 @@ function useConfigs() {
  * Return a wallet adapter for Rainbow Wallet SIWE.
  */
 function useAuthenticationAdapter() {
+  const user = useOptionalUser();
+  const account = useAccount();
+  // If the user is logged in but the account is different (e.g. they changed account in Metamask), log them out and reload the page.
+  useEffect(() => {
+    if (user?.address && user?.address !== account.address) {
+      fetch("/api/logout").then(() => {
+        window.location.reload();
+      });
+    }
+  }, [user?.address, account.address]);
   return useMemo(() => {
     return createAuthenticationAdapter({
       getNonce: async () => {

@@ -7,22 +7,20 @@ module.exports = {
     fontFamily: {
       sans: ["Inter", "sans-serif"],
     },
-  },
-  extend: {
-    colors: {
-      brand: {
-        50: "#dbfaff",
-        100: "#b1e9fc",
-        200: "#86daf5",
-        300: "#59caf0",
-        400: "#2ebbea",
-        500: "#15a1d1",
-        600: "#037ea3",
-        700: "#005a76",
-        800: "#00374a",
-        900: "#00141d",
+    extend: {
+      keyframes: {
+        rotateLeft: {
+          "0%": { transform: "rotate(90deg)" },
+          "100%": { transform: "rotate(0deg)" },
+        },
+        rotate360: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
     },
+  },
+  extend: {
     extend: {
       fontFamily: {
         sans: ["Inter"],

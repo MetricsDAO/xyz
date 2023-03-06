@@ -1,30 +1,49 @@
-import { UserAvatarFilledAlt32 } from "@carbon/icons-react";
-import { Link } from "@remix-run/react";
-import { useEnsAvatar, useEnsName } from "wagmi";
+import { UserCircleIcon } from "@heroicons/react/20/solid";
+import { BigNumber } from "ethers";
+import { ReputationToken } from "labor-markets-abi";
+import { useContractRead, useEnsAvatar, useEnsName } from "wagmi";
+import { REPUTATION_TOKEN_ID } from "~/utils/constants";
+import { displayBalance, truncateAddress } from "~/utils/helpers";
 import { Avatar } from "../avatar";
-import { truncateAddress } from "~/utils/helpers";
 
 /** Renders a wallet's avatar and address or ENS name, along with their rMETRIC balance, and UserCard on hover. */
-export function UserBadge({ url, address, balance }: { url: string; address: `0x${string}`; balance: number }) {
+export function UserBadge({ address, variant }: { address: `0x${string}`; variant?: "default" | "separate" }) {
   const { data: ensName } = useEnsName({
     address: address,
     chainId: 1,
   });
 
   const { data: ensAvatarUrl } = useEnsAvatar({
-    addressOrName: address,
+    address: address as `0x${string}`,
     chainId: 1,
   });
 
-  return (
-    <Link to={url}>
+  const { data: reputationBalance } = useContractRead({
+    address: ReputationToken.address,
+    abi: ReputationToken.abi,
+    functionName: "balanceOf",
+    args: [address, BigNumber.from(REPUTATION_TOKEN_ID)],
+  });
+
+  if (variant === "separate") {
+    return (
+      <div className="flex flex-wrap gap-2 items-center">
+        {ensAvatarUrl ? <Avatar src={ensAvatarUrl} size="sm" /> : <UserCircleIcon height={16} width={16} />}
+        <p className="text-sm font-medium">{ensName ?? truncateAddress(address)}</p>
+        <p className="text-xs py-1 px-1.5 bg-neutral-100 rounded-full text-stone-500">
+          {reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC
+        </p>
+      </div>
+    );
+  } else {
+    return (
       <div className="flex rounded-full bg-[#ADB5BD] items-center pr-1">
         <div className="flex rounded-full bg-[#F1F3F5] px-1 gap-x-1 items-center py-1">
-          {ensAvatarUrl ? <Avatar src={ensAvatarUrl} /> : <UserAvatarFilledAlt32 height={16} width={16} />}
+          {ensAvatarUrl ? <Avatar src={ensAvatarUrl} /> : <UserCircleIcon height={16} width={16} />}
           <p className="text-sm">{ensName ?? truncateAddress(address)}</p>
         </div>
-        <p className="text-xs px-1">{balance} rMETRIC</p>
+        <p className="text-xs px-1">{reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC</p>
       </div>
-    </Link>
-  );
+    );
+  }
 }

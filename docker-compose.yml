@@ -17,3 +17,19 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports:
       - "5435:5432"
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  # app:
+  #   build: .
+  #   ports:
+  #     - "8000:3000"
+  #   environment:
+  #     - DATABASE_URL=postgres://user:pass@db:5432/mdao
+  #     - SESSION_SECRET=secret
+  #     - ENVIRONMENT=production

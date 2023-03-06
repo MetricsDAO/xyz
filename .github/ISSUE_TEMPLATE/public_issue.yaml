@@ -1,0 +1,89 @@
+name: Bug Report
+description: File a bug report
+title: "[public report]: "
+labels: ["triage"]
+assignees:
+  - gnomadic
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We need your help beta testing the Metrics App! If you run into any unexpected behaviors, issues or suspected bugs, please describe them here. Please try to provide enough information for us to be able to recreate it so we can fix it. Thank you!
+  - type: input
+    id: address
+    attributes:
+      label: User Impacted
+      description: Your connected Polygon address
+      placeholder: ex. 0x1234...
+    validations:
+      required: true
+  - type: input
+    id: discord
+    attributes:
+      label: Discord ID (including number)
+      description: In case we need to follow up
+      placeholder: ex. metricsdao#8135
+    validations:
+      required: false
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Workflow Impacted
+      description: Which flow in the app are you using?
+      options:
+        - Brainstorm
+        - Analyze
+        - My Rewards
+    validations:
+      required: true
+  - type: dropdown
+    id: feature
+    attributes:
+      label: Feature Impacted
+      description: Which feature in the app are you using?
+      options:
+        - Create Marketplace
+        - Launch Challenge
+        - Claim to Submit
+        - Enter Submission
+        - Claim to Review
+        - Score Submission
+        - Claim Reward
+        - Manage Payout Address
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue description
+      description: Also tell us, what did you expect to happen?
+      placeholder: I'm not able to claim this challenge to submit [link] and I get the following error message [error]
+      value: "Issue Description"
+    validations:
+      required: true
+  - type: dropdown
+    id: blocking
+    attributes:
+      label: Blocking
+      description: Is this blocking you from completing your work?
+      options:
+        - yes it is
+        - no it is not
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  # - type: checkboxes
+  #   id: terms
+  #   attributes:
+  #     label: Code of Conduct
+  #     description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+  #     options:
+  #       - label: I agree to follow this project's Code of Conduct
+  #         required: true

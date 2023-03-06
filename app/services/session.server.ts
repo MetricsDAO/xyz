@@ -1,6 +1,7 @@
 import type { User } from "@prisma/client";
-import { createCookieSessionStorage, json } from "@remix-run/node";
-import env from "~/env";
+import { createCookieSessionStorage, json, redirect } from "@remix-run/node";
+import env from "~/env.server";
+import { prisma } from "./prisma.server";
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -14,17 +15,36 @@ export const sessionStorage = createCookieSessionStorage({
 });
 
 const USER_SESSION_KEY = "userId";
-const NONCE = "nonce";
+const NONCE_KEY = "nonce";
 
 export async function getSession(request: Request) {
   const cookie = request.headers.get("cookie");
   return sessionStorage.getSession(cookie);
 }
 
-export async function getUserId(request: Request): Promise<User | undefined> {
+export async function getUserId(request: Request): Promise<string | undefined> {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
   return userId;
+}
+
+export async function getUser(request: Request): Promise<User | null> {
+  const userId = await getUserId(request);
+  if (!userId) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  if (user) return user;
+
+  throw await logout(request);
+}
+
+export async function requireUser(request: Request): Promise<User> {
+  const user = await getUser(request);
+  if (user) return user;
+
+  throw await logout(request);
 }
 
 /**
@@ -34,7 +54,7 @@ export async function getUserId(request: Request): Promise<User | undefined> {
  */
 export async function getNonce(request: Request): Promise<string | undefined> {
   const session = await getSession(request);
-  const nonce = session.get(NONCE);
+  const nonce = session.get(NONCE_KEY);
   return nonce;
 }
 
@@ -51,7 +71,7 @@ export async function createUserSession({ request, userId }: { request: Request;
 
 export async function createNonceSession({ request, nonce }: { request: Request; nonce: string }) {
   const session = await getSession(request);
-  session.set(NONCE, nonce);
+  session.set(NONCE_KEY, nonce);
 
   return json(nonce, {
     headers: {
@@ -62,7 +82,7 @@ export async function createNonceSession({ request, nonce }: { request: Request;
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  return json(null, {
+  return redirect("/app", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },
