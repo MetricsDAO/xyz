@@ -308,7 +308,33 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             },
           ]
         : []),
-      //todo - score, timeframe, project
+      ...(params.score
+        ? [
+            {
+              $match: {
+                $and: [{ "score.avg": { $gte: params.score } }, { "score.avg": { $lt: params.score + 25 } }],
+              },
+            },
+          ]
+        : []),
+      ...(params.timeframe
+        ? [
+            {
+              $match: {
+                $and: [{ createdAtBlockTimestamp: { $gte: params.timeframe } }],
+              },
+            },
+          ]
+        : []),
+      ...(params.project
+        ? [
+            {
+              $match: {
+                $and: [{ "sr.appData.projectSlugs": { $in: params.project } }],
+              },
+            },
+          ]
+        : []),
     ])
     .sort({ "score.avg": -1 })
     .limit(5 + params.count)

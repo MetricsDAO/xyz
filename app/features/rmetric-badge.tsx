@@ -3,7 +3,6 @@ import { ReputationToken } from "labor-markets-abi";
 import { useContractRead } from "wagmi";
 import { REPUTATION_TOKEN_ID } from "~/utils/constants";
 import { displayBalance } from "~/utils/helpers";
-import { Badge } from "../components/badge";
 
 export function RMetricBadge({ address }: { address: `0x${string}` }) {
   const { data: reputationBalance } = useContractRead({
@@ -14,8 +13,8 @@ export function RMetricBadge({ address }: { address: `0x${string}` }) {
   });
 
   return (
-    <Badge>
-      <p className="text-xs px-1">{reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC</p>
-    </Badge>
+    <p className="text-xs px-2 py-1 bg-gray-100 rounded-full w-fit">
+      {reputationBalance ? displayBalance(reputationBalance) : "?"} rMETRIC
+    </p>
   );
 }

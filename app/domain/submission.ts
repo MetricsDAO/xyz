@@ -86,11 +86,16 @@ export const RewardsSearchSchema = z.object({
   serviceProvider: EvmAddressSchema.optional(),
 });
 
+var oneMonthAgo = new Date();
+oneMonthAgo.setDate(oneMonthAgo.getMonth() - 1);
+
 export const ShowcaseSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
   count: z.number().default(0),
   marketplace: z.array(EvmAddressSchema).optional(),
   project: z.array(z.string()).optional(),
+  score: z.number().optional(),
+  timeframe: z.date().default(() => oneMonthAgo),
   type: z.array(z.enum(["analyze", "brainstorm"])).optional(),
 });
 

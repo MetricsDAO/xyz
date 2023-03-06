@@ -47,7 +47,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 export default function Showcase() {
   const { submissions, projects, search, laborMarkets } = useTypedLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
-  searchParams.set("count", String(5 + search.count)); //todo - hide count when no more to
+  searchParams.set("count", String(5 + search.count));
 
   return (
     <Container className="py-16 px-10">
@@ -85,6 +85,13 @@ function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; labo
     }
   };
 
+  var oneDayAgo = new Date();
+  oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+  var oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  var oneMonthAgo = new Date();
+  oneMonthAgo.setDate(oneMonthAgo.getMonth() - 1);
+
   return (
     <ValidatedForm
       formRef={formRef}
@@ -118,15 +125,14 @@ function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; labo
 
       <Field>
         <Label>Score</Label>
-        <ValidatedCombobox
+        <ValidatedSelect
           name="score"
           size="sm"
           onChange={handleChange}
           placeholder="Select option"
           options={[
-            { label: "Winners", value: "Winner" },
-            { label: "Great", value: "Great" },
-            { label: "Good", value: "Good" },
+            { label: "Great", value: "100" },
+            { label: "Good", value: "75" },
           ]}
         />
       </Field>
@@ -139,9 +145,9 @@ function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; labo
           onChange={handleChange}
           placeholder="Select option"
           options={[
-            { label: "Past 24 hours", value: "tbd" },
-            { label: "Past 7 days", value: "tbd" },
-            { label: "Past 30 days", value: "tbd" },
+            { label: "Past 24 hours", value: oneDayAgo.toISOString() },
+            { label: "Past 7 days", value: oneWeekAgo.toISOString() },
+            { label: "Past 30 days", value: oneMonthAgo.toISOString() },
           ]}
         />
       </Field>
@@ -193,13 +199,12 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
             <Link
               to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
               className={clsx("text-sm text-stone-500", {
-                "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.serviceProvider,
+                "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.serviceProvider,
               })}
             >
               <Row.Column span={3}>
                 <div className="flex flex-wrap gap-1">
                   {s.appData?.title}
-                  <img alt="" src="/img/trophy.svg" width={15} />
                   <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
@@ -229,6 +234,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
 
 function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]; projects: Project[] }) {
   const user = useOptionalUser();
+
   return (
     <div className="space-y-4">
       {submissions.map((s) => {
@@ -243,7 +249,6 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
               <div className="col-span-2">
                 <div className="flex gap-1">
                   {s.appData?.title}
-                  <img alt="" src="/img/trophy.svg" width={15} />
                   <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
