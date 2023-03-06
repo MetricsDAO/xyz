@@ -159,7 +159,10 @@ export default function Index() {
                 Winners earn tokens from the partner reward pool while increasing their reputation score in the
                 MetricsDAO ecosystem.
               </p>
-              <MarketingButton label="Launch App" link="/app/analyze" />
+              <MarketingButton
+                label="Launch App"
+                link="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
+              />
             </div>
           </InfoSection>
         </main>
