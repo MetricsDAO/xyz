@@ -9,12 +9,7 @@ import {
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
-import {
-  REPUTATION_REWARD_POOL,
-  REPUTATION_REVIEW_SIGNAL_STAKE,
-  REPUTATION_SUBMIT_SIGNAL_STAKE,
-  REPUTATION_TOKEN_ID,
-} from "~/utils/constants";
+import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
 
 export function useCreateLaborMarket({
   data,
@@ -51,7 +46,7 @@ export function useCreateLaborMarket({
         reputationParams: {
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
           reviewStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
-          provideStake: BigNumber.from(REPUTATION_SUBMIT_SIGNAL_STAKE),
+          provideStake: BigNumber.from(data.submitRepMin),
           submitMin: BigNumber.from(data.submitRepMin),
           submitMax: BigNumber.from(data.submitRepMax !== undefined ? data.submitRepMax : ethers.constants.MaxUint256),
         },

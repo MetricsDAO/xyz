@@ -2,8 +2,6 @@ export const REPUTATION_TOKEN_ID = 4;
 
 export const REPUTATION_REWARD_POOL = 5000;
 
-export const REPUTATION_SUBMIT_SIGNAL_STAKE = 0;
-
 export const REPUTATION_REVIEW_SIGNAL_STAKE = 5;
 
 export const SCORE_COLOR = {
