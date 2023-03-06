@@ -41,14 +41,15 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
       style={{ backgroundImage: styles[variant] }}
     >
       <a
-        href="/app/analyze"
+        href="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
         target="_blank"
         className="group flex flex-row items-center py-8 text-white text-8xl font-thin text-clip hover:font-bold overflow-clip backdrop-blur-sm"
+        rel="noreferrer"
       >
         {[1, 2, 3, 4].map((i) => {
           return (
             <Fragment key={i}>
-              <p>LAUNCH APP</p>
+              <p>VIEW BOUNTIES</p>
               <ArrowRightIcon className="h-10 w-8 mx-5 text-white shrink-0 group-hover:hidden" />
               <img
                 src="/img/marketing/footer-rocket.png"
@@ -58,7 +59,7 @@ export default function Footer({ variant = "gradient" }: { variant?: Variant }) 
             </Fragment>
           );
         })}
-        <p>LAUNCH APP</p>
+        <p>VIEW BOUNTIES</p>
       </a>
 
       <div className="flex flex-col lg:flex-row gap-y-5 justify-between items-center py-4 px-6 backdrop-blur-sm">
