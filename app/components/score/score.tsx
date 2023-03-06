@@ -29,16 +29,18 @@ export function ScoreBadge({ score }: Props) {
 }
 
 export function scoreToLabel(score: number | string) {
+  console.log(score);
+  let numberScore = score;
   if (typeof score === "string") {
-    return score === "4"
-      ? "Great"
-      : score === "3"
-      ? "Good"
-      : score === "2"
-      ? "Average"
-      : score === "1"
-      ? "Bad"
-      : "Spam";
+    numberScore = parseFloat(score);
   }
-  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 1 ? "Bad" : "Spam";
+  return numberScore >= 100
+    ? "Great"
+    : numberScore >= 75
+    ? "Good"
+    : numberScore >= 50
+    ? "Average"
+    : numberScore >= 25
+    ? "Bad"
+    : "Spam";
 }

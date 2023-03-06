@@ -4,7 +4,6 @@ import { Card, Score, UserBadge } from "~/components";
 import type { LaborMarketDoc, SubmissionWithReviewsDoc } from "~/domain";
 import { useUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
-import { overallScore } from "~/utils/helpers";
 
 export function SubmissionCard({
   submission,
@@ -16,7 +15,7 @@ export function SubmissionCard({
   const user = useUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
-  const score = overallScore(submission);
+  const score = submission.score?.avg;
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
