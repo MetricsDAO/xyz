@@ -67,7 +67,6 @@ export const SubmissionEventSchema = z.object({
   submissionId: z.string(),
 });
 
-
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestDocSchema,
 });

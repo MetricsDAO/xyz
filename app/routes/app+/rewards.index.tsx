@@ -21,9 +21,6 @@ import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
 import { getUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/services/submissions.server";
-import type { CombinedDoc } from "~/domain/submission";
-import { RewardsSearchSchema } from "~/domain/submission";
-import { Field, Label, ValidatedSelect } from "~/components";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
@@ -77,7 +74,6 @@ export default function Rewards() {
     </Container>
   );
 }
-
 
 function RewardsListView({
   rewards,
