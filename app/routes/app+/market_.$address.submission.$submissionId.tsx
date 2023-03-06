@@ -172,11 +172,11 @@ export default function ChallengeSubmission() {
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-x-8 gap-y-2">
                         <div
                           className={clsx(
-                            SCORE_COLOR[scoreToLabel(parseFloat(r.score) * 25)],
+                            SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
                             "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                           )}
                         >
-                          <p>{scoreToLabel(parseFloat(r.score) * 25)}</p>
+                          <p>{scoreToLabel(Number(r.score) * 25)}</p>
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>

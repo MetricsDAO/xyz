@@ -29,10 +29,9 @@ export function ScoreBadge({ score }: Props) {
 }
 
 export function scoreToLabel(score: number | string) {
-  console.log(score);
   let numberScore = score;
   if (typeof score === "string") {
-    numberScore = parseFloat(score);
+    numberScore = Number(score);
   }
   return numberScore >= 100
     ? "Great"
