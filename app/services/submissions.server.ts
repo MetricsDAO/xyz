@@ -9,9 +9,9 @@ import type {
   SubmissionForm,
   SubmissionSearch,
   SubmissionWithReviewsDoc,
-  SubmissionWithServiceRequest,
+  CombinedDoc,
 } from "~/domain/submission";
-import { SubmissionWithServiceRequestSchema } from "~/domain/submission";
+import { CombinedDocSchema } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
 import { utcDate } from "~/utils/date";
@@ -191,9 +191,9 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 };
 
 /**
- * Returns an array of Submissions with their Service Request for a given user
+ * Returns an array of Submissions with their Service Request and Labor Market for a given user
  */
-export const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
+export const searchUserSubmissions = async (params: RewardsSearch): Promise<CombinedDoc[]> => {
   const submissionsDocs = await mongo.submissions
     .aggregate([
       {
@@ -247,7 +247,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
       {
         $unwind: "$lm",
       },
-      ...(params.isPastEnforcementExpiration
+      /*...(params.isPastEnforcementExpiration
         ? [
             {
               $match: {
@@ -255,7 +255,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
               },
             },
           ]
-        : []),
+        : []),*/
       ...(params.marketplace
         ? [
             {
@@ -269,7 +269,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
         ? [
             {
               $match: {
-                $and: [{ "configuration.pToken": { $in: params.token } }],
+                $and: [{ "sr.configuration.pToken": { $in: params.token } }],
               },
             },
           ]
@@ -279,6 +279,5 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
-
-  return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
+  return z.array(CombinedDocSchema).parse(submissionsDocs);
 };

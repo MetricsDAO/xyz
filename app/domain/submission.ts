@@ -2,7 +2,7 @@ import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 import { ServiceRequestDocSchema } from "./service-request";
 import { ReviewDocSchema } from "./review";
-import { LaborMarketSchema } from "./labor-market";
+import { LaborMarketDocSchema } from "./labor-market";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -67,21 +67,21 @@ export const SubmissionEventSchema = z.object({
   submissionId: z.string(),
 });
 
-export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
+export const CombinedDocSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestDocSchema,
-  lm: LaborMarketSchema,
+  lm: LaborMarketDocSchema,
 });
 
 export const RewardsSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z.enum(["sr[0].appData.title", "createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["sr.appData.title", "createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   first: z.number().default(10),
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   isPastEnforcementExpiration: z.boolean().default(true),
-  serviceProvider: EvmAddressSchema,
-  marketplace: EvmAddressSchema.optional(),
+  serviceProvider: EvmAddressSchema.optional(),
+  marketplace: z.array(EvmAddressSchema).optional(),
   claim: z.array(z.string()).optional(),
 });
 
@@ -94,6 +94,6 @@ export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
-export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
+export type CombinedDoc = z.infer<typeof CombinedDocSchema>;
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

@@ -2,7 +2,7 @@ import type { Token, Wallet } from "@prisma/client";
 import { useSearchParams } from "@remix-run/react";
 import { Card } from "~/components/card";
 import { RewardBadge } from "~/components/reward-badge";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { CombinedDoc } from "~/domain/submission";
 import { useGetReward } from "~/hooks/use-get-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";
@@ -14,7 +14,7 @@ export function RewardsCards({
   wallets,
   tokens,
 }: {
-  rewards: SubmissionWithServiceRequest[];
+  rewards: CombinedDoc[];
   wallets: Wallet[];
   tokens: Token[];
 }) {
@@ -27,15 +27,7 @@ export function RewardsCards({
   );
 }
 
-function RewardCard({
-  reward,
-  wallets,
-  tokens,
-}: {
-  reward: SubmissionWithServiceRequest;
-  wallets: Wallet[];
-  tokens: Token[];
-}) {
+function RewardCard({ reward, wallets, tokens }: { reward: CombinedDoc; wallets: Wallet[]; tokens: Token[] }) {
   const contractReward = useGetReward({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
@@ -48,8 +40,9 @@ function RewardCard({
   const [searchParams] = useSearchParams();
   const claimFilter = searchParams.get("claim");
   if (
-    (claimFilter && !(claimFilter.includes("unclaimed") && hasClaimed)) ||
-    (claimFilter && !(claimFilter.includes("collected") && !hasClaimed))
+    claimFilter &&
+    !(claimFilter.includes("unclaimed") && !hasClaimed) &&
+    !(claimFilter.includes("collected") && hasClaimed)
   ) {
     return <></>;
   }

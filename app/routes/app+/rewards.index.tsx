@@ -15,11 +15,12 @@ import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import type { LaborMarketDoc } from "~/domain";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { CombinedDoc } from "~/domain/submission";
 import { RewardsSearchSchema } from "~/domain/submission";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
+import { findLaborMarkets } from "~/services/labor-market.server";
 import { getUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/services/submissions.server";
 import { listTokens } from "~/services/tokens.server";
@@ -35,7 +36,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const wallets = await findAllWalletsForUser(user.id);
   const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
   const tokens = await listTokens();
-  const laborMarkets = []; //await findLaborMarkets(); uncomment me pls
+  const laborMarkets = await findLaborMarkets();
   return typedjson({
     wallets,
     rewards,
@@ -78,15 +79,7 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({
-  rewards,
-  wallets,
-  tokens,
-}: {
-  rewards: SubmissionWithServiceRequest[];
-  wallets: Wallet[];
-  tokens: Token[];
-}) {
+function RewardsListView({ rewards, wallets, tokens }: { rewards: CombinedDoc[]; wallets: Wallet[]; tokens: Token[] }) {
   if (rewards.length === 0) {
     return (
       <div className="flex">
@@ -129,6 +122,7 @@ function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarke
       <ValidatedInput
         placeholder="Search"
         name="q"
+        size="sm"
         iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
       <Field>
@@ -139,7 +133,7 @@ function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarke
           size="sm"
           onChange={handleChange}
           options={[
-            { label: "Challenge Title", value: "sr[0].appData.title" },
+            { label: "Challenge Title", value: "sr.appData.title" },
             { label: "Submitted", value: "createdAtBlockTimestamp" },
           ]}
         />
@@ -159,7 +153,7 @@ function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarke
       <Label>Challenge Marketplace</Label>
       <ValidatedCombobox
         placeholder="Select option"
-        name="laborMarket"
+        name="marketplace"
         onChange={handleChange}
         size="sm"
         options={laborMarkets.map((lm) => ({ value: lm.address, label: lm.appData?.title ?? "" }))}

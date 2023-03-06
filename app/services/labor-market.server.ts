@@ -125,3 +125,7 @@ export async function requireLaborMarket(address: string) {
   if (!doc) throw new Error(`LaborMarket ${address} not found`);
   return doc;
 }
+
+export async function findLaborMarkets() {
+  return mongo.laborMarkets.find({ valid: true }).toArray();
+}
