@@ -3,6 +3,7 @@ import { EvmAddressSchema } from "./address";
 import { ServiceRequestDocSchema } from "./service-request";
 import { ReviewDocSchema } from "./review";
 import { LaborMarketDocSchema } from "./labor-market";
+import { oneUnitAgo } from "~/utils/date";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -87,8 +88,7 @@ export const RewardsSearchSchema = z.object({
   serviceProvider: EvmAddressSchema.optional(),
 });
 
-var oneMonthAgo = new Date();
-oneMonthAgo.setDate(oneMonthAgo.getMonth() - 1);
+const oneMonthAgo = oneUnitAgo("month").toDate();
 
 export const ShowcaseSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),

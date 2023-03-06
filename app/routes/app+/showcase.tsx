@@ -11,7 +11,7 @@ import type { CombinedDoc, LaborMarketDoc } from "~/domain";
 import { ShowcaseSearchSchema } from "~/domain";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
-import { fromNow } from "~/utils/date";
+import { fromNow, oneUnitAgo } from "~/utils/date";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Card } from "~/components/card";
 import { findProjectsBySlug, truncateAddress } from "~/utils/helpers";
@@ -85,13 +85,6 @@ function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; labo
     }
   };
 
-  var oneDayAgo = new Date();
-  oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-  var oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-  var oneMonthAgo = new Date();
-  oneMonthAgo.setDate(oneMonthAgo.getMonth() - 1);
-
   return (
     <ValidatedForm
       formRef={formRef}
@@ -145,9 +138,9 @@ function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; labo
           onChange={handleChange}
           placeholder="Select option"
           options={[
-            { label: "Past 24 hours", value: oneDayAgo.toISOString() },
-            { label: "Past 7 days", value: oneWeekAgo.toISOString() },
-            { label: "Past 30 days", value: oneMonthAgo.toISOString() },
+            { label: "Past 24 hours", value: oneUnitAgo("day").toISOString() },
+            { label: "Past 7 days", value: oneUnitAgo("week").toISOString() },
+            { label: "Past 30 days", value: oneUnitAgo("month").toISOString() },
           ]}
         />
       </Field>
