@@ -215,15 +215,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
             {
               $match: {
                 $expr: {
-                  $and: [
-                    { $eq: ["$id", "$$sr_id"] },
-                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
-                    params.token
-                      ? {
-                          serviceRequestRewardPools: { $elemMatch: { "$configuration.pToken": { $in: params.token } } },
-                        }
-                      : {},
-                  ],
+                  $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
                 },
               },
             },
@@ -232,13 +224,52 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
         },
       },
       {
+        $lookup: {
+          from: "laborMarkets",
+          let: {
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$address", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "lm",
+        },
+      },
+      {
         $unwind: "$sr",
+      },
+      {
+        $unwind: "$lm",
       },
       ...(params.isPastEnforcementExpiration
         ? [
             {
               $match: {
                 $and: [{ "sr.configuration.enforcementExpiration": { $lt: utcDate() } }],
+              },
+            },
+          ]
+        : []),
+      ...(params.marketplace
+        ? [
+            {
+              $match: {
+                $and: [{ "lm.address": { $in: params.marketplace } }],
+              },
+            },
+          ]
+        : []),
+      ...(params.token
+        ? [
+            {
+              $match: {
+                $and: [{ "configuration.pToken": { $in: params.token } }],
               },
             },
           ]

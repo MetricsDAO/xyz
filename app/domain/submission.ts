@@ -2,6 +2,7 @@ import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 import { ServiceRequestDocSchema } from "./service-request";
 import { ReviewDocSchema } from "./review";
+import { LaborMarketSchema } from "./labor-market";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -68,6 +69,7 @@ export const SubmissionEventSchema = z.object({
 
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestDocSchema,
+  lm: LaborMarketSchema,
 });
 
 export const RewardsSearchSchema = z.object({
@@ -78,7 +80,8 @@ export const RewardsSearchSchema = z.object({
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   isPastEnforcementExpiration: z.boolean().default(true),
-  serviceProvider: EvmAddressSchema.optional(),
+  serviceProvider: EvmAddressSchema,
+  marketplace: EvmAddressSchema.optional(),
 });
 
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({

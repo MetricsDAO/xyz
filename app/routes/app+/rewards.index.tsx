@@ -14,6 +14,7 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
+import type { LaborMarketDoc } from "~/domain";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
 import { RewardsSearchSchema } from "~/domain/submission";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
@@ -34,17 +35,19 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const wallets = await findAllWalletsForUser(user.id);
   const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
   const tokens = await listTokens();
+  const laborMarkets = await findLaborMarkets();
   return typedjson({
     wallets,
     rewards,
     user,
     tokens,
     search,
+    laborMarkets,
   });
 };
 
 export default function Rewards() {
-  const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
+  const { wallets, rewards, tokens, search, laborMarkets } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -68,7 +71,7 @@ export default function Rewards() {
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter tokens={tokens} />
+          <SearchAndFilter tokens={tokens} laborMarkets={laborMarkets} />
         </aside>
       </section>
     </Container>
@@ -106,7 +109,7 @@ function RewardsListView({
   );
 }
 
-function SearchAndFilter({ tokens }: { tokens: Token[] }) {
+function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarkets: LaborMarketDoc[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -153,14 +156,14 @@ function SearchAndFilter({ tokens }: { tokens: Token[] }) {
         size="sm"
         options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
       />
-      {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
-      <Combobox
+      <Label>Challenge Marketplace</Label>
+      <ValidatedCombobox
         placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />*/}
+        name="laborMarket"
+        onChange={handleChange}
+        size="sm"
+        options={laborMarkets.map((lm) => ({ value: lm.address, label: lm.appData?.title ?? "" }))}
+      />
     </ValidatedForm>
   );
 }
