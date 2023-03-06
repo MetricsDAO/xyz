@@ -244,7 +244,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
     .aggregate<CombinedDoc>([
       {
         $match: {
-          /*$and: [{ "score.avg": { $ne: null } }],*/
+          $and: [{ "score.avg": { $ne: null } }],
         },
       },
       {
