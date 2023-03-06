@@ -35,7 +35,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const wallets = await findAllWalletsForUser(user.id);
   const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
   const tokens = await listTokens();
-  const laborMarkets = await findLaborMarkets();
+  const laborMarkets = []; //await findLaborMarkets(); uncomment me pls
   return typedjson({
     wallets,
     rewards,
@@ -146,8 +146,8 @@ function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarke
       </Field>
       <p className="text-lg font-semibold">Filter:</p>
       <Label size="md">Status</Label>
-      <Checkbox value="unclaimed" label="Unclaimed" />
-      <Checkbox value="claimed" label="Claimed" />
+      <Checkbox onChange={handleChange} id="unclaimed_checkbox" name="claim" value="unclaimed" label="Unclaimed" />
+      <Checkbox onChange={handleChange} id="claimed_checkbox" name="claim" value="collected" label="Claimed" />
       <Label>Reward Token</Label>
       <ValidatedCombobox
         placeholder="Select option"

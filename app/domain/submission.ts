@@ -82,6 +82,7 @@ export const RewardsSearchSchema = z.object({
   isPastEnforcementExpiration: z.boolean().default(true),
   serviceProvider: EvmAddressSchema,
   marketplace: EvmAddressSchema.optional(),
+  claim: z.array(z.string()).optional(),
 });
 
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({

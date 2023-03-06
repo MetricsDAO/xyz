@@ -1,4 +1,5 @@
 import type { Token, Wallet } from "@prisma/client";
+import { useSearchParams } from "@remix-run/react";
 import { RewardBadge } from "~/components/reward-badge";
 import { Header, Row, Table } from "~/components/table";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
@@ -58,6 +59,14 @@ function RewardsTableRow({
     id: reward.id,
     action: "HAS_CLAIMED",
   });
+  const [searchParams] = useSearchParams();
+  const claimFilter = searchParams.get("claim");
+  if (
+    (claimFilter && !(claimFilter.includes("unclaimed") && hasClaimed)) ||
+    (claimFilter && !(claimFilter.includes("collected") && !hasClaimed))
+  ) {
+    return <></>;
+  }
   const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const showReward = contractReward !== undefined && hasClaimed === false;
   const showRewarded = contractReward !== undefined && hasClaimed === true;
