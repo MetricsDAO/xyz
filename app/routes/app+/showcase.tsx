@@ -188,7 +188,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
       </Header>
       {submissions.map((s) => {
         return (
-          <Row asChild columns={12} key={"s.contractId"}>
+          <Row asChild columns={12} key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
               to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
               className={clsx("text-sm text-stone-500", {
@@ -232,7 +232,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
     <div className="space-y-4">
       {submissions.map((s) => {
         return (
-          <Card asChild key={"s.contractId"}>
+          <Card asChild key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
               to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
               className={clsx("text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {

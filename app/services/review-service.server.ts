@@ -99,9 +99,9 @@ export const indexReview = async (event: TracerEvent) => {
     {
       $set: {
         score: {
-          reviewCount: submissionToScore.reviewCount.toString(),
-          reviewSum: submissionToScore.reviewSum.toString(),
-          avg: submissionToScore.avg.toString(),
+          reviewCount: submissionToScore.reviewCount.toNumber(),
+          reviewSum: submissionToScore.reviewSum.toNumber(),
+          avg: submissionToScore.avg.toNumber(),
           qualified: submissionToScore.qualified,
         },
       },

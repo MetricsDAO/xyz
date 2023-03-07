@@ -54,9 +54,9 @@ const SubmissionDocSchema = z.object({
   }),
   score: z
     .object({
-      reviewCount: z.string(),
-      reviewSum: z.string(),
-      avg: z.string(),
+      reviewCount: z.number(),
+      reviewSum: z.number(),
+      avg: z.number(),
       qualified: z.boolean(),
     })
     .optional(),
