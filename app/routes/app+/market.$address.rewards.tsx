@@ -29,7 +29,7 @@ export default function MarketplaceIdRewards() {
             <Card className="p-4 space-around space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Challenge Pools Total</p>
               <p className="text-xs text-gray-500">SUM OF ALL ACTIVE CHALLENGE REWARD POOLS</p>
-              <ChallengePoolBadges pools={laborMarket.serviceRequestRewardPools} tokens={tokens} />
+              <ChallengePoolBadges pools={laborMarket.indexData.serviceRequestRewardPools} tokens={tokens} />
             </Card>
             {/* MVP Hide */}
             {/* <Card className="p-4 space-y-2">

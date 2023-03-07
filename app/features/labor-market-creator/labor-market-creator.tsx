@@ -6,12 +6,11 @@ import type { LaborMarketFormValues } from "./labor-market-creator-values";
 import { LaborMarketFormValuesSchema } from "./labor-market-creator-values";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ConstantLikertEnforcement,
   LaborMarket,
   LaborMarketNetwork,
-  PaymentModule,
   ReputationModule,
   ReputationToken,
+  ScalableLikertEnforcement,
 } from "labor-markets-abi";
 import { LaborMarketCreatorFields } from "./labor-market-creator-fields";
 import { BigNumber, ethers } from "ethers";
@@ -98,19 +97,19 @@ function configureFromValues({
       LaborMarket.address,
       {
         marketUri: cid,
-        owner,
+        owner: owner as `0x${string}`,
         modules: {
-          enforcement: ConstantLikertEnforcement.address,
           network: LaborMarketNetwork.address,
-          payment: PaymentModule.address,
           reputation: ReputationModule.address,
+          enforcement: ScalableLikertEnforcement.address,
+          enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
         },
         delegateBadge: {
-          token: values.configuration.delegateBadge.token,
+          token: values.configuration.delegateBadge.token as `0x${string}`,
           tokenId: BigNumber.from(values.configuration.delegateBadge.tokenId),
         },
         maintainerBadge: {
-          token: values.configuration.maintainerBadge.token,
+          token: values.configuration.maintainerBadge.token as `0x${string}`,
           tokenId: BigNumber.from(values.configuration.maintainerBadge.tokenId),
         },
         reputationBadge: {
@@ -119,13 +118,10 @@ function configureFromValues({
         },
         reputationParams: {
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
-          signalStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
+          reviewStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
+          provideStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
           submitMin: BigNumber.from(values.configuration.reputationParams.submitMin),
-          submitMax: BigNumber.from(
-            values.configuration.reputationParams.submitMax
-              ? values.configuration.reputationParams.submitMin
-              : ethers.constants.MaxUint256
-          ),
+          submitMax: BigNumber.from(values.configuration.reputationParams.submitMax ?? ethers.constants.MaxUint256),
         },
       },
     ],

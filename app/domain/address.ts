@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
 
-export const EvmAddressSchema = z.string().refine((address): address is `0x${string}` => {
+export const EvmAddressSchema = z.string().refine((address) => {
   return ethers.utils.isAddress(address);
 }, "Must be a valid EVM address.");
 

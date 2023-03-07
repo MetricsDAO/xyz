@@ -46,6 +46,7 @@ import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -238,7 +239,7 @@ function ReviewQuestionDrawerButton({
   laborMarket,
 }: {
   submission: SubmissionDoc;
-  laborMarket: LaborMarketDoc;
+  laborMarket: LaborMarket;
 }) {
   const [selected, setSelected] = useState<number>(2);
   const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);

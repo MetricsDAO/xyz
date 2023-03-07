@@ -2,6 +2,7 @@ import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -79,6 +80,6 @@ export function displayBalance(balance: BigNumber): string {
   }
 }
 
-export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
+export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }
