@@ -12,6 +12,7 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
@@ -21,7 +22,6 @@ import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance"
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useOptionalUser } from "~/hooks/use-user";
-import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { countReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
@@ -38,7 +38,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }

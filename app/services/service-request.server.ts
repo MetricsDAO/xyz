@@ -129,7 +129,7 @@ export const indexServiceRequest = async (event: TracerEvent) => {
         },
         $set: {
           serviceRequestRewardPools: calculateRewardPools(
-            lm?.serviceRequestRewardPools ?? [],
+            lm?.indexData.serviceRequestRewardPools ?? [],
             doc.configuration.pToken,
             doc.configuration.pTokenQuantity
           ),

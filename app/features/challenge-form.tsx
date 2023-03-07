@@ -1,7 +1,8 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
+// import MDEditor from "@uiw/react-md-editor";
 import { useState } from "react";
-import { Error, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect } from "~/components";
+import { ValidatedError, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect } from "~/components";
 import type { SetStateAction } from "react";
 import { claimDate, parseDatetime } from "~/utils/date";
 import React from "react";
@@ -49,7 +50,7 @@ export function ChallengeForm({
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
           <ValidatedInput name="title" placeholder="Challenge Title" className="w-full" />
-          <Error name="title" />
+          <ValidatedError name="title" />
         </Field>
       </section>
       <section className="space-y-3">{mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}</section>
@@ -62,7 +63,7 @@ export function ChallengeForm({
                 placeholder="Language"
                 options={[{ label: "English", value: "english" }]}
               />
-              <Error name="language" />
+              <ValidatedError name="language" />
             </Field>
           </div>
           <div className="flex-grow">
@@ -72,7 +73,7 @@ export function ChallengeForm({
                 name="projectSlugs"
                 options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
               />
-              <Error name="projectSlugs" />
+              <ValidatedError name="projectSlugs" />
             </Field>
           </div>
         </div>
@@ -82,11 +83,11 @@ export function ChallengeForm({
         <h2 className="font-bold">When must submissions be entered by?*</h2>
         <Field>
           <ValidatedInput onChange={handleSubmitDateChange} type="date" name="endDate" placeholder="End date" />
-          <Error name="endDate" />
+          <ValidatedError name="endDate" />
         </Field>
         <Field>
           <ValidatedInput onChange={handleSubmitTimeChange} type="time" name="endTime" placeholder="End time" />
-          <Error name="endTime" />
+          <ValidatedError name="endTime" />
         </Field>
         <p className="text-gray-400 italic">
           {selectedSubmitDate &&
@@ -99,11 +100,11 @@ export function ChallengeForm({
         <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
         <Field>
           <ValidatedInput onChange={handleReviewDateChange} type="date" name="reviewEndDate" placeholder="End date" />
-          <Error name="reviewEndDate" />
+          <ValidatedError name="reviewEndDate" />
         </Field>
         <Field>
           <ValidatedInput onChange={handleReviewTimeChange} type="time" name="reviewEndTime" placeholder="End time" />
-          <Error name="reviewEndTime" />
+          <ValidatedError name="reviewEndTime" />
         </Field>
         <p className="text-gray-400 italic">
           {selectedReviewDate &&
@@ -124,13 +125,13 @@ export function ChallengeForm({
                   return { label: t.symbol, value: t.contractAddress };
                 })}
               />
-              <Error name="rewardToken" />
+              <ValidatedError name="rewardToken" />
             </Field>
           </div>
           <div className="flex-grow w-full">
             <Field>
               <ValidatedInput name="rewardPool" placeholder="Token amount distributed across winners" />
-              <Error name="rewardPool" />
+              <ValidatedError name="rewardPool" />
             </Field>
           </div>
         </div>

@@ -17,7 +17,6 @@ import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-e
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { prepareServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
@@ -26,6 +25,7 @@ import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { toTokenAbbreviation } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ address: z.string() });
@@ -33,7 +33,7 @@ const serviceRequestMachine = createBlockchainTransactionStateMachine<ServiceReq
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");
   }
@@ -73,9 +73,6 @@ export default function CreateServiceRequest() {
   });
 
   const [modalOpen, setModalOpen] = useState(false);
-
-  // DEBUG
-  // console.log("state", state.value, state.context);
 
   useEffect(() => {
     if (actionData && !isValidationError(actionData)) {
