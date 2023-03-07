@@ -14,7 +14,7 @@ import {
 } from "labor-markets-abi";
 import { LaborMarketCreatorFields } from "./labor-market-creator-fields";
 import { BigNumber, ethers } from "ethers";
-import { REPUTATION_REWARD_POOL, REPUTATION_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
+import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
 import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
@@ -116,8 +116,8 @@ function configureFromValues({
         },
         reputationParams: {
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
-          reviewStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
-          provideStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
+          reviewStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
+          provideStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
           submitMin: BigNumber.from(values.configuration.reputationParams.submitMin),
           submitMax: BigNumber.from(values.configuration.reputationParams.submitMax ?? ethers.constants.MaxUint256),
         },

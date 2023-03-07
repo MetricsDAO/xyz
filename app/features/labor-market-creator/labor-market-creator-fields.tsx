@@ -144,10 +144,10 @@ export function LaborMarketCreatorFields({ projects, type }: { projects: Project
             <Label>Reward Curve</Label>
             <Controller
               control={control}
-              name="configuration.modules.payment"
+              name="configuration.modules.enforcement"
               render={({ field }) => <Select {...field} options={[]} />}
             />
-            <Error error={errors.configuration?.modules?.payment?.message} />
+            <Error error={errors.configuration?.modules?.enforcement?.message} />
           </Field>
         </div>
       </section>

@@ -37,7 +37,7 @@ export function fakeLaborMarketFormValues(): LaborMarketFormValues {
       modules: {
         enforcement: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
         network: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-        payment: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+        enforcementKey: "aggressive",
         reputation: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
       },
       delegateBadge: {
