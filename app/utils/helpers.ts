@@ -1,7 +1,7 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestDoc } from "~/domain";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { claimDate } from "./date";
 

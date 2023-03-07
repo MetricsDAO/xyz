@@ -1,5 +1,5 @@
 import { useTypedRouteLoaderData } from "remix-typedjson";
-import { loader } from "~/routes/app+/market.$address";
+import type { loader } from "~/routes/app+/market.$address";
 
 export function useMarketAddressData() {
   const data = useTypedRouteLoaderData<typeof loader>("routes/app+/market.$address");
