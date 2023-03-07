@@ -19,7 +19,7 @@ import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketNetwork__factory } from "~/contracts";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 interface LaborMarketFormProps {
   projects: Project[];

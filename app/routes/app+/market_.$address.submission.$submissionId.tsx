@@ -29,7 +29,7 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
-import type { LaborMarketDoc, SubmissionDoc } from "~/domain";
+import type { SubmissionDoc } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
