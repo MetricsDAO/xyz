@@ -263,7 +263,10 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
     .aggregate<CombinedDoc>([
       {
         $match: {
-          $and: [{ "score.avg": { $ne: null } }],
+          $and: [
+            { "score.avg": { $ne: null } },
+            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+          ],
         },
       },
       {
@@ -309,51 +312,18 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $unwind: "$lm",
       },
-      ...(params.type
-        ? [
-            {
-              $match: {
-                $and: [{ "lm.appData.type": { $in: params.type } }],
-              },
-            },
-          ]
-        : []),
-      ...(params.marketplace
-        ? [
-            {
-              $match: {
-                $and: [{ "lm.address": { $in: params.marketplace } }],
-              },
-            },
-          ]
-        : []),
-      ...(params.score
-        ? [
-            {
-              $match: {
-                $and: [{ "score.avg": { $gte: params.score } }, { "score.avg": { $lt: params.score + 25 } }],
-              },
-            },
-          ]
-        : []),
-      ...(params.timeframe
-        ? [
-            {
-              $match: {
-                $and: [{ createdAtBlockTimestamp: { $gte: params.timeframe } }],
-              },
-            },
-          ]
-        : []),
-      ...(params.project
-        ? [
-            {
-              $match: {
-                $and: [{ "sr.appData.projectSlugs": { $in: params.project } }],
-              },
-            },
-          ]
-        : []),
+      {
+        $match: {
+          $and: [
+            params.type ? { "lm.appData.type": { $in: params.type } } : {},
+            params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
+            params.score ? { "score.avg": { $gte: params.score } } : {},
+            params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
+            params.timeframe ? { createdAtBlockTimestamp: { $gte: params.timeframe } } : {},
+            params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
+          ],
+        },
+      },
     ])
     .sort({ "score.avg": -1 })
     .limit(5 + params.count)
