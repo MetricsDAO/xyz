@@ -265,6 +265,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
         $match: {
           $and: [
             { "score.avg": { $ne: null } },
+            { "score.avg": { $gte: 75 } },
             //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
@@ -315,6 +316,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $match: {
           $and: [
+            { "sr.configuration.enforcementExpiration": { $lt: utcDate() } },
             params.type ? { "lm.appData.type": { $in: params.type } } : {},
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
             params.score ? { "score.avg": { $gte: params.score } } : {},
@@ -325,7 +327,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
         },
       },
     ])
-    .sort({ "score.avg": -1 })
+    .sort({ createdAtBlockTimestamp: -1 })
     .limit(5 + params.count)
     .toArray();
 };
