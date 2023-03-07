@@ -1,7 +1,8 @@
 import { Link, Outlet } from "@remix-run/react";
+import DOMPurify from "dompurify";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { badRequest, notFound } from "remix-utils";
+import { badRequest, ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
@@ -10,6 +11,7 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
@@ -34,6 +36,8 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
+  const sanitized = DOMPurify.sanitize(description);
 
   return (
     <Container className="pb-16 pt-7 px-10">
@@ -61,7 +65,7 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
+        <ClientOnly>{() => <ParsedMarkdown text={sanitized} />}</ClientOnly>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">

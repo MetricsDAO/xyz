@@ -2,7 +2,7 @@ import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { badRequest, notFound } from "remix-utils";
+import { badRequest, ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Badge } from "~/components/badge";
@@ -13,6 +13,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { useHasPerformed } from "~/hooks/use-has-performed";
@@ -28,6 +29,7 @@ import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
+import * as DOMPurify from "dompurify";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -60,6 +62,9 @@ export default function ServiceRequest() {
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+
+  const description = serviceRequest.appData?.description ? serviceRequest.appData.description : "";
+  const sanitized = DOMPurify.sanitize(description);
 
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
@@ -140,40 +145,40 @@ export default function ServiceRequest() {
           </Button>
         </div>
       </header>
-      <Detail className="mb-6 flex flex-wrap gap-y-2">
-        <DetailItem title="Sponsor">
-          <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
-        </DetailItem>
-        <div className="flex space-x-4">
-          {serviceRequestProjects && (
-            <DetailItem title="Chain/Project">{<ProjectBadges projects={serviceRequestProjects} />}</DetailItem>
-          )}
-        </div>
-        <DetailItem title="Reward Pool">
-          <RewardBadge
-            amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
-            token={token?.symbol ?? ""}
-            rMETRIC={REPUTATION_REWARD_POOL}
-          />
-        </DetailItem>
-        <DetailItem title="Submissions">
-          <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
-        </DetailItem>
-        <DetailItem title="Reviews">
-          <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
-        </DetailItem>
-        <DetailItem title="Winner">
-          {!dateHasPassed(serviceRequest.configuration.enforcementExpiration) ? (
-            <Badge>Pending</Badge>
-          ) : (
-            <Badge>todo</Badge>
-          )}
-        </DetailItem>
-      </Detail>
+      <section className="flex flex-col space-y-7 pb-12">
+        <Detail className="mb-6 flex flex-wrap gap-y-2">
+          <DetailItem title="Sponsor">
+            <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
+          </DetailItem>
+          <div className="flex space-x-4">
+            {serviceRequestProjects && (
+              <DetailItem title="Chain/Project">{<ProjectBadges projects={serviceRequestProjects} />}</DetailItem>
+            )}
+          </div>
+          <DetailItem title="Reward Pool">
+            <RewardBadge
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+              token={token?.symbol ?? ""}
+              rMETRIC={REPUTATION_REWARD_POOL}
+            />
+          </DetailItem>
+          <DetailItem title="Submissions">
+            <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
+          </DetailItem>
+          <DetailItem title="Reviews">
+            <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
+          </DetailItem>
+          <DetailItem title="Winner">
+            {!dateHasPassed(serviceRequest.configuration.enforcementExpiration) ? (
+              <Badge>Pending</Badge>
+            ) : (
+              <Badge>todo</Badge>
+            )}
+          </DetailItem>
+        </Detail>
 
-      <article className="text-gray-500 text-sm mb-20 max-w-2xl">
-        <p>{serviceRequest.appData?.description}</p>
-      </article>
+        <ClientOnly>{() => <ParsedMarkdown text={sanitized} />}</ClientOnly>
+      </section>
 
       <TabNav className="mb-10">
         <TabNavLink to="" end>
