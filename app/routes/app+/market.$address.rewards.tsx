@@ -1,5 +1,4 @@
 import { Card } from "~/components/card";
-import invariant from "tiny-invariant";
 import { ChallengePoolBadges } from "~/features/challenge-pool-badges";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
 
