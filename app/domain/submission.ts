@@ -43,7 +43,6 @@ const SubmissionDocSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   valid: z.boolean(),
-  reviewed: z.boolean(),
   submissionUrl: z.string().nullable(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
@@ -51,7 +50,14 @@ const SubmissionDocSchema = z.object({
     serviceProvider: EvmAddressSchema,
     uri: z.string(),
   }),
-  reviewCount: z.number(),
+  score: z
+    .object({
+      reviewCount: z.string(),
+      reviewSum: z.string(),
+      avg: z.string(),
+      qualified: z.boolean(),
+    })
+    .optional(),
   appData: SubmissionFormSchema.nullable(),
 });
 
@@ -60,8 +66,8 @@ export const SubmissionEventSchema = z.object({
   submissionId: z.string(),
 });
 
-const RewardsSchema = SubmissionDocSchema.extend({
-  sr: z.array(ServiceRequestDocSchema),
+export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
+  sr: ServiceRequestDocSchema,
 });
 
 export const RewardsSearchSchema = z.object({
@@ -71,6 +77,7 @@ export const RewardsSearchSchema = z.object({
   first: z.number().default(10),
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
+  isPastEnforcementExpiration: z.boolean().default(true),
   serviceProvider: EvmAddressSchema.optional(),
 });
 
@@ -83,6 +90,6 @@ export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
-export type RewardsDoc = z.infer<typeof RewardsSchema>;
+export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { validateDate, validateTime } from "~/utils/date";
+import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
 
@@ -37,19 +37,28 @@ const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
+function validDeadlines(reviewDate: string, reviewTime: string, submitDate: string, submitTime: string) {
+  return parseDatetime(reviewDate, reviewTime) > parseDatetime(submitDate, submitTime);
+}
+
 export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
   language: true,
   projectSlugs: true,
-}).extend({
-  endDate: InputDateSchema,
-  endTime: InputTimeSchema,
-  reviewEndDate: InputDateSchema,
-  reviewEndTime: InputTimeSchema,
-  rewardToken: EvmAddressSchema,
-  rewardPool: TokenAmountSchema,
-});
+})
+  .extend({
+    endDate: InputDateSchema,
+    endTime: InputTimeSchema,
+    reviewEndDate: InputDateSchema,
+    reviewEndTime: InputTimeSchema,
+    rewardToken: EvmAddressSchema,
+    rewardPool: TokenAmountSchema,
+  })
+  .refine((data) => validDeadlines(data.reviewEndDate, data.reviewEndTime, data.endDate, data.endTime), {
+    message: "Review deadline cannot be before submission deadline.",
+    path: ["reviewEndTime"],
+  });
 
 export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
   title: true,
@@ -142,13 +151,8 @@ export const ServiceRequestSearchSchema = z.object({
   first: z.number().default(12),
 });
 
-export const ServiceRequestIndexerSchema = ServiceRequestContractSchema.extend({
-  contractId: z.string(),
-});
-
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
-export type ServiceRequestIndexer = z.infer<typeof ServiceRequestIndexerSchema>;
 export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;

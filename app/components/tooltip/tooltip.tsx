@@ -23,10 +23,13 @@ const Content = TooltipContent;
 
 type TooltipProps = {
   content: React.ReactNode;
+  hide?: boolean;
   children: React.ReactNode;
 };
 
-export const Tooltip = ({ content, children }: TooltipProps) => {
+export const Tooltip = ({ content, hide, children }: TooltipProps) => {
+  if (hide) return <>{children}</>;
+
   return (
     <Provider delayDuration={0}>
       <Root>

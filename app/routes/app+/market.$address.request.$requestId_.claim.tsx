@@ -7,7 +7,6 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { Modal } from "~/components";
-import { Badge } from "~/components/badge";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
@@ -18,7 +17,6 @@ import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit"
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
-import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import invariant from "tiny-invariant";
 import { findLaborMarket } from "~/services/labor-market.server";
@@ -124,14 +122,10 @@ export default function ClaimToSubmit() {
       </div>
       <div className="space-y-2">
         <h2 className="font-semibold">Lock rMETRIC</h2>
-        <div className="flex flex-col md:flex-row gap-2 md:items-center">
-          <p className="text-sm">
-            You must lock <Badge>{REPUTATION_SIGNAL_STAKE}</Badge> rMETRIC to claim
-          </p>
-        </div>
         <p className="mt-2 text-gray-500 italic text-sm">
-          Important: If you don't submit before the deadline, all {REPUTATION_SIGNAL_STAKE} of your locked rMETRIC will
-          be slashed.
+          Important: You must lock {laborMarket.configuration.reputationParams.provideStake} rMETRIC as defined by the
+          Marketplace. If you don’t submit before the deadline, all{" "}
+          {laborMarket.configuration.reputationParams.provideStake} of your locked rMETRIC will be slashed.
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
@@ -152,7 +146,10 @@ export default function ClaimToSubmit() {
           onClose={() => setIsModalOpen(false)}
         >
           <div className="space-y-8">
-            <p>Please confirm that you would like to claim a submission.</p>
+            <p className="mt-2">Please confirm that you would like to claim a submission.</p>
+            <p>
+              This will lock <b>{laborMarket.configuration.reputationParams.provideStake} rMETRIC.</b>
+            </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
               {!error && (

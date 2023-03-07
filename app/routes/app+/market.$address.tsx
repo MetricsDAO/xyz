@@ -4,6 +4,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
@@ -32,7 +33,8 @@ export const loader = async (data: DataFunctionArgs) => {
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   return (
-    <Container className="py-16 px-10">
+    <Container className="pb-16 pt-7 px-10">
+      <Breadcrumbs crumbs={[{ link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" }]} />
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
         <div className="flex flex-wrap gap-5">

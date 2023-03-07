@@ -66,7 +66,11 @@ export default function Index() {
               <b className="text-white"> on-chain participation</b> and help <b className="text-white">Web3</b>{" "}
               organizations launch, grow, and <b className="text-white">succeed.</b>
             </p>
-            <MarketingButton label="Explore the Ecosystem" link="/app/analyze" variant="outline" />
+            <MarketingButton
+              label="Explore the Ecosystem"
+              link="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
+              variant="outline"
+            />
           </div>
           <InfoSection id="partner">
             <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
@@ -155,7 +159,10 @@ export default function Index() {
                 Winners earn tokens from the partner reward pool while increasing their reputation score in the
                 MetricsDAO ecosystem.
               </p>
-              <MarketingButton label="Launch App" link="/app/analyze" />
+              <MarketingButton
+                label="Launch App"
+                link="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
+              />
             </div>
           </InfoSection>
         </main>

@@ -4,22 +4,26 @@ import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, notFound } from "remix-utils";
 import { z } from "zod";
+import { UserBadge } from "~/components";
 import { Badge } from "~/components/badge";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
-import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { findServiceRequest } from "~/services/service-request.server";
-import { UserBadge } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
+import { TabNav, TabNavLink } from "~/components/tab-nav";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ProjectBadges } from "~/features/project-badges";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { useHasPerformed } from "~/hooks/use-has-performed";
+import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useTokenBalance } from "~/hooks/use-token-balance";
+import { useOptionalUser } from "~/hooks/use-user";
 import { findLaborMarket } from "~/services/labor-market.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { countReviews } from "~/services/review-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
@@ -59,13 +63,13 @@ export default function ServiceRequest() {
 
   const hasClaimedToSubmit = useHasPerformed({
     laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
-    serviceRequestId: serviceRequest.id,
+    id: serviceRequest.id,
     action: "HAS_SIGNALED",
   });
 
   const hasSubmitted = useHasPerformed({
     laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
-    serviceRequestId: serviceRequest.id,
+    id: serviceRequest.id,
     action: "HAS_SUBMITTED",
   });
 
@@ -79,45 +83,57 @@ export default function ServiceRequest() {
     serviceRequestId: serviceRequest.id,
   });
 
+  const reputationBalance = useReputationTokenBalance();
+
+  const user = useOptionalUser();
+  const userSignedIn = !!user;
+
   const showSubmit = hasClaimedToSubmit && !hasSubmitted;
+  const canClaimToSubmit =
+    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
+    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
   const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted && !claimDeadlinePassed;
   const showClaimToReview =
     reviewSignal?.remainder.eq(0) && // Must not have any remaining reviews left (or initial of 0)
-    !claimToReviewDeadlinePassed &&
-    maintainerBadgeTokenBalance?.gt(0);
+    !claimToReviewDeadlinePassed;
+
+  const canClaimToReview = maintainerBadgeTokenBalance?.gt(0);
 
   return (
-    <Container className="py-16 px-10">
+    <Container className="pt-7 pb-16 px-10">
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+        ]}
+      />
       <header className="flex flex-wrap gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5">
           {showClaimToReview && (
-            <Button variant="cancel" size="lg" asChild>
-              <ConnectWalletWrapper>
-                <Button size="lg" asChild>
-                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}>
-                    Claim to Review
-                  </Link>
-                </Button>
-              </ConnectWalletWrapper>
-            </Button>
+            <WalletGuardedButtonLink
+              buttonText="Claim to Review"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
+              disabled={userSignedIn && !canClaimToReview}
+              disabledTooltip="Check for Prerequisites"
+              variant="cancel"
+              size="lg"
+            />
           )}
           {showClaimToSubmit && (
-            <Button variant="primary" size="lg" asChild>
-              <ConnectWalletWrapper>
-                <Button size="lg" asChild>
-                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/claim`}>
-                    Claim to Submit
-                  </Link>
-                </Button>
-              </ConnectWalletWrapper>
-            </Button>
+            <WalletGuardedButtonLink
+              buttonText="Claim to Submit"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/claim`}
+              disabled={userSignedIn && !canClaimToSubmit}
+              disabledTooltip="Check for Prerequisites"
+              size="lg"
+            />
           )}
           <Button variant="primary" size="lg" asChild>
             {showSubmit && (
               <ConnectWalletWrapper>
                 <Button size="lg" asChild>
-                  <Link to={`/app/market${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
+                  <Link to={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/submit`}>Submit</Link>
                 </Button>
               </ConnectWalletWrapper>
             )}

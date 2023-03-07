@@ -154,7 +154,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
 
   return (
     <Table>
-      <Header columns={6} className="mb-2">
+      <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={2}>Challenge</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column>Reward Pool</Header.Column>

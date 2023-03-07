@@ -112,7 +112,7 @@ export default function PayoutAddresses() {
 function AddressTable({ wallets }: { wallets: WalletWithChain[] }) {
   return (
     <Table>
-      <Header columns={12}>
+      <Header columns={12} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={2}>Chain</Header.Column>
         <Header.Column span={5}>Address</Header.Column>
         <Header.Column span={2}>Last Updated</Header.Column>
@@ -174,13 +174,45 @@ function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
 function AddAddressButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), [setOpen]);
+  const { networks } = useTypedLoaderData<typeof loader>();
+  const fetcher = useFetcher<ActionResponse>();
+  useEffect(() => {
+    if (fetcher.data && !isValidationError(fetcher.data)) {
+      close();
+    }
+  }, [fetcher.data, close]);
+
   return (
     <>
       <Button className="mx-auto" onClick={() => setOpen(true)}>
         Add Address
       </Button>
       <Modal isOpen={open} onClose={close} title="Add an address" unmount>
-        <AddAddressForm onDone={close} />
+        <ValidatedForm
+          fetcher={fetcher}
+          defaultValues={{
+            payment: {
+              networkName: "Polygon",
+              address: "" as `0x${string}`,
+            },
+          }}
+          method="post"
+          action="?/create"
+          name="create"
+          subaction="create"
+          validator={addWalletValidator}
+          className="space-y-5 mt-5"
+        >
+          <div className="pb-44 pt-8">
+            <AddPaymentAddressForm networks={networks} />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={close} type="button">
+              Cancel
+            </Button>
+            <Button type="submit">Save</Button>
+          </div>
+        </ValidatedForm>
       </Modal>
     </>
   );
@@ -240,10 +272,10 @@ function RemoveAddressButton({ wallet }: { wallet: WalletWithChain }) {
       >
         <div className="space-y-5 mt-5">
           <div className="flex border-solid border rounded-md border-trueGray-200 items-center">
-            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3">
+            <p className="text-sm font-semibold border-solid border-0 border-r border-trueGray-200 p-3 mr-2">
               {wallet.networkName}
             </p>
-            <p className="pl-2 overflow-clip">{wallet.address}</p>
+            <p className="overflow-x-auto">{wallet.address}</p>
           </div>
           <ValidatedForm method="post" action="?/delete" validator={deleteWalletValidator} className="space-y-5 mt-5">
             <div className="invisible h-0 w-0">

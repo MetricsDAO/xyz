@@ -1,9 +1,10 @@
-import { useParams } from "@remix-run/react";
+import { useTransition } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
-import { typedjson, useTypedActionData } from "remix-typedjson";
+import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
@@ -15,6 +16,7 @@ import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { findLaborMarket } from "~/services/labor-market.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
@@ -41,10 +43,18 @@ export const action = async ({ request, params }: ActionArgs) => {
   return typedjson({ preparedSubmission });
 };
 
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const { address } = paramsSchema.parse(params);
+  const laborMarket = await findLaborMarket(address);
+  invariant(laborMarket, "labormarket must exist");
+
+  return typedjson({ laborMarket }, { status: 200 });
+};
+
 export default function SubmitQuestion() {
+  const { laborMarket } = useTypedLoaderData<typeof loader>();
   const actionData = useTypedActionData<ActionResponse>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { mType } = useParams();
   const [state, send] = useMachine(submissionMachine, {
     actions: {
       notifyTransactionWait: (context) => {
@@ -78,7 +88,7 @@ export default function SubmitQuestion() {
     setIsModalOpen(false);
   };
 
-  if (mType === "analyze") {
+  if (laborMarket.appData?.type === "analyze") {
     return (
       <Analyze
         isModalOpen={isModalOpen && !state.matches("transactionWait")}
@@ -87,7 +97,7 @@ export default function SubmitQuestion() {
         onWriteSuccess={onWriteSuccess}
       />
     );
-  } else if (mType === "brainstorm") {
+  } else if (laborMarket.appData?.type === "brainstorm") {
     return (
       <Brainstorm
         isModalOpen={isModalOpen && !state.matches("transactionWait")}
@@ -113,6 +123,7 @@ function Brainstorm({
   onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
 }) {
   const [error, setError] = useState<EthersError>();
+  const transition = useTransition();
   const onPrepareTransactionError = (error: EthersError) => {
     setError(error);
   };
@@ -157,7 +168,7 @@ function Brainstorm({
                   </i>
                 </p>
               </section>
-              <Button type="submit">Next</Button>
+              <Button type="submit">{transition.state === "submitting" ? "Loading..." : "Next"}</Button>
             </div>
           </ValidatedForm>
           {contractData && (

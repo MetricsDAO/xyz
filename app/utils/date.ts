@@ -2,9 +2,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
+import utc from "dayjs/plugin/utc";
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 /**
  * Get a relative description of a date , e.g. "2 days ago"
@@ -68,6 +70,10 @@ export function validateTime(time: string) {
 
 export function dateHasPassed(date: Date) {
   return dayjs(date).diff() < 0;
+}
+
+export function utcDate() {
+  return dayjs.utc().toDate();
 }
 
 /**

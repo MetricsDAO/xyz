@@ -1,7 +1,10 @@
+import { ScalableLikertEnforcement } from "labor-markets-abi";
 import type { TracerEvent } from "pinekit/types";
+import { ScalableLikertEnforcement__factory } from "~/contracts";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";
+import { nodeProvider } from "./node.server";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
@@ -40,6 +43,20 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
 };
 
 /**
+ * Finds a user's review on a submission if it exists
+ * @param {String} id - The ID of the submission.
+ * @param {String} userAddress - The address of the user
+ * @returns - the users submission or null if not found.
+ */
+export const findUserReview = async (submissionId: string, laborMarketAddress: string, userAddress: string) => {
+  return mongo.reviews.findOne({
+    laborMarketAddress,
+    submissionId,
+    reviewer: userAddress,
+  });
+};
+
+/**
  * Finds a review by its ID.
  * @param {String} id - The ID of the review.
  * @returns - The Submission or null if not found.
@@ -62,6 +79,11 @@ export const countReviewsOnSubmission = async (submissionId: string) => {
  */
 export const indexReview = async (event: TracerEvent) => {
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
+  // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)
+  const enforceContract = ScalableLikertEnforcement__factory.connect(ScalableLikertEnforcement.address, nodeProvider);
+  const submissionToScore = await enforceContract.submissionToScore(event.contract.address, submissionId, {
+    blockTag: event.block.number,
+  });
 
   const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
     laborMarketAddress: event.contract.address,
@@ -75,8 +97,13 @@ export const indexReview = async (event: TracerEvent) => {
   await mongo.submissions.updateOne(
     { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
     {
-      $inc: {
-        reviewCount: 1,
+      $set: {
+        score: {
+          reviewCount: submissionToScore.reviewCount.toString(),
+          reviewSum: submissionToScore.reviewSum.toString(),
+          avg: submissionToScore.avg.toString(),
+          qualified: submissionToScore.qualified,
+        },
       },
     }
   );

@@ -1,7 +1,8 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useParams, useSearchParams, useSubmit } from "@remix-run/react";
+import { useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";
 import clsx from "clsx";
@@ -27,7 +28,7 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
-import { scoreToLabel } from "~/components/score";
+import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { LaborMarketDoc, SubmissionDoc } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
@@ -38,7 +39,8 @@ import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findLaborMarket } from "~/services/labor-market.server";
-import { searchReviews } from "~/services/review-service.server";
+import { findUserReview, searchReviews } from "~/services/review-service.server";
+import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
@@ -58,7 +60,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const reviewedByUser = user && reviews.find((review) => review.reviewer === user.address);
+  const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
 
   const submission = await findSubmission(submissionId, address);
   if (!submission) {
@@ -67,18 +69,23 @@ export const loader = async (data: DataFunctionArgs) => {
   const laborMarket = await findLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
-  return typedjson({ submission, reviews, params, laborMarket, reviewedByUser }, { status: 200 });
+  const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
+  invariant(serviceRequest, "Service request not found");
+
+  return typedjson({ submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest }, { status: 200 });
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, reviewedByUser } = useTypedLoaderData<typeof loader>();
+  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest } =
+    useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const mType = laborMarket.appData?.type;
   invariant(mType, "Labor Market type is undefined");
   const [searchParams, setSearchParams] = useSearchParams();
+  const submittedByUser = user && user.address === submission.configuration.serviceProvider;
 
   const handleChange = () => {
     if (formRef.current) {
@@ -92,15 +99,30 @@ export default function ChallengeSubmission() {
   };
 
   const isWinner = false;
+  const score = submission.score?.avg;
 
   return (
-    <Container className="py-16 px-10">
-      <section className="flex flex-wrap gap-5 justify-between pb-10">
+    <Container className="pt-7 pb-16 px-10">
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+          {
+            link: `/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`,
+            name: serviceRequest.appData?.title ?? "",
+          },
+        ]}
+      />
+      <section className="flex flex-wrap gap-5 justify-between pb-10 items-center">
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
-        <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+        {!submittedByUser ? (
+          <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+        ) : (
+          <p className="text-sm">Your Submission!</p>
+        )}
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
@@ -110,12 +132,16 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
           </DetailItem>
-          <DetailItem title="Overall Score">{/* <ScoreBadge score={submission.score} /> */}</DetailItem>
+          {score && (
+            <DetailItem title="Overall Score">
+              <ScoreBadge score={score} />
+            </DetailItem>
+          )}
           <DetailItem title="Reviews">
             {reviewedByUser ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
-                <p className="font-medium">{`You + ${reviews.length} reviews`}</p>
+                <p className="font-medium">{`You${reviews.length === 1 ? "" : ` + ${reviews.length - 1} reviews`}`}</p>
               </div>
             ) : (
               <Badge>{reviews.length}</Badge>
@@ -138,23 +164,23 @@ export default function ChallengeSubmission() {
       <section className="mt-3">
         <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
           <main className="flex-1">
-            <div className="w-full border-spacing-4 border-separate space-y-5">
+            <div className="w-full border-spacing-4 border-separate space-y-4">
               {reviews.map((r) => {
                 return (
                   <Card asChild key={r.reviewer}>
-                    <div className="flex flex-col md:flex-row gap-3 py-3 px-4 items-center space-between">
-                      <div className="flex flex-col md:flex-row items-center flex-1 gap-2">
+                    <div className="flex flex-col md:flex-row gap-3 py-4 px-6 items-center space-between">
+                      <div className="flex flex-col md:flex-row items-center flex-1 gap-x-8 gap-y-2">
                         <div
                           className={clsx(
-                            SCORE_COLOR[scoreToLabel(r.score)],
-                            "flex w-24 h-12 justify-center items-center rounded-lg"
+                            SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
+                            "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                           )}
                         >
-                          <p>{scoreToLabel(r.score)}</p>
+                          <p>{scoreToLabel(Number(r.score) * 25)}</p>
                         </div>
-                        <UserBadge address={r.reviewer as `0x${string}`} />
+                        <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>
-                      <p>{fromNow(r.createdAtBlockTimestamp)}</p>
+                      <p className="text-sm">{fromNow(r.createdAtBlockTimestamp)}</p>
                     </div>
                   </Card>
                 );
@@ -290,16 +316,16 @@ function ReviewQuestionDrawerButton({
             </div>
             <div className="flex flex-col space-y-3">
               <Button
-                variant="outline"
+                variant="gray"
                 onClick={() => setSelected(4)}
-                className={clsx("hover:bg-green-200", {
-                  "bg-green-200": selected === 4,
+                className={clsx("hover:bg-lime-100", {
+                  "bg-lime-100": selected === 4,
                 })}
               >
                 Great
               </Button>
               <Button
-                variant="outline"
+                variant="gray"
                 onClick={() => setSelected(3)}
                 className={clsx("hover:bg-blue-200", {
                   "bg-blue-200": selected === 3,
@@ -308,16 +334,16 @@ function ReviewQuestionDrawerButton({
                 Good
               </Button>
               <Button
-                variant="outline"
+                variant="gray"
                 onClick={() => setSelected(2)}
-                className={clsx("hover:bg-gray-200", {
-                  "bg-gray-200": selected === 2,
+                className={clsx("hover:bg-neutral-200", {
+                  "bg-neutral-200": selected === 2,
                 })}
               >
                 Average
               </Button>
               <Button
-                variant="outline"
+                variant="gray"
                 onClick={() => setSelected(1)}
                 className={clsx("hover:bg-orange-200", {
                   "bg-orange-200": selected === 1,
@@ -326,10 +352,10 @@ function ReviewQuestionDrawerButton({
                 Bad
               </Button>
               <Button
-                variant="outline"
+                variant="gray"
                 onClick={() => setSelected(0)}
-                className={clsx("hover:bg-red-200", {
-                  "bg-red-200": selected === 0,
+                className={clsx("hover:bg-rose-200", {
+                  "bg-rose-200": selected === 0,
                 })}
               >
                 Spam
@@ -352,7 +378,7 @@ function ReviewQuestionDrawerButton({
             <p className="text-3xl font-semibold">Review & Score</p>
             <p>
               Please confirm that you would like to give this submission a score of
-              <b>{` ${scoreToLabel(state.context.contractData.score)}`}</b>.
+              <b>{` ${scoreToLabel(state.context.contractData.score * 25)}`}</b>.
             </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-2">
