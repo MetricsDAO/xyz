@@ -1,4 +1,5 @@
 import { Link, Outlet } from "@remix-run/react";
+import DOMPurify from "dompurify";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, ClientOnly, notFound } from "remix-utils";
@@ -36,6 +37,7 @@ export const loader = async (data: DataFunctionArgs) => {
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
+  const sanitized = DOMPurify.sanitize(description);
 
   return (
     <Container className="pb-16 pt-7 px-10">
@@ -63,7 +65,7 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <ClientOnly>{() => <ParsedMarkdown text={description} />}</ClientOnly>
+        <ClientOnly>{() => <ParsedMarkdown text={sanitized} />}</ClientOnly>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
