@@ -15,7 +15,7 @@ export type BadgePair = z.infer<typeof BadgePairSchema>;
 export const LaborMarketModules = z.object({
   network: EvmAddressSchema,
   enforcement: EvmAddressSchema,
-  payment: EvmAddressSchema,
+  enforcementKey: z.string(),
   reputation: EvmAddressSchema,
 });
 

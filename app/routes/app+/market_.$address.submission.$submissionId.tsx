@@ -38,7 +38,6 @@ import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submis
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
-import { findLaborMarket } from "~/services/labor-market.server";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
@@ -47,6 +46,7 @@ import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -67,7 +67,7 @@ export const loader = async (data: DataFunctionArgs) => {
   if (!submission) {
     throw notFound({ submissionId });
   }
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);

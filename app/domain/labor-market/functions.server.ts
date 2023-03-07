@@ -14,6 +14,9 @@ import type {
 } from "./schemas";
 import { LaborMarketAppDataSchema, LaborMarketConfigSchema, LaborMarketWithIndexDataSchema } from "./schemas";
 
+/**
+ * Gets a LaborMarketConfig from chain and ipfs. Returns undefined if the contract doesn't exist.
+ */
 export async function getChainLaborMarket(address: EvmAddress, block?: number): Promise<LaborMarket> {
   const configuration = await getLaborMarketConfig(address, block);
   const appData = await getLaborMarketAppData(configuration.marketUri);
@@ -28,7 +31,7 @@ export async function getChainLaborMarket(address: EvmAddress, block?: number): 
 export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborMarketWithIndexData> {
   const doc = await mongo.laborMarkets.findOne({ address });
   if (!doc) {
-    await createIndexedLaborMarket(address);
+    await upsertIndexedLaborMarket(address);
     return getIndexedLaborMarket(address);
   }
   return LaborMarketWithIndexDataSchema.parse(doc);
@@ -37,9 +40,8 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function createIndexedLaborMarket(address: EvmAddress) {
-  const laborMarket = await getChainLaborMarket(address);
-  console.log({ laborMarket });
+export async function upsertIndexedLaborMarket(address: EvmAddress, block?: number) {
+  const laborMarket = await getChainLaborMarket(address, block);
   const indexData: LaborMarketIndexData = {
     valid: LaborMarketAppDataSchema.safeParse(laborMarket.appData).success,
     indexedAt: new Date(),

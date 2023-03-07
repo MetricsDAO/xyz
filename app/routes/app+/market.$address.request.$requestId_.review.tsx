@@ -23,13 +23,13 @@ import { claimToReviewDeadline } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
 import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { findLaborMarket } from "~/services/labor-market.server";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }

@@ -17,7 +17,6 @@
     "dev:remix": "cross-env NODE_ENV=development remix watch",
     "dev:indexer": "cross-env NODE_ENV=development tsx -r dotenv/config indexer/worker.ts",
     "dev:server": "cross-env NODE_ENV=development node --inspect --require ./node_modules/dotenv/config ./build/server.js",
-    "dev:ladle": "ladle serve",
     "docker": "docker compose up -d --remove-orphans",
     "generate:ethers": "typechain --target ethers-v5 --out-dir app/contracts './node_modules/labor-markets-abi/dist/abis/*.json'",
     "generate:css": "tailwindcss -i ./styles/app.css -o app/styles/app.css",
