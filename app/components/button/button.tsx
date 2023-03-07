@@ -18,7 +18,7 @@ const variantClasses = {
   link: "text-sky-500",
   outline: "border border-sky-200 text-sky-500 hover:bg-sky-100 shadow",
   danger: "bg-red-500 hover:bg-red-700 text-white",
-  cancel: "bg-white ring-1 ring-black/10 hover:bg-black/5 text-gray-900",
+  cancel: "bg-white border border-black/10 hover:bg-black/5 text-gray-900",
 } as const;
 
 type Props = React.ComponentProps<"button"> & {

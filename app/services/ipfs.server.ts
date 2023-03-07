@@ -47,5 +47,6 @@ export const uploadJsonToIpfs = async (user: User, data: any, name?: string) => 
  * @throws {Error} - If the request fails or JSON isn't valid.
  */
 export async function fetchIpfsJson(cid: string) {
+  console.log(await fetch(`${GATEWAY}/ipfs/${cid}`));
   return fetch(`${GATEWAY}/ipfs/${cid}`).then((res) => res.json());
 }

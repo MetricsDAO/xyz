@@ -14,7 +14,7 @@ import type {
 } from "./schemas";
 import { LaborMarketAppDataSchema, LaborMarketConfigSchema, LaborMarketWithIndexDataSchema } from "./schemas";
 
-export async function getLaborMarket(address: EvmAddress, block?: number): Promise<LaborMarket> {
+export async function getChainLaborMarket(address: EvmAddress, block?: number): Promise<LaborMarket> {
   const configuration = await getLaborMarketConfig(address, block);
   const appData = await getLaborMarketAppData(configuration.marketUri);
   return { address, configuration, appData };
@@ -38,7 +38,8 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
 export async function createIndexedLaborMarket(address: EvmAddress) {
-  const laborMarket = await getLaborMarket(address);
+  const laborMarket = await getChainLaborMarket(address);
+  console.log({ laborMarket });
   const indexData: LaborMarketIndexData = {
     valid: LaborMarketAppDataSchema.safeParse(laborMarket.appData).success,
     indexedAt: new Date(),
