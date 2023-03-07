@@ -19,7 +19,7 @@ import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketNetwork__factory } from "~/contracts";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 interface LaborMarketFormProps {
   projects: Project[];
@@ -52,9 +52,7 @@ export function LaborMarketCreator({ projects, tokens, defaultValues }: LaborMar
       (receipt) => {
         const iface = LaborMarketNetwork__factory.createInterface();
         const event = getEventFromLogs(iface, receipt.logs, "LaborMarketCreated");
-        if (event) {
-          navigate(`/app/market/${event.args["marketAddress"]}`);
-        }
+        if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
       },
       [navigate]
     ),

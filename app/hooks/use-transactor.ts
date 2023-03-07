@@ -64,7 +64,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     onSuccess(state.receipt);
   }, [state, onSuccess]);
 
-  return { start, write, state: state.state, cancel };
+  return { start, write, cancel, ...state };
 }
 
 async function uploadMetadata(metadata: JsonObject) {
