@@ -21,7 +21,6 @@ export const LaborMarketModules = z.object({
 
 export const LaborMarketReputationParams = z.object({
   rewardPool: z.coerce.string(),
-  signalStake: z.coerce.string(),
   provideStake: z.coerce.string(),
   submitMin: z.coerce.string(),
   submitMax: z.coerce.string(),
