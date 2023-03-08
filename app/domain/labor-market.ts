@@ -82,7 +82,7 @@ const BadgePairSchema = z.object({
 /**
  * The schema for a LaborMarketDocument. This should be identical to how the document is stored in mongo.
  */
-export const LaborMarketDocSchema = z.object({
+const LaborMarketDocSchema = z.object({
   address: EvmAddressSchema,
   valid: z.boolean(),
   createdAtBlockTimestamp: z.date(),
