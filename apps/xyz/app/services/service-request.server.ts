@@ -2,7 +2,7 @@ import type { User } from "database";
 import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
-import { LaborMarket__factory } from "contracts";
+import { LaborMarket__factory } from "contracts/ethers";
 import type { LaborMarketDoc } from "~/domain";
 import { ClaimToSubmitEventSchema, ClaimToReviewEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";

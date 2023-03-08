@@ -1,7 +1,7 @@
 import type { User } from "database";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
-import { LaborMarket__factory } from "contracts";
+import { LaborMarket__factory } from "contracts/ethers";
 import type {
   RewardsSearch,
   SubmissionContract,
