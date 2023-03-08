@@ -1,9 +1,9 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
-import { forbidden, notFound } from "remix-utils";
+import { forbidden } from "remix-utils";
 import { z } from "zod";
-import { findUserByAddress } from "~/services/user.server";
 import env from "~/env.server";
+import { findWalletsByUserAddress } from "~/services/user.server";
 
 const paramSchema = z.object({ address: z.string() });
 // Get user info by wallet address. Initially build for use by Treasury team to find wallet addresses for a user.
@@ -16,10 +16,7 @@ export async function loader({ request, params }: DataFunctionArgs) {
 
   const { address } = getParamsOrFail(params, paramSchema);
 
-  const user = await findUserByAddress(address);
-  if (!user) {
-    throw notFound(`User with address ${address} not found`);
-  }
+  const wallets = await findWalletsByUserAddress(address);
 
-  return user;
+  return wallets;
 }

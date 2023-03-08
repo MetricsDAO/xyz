@@ -8,7 +8,17 @@ import { prisma } from "./prisma.server";
 export const findUserByAddress = async (address: string) => {
   return prisma.user.findFirst({
     where: { address: address },
-    include: { wallet: true },
+  });
+};
+
+/**
+ * Finds a user by its wallet address.
+ * @param {string} address - The address of the user to find.
+ * @returns {Promise<User | null>} - The submission or null if not found.
+ */
+export const findWalletsByUserAddress = async (address: string) => {
+  return prisma.wallet.findMany({
+    where: { user: { address: address } },
   });
 };
 
