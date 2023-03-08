@@ -26,7 +26,7 @@ import { ProjectBadges } from "~/features/project-badges";
 import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
-import { findLaborMarkets } from "~/services/labor-market.server";
+import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 
 const validator = withZod(ShowcaseSearchSchema);
 
