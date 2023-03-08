@@ -1,14 +1,17 @@
+import React from "react";
 import { useField } from "remix-validated-form";
-type Props = JSX.IntrinsicElements["textarea"];
+type Props = Omit<JSX.IntrinsicElements["textarea"], "ref">;
 
 /**
  * Textarea component that integrates with remix-validated-form.
  */
-export function Textarea({ name, ...props }: Props) {
+export const Textarea = React.forwardRef<HTMLTextAreaElement, Props>((props, ref) => {
   return (
-    <textarea name={name} {...props} className="w-full outline-none p-3 border border-gray-300 text-sm rounded-lg" />
+    <textarea {...props} className="w-full outline-none p-3 border border-gray-300 text-sm rounded-lg" ref={ref} />
   );
-}
+});
+
+Textarea.displayName = "Textarea";
 
 export function ValidatedTextarea(props: Props & { name: string }) {
   const { getInputProps } = useField(props.name);

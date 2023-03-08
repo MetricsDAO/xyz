@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { validateDate, validateTime } from "~/utils/date";
+import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "./address";
 
@@ -37,19 +37,28 @@ const InputTimeSchema = z.string().refine((t) => {
   return validateTime(t);
 });
 
+function validDeadlines(reviewDate: string, reviewTime: string, submitDate: string, submitTime: string) {
+  return parseDatetime(reviewDate, reviewTime) > parseDatetime(submitDate, submitTime);
+}
+
 export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
   title: true,
   description: true,
   language: true,
   projectSlugs: true,
-}).extend({
-  endDate: InputDateSchema,
-  endTime: InputTimeSchema,
-  reviewEndDate: InputDateSchema,
-  reviewEndTime: InputTimeSchema,
-  rewardToken: EvmAddressSchema,
-  rewardPool: TokenAmountSchema,
-});
+})
+  .extend({
+    endDate: InputDateSchema,
+    endTime: InputTimeSchema,
+    reviewEndDate: InputDateSchema,
+    reviewEndTime: InputTimeSchema,
+    rewardToken: EvmAddressSchema,
+    rewardPool: TokenAmountSchema,
+  })
+  .refine((data) => validDeadlines(data.reviewEndDate, data.reviewEndTime, data.endDate, data.endTime), {
+    message: "Review deadline cannot be before submission deadline.",
+    path: ["reviewEndTime"],
+  });
 
 export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
   title: true,

@@ -1,22 +1,22 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
-import type { LaborMarketDoc, SubmissionWithReviewsDoc } from "~/domain";
+import type { SubmissionWithReviewsDoc } from "~/domain";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { useUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
-import { overallScore } from "~/utils/helpers";
 
 export function SubmissionCard({
   submission,
   laborMarket,
 }: {
-  laborMarket: LaborMarketDoc;
+  laborMarket: LaborMarket;
   submission: SubmissionWithReviewsDoc;
 }) {
   const user = useUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
-  const score = overallScore(submission);
+  const score = submission.score?.avg;
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
