@@ -14,17 +14,17 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { LaborMarketDoc } from "~/domain";
 import type { CombinedDoc } from "~/domain/submission";
 import { RewardsSearchSchema } from "~/domain/submission";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
-import { findLaborMarkets } from "~/services/labor-market.server";
+import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 import { getUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/services/submissions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
+import { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 
 const validator = withZod(RewardsSearchSchema);
 
@@ -102,7 +102,7 @@ function RewardsListView({ rewards, wallets, tokens }: { rewards: CombinedDoc[];
   );
 }
 
-function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarkets: LaborMarketDoc[] }) {
+function SearchAndFilter({ tokens, laborMarkets }: { tokens: Token[]; laborMarkets: LaborMarketWithIndexData[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 

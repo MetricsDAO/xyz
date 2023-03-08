@@ -7,7 +7,7 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { CombinedDoc } from "~/domain/submission";
 import { RPCError } from "~/features/rpc-error";
 import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import type { EthersError } from "~/features/web3-button/types";
@@ -17,15 +17,7 @@ import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>();
-export function ClaimButton({
-  reward,
-  wallets,
-  tokens,
-}: {
-  reward: SubmissionWithServiceRequest;
-  wallets: Wallet[];
-  tokens: Token[];
-}) {
+export function ClaimButton({ reward, wallets, tokens }: { reward: CombinedDoc; wallets: Wallet[]; tokens: Token[] }) {
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
