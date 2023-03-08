@@ -6,7 +6,6 @@ import env from "~/env.server";
 import { findWalletsByUserAddress } from "~/services/user.server";
 
 const paramSchema = z.object({ address: z.string() });
-// Get user info by wallet address. Initially build for use by Treasury team to find wallet addresses for a user.
 export async function loader({ request, params }: DataFunctionArgs) {
   const apiKey = request.headers.get("x-api-key");
 
