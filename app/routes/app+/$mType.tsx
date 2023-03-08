@@ -114,8 +114,8 @@ export default function MarketplaceCollection() {
                 size="sm"
                 onChange={handleChange}
                 options={[
-                  { label: "Active Challenges", value: "serviceRequestCount" },
-                  { label: "New", value: "createdAtBlockTimestamp" },
+                  { label: "Active Challenges", value: "indexData.serviceRequestCount" },
+                  { label: "New", value: "indexData.createdAtBlockTimestamp" },
                 ]}
               />
             </Field>
