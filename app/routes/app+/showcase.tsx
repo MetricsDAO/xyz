@@ -7,7 +7,7 @@ import { ValidatedInput } from "~/components/input";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
 import { Checkbox } from "~/components/checkbox";
 import { withZod } from "@remix-validated-form/with-zod";
-import type { CombinedDoc, LaborMarketDoc } from "~/domain";
+import type { CombinedDoc } from "~/domain";
 import { ShowcaseSearchSchema } from "~/domain";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
@@ -27,6 +27,7 @@ import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
+import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 
 const validator = withZod(ShowcaseSearchSchema);
 
@@ -75,7 +76,13 @@ export default function Showcase() {
   );
 }
 
-function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; laborMarkets: LaborMarketDoc[] }) {
+function SearchAndFilter({
+  projects,
+  laborMarkets,
+}: {
+  projects: Project[];
+  laborMarkets: LaborMarketWithIndexData[];
+}) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 

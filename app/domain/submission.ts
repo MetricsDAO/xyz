@@ -2,7 +2,7 @@ import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 import { ServiceRequestDocSchema } from "./service-request";
 import { ReviewDocSchema } from "./review";
-import { LaborMarketDocSchema } from "./labor-market";
+import { LaborMarketWithIndexDataSchema } from "./labor-market/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -73,7 +73,7 @@ export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
 
 const CombinedSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestDocSchema,
-  lm: LaborMarketDocSchema,
+  lm: LaborMarketWithIndexDataSchema,
 });
 
 export const RewardsSearchSchema = z.object({
