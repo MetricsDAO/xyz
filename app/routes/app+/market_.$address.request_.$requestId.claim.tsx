@@ -123,7 +123,7 @@ export default function ClaimToSubmit() {
       <div className="space-y-2">
         <h2 className="font-semibold">Lock rMETRIC</h2>
         <p className="mt-2 text-gray-500 italic text-sm">
-          Important: You must lock {laborMarket.configuration.reputationParams.signalStake} rMETRIC as defined by the
+          Important: You must lock {laborMarket.configuration.reputationParams.provideStake} rMETRIC as defined by the
           Marketplace. If you don’t submit before the deadline, all{""}
           {laborMarket.configuration.reputationParams.signalStake} of your locked rMETRIC will be slashed.
         </p>
@@ -148,7 +148,7 @@ export default function ClaimToSubmit() {
           <div className="space-y-8">
             <p className="mt-2">Please confirm that you would like to claim a submission.</p>
             <p>
-              This will lock <b>{laborMarket.configuration.reputationParams.signalStake} rMETRIC.</b>
+              This will lock <b>{laborMarket.configuration.reputationParams.provideStake} rMETRIC.</b>
             </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
