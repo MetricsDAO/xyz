@@ -29,7 +29,7 @@ import {
 } from "~/components";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
-import type { LaborMarketDoc, SubmissionDoc } from "~/domain";
+import type { SubmissionDoc } from "~/domain";
 import type { ReviewContract } from "~/domain/review";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -38,7 +38,6 @@ import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submis
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
-import { findLaborMarket } from "~/services/labor-market.server";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
@@ -46,7 +45,8 @@ import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { overallScore } from "~/utils/helpers";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -67,7 +67,7 @@ export const loader = async (data: DataFunctionArgs) => {
   if (!submission) {
     throw notFound({ submissionId });
   }
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
@@ -100,7 +100,7 @@ export default function ChallengeSubmission() {
   };
 
   const isWinner = false;
-  const score = overallScore(submission);
+  const score = submission.score?.avg;
 
   return (
     <Container className="pt-7 pb-16 px-10">
@@ -173,11 +173,11 @@ export default function ChallengeSubmission() {
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-x-8 gap-y-2">
                         <div
                           className={clsx(
-                            SCORE_COLOR[scoreToLabel(r.score)],
+                            SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
                             "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                           )}
                         >
-                          <p>{scoreToLabel(r.score)}</p>
+                          <p>{scoreToLabel(Number(r.score) * 25)}</p>
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>
@@ -239,7 +239,7 @@ function ReviewQuestionDrawerButton({
   laborMarket,
 }: {
   submission: SubmissionDoc;
-  laborMarket: LaborMarketDoc;
+  laborMarket: LaborMarket;
 }) {
   const [selected, setSelected] = useState<number>(2);
   const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);
@@ -379,7 +379,7 @@ function ReviewQuestionDrawerButton({
             <p className="text-3xl font-semibold">Review & Score</p>
             <p>
               Please confirm that you would like to give this submission a score of
-              <b>{` ${scoreToLabel(state.context.contractData.score)}`}</b>.
+              <b>{` ${scoreToLabel(state.context.contractData.score * 25)}`}</b>.
             </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-2">

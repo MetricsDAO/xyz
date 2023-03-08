@@ -1,7 +1,8 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import type { LaborMarketDoc, ServiceRequestDoc, SubmissionDoc } from "~/domain";
+import type { ServiceRequestDoc } from "~/domain";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -79,19 +80,6 @@ export function displayBalance(balance: BigNumber): string {
   }
 }
 
-export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
+export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
-}
-
-/**
- * Get the overall score of a submission.
- * If it has been scored (indexed) it should just be the average. We can divide by 25 to covert it back to the 0-4 scale.
- * @param {SubmissionDoc} submission
- * @returns {number | undefined} the score of 0, 1, 2, 3, or 4
- */
-export function overallScore(submission: SubmissionDoc): number | undefined {
-  if (submission.score?.avg === undefined) {
-    return undefined;
-  }
-  return Number(submission.score.avg) / 25;
 }

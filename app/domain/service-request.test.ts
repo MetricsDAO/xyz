@@ -14,7 +14,7 @@ describe("ServiceRequestFormSchema", () => {
       startTime: "12:00",
       endDate: "2021-01-01",
       endTime: "12:00",
-      reviewEndDate: "2021-01-01",
+      reviewEndDate: "2021-02-01",
       reviewEndTime: "12:00",
       rewardToken: faker.finance.ethereumAddress(),
       rewardPool: "0.005",

@@ -6,7 +6,9 @@ export const EvmAddressSchema = z.string().refine((address) => {
   return ethers.utils.isAddress(address);
 }, "Must be a valid EVM address.");
 
-export const SolAddressSchema = z.string().refine((address) => {
+export type EvmAddress = z.infer<typeof EvmAddressSchema>;
+
+export const SolAddressSchema = z.string().refine((address): address is `0x${string}` => {
   try {
     const pubkey = new PublicKey(address);
     return PublicKey.isOnCurve(pubkey.toBuffer());

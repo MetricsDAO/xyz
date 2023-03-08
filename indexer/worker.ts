@@ -1,7 +1,7 @@
 import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
+import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import env from "~/env.server";
-import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
 import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
@@ -31,7 +31,7 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  return indexLaborMarket(event);
+  upsertIndexedLaborMarket(event.contract.address, event.block.number);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {

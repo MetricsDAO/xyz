@@ -6,9 +6,7 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Card } from "~/components/card";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -20,7 +18,7 @@ import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { ServiceRequestSearchSchema } from "~/domain/service-request";
 import { ProjectBadges } from "~/features/project-badges";
-import { findLaborMarket } from "~/services/labor-market.server";
+import { useMarketAddressData } from "~/hooks/use-market-address-data";
 import { listProjects } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
@@ -29,12 +27,10 @@ import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/util
 const validator = withZod(ServiceRequestSearchSchema);
 
 const paramsSchema = z.object({ address: z.string() });
+
 export const loader = async (data: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(data.params);
-  const laborMarket = await findLaborMarket(address);
-  if (!laborMarket) {
-    throw notFound("Labor market not found");
-  }
+
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: address };
@@ -47,7 +43,6 @@ export const loader = async (data: DataFunctionArgs) => {
     serviceRequests,
     totalResults,
     params,
-    laborMarket,
     projects,
     tokens,
   });
@@ -155,8 +150,7 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
-  invariant(laborMarket.appData?.type, "marketplace type must be specified");
+  const { laborMarket } = useMarketAddressData();
 
   return (
     <Table>
@@ -197,7 +191,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
 }
 
 function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
+  const { laborMarket } = useMarketAddressData();
 
   return (
     <div className="space-y-4">

@@ -5,7 +5,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
-import { Error, Modal, ValidatedSegmentedRadio } from "~/components";
+import { ValidatedError, Modal, ValidatedSegmentedRadio } from "~/components";
 import { useMachine } from "@xstate/react";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -18,18 +18,18 @@ import { findServiceRequest } from "~/services/service-request.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { REPUTATION_SIGNAL_STAKE } from "~/utils/constants";
+import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
 import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { findLaborMarket } from "~/services/labor-market.server";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
@@ -140,7 +140,7 @@ export default function ClaimToReview() {
               { label: "100", value: "100" },
             ]}
           />
-          <Error name="quantity" />
+          <ValidatedError name="quantity" />
           <p className="text-gray-500 italic mt-2 text-sm">
             You're only required to review the minimum you commit to, but you can optionally review more
           </p>
@@ -148,8 +148,9 @@ export default function ClaimToReview() {
         <div className="space-y-2">
           <h2 className="font-semibold">Lock rMETRIC</h2>
           <p className="mt-2 text-gray-500 italic text-sm">
-            Important: You must lock {REPUTATION_SIGNAL_STAKE} rMETRIC for each submission to commit to reviewing and{" "}
-            {REPUTATION_SIGNAL_STAKE} rMETRIC will be slashed for each submission to fail to review before the deadline.
+            Important: You must lock {REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC for each submission to commit to reviewing
+            and {REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC will be slashed for each submission to fail to review before
+            the deadline.
           </p>
         </div>
         <div className="flex flex-wrap gap-5">
@@ -174,7 +175,7 @@ export default function ClaimToReview() {
               Please confirm that you would like to claim {state.context.contractData.quantity} submissions to review.
             </p>
             <p>
-              This will lock <b>{state.context.contractData.quantity * REPUTATION_SIGNAL_STAKE} rMETRIC.</b>
+              This will lock <b>{state.context.contractData.quantity * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
             </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">

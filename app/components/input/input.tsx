@@ -27,15 +27,25 @@ const sizeStyles = {
  * TextInput component that integrates with remix-validated-form.
  * Also so we can switch out the underlying component without affecting things higher up the tree.
  */
-export function Input({ name, iconLeft, iconRight, size = "md", ...props }: InputProps) {
-  return (
-    <div className={clsx(baseStyles, sizeStyles[size])}>
-      {iconLeft}
-      <input {...props} name={name} className="w-full h-12 text-sm outline-none placeholder:text-gray-400" />
-      {iconRight}
-    </div>
-  );
-}
+
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ iconLeft, iconRight, name, size = "md", ...props }, ref) => {
+    return (
+      <div className={clsx(baseStyles, sizeStyles[size])}>
+        {iconLeft}
+        <input
+          {...props}
+          name={name}
+          ref={ref}
+          className="w-full h-12 text-sm outline-none placeholder:text-gray-400"
+        />
+        {iconRight}
+      </div>
+    );
+  }
+);
+
+Input.displayName = "Input";
 
 /** Integration with remix-validated-form */
 export function ValidatedInput(props: InputProps & { name: string }) {

@@ -19,13 +19,13 @@ import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toa
 import { findServiceRequest } from "~/services/service-request.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import invariant from "tiny-invariant";
-import { findLaborMarket } from "~/services/labor-market.server";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   if (!serviceRequest) {
     throw notFound({ id: requestId });
   }

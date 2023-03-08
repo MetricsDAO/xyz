@@ -1,24 +1,14 @@
-import { useRouteData } from "remix-utils";
-import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { PermissionIcon } from "~/features/permission-icon";
+import { useMarketAddressData } from "~/hooks/use-market-address-data";
 import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useTokenData } from "~/hooks/use-token-data";
-import type { findLaborMarket } from "~/services/labor-market.server";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function MarketplaceIdPrerequesites() {
-  const data = useRouteData<{ laborMarket: Awaited<ReturnType<typeof findLaborMarket>> }>(
-    "routes/app+/market.$address"
-  );
-  if (!data) {
-    throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");
-  }
-  const { laborMarket } = data;
-
-  invariant(laborMarket, "No labormarket found");
+  const { laborMarket } = useMarketAddressData();
 
   const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
   const delegateData = useTokenData(laborMarket.configuration.delegateBadge);
