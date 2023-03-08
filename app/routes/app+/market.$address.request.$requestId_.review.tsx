@@ -175,7 +175,7 @@ export default function ClaimToReview() {
               Please confirm that you would like to claim {state.context.contractData.quantity} submissions to review.
             </p>
             <p>
-              This will lock <b>{state.context.contractData.quantity * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
+              This will lock <b>{state.context.contractData.quantity} rMETRIC.</b>
             </p>
             {error && <RPCError error={error} />}
             <div className="flex flex-col sm:flex-row justify-center gap-5">
