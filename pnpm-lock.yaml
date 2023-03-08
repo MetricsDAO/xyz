@@ -8,6 +8,17 @@ importers:
     devDependencies:
       dotenv-cli: 7.0.0
 
+  apps/indexer:
+    specifiers:
+      '@flipsidecrypto/pine-sdk': ^0.0.7
+      tsx: 3.12.3
+      typescript: ^4.9.5
+    dependencies:
+      '@flipsidecrypto/pine-sdk': 0.0.7
+    devDependencies:
+      tsx: 3.12.3
+      typescript: 4.9.5
+
   apps/xyz:
     specifiers:
       '@axiomhq/axiom-node': ^0.10.0
@@ -3510,6 +3521,14 @@ packages:
 
   /@flipsidecrypto/pine-sdk/0.0.6:
     resolution: {integrity: sha512-bGPOKZ/da5cMC85+nROIyyy0lh6tKKY2zy0gcllYaXnSW7GFFwayC10yNL+BerFBOHeoTurUYzMHhTBhuuD4NQ==}
+    dependencies:
+      node-fetch: 2.6.9
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@flipsidecrypto/pine-sdk/0.0.7:
+    resolution: {integrity: sha512-Umwkwqw/hCe5CyqRDK8IzshWRRZziDgU1COy9dPz2w7af5dys3uKeJuyurVrWpKoKT1NwjTNQw0SOiAv12AYqQ==}
     dependencies:
       node-fetch: 2.6.9
     transitivePeerDependencies:
