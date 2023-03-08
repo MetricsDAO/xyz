@@ -125,7 +125,7 @@ export default function ClaimToSubmit() {
         <p className="mt-2 text-gray-500 italic text-sm">
           Important: You must lock {laborMarket.configuration.reputationParams.provideStake} rMETRIC as defined by the
           Marketplace. If you don’t submit before the deadline, all{" "}
-          {laborMarket.configuration.reputationParams.signalStake} of your locked rMETRIC will be slashed.
+          {laborMarket.configuration.reputationParams.provideStake} of your locked rMETRIC will be slashed.
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
