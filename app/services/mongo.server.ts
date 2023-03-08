@@ -13,6 +13,7 @@ const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");
+const userActivity = db.collection("userActivity");
 
 laborMarkets.createIndex({ "appData.title": "text" });
 serviceRequests.createIndex({ "appData.title": "text" });
@@ -23,4 +24,5 @@ export const mongo = {
   serviceRequests,
   submissions,
   reviews,
+  userActivity,
 };
