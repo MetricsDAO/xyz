@@ -1,4 +1,3 @@
-export * from "./labor-market";
 export * from "./user";
 export * from "./review";
 export * from "./service-request";
