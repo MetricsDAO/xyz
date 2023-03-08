@@ -1,25 +1,38 @@
-# base node image
 FROM node:19-bullseye-slim as base
-
-# set for base and all layer that inherit from it
-ENV NODE_ENV production
-
-# Install openssl for Prisma
 RUN apt-get update && apt-get install -y openssl git python3 build-essential
+RUN npm i -g pnpm
+WORKDIR /app
 
-FROM base
+FROM base as builder
+WORKDIR /app
+RUN npm install -g turbo
+COPY . .
+RUN turbo prune --scope=xyz --docker
 
-WORKDIR /myapp
 
-ADD package.json ./
-ADD yarn.lock ./
-# Install all node_modules, including dev dependencies
-RUN yarn install --production=false --frozen-lockfile
+# Add lockfile and package.json's of isolated subworkspace
+# First install the dependencies (as they change less often)
+FROM base as installer
+WORKDIR /app
+COPY .gitignore .gitignore
+COPY .npmrc .npmrc
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
 
-ADD prisma .
-RUN npx prisma generate
+# Build the app
+COPY --from=builder /app/out/full .
+RUN pnpm build --filter=xyz
 
-ADD . .
-RUN yarn build
+FROM base as runner
+WORKDIR /app
 
-CMD ["yarn", "start"]
+# Don't run production as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 remix
+USER remix
+
+COPY --from=installer /app/apps/xyz/remix.config.js .
+COPY --from=installer /app/apps/xyz/package.json .
+
+CMD pnpm start

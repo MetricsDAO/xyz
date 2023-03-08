@@ -25,11 +25,14 @@ services:
     ports:
       - "27017:27017"
 
-  # app:
-  #   build: .
-  #   ports:
-  #     - "8000:3000"
-  #   environment:
-  #     - DATABASE_URL=postgres://user:pass@db:5432/mdao
-  #     - SESSION_SECRET=secret
-  #     - ENVIRONMENT=production
+  xyz:
+    build:
+      context: .
+      dockerfile: ./apps/xyz/Dockerfile
+    restart: always
+    ports:
+      - "8000:3000"
+    environment:
+      - DATABASE_URL=postgres://user:pass@db:5432/mdao
+      - SESSION_SECRET=secret
+      - ENVIRONMENT=production

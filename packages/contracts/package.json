@@ -7,14 +7,14 @@
   },
   "dependencies": {
     "labor-markets-abi": "1.6.0",
-    "ethers": "^5.7.2"
-  },
-  "devDependencies": {
+    "ethers": "^5.7.2",
     "typechain": "^8.1.1",
     "@typechain/ethers-v5": "^10.2.0",
-    "typescript": "4.9.5",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/providers": "^5.7.0"
+  },
+  "devDependencies": {
+    "typescript": "4.9.5"
   }
 }

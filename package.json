@@ -1,10 +1,11 @@
 {
   "name": "metricsdao",
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo run build",
     "dev": "dotenv -- turbo dev"
   },
   "devDependencies": {
-    "dotenv-cli": "latest"
+    "dotenv-cli": "latest",
+    "turbo": "latest"
   }
 }
