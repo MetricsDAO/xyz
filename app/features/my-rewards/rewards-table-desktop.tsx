@@ -51,18 +51,8 @@ function RewardsTableRow({ reward, wallets, tokens }: { reward: CombinedDoc; wal
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const [searchParams] = useSearchParams();
-  const claimFilter = searchParams.get("claim");
-  if (
-    claimFilter &&
-    !(claimFilter.includes("unclaimed") && !hasClaimed) &&
-    !(claimFilter.includes("collected") && hasClaimed)
-  ) {
-    return <></>;
-  }
   const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const showReward = contractReward !== undefined && hasClaimed === false;
-  const showRewarded = contractReward !== undefined && hasClaimed === true;
 
   return (
     <Row columns={12}>
@@ -84,15 +74,7 @@ function RewardsTableRow({ reward, wallets, tokens }: { reward: CombinedDoc; wal
         {fromNow(reward.createdAtBlockTimestamp)}{" "}
       </Row.Column>
       <Row.Column span={3} className="text-black" color="dark.3">
-        {showRewarded ? (
-          <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
-          />
-        ) : (
-          <span>--</span>
-        )}
+        <p>{fromNow(reward.sr.configuration.enforcementExpiration)}</p>
       </Row.Column>
       <Row.Column>
         {hasClaimed === false ? (

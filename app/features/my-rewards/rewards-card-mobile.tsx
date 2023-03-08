@@ -37,18 +37,8 @@ function RewardCard({ reward, wallets, tokens }: { reward: CombinedDoc; wallets:
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const [searchParams] = useSearchParams();
-  const claimFilter = searchParams.get("claim");
-  if (
-    claimFilter &&
-    !(claimFilter.includes("unclaimed") && !hasClaimed) &&
-    !(claimFilter.includes("collected") && hasClaimed)
-  ) {
-    return <></>;
-  }
   const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const showReward = contractReward !== undefined && hasClaimed === false;
-  const showRewarded = contractReward !== undefined && hasClaimed === true;
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
@@ -69,15 +59,7 @@ function RewardCard({ reward, wallets, tokens }: { reward: CombinedDoc; wallets:
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
       <div>Rewarded</div>
       <div className="text-black" color="dark.3">
-        {showRewarded ? (
-          <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
-          />
-        ) : (
-          <span>--</span>
-        )}
+        <p>{fromNow(reward.sr.configuration.enforcementExpiration)}</p>
       </div>
       <div>Status</div>
       {hasClaimed === false ? (

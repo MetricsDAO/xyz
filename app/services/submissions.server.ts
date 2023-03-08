@@ -205,6 +205,14 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
  * Returns an array of Submissions with their Service Request and Labor Market for a given user
  */
 export const searchUserSubmissions = async (params: RewardsSearch): Promise<CombinedDoc[]> => {
+  /* todo - need to move inside and use
+  if (
+    params.claim &&
+    !(params.claim.includes("unclaimed") && !hasClaimed) &&
+    !(params.claim.includes("collected") && hasClaimed)
+  ) {
+    return todo;
+  }*/
   const submissionsDocs = await mongo.submissions
     .aggregate([
       {
