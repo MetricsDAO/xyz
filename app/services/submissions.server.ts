@@ -16,7 +16,7 @@ import type {
 import { SubmissionWithServiceRequestSchema } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
-import { utcDate } from "~/utils/date";
+import { oneUnitAgo, utcDate } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -259,6 +259,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
  * Returns an array of Submissions with their Service Request and LaborMarket sorted by score
  */
 export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
+  const timeframe = oneUnitAgo(params.timeframe);
   return mongo.submissions
     .aggregate<CombinedDoc>([
       {
@@ -321,7 +322,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
             params.score ? { "score.avg": { $gte: params.score } } : {},
             params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
-            params.timeframe ? { createdAtBlockTimestamp: { $gte: params.timeframe } } : {},
+            { createdAtBlockTimestamp: { $gte: timeframe } },
             params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
           ],
         },

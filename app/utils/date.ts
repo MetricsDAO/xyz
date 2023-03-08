@@ -96,5 +96,5 @@ export function claimDate(createdAt: Date, expiration: Date) {
 }
 
 export function oneUnitAgo(unit: "month" | "day" | "week") {
-  return dayjs().subtract(1, unit);
+  return dayjs().subtract(1, unit).toDate();
 }
