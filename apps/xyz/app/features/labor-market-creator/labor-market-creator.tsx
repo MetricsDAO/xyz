@@ -18,7 +18,7 @@ import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKE
 import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import { LaborMarketNetwork__factory } from "~/contracts";
+import { LaborMarketNetwork__factory } from "contracts";
 import { useCallback } from "react";
 
 interface LaborMarketFormProps {

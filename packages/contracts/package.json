@@ -1,0 +1,20 @@
+{
+  "name": "contracts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "postinstall": "typechain --target ethers-v5 --out-dir src/ './node_modules/labor-markets-abi/dist/abis/*.json'"
+  },
+  "dependencies": {
+    "labor-markets-abi": "1.6.0",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "typechain": "^8.1.1",
+    "@typechain/ethers-v5": "^10.2.0",
+    "typescript": "4.9.5",
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/bytes": "^5.7.0",
+    "@ethersproject/providers": "^5.7.0"
+  }
+}

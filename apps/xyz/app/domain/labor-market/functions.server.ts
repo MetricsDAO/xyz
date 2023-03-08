@@ -1,5 +1,5 @@
 import type { User } from "database";
-import { LaborMarket__factory } from "~/contracts";
+import { LaborMarket__factory } from "contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
