@@ -58,7 +58,7 @@ export const loader = async (data: DataFunctionArgs) => {
   invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
-    serviceProvider: user.address,
+    serviceProvider: user.address as `0x${string}`,
   });
   const networks = await listNetworks();
   return typedjson({
@@ -193,7 +193,7 @@ function AddAddressButton() {
           defaultValues={{
             payment: {
               networkName: "Polygon",
-              address: "",
+              address: "" as `0x${string}`,
             },
           }}
           method="post"
@@ -215,6 +215,44 @@ function AddAddressButton() {
         </ValidatedForm>
       </Modal>
     </>
+  );
+}
+
+function AddAddressForm({ onDone }: { onDone: () => void }) {
+  const { networks } = useTypedLoaderData<typeof loader>();
+  const fetcher = useFetcher<ActionResponse>();
+  useEffect(() => {
+    if (fetcher.data && !isValidationError(fetcher.data)) {
+      onDone();
+    }
+  }, [fetcher.data, onDone]);
+
+  return (
+    <ValidatedForm
+      fetcher={fetcher}
+      defaultValues={{
+        payment: {
+          networkName: "Polygon",
+          address: "" as `0x${string}`,
+        },
+      }}
+      method="post"
+      action="?/create"
+      name="create"
+      subaction="create"
+      validator={addWalletValidator}
+      className="space-y-5 mt-5"
+    >
+      <div className="pb-44 pt-8">
+        <AddPaymentAddressForm networks={networks} />
+      </div>
+      <div className="flex gap-2 justify-end">
+        <Button variant="cancel" onClick={onDone} type="button">
+          Cancel
+        </Button>
+        <Button type="submit">Save</Button>
+      </div>
+    </ValidatedForm>
   );
 }
 

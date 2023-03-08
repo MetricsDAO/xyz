@@ -1,7 +1,7 @@
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
 import type { Network } from "@prisma/client";
 import { useField } from "remix-validated-form";
-import { Error, ValidatedInput, ValidatedSelect } from "~/components";
+import { ValidatedError, ValidatedInput, ValidatedSelect } from "~/components";
 import { NetworkAvatar } from "~/components/avatar/network-avatar";
 
 function SelectLabel({ network }: { network: Network }) {
@@ -48,8 +48,8 @@ export function AddPaymentAddressForm({ networks }: { networks: Network[] }) {
           placeholder="Select a chain and enter an address"
         />
       </div>
-      <Error name="payment.address" />
-      <Error name="payment.networkName" />
+      <ValidatedError name="payment.address" />
+      <ValidatedError name="payment.networkName" />
     </>
   );
 }

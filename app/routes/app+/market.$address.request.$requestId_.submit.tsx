@@ -16,12 +16,12 @@ import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findLaborMarket } from "~/services/labor-market.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const validator = withZod(SubmissionFormSchema);
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
@@ -45,7 +45,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
-  const laborMarket = await findLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "labormarket must exist");
 
   return typedjson({ laborMarket }, { status: 200 });
