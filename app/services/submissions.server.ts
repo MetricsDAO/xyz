@@ -2,6 +2,7 @@ import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import { PayClaimedEventSchema } from "~/domain/pay-claimed";
 import type {
   RewardsSearch,
   SubmissionContract,
@@ -99,6 +100,7 @@ export const indexSubmission = async (event: TracerEvent) => {
       serviceProvider: submission.serviceProvider,
       uri: submission.uri,
     },
+    payClaimed: null,
     appData,
   };
 
@@ -141,6 +143,15 @@ export const prepareSubmission = async (
     uri: cid,
   });
   return contractData;
+};
+
+export const indexPayClaimed = async (event: TracerEvent) => {
+  const inputs = PayClaimedEventSchema.parse(event.decoded.inputs);
+
+  return mongo.submissions.updateOne(
+    { laborMarketAddress: event.contract.address, id: inputs.submissionId },
+    { $push: { rewardClaimed: { wallet: inputs.to, amount: inputs.payAmount, claimedAt: new Date() } } }
+  );
 };
 
 /**

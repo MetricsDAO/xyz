@@ -59,6 +59,14 @@ const SubmissionDocSchema = z.object({
       qualified: z.boolean(),
     })
     .optional(),
+  payClaimed: z
+    .object({
+      wallet: EvmAddressSchema,
+      amount: z.string(),
+      claimedAt: z.date(),
+    })
+    .nullable(),
+
   appData: SubmissionFormSchema.nullable(),
 });
 

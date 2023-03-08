@@ -5,7 +5,7 @@ import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
 import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
-import { indexSubmission } from "~/services/submissions.server";
+import { indexPayClaimed, indexSubmission } from "~/services/submissions.server";
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),
@@ -52,6 +52,10 @@ worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
 
 worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
   return indexReview(event);
+});
+
+worker.onEvent(LaborMarket, "RequestPayClaimed", async (event) => {
+  return indexPayClaimed(event);
 });
 
 worker.run();
