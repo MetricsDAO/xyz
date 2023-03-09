@@ -70,9 +70,9 @@ function RewardsTableRow({
       <Row.Column span={3}>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
+            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
+            rMETRIC={contractReward.rMetric.toNumber()}
           />
         ) : (
           <span>--</span>
@@ -84,9 +84,9 @@ function RewardsTableRow({
       <Row.Column span={3} className="text-black" color="dark.3">
         {showRewarded ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
+            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
+            rMETRIC={contractReward.rMetric.toNumber()}
           />
         ) : (
           <span>--</span>

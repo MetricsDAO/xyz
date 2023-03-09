@@ -43,10 +43,13 @@ import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";
-import { fromNow } from "~/utils/date";
+import { dateHasPassed, fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { useGetReward } from "~/hooks/use-get-reward";
+import { listTokens } from "~/services/tokens.server";
+import { fromTokenAmount } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -62,6 +65,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
   const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
+  const tokens = await listTokens();
 
   const submission = await findSubmission(submissionId, address);
   if (!submission) {
@@ -73,13 +77,16 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
   invariant(serviceRequest, "Service request not found");
 
-  return typedjson({ submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest }, { status: 200 });
+  return typedjson(
+    { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens },
+    { status: 200 }
+  );
 };
 
 const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest } =
+  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens } =
     useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -99,7 +106,15 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const isWinner = false;
+  const reward = useGetReward({
+    laborMarketAddress: submission.laborMarketAddress as `0x${string}`,
+    submissionId: submission.id,
+  });
+
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
+  const isWinner =
+    enforcementExpirationPassed && reward !== undefined && (reward.tokenAmount.gt(0) || reward.rMetric.gt(0));
   const score = submission.score?.avg;
 
   return (
@@ -149,8 +164,13 @@ export default function ChallengeSubmission() {
             )}
           </DetailItem>
           {isWinner && (
-            <DetailItem title="Winner">
-              <RewardBadge amount={50} token="SOL" rMETRIC={5000} variant="winner" />
+            <DetailItem title="Reward">
+              <RewardBadge
+                variant="winner"
+                amount={fromTokenAmount(reward.tokenAmount.toString())}
+                token={token?.symbol ?? "Unknown Token"}
+                rMETRIC={reward.rMetric.toNumber()}
+              />
             </DetailItem>
           )}
         </Detail>

@@ -168,13 +168,6 @@ export default function ServiceRequest() {
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
           </DetailItem>
-          <DetailItem title="Winner">
-            {!dateHasPassed(serviceRequest.configuration.enforcementExpiration) ? (
-              <Badge>Pending</Badge>
-            ) : (
-              <Badge>todo</Badge>
-            )}
-          </DetailItem>
         </Detail>
 
         <ClientOnly>{() => <ParsedMarkdown text={sanitized} />}</ClientOnly>
