@@ -1,5 +1,4 @@
 import { Link, Outlet } from "@remix-run/react";
-import DOMPurify from "dompurify";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, ClientOnly, notFound } from "remix-utils";
@@ -17,6 +16,7 @@ import { ProjectBadges } from "~/features/project-badges";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { EvmAddressSchema } from "~/domain/address";
+import DOMPurify from "dompurify";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -35,7 +35,6 @@ export const loader = async (data: DataFunctionArgs) => {
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
-  const sanitized = DOMPurify.sanitize(description);
 
   return (
     <Container className="pb-16 pt-7 px-10">
@@ -63,7 +62,7 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <ClientOnly>{() => <ParsedMarkdown text={sanitized} />}</ClientOnly>
+        <ClientOnly>{() => <ParsedMarkdown text={DOMPurify.sanitize(description)} />}</ClientOnly>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">

@@ -13,6 +13,7 @@ const envSchema = z.object({
   SENTRY_DSN: z.string().optional(),
   QUICKNODE_URL: z.string(),
   DEV_SKIP_IPFS_UPLOAD: z.string().optional(),
+  FLIPSIDE_API_KEY: z.string(),
 });
 
 export default envSchema.parse(process.env);

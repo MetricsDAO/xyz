@@ -69,7 +69,7 @@ export function LaborMarketCreator({ projects, tokens, defaultValues }: LaborMar
     <FormProvider {...methods}>
       <TxModal transactor={transactor} />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <LaborMarketCreatorFields projects={projects} type={mType} />
+        <LaborMarketCreatorFields projects={projects} type={mType} tokens={tokens} />
         <Button size="lg" type="submit">
           Next
         </Button>
@@ -117,7 +117,7 @@ function configureFromValues({
         reputationParams: {
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
           reviewStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
-          provideStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
+          provideStake: BigNumber.from(values.configuration.reputationParams.provideStake),
           submitMin: BigNumber.from(values.configuration.reputationParams.submitMin),
           submitMax: BigNumber.from(values.configuration.reputationParams.submitMax ?? ethers.constants.MaxUint256),
         },

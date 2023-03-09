@@ -85,7 +85,7 @@ export default function ClaimToSubmit() {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.appData?.title}</h1>
         <h2 className="text-lg text-cyan-500">
-          Claiming is an up front commitment to submit at least one
+          Claiming is an up front commitment to submit at least one{" "}
           {mType === "brainstorm" ? "submission" : "dashboard"}
         </h2>
         <p className="text-gray-500 text-sm">
