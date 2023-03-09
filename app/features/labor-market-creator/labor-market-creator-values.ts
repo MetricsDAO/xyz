@@ -26,7 +26,7 @@ export type LaborMarketFormValues = z.infer<typeof LaborMarketFormValuesSchema>;
 
 export function fakeLaborMarketFormValues(): LaborMarketFormValues {
   return {
-    delegatePermission: "anyone",
+    delegatePermission: "delegates",
     appData: {
       title: faker.commerce.productName(),
       description: faker.lorem.paragraphs(2),
@@ -57,8 +57,7 @@ export function fakeLaborMarketFormValues(): LaborMarketFormValues {
         rewardPool: faker.datatype.number(100),
         provideStake: faker.datatype.number(100),
         signalStake: faker.datatype.number(100),
-        submitMin: faker.datatype.number(100),
-        submitMax: faker.datatype.number(100),
+        submitMin: 0,
       },
     },
   };
