@@ -55,9 +55,9 @@ function RewardCard({
       <div>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
+            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
+            rMETRIC={contractReward.rMetric.toNumber()}
           />
         ) : (
           <span>--</span>
@@ -69,9 +69,9 @@ function RewardCard({
       <div className="text-black" color="dark.3">
         {showRewarded ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
+            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
+            rMETRIC={contractReward.rMetric.toNumber()}
           />
         ) : (
           <span>--</span>
