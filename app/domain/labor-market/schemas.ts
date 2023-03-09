@@ -65,7 +65,6 @@ export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
  * Contains all aggregated and index-specific data for a LaborMarket.
  */
 export const LaborMarketIndexDataSchema = z.object({
-  valid: z.boolean(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date().default(() => new Date()),
   serviceRequestCount: z.number(),

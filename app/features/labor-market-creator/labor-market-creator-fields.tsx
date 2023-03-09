@@ -110,7 +110,7 @@ export function LaborMarketCreatorFields({
                 <Select
                   {...field}
                   options={[
-                    { label: "Anyone", value: "anyone" }, // Not for MVP
+                    // { label: "Anyone", value: "anyone" }, // Not for MVP
                     { label: "Delegates only", value: "delegates" },
                   ]}
                 />
@@ -143,9 +143,9 @@ export function LaborMarketCreatorFields({
             <Label>Reward Token Allowlist</Label>
             <Controller
               control={control}
-              name="configuration.modules.enforcement"
+              name="appData.tokenAllowlist"
               render={({ field }) => (
-                <Select {...field} options={tokens.map((t) => ({ label: t.name, value: t.symbol }))} />
+                <Combobox {...field} options={tokens.map((t) => ({ label: t.name, value: t.symbol }))} />
               )}
             />
             <Error error={errors.appData?.tokenAllowlist?.message} />

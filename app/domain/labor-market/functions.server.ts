@@ -1,11 +1,11 @@
 import type { User } from "@prisma/client";
 import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
+import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
 import type {
-  LaborMarket,
   LaborMarketAppData,
   LaborMarketFilter,
   LaborMarketIndexData,
@@ -13,15 +13,6 @@ import type {
   LaborMarketWithIndexData,
 } from "./schemas";
 import { LaborMarketAppDataSchema, LaborMarketConfigSchema, LaborMarketWithIndexDataSchema } from "./schemas";
-
-/**
- * Gets a LaborMarketConfig from chain and ipfs. Returns undefined if the contract doesn't exist.
- */
-export async function getChainLaborMarket(address: EvmAddress, block?: number): Promise<LaborMarket> {
-  const configuration = await getLaborMarketConfig(address, block);
-  const appData = await getLaborMarketAppData(configuration.marketUri);
-  return { address, configuration, appData };
-}
 
 /**
  * Returns a LaborMarketWithIndexData from mongodb, if it exists.
@@ -41,9 +32,16 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
 export async function upsertIndexedLaborMarket(address: EvmAddress, block?: number) {
-  const laborMarket = await getChainLaborMarket(address, block);
+  const configuration = await getLaborMarketConfig(address, block);
+  let appData;
+  try {
+    appData = await getLaborMarketAppData(configuration.marketUri);
+  } catch (e) {
+    logger.warn(`Failed to fetch and parse labor market app data for ${address}. Skipping indexing.`, e);
+    return;
+  }
+  const laborMarket = { address, configuration, appData };
   const indexData: LaborMarketIndexData = {
-    valid: LaborMarketAppDataSchema.safeParse(laborMarket.appData).success,
     indexedAt: new Date(),
     serviceRequestCount: 0,
     serviceRequestRewardPools: [],
