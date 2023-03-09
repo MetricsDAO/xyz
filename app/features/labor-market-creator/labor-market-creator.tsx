@@ -117,7 +117,7 @@ function configureFromValues({
         reputationParams: {
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
           reviewStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
-          provideStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
+          provideStake: BigNumber.from(values.configuration.reputationParams.provideStake),
           submitMin: BigNumber.from(values.configuration.reputationParams.submitMin),
           submitMax: BigNumber.from(values.configuration.reputationParams.submitMax ?? ethers.constants.MaxUint256),
         },
