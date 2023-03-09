@@ -1,4 +1,4 @@
-import type { Project, Token } from "database";
+import type { Project, Token } from "@prisma/client";
 import { Button } from "../../components/button";
 import { useNavigate, useParams } from "@remix-run/react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -18,7 +18,7 @@ import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKE
 import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import { LaborMarketNetwork__factory } from "contracts/ethers";
+import { LaborMarketNetwork__factory } from "~/contracts";
 import { useCallback } from "react";
 
 interface LaborMarketFormProps {
@@ -69,7 +69,7 @@ export function LaborMarketCreator({ projects, tokens, defaultValues }: LaborMar
     <FormProvider {...methods}>
       <TxModal transactor={transactor} />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <LaborMarketCreatorFields projects={projects} type={mType} />
+        <LaborMarketCreatorFields projects={projects} type={mType} tokens={tokens} />
         <Button size="lg" type="submit">
           Next
         </Button>

@@ -1,4 +1,4 @@
-import { PrismaClient } from "database";
+import { PrismaClient } from "@prisma/client";
 
 let prisma: PrismaClient;
 declare global {

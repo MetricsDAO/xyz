@@ -1,4 +1,4 @@
-import type { Network } from "database";
+import type { Network } from "@prisma/client";
 import type { Props as AvatarProps } from "./avatar";
 import { Avatar } from "./avatar";
 

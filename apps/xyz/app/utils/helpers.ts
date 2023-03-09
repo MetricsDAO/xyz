@@ -1,4 +1,4 @@
-import type { Project, Token } from "database";
+import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import type { ServiceRequestDoc } from "~/domain";

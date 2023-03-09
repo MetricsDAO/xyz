@@ -1,5 +1,5 @@
 import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
-import type { Network, Wallet } from "database";
+import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useEffect, useState } from "react";

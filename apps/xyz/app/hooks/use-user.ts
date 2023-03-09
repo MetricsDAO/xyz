@@ -1,4 +1,4 @@
-import type { User } from "database";
+import type { User } from "@prisma/client";
 import { useRouteData } from "remix-utils";
 
 function isUser(user: any): user is User {

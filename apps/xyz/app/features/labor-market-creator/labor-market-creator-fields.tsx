@@ -1,4 +1,5 @@
-import type { Project } from "database";
+import type { Project, Token } from "@prisma/client";
+import { ScalableLikertEnforcement } from "labor-markets-abi";
 import { Controller, useFormContext } from "react-hook-form";
 import { Field, Label, Textarea, Button, Select, Input, Error, Combobox } from "~/components";
 import type { LaborMarketFormValues } from "./labor-market-creator-values";
@@ -32,7 +33,15 @@ function BrainstormDescription() {
   );
 }
 
-export function LaborMarketCreatorFields({ projects, type }: { projects: Project[]; type?: string }) {
+export function LaborMarketCreatorFields({
+  projects,
+  type,
+  tokens,
+}: {
+  projects: Project[];
+  type?: string;
+  tokens: Token[];
+}) {
   const {
     register,
     control,
@@ -130,22 +139,25 @@ export function LaborMarketCreatorFields({ projects, type }: { projects: Project
       <section>
         <h4 className="font-semibold mb-4">Challenge Rewards</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* <Field>
+          <Field>
             <Label>Reward Token Allowlist</Label>
-            <Controller name="" control={control}/>
-            <ValidatedCombobox
-              name="tokenAllowlist"
-              options={tokens.map((t) => ({ label: t.name, value: t.symbol }))}
+            <Controller
+              control={control}
+              name="configuration.modules.enforcement"
+              render={({ field }) => (
+                <Select {...field} options={tokens.map((t) => ({ label: t.name, value: t.symbol }))} />
+              )}
             />
-            <Error error={errors.appData?.projectSlugs} />
-            <ValidatedError name="tokenAllowlist" />
-          </Field> */}
+            <Error error={errors.appData?.tokenAllowlist?.message} />
+          </Field>
           <Field>
             <Label>Reward Curve</Label>
             <Controller
               control={control}
               name="configuration.modules.enforcement"
-              render={({ field }) => <Select {...field} options={[]} />}
+              render={({ field }) => (
+                <Select {...field} options={[{ label: "Scalable Likert", value: ScalableLikertEnforcement.address }]} />
+              )}
             />
             <Error error={errors.configuration?.modules?.enforcement?.message} />
           </Field>

@@ -1,4 +1,4 @@
-import type { Token } from "database";
+import type { Token } from "@prisma/client";
 import type { Props as AvatarProps } from "./avatar";
 import { Avatar } from "./avatar";
 

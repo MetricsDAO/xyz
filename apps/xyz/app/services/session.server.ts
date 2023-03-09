@@ -1,4 +1,4 @@
-import type { User } from "database";
+import type { User } from "@prisma/client";
 import { createCookieSessionStorage, json, redirect } from "@remix-run/node";
 import env from "~/env.server";
 import { prisma } from "./prisma.server";

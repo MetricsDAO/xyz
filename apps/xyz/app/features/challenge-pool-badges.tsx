@@ -1,4 +1,4 @@
-import type { Token } from "database";
+import type { Token } from "@prisma/client";
 import { Badge, TokenAvatar } from "~/components";
 import type { LaborMarketDoc } from "~/domain";
 import { fromTokenAmount } from "~/utils/helpers";

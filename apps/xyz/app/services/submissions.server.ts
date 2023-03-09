@@ -1,7 +1,7 @@
-import type { User } from "database";
+import type { User } from "@prisma/client";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
-import { LaborMarket__factory } from "contracts/ethers";
+import { LaborMarket__factory } from "~/contracts";
 import type {
   RewardsSearch,
   SubmissionContract,

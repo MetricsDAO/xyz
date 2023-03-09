@@ -1,4 +1,4 @@
-import type { Token, Wallet } from "database";
+import type { Token, Wallet } from "@prisma/client";
 import { RewardBadge } from "~/components/reward-badge";
 import { Header, Row, Table } from "~/components/table";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";

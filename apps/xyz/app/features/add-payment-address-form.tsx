@@ -1,5 +1,5 @@
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/20/solid";
-import type { Network } from "database";
+import type { Network } from "@prisma/client";
 import { useField } from "remix-validated-form";
 import { ValidatedError, ValidatedInput, ValidatedSelect } from "~/components";
 import { NetworkAvatar } from "~/components/avatar/network-avatar";

@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "database";
+import type { Token, Wallet } from "@prisma/client";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";

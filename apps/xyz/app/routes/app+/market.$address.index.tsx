@@ -1,5 +1,5 @@
 import MagnifyingGlassIcon from "@heroicons/react/20/solid/MagnifyingGlassIcon";
-import type { Project, Token } from "database";
+import type { Project, Token } from "@prisma/client";
 import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";

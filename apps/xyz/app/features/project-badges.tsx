@@ -1,4 +1,4 @@
-import type { Project } from "database";
+import type { Project } from "@prisma/client";
 import { Badge, ProjectAvatar } from "~/components";
 
 const MAX = 3;

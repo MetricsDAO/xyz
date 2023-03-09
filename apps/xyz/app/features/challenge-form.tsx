@@ -1,5 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
-import type { Project, Token } from "database";
+import type { Project, Token } from "@prisma/client";
 // import MDEditor from "@uiw/react-md-editor";
 import { useState } from "react";
 import { ValidatedError, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect } from "~/components";

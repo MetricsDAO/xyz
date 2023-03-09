@@ -2,7 +2,7 @@ import { useControlField } from "remix-validated-form";
 import { ValidatedInput } from "../../components/input/input";
 import { ValidatedSelect } from "~/components/select";
 import { ValidatedCombobox } from "../../components/combobox/combobox";
-import type { Project, Token } from "database";
+import type { Project, Token } from "@prisma/client";
 import { ValidatedError, Field, Label } from "../../components/field";
 import { Button } from "../../components/button";
 import { useParams } from "@remix-run/react";

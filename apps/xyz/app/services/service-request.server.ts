@@ -1,8 +1,8 @@
-import type { User } from "database";
+import type { User } from "@prisma/client";
 import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
-import { LaborMarket__factory } from "contracts/ethers";
+import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketDoc } from "~/domain";
 import { ClaimToSubmitEventSchema, ClaimToReviewEventSchema } from "~/domain";
 import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request";
@@ -125,10 +125,10 @@ export const indexServiceRequest = async (event: TracerEvent) => {
       { address: doc.laborMarketAddress },
       {
         $inc: {
-          serviceRequestCount: 1,
+          "indexData.serviceRequestCount": 1,
         },
         $set: {
-          serviceRequestRewardPools: calculateRewardPools(
+          "indexData.serviceRequestRewardPools": calculateRewardPools(
             lm?.indexData.serviceRequestRewardPools ?? [],
             doc.configuration.pToken,
             doc.configuration.pTokenQuantity

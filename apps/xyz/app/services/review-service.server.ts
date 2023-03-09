@@ -1,6 +1,6 @@
 import { ScalableLikertEnforcement } from "labor-markets-abi";
 import type { TracerEvent } from "pinekit/types";
-import { ScalableLikertEnforcement__factory } from "contracts/ethers";
+import { ScalableLikertEnforcement__factory } from "~/contracts";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";

@@ -1,4 +1,4 @@
-import type { User } from "database";
+import type { User } from "@prisma/client";
 import { forbidden } from "remix-utils";
 
 type CanObject = User; // | LaborMarket

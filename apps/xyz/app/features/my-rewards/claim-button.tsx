@@ -1,5 +1,5 @@
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "database";
+import type { Token, Wallet } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import type { SendTransactionResult } from "@wagmi/core";
 import { useMachine } from "@xstate/react";

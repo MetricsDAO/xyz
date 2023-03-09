@@ -1,5 +1,5 @@
-import type { User } from "database";
-import { LaborMarket__factory } from "contracts/ethers";
+import type { User } from "@prisma/client";
+import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
