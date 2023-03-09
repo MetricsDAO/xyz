@@ -42,7 +42,6 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, block?: numb
   }
   const laborMarket = { address, configuration, appData };
   const indexData: LaborMarketIndexData = {
-    valid: true,
     indexedAt: new Date(),
     serviceRequestCount: 0,
     serviceRequestRewardPools: [],
