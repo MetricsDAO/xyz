@@ -32,6 +32,7 @@ export function fakeLaborMarketFormValues(): LaborMarketFormValues {
       description: faker.lorem.paragraphs(2),
       type: "brainstorm",
       projectSlugs: ["ethereum", "polygon"],
+      tokenAllowlist: ["eth"],
     },
     configuration: {
       modules: {

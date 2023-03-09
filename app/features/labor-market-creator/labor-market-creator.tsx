@@ -69,7 +69,7 @@ export function LaborMarketCreator({ projects, tokens, defaultValues }: LaborMar
     <FormProvider {...methods}>
       <TxModal transactor={transactor} />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <LaborMarketCreatorFields projects={projects} type={mType} />
+        <LaborMarketCreatorFields projects={projects} type={mType} tokens={tokens} />
         <Button size="lg" type="submit">
           Next
         </Button>
