@@ -2,7 +2,7 @@ import type { Token, Wallet } from "@prisma/client";
 import { Card } from "~/components/card";
 import { RewardBadge } from "~/components/reward-badge";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
-import { useGetReward } from "~/hooks/use-get-reward";
+import { useReward } from "~/hooks/use-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
@@ -35,7 +35,7 @@ function RewardCard({
   wallets: Wallet[];
   tokens: Token[];
 }) {
-  const contractReward = useGetReward({
+  const contractReward = useReward({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
   });
@@ -55,9 +55,9 @@ function RewardCard({
       <div>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
+            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.rMetric.toNumber()}
+            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
           />
         ) : (
           <span>--</span>
@@ -69,9 +69,9 @@ function RewardCard({
       <div className="text-black" color="dark.3">
         {showRewarded ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
+            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.rMetric.toNumber()}
+            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
           />
         ) : (
           <span>--</span>

@@ -47,7 +47,7 @@ import { dateHasPassed, fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { useGetReward } from "~/hooks/use-get-reward";
+import { useReward } from "~/hooks/use-reward";
 import { listTokens } from "~/services/tokens.server";
 import { fromTokenAmount } from "~/utils/helpers";
 
@@ -106,7 +106,7 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const reward = useGetReward({
+  const reward = useReward({
     laborMarketAddress: submission.laborMarketAddress as `0x${string}`,
     submissionId: submission.id,
   });
@@ -114,7 +114,9 @@ export default function ChallengeSubmission() {
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
   const isWinner =
-    enforcementExpirationPassed && reward !== undefined && (reward.tokenAmount.gt(0) || reward.rMetric.gt(0));
+    enforcementExpirationPassed &&
+    reward !== undefined &&
+    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0));
   const score = submission.score?.avg;
 
   return (
@@ -167,9 +169,9 @@ export default function ChallengeSubmission() {
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
-                amount={fromTokenAmount(reward.tokenAmount.toString())}
+                amount={fromTokenAmount(reward.paymentTokenAmount.toString())}
                 token={token?.symbol ?? "Unknown Token"}
-                rMETRIC={reward.rMetric.toNumber()}
+                rMETRIC={reward.reputationTokenAmount.toNumber()}
               />
             </DetailItem>
           )}

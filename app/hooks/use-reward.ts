@@ -9,9 +9,9 @@ type Props = {
 
 /**
  * Get the user's reward for a submission. The payment token and reputation token.
- * @returns { { tokenAmount: BigNumber; rMetric: BigNumber } | undefined} - undefined if still loading
+ * @returns { { paymentTokenAmount: BigNumber; reputationTokenAmount: BigNumber } | undefined} - undefined if still loading
  */
-export function useGetReward({ laborMarketAddress, submissionId }: Props) {
+export function useReward({ laborMarketAddress, submissionId }: Props) {
   const { data } = useContractRead({
     address: ScalableLikertEnforcement.address,
     abi: ScalableLikertEnforcement.abi,
@@ -21,8 +21,8 @@ export function useGetReward({ laborMarketAddress, submissionId }: Props) {
 
   if (data) {
     return {
-      tokenAmount: data[0],
-      rMetric: data[1],
+      paymentTokenAmount: data[0],
+      reputationTokenAmount: data[1],
     };
   }
 

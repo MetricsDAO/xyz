@@ -2,7 +2,7 @@ import type { Token, Wallet } from "@prisma/client";
 import { RewardBadge } from "~/components/reward-badge";
 import { Header, Row, Table } from "~/components/table";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
-import { useGetReward } from "~/hooks/use-get-reward";
+import { useReward } from "~/hooks/use-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
@@ -49,7 +49,7 @@ function RewardsTableRow({
   wallets: Wallet[];
   tokens: Token[];
 }) {
-  const contractReward = useGetReward({
+  const contractReward = useReward({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
   });
@@ -70,9 +70,9 @@ function RewardsTableRow({
       <Row.Column span={3}>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
+            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.rMetric.toNumber()}
+            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
           />
         ) : (
           <span>--</span>
@@ -84,9 +84,9 @@ function RewardsTableRow({
       <Row.Column span={3} className="text-black" color="dark.3">
         {showRewarded ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.tokenAmount.toString())}
+            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
             token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.rMetric.toNumber()}
+            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
           />
         ) : (
           <span>--</span>
