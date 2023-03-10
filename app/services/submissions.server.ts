@@ -265,7 +265,6 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $match: {
           $and: [
-            { "score.avg": { $ne: null } },
             { "score.avg": { $gte: 75 } },
             //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
