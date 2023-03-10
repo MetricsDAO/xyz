@@ -104,3 +104,7 @@ async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppD
   const data = await fetchIpfsJson(marketUri);
   return LaborMarketAppDataSchema.parse(data);
 }
+
+export async function findLaborMarkets() {
+  return mongo.laborMarkets.find({ valid: true }).toArray();
+}
