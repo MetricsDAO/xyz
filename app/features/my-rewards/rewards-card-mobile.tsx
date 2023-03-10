@@ -45,8 +45,7 @@ function RewardCard({
     action: "HAS_CLAIMED",
   });
   const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
-  const showReward = contractReward !== undefined && hasClaimed === false;
-  const showRewarded = contractReward !== undefined && hasClaimed === true;
+  const showReward = contractReward !== undefined;
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
@@ -55,7 +54,7 @@ function RewardCard({
       <div>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
+            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString(), 3)}
             token={token?.symbol ?? "Unknown Token"}
             rMETRIC={contractReward.reputationTokenAmount.toNumber()}
           />
@@ -65,18 +64,6 @@ function RewardCard({
       </div>
       <div>Submitted</div>
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
-      <div>Rewarded</div>
-      <div className="text-black" color="dark.3">
-        {showRewarded ? (
-          <RewardBadge
-            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
-          />
-        ) : (
-          <span>--</span>
-        )}
-      </div>
       <div>Status</div>
       {hasClaimed === false ? (
         <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />

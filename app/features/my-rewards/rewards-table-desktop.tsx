@@ -20,11 +20,10 @@ export function RewardsTable({
   return (
     <Table>
       <Header columns={12} className="mb-2">
-        <Header.Column span={3}>Challenge Title</Header.Column>
-        <Header.Column span={3}>Reward</Header.Column>
+        <Header.Column span={4}>Challenge Title</Header.Column>
+        <Header.Column span={4}>Reward</Header.Column>
         <Header.Column span={2}>Submitted</Header.Column>
-        <Header.Column span={3}>Rewarded</Header.Column>
-        <Header.Column>Status</Header.Column>
+        <Header.Column span={2}>Status</Header.Column>
       </Header>
       {rewards.map((r) => {
         return (
@@ -59,18 +58,17 @@ function RewardsTableRow({
     action: "HAS_CLAIMED",
   });
   const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
-  const showReward = contractReward !== undefined && hasClaimed === false;
-  const showRewarded = contractReward !== undefined && hasClaimed === true;
+  const showReward = contractReward !== undefined;
 
   return (
     <Row columns={12}>
-      <Row.Column span={3}>
+      <Row.Column span={4}>
         <p>{reward.sr.appData?.title}</p>
       </Row.Column>
-      <Row.Column span={3}>
+      <Row.Column span={4}>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
+            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString(), 3)}
             token={token?.symbol ?? "Unknown Token"}
             rMETRIC={contractReward.reputationTokenAmount.toNumber()}
           />
@@ -81,18 +79,7 @@ function RewardsTableRow({
       <Row.Column span={2} className="text-black">
         {fromNow(reward.createdAtBlockTimestamp)}{" "}
       </Row.Column>
-      <Row.Column span={3} className="text-black" color="dark.3">
-        {showRewarded ? (
-          <RewardBadge
-            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString())}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
-          />
-        ) : (
-          <span>--</span>
-        )}
-      </Row.Column>
-      <Row.Column>
+      <Row.Column span={2}>
         {hasClaimed === false ? (
           <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
         ) : hasClaimed === true ? (
