@@ -46,10 +46,7 @@ export default function Index() {
               is peer reviewed to ensure quality and accuracy.
             </p>
             <div className="flex flex-col items-center">
-              <MarketingButton
-                label="Explore the Ecosystem"
-                link="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
-              />
+              <MarketingButton label="Explore the Ecosystem" link="/app/analyze" />
             </div>
           </section>
           <img
@@ -119,11 +116,7 @@ export default function Index() {
                 <b>Fede Basta</b> Uniswap Grants Program
               </p>
             </div>
-            <MarketingButton
-              label="Explore the Ecosystem"
-              link="https://metricsdao.notion.site/Bounty-Programs-d4bac7f1908f412f8bf4ed349198e5fe"
-              variant="outline"
-            />
+            <MarketingButton label="Explore the Ecosystem" link="/app/analyze" variant="outline" />
           </section>
         </main>
       </div>
