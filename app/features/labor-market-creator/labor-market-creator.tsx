@@ -1,6 +1,7 @@
 import type { Project, Token } from "@prisma/client";
 import { Button } from "../../components/button";
 import { useNavigate, useParams } from "@remix-run/react";
+import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import type { LaborMarketFormValues } from "./labor-market-creator-values";
 import { LaborMarketFormValuesSchema } from "./labor-market-creator-values";
@@ -24,7 +25,7 @@ import { useCallback } from "react";
 interface LaborMarketFormProps {
   projects: Project[];
   tokens: Token[];
-  defaultValues?: LaborMarketFormValues;
+  defaultValues?: DefaultValues<LaborMarketFormValues>;
 }
 
 /**

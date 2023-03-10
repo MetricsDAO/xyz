@@ -7,11 +7,13 @@ import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { fakeLaborMarketFormValues, LaborMarketCreator } from "~/features/labor-market-creator";
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const projects = await listProjects();
   const tokens = await listTokens();
-  const defaultValues = url.searchParams.get("fake") ? fakeLaborMarketFormValues() : undefined;
+  const defaultValues = url.searchParams.get("fake")
+    ? fakeLaborMarketFormValues()
+    : { appData: { type: params.type as "analyze" | "brainstorm" } };
   return typedjson({ projects, tokens, defaultValues });
 };
 
