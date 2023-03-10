@@ -14,7 +14,6 @@ export const LaborMarketFormValuesSchema = z.object({
     .extend({
       reputationParams: LaborMarketReputationParams.extend({
         rewardPool: z.coerce.number(),
-        signalStake: z.coerce.number(),
         provideStake: z.coerce.number(),
         submitMin: z.coerce.number(),
         submitMax: z.coerce.number().optional(),
@@ -56,7 +55,6 @@ export function fakeLaborMarketFormValues(): LaborMarketFormValues {
       reputationParams: {
         rewardPool: faker.datatype.number(100),
         provideStake: faker.datatype.number(100),
-        signalStake: faker.datatype.number(100),
         submitMin: 0,
       },
     },

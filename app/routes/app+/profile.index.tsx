@@ -14,77 +14,69 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { ActivityDoc } from "~/domain";
+import { ActivityTypeSchema } from "~/domain";
+import type { ActivityTypes } from "~/domain";
+import { ActivitySearchSchema } from "~/domain";
 import { RewardsSearchSchema } from "~/domain/submission";
-import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
-import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
+import { searchUserActivity } from "~/domain/user-activity/function.server";
+import { ActivityCards } from "~/features/my-activity/activity-card-mobile";
+import { ActivityTable } from "~/features/my-activity/activity-table-desktop";
 import { getUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/services/submissions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
-const validator = withZod(RewardsSearchSchema);
+const validator = withZod(ActivitySearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await getUser(request);
   invariant(user, "Could not find user, please sign in");
+  console.log("user", user);
+  invariant(user.address, "Could not find user, please sign in");
+
   const url = new URL(request.url);
-  const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
-  const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
-  const tokens = await listTokens();
+  const activityTypes = Object.values(ActivityTypeSchema);
+  const search = getParamsOrFail(url.searchParams, ActivitySearchSchema);
+  const userActivities = await searchUserActivity(user.address, search);
+  console.log("userActivities", userActivities);
   return typedjson({
-    wallets,
-    rewards,
+    userActivities,
+    activityTypes,
     user,
-    tokens,
     search,
   });
 };
 
 export default function Profile() {
-  const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
+  const { userActivities, search, activityTypes } = useTypedLoaderData<typeof loader>();
 
   return (
-    <Container className="py-16 px-10">
-      {/* <section className="space-y-2 max-w-3xl mb-16">
-        <h1 className="text-3xl font-semibold">My Activity</h1>
-        <div>
-          <p className="text-lg text-cyan-500">Claim reward tokens for all the challenges you’ve won</p>
-          <p className="text-gray-500 text-sm">
-            View all your pending and claimed rewards and manage all your payout addresses
-          </p>
-        </div>
-      </section> */}
-      {/* <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} /> */}
-      <TabNav children={"My Activity"} />
+    <Container className="py-16">
+      <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
+        Activity
+        <span className="text-gray-400">(0)</span>
+      </h2>
+
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <ProfileListView rewards={rewards} wallets={wallets} tokens={tokens} />
+            <ProfileListView activities={userActivities} />
             <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(userActivities.length / search.first)} />
             </div>
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter tokens={tokens} />
+          <SearchAndFilter types={activityTypes} />
         </aside>
       </section>
     </Container>
   );
 }
 
-function ProfileListView({
-  rewards,
-  wallets,
-  tokens,
-}: {
-  rewards: SubmissionWithServiceRequest[];
-  wallets: Wallet[];
-  tokens: Token[];
-}) {
-  if (rewards.length === 0) {
+function ProfileListView({ activities }: { activities: ActivityDoc[] }) {
+  if (activities.length === 0) {
     return (
       <div className="flex">
         <p className="text-gray-500 mx-auto py-12">Your activities will appear here!</p>
@@ -96,17 +88,17 @@ function ProfileListView({
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable rewards={rewards} wallets={wallets} tokens={tokens} />
+        <ActivityTable activities={[]} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards rewards={rewards} wallets={wallets} tokens={tokens} />
+        <ActivityCards activities={[]} />
       </div>
     </>
   );
 }
 
-function SearchAndFilter({ tokens }: { tokens: Token[] }) {
+function SearchAndFilter({ types }: { types: ActivityTypes[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -128,39 +120,17 @@ function SearchAndFilter({ tokens }: { tokens: Token[] }) {
         name="q"
         iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
+      <p className="text-lg font-semibold">Filter:</p>
       <Field>
-        <Label>Sort by</Label>
-        <ValidatedSelect
-          placeholder="Select option"
-          name="sortBy"
+        <Label>Type</Label>
+        <ValidatedCombobox
+          name="eventType"
           size="sm"
           onChange={handleChange}
-          options={[
-            { label: "Challenge Title", value: "sr[0].appData.title" },
-            { label: "Submitted", value: "createdAtBlockTimestamp" },
-          ]}
+          placeholder="Select option"
+          options={[{ label: "Marketplaces", value: "LaborMarketConfigured" }]}
         />
       </Field>
-      <p className="text-lg font-semibold">Filter:</p>
-      <Label size="md">Status</Label>
-      <Checkbox value="unclaimed" label="Unclaimed" />
-      <Checkbox value="claimed" label="Claimed" />
-      <Label>Reward Token</Label>
-      <ValidatedCombobox
-        placeholder="Select option"
-        name="token"
-        onChange={handleChange}
-        size="sm"
-        options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
-      />
-      {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
-      <Combobox
-        placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />*/}
     </ValidatedForm>
   );
 }

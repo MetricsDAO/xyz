@@ -1,4 +1,5 @@
 import type { User } from "@prisma/client";
+import { uniqueId } from "xstate/lib/utils";
 import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
@@ -47,6 +48,18 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, block?: numb
     serviceRequestRewardPools: [],
     createdAtBlockTimestamp: new Date(),
   };
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    id: uniqueId(),
+    eventType: "LaborMarketConfigured",
+    userAddress: configuration.owner,
+    laborMarketAddress: address,
+    serviceRequestId: null,
+    createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+    indexedAt: indexData.indexedAt,
+  });
+
   return mongo.laborMarkets.updateOne(
     { address },
     { $set: laborMarket, $setOnInsert: { indexData } },
