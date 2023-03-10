@@ -49,6 +49,9 @@ export function LaborMarketCreatorFields({
     formState: { errors },
   } = useFormContext<LaborMarketFormValues>();
 
+  // Filtering out MBETA for now. Might not be necessary later on.
+  const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
+
   return (
     <>
       {type === "brainstorm" ? <BrainstormDescription /> : <AnalyticsDescription />}
@@ -144,9 +147,7 @@ export function LaborMarketCreatorFields({
             <Controller
               control={control}
               name="appData.tokenAllowlist"
-              render={({ field }) => (
-                <Combobox {...field} options={tokens.map((t) => ({ label: t.name, value: t.symbol }))} />
-              )}
+              render={({ field }) => <Combobox {...field} options={tokenAllowlist} />}
             />
             <Error error={errors.appData?.tokenAllowlist?.message} />
           </Field>
