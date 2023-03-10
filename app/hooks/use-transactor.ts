@@ -16,7 +16,7 @@ type StartFn = (
 ) => void;
 
 // https://github.com/wagmi-dev/wagmi/discussions/233#discussioncomment-2609115
-export type EthersError = Error & { reason?: string; code?: string };
+type EthersError = Error & { reason?: string; code?: string };
 
 type State =
   | { state: "idle" }
