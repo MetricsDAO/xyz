@@ -15,9 +15,13 @@ type StartFn = (
   params: { config: ConfigWithCidFn; metadata: JsonObject } | { config: ConfigWithoutCidFn; metadata?: undefined }
 ) => void;
 
+// https://github.com/wagmi-dev/wagmi/discussions/233#discussioncomment-2609115
+export type EthersError = Error & { reason?: string; code?: string };
+
 type State =
   | { state: "idle" }
   | { state: "preparing" }
+  | { state: "prepare-fail"; error: EthersError }
   | { state: "prepared"; prepared: WriteContractPreparedArgs<any, any> }
   | { state: "writing" }
   | { state: "written"; result: WriteContractResult }
@@ -42,8 +46,12 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     } else {
       config = params.config({ account: account.address! });
     }
-    const prepared = await prepareWriteContract(config);
-    setState({ state: "prepared", prepared });
+    try {
+      const prepared = await prepareWriteContract(config);
+      setState({ state: "prepared", prepared });
+    } catch (e) {
+      setState({ state: "prepare-fail", error: e as EthersError });
+    }
   };
 
   const write = async () => {
