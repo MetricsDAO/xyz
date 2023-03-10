@@ -21,7 +21,6 @@ export const LaborMarketModules = z.object({
 
 export const LaborMarketReputationParams = z.object({
   rewardPool: z.coerce.string(),
-  signalStake: z.coerce.string(),
   provideStake: z.coerce.string(),
   submitMin: z.coerce.string(),
   submitMax: z.coerce.string(),
@@ -66,7 +65,6 @@ export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
  * Contains all aggregated and index-specific data for a LaborMarket.
  */
 export const LaborMarketIndexDataSchema = z.object({
-  valid: z.boolean(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date().default(() => new Date()),
   serviceRequestCount: z.number(),

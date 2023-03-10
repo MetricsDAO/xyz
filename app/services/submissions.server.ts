@@ -3,7 +3,9 @@ import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type {
+  CombinedDoc,
   RewardsSearch,
+  ShowcaseSearch,
   SubmissionContract,
   SubmissionDoc,
   SubmissionForm,
@@ -14,7 +16,7 @@ import type {
 import { SubmissionWithServiceRequestSchema } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
-import { utcDate } from "~/utils/date";
+import { oneUnitAgo, utcDate } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -191,16 +193,17 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 };
 
 /**
- * Returns an array of Submissions with their Service Request for a given user
+ * Returns an array of Submissions with their Service Request and LaborMarket
  */
+
 export const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
   const submissionsDocs = await mongo.submissions
     .aggregate([
       {
         $match: {
           $and: [
-            { "configuration.serviceProvider": params.serviceProvider },
-            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+            // params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
       },
@@ -250,4 +253,81 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
     .toArray();
 
   return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
+};
+
+/**
+ * Returns an array of Submissions with their Service Request and LaborMarket sorted by score
+ */
+export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
+  const timeframe = oneUnitAgo(params.timeframe);
+  return mongo.submissions
+    .aggregate<CombinedDoc>([
+      {
+        $match: {
+          $and: [
+            { "score.avg": { $gte: 75 } },
+            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "serviceRequests",
+          let: {
+            sr_id: "$serviceRequestId",
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "sr",
+        },
+      },
+      {
+        $lookup: {
+          from: "laborMarkets",
+          let: {
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$address", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "lm",
+        },
+      },
+      {
+        $unwind: "$sr",
+      },
+      {
+        $unwind: "$lm",
+      },
+      {
+        $match: {
+          $and: [
+            { "sr.configuration.enforcementExpiration": { $lt: utcDate() } },
+            params.type ? { "lm.appData.type": { $in: params.type } } : {},
+            params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
+            params.score ? { "score.avg": { $gte: params.score } } : {},
+            params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
+            { createdAtBlockTimestamp: { $gte: timeframe } },
+            params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
+          ],
+        },
+      },
+    ])
+    .sort({ createdAtBlockTimestamp: -1 })
+    .limit(5 + params.count)
+    .toArray();
 };

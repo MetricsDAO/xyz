@@ -10,6 +10,13 @@ export function TxModal({ transactor }: { transactor: Transactor }) {
 
         {transactor.state === "preparing" ? <div>Preparing...</div> : null}
 
+        {transactor.state === "failure" ? (
+          <div className="text-rose-500 space-y-3">
+            <p>Something went wrong in your transaction</p>
+            <p>{transactor.error}</p>
+          </div>
+        ) : null}
+
         {transactor.state === "prepared" ? (
           <p className="text-sm text-gray-600">Confirm that you would like to create a new marketplace.</p>
         ) : null}
