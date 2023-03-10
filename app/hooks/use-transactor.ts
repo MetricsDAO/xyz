@@ -21,7 +21,7 @@ export type EthersError = Error & { reason?: string; code?: string };
 type State =
   | { state: "idle" }
   | { state: "preparing" }
-  | { state: "prepare-fail"; error: EthersError }
+  | { state: "failure"; error: EthersError }
   | { state: "prepared"; prepared: WriteContractPreparedArgs<any, any> }
   | { state: "writing" }
   | { state: "written"; result: WriteContractResult }
@@ -50,7 +50,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
       const prepared = await prepareWriteContract(config);
       setState({ state: "prepared", prepared });
     } catch (e) {
-      setState({ state: "prepare-fail", error: e as EthersError });
+      setState({ state: "failure", error: e as EthersError });
     }
   };
 
