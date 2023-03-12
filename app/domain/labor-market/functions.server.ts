@@ -1,5 +1,4 @@
 import type { User } from "@prisma/client";
-import { uniqueId } from "xstate/lib/utils";
 import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";

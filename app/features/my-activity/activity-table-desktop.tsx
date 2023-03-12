@@ -3,15 +3,13 @@ import { Countdown } from "~/components";
 import { ActivityAvatar } from "~/components/activity/activity-avatar";
 import { Header, Row, Table } from "~/components/table";
 import type { ActivityDoc } from "~/domain";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { mongo } from "~/services/mongo.server";
 
 export type ActivityDocWithMongoId = ActivityDoc & { _id: ObjectId };
 
 export function ActivityTable({ activities }: { activities: ActivityDocWithMongoId[] }) {
   return (
     <Table>
-      <Header columns={12} className="mb-2">
+      <Header columns={12} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column span={3}>Action</Header.Column>
         <Header.Column span={3}>Title</Header.Column>
         <Header.Column span={3}>Status</Header.Column>

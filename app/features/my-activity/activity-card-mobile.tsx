@@ -1,4 +1,4 @@
-import { Countdown, CountdownCard } from "~/components";
+import { Countdown } from "~/components";
 import { Card } from "~/components/card";
 import type { ActivityDoc } from "~/domain";
 import type { ActivityDocWithMongoId } from "./activity-table-desktop";

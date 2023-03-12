@@ -1,5 +1,3 @@
-import type { Project } from "@prisma/client";
-
 type Props = {
   eventType: string;
 };
