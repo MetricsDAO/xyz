@@ -10,10 +10,9 @@ export function ActivityTable({ activities }: { activities: ActivityDocWithMongo
   return (
     <Table>
       <Header columns={12} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={3}>Action</Header.Column>
-        <Header.Column span={3}>Title</Header.Column>
-        <Header.Column span={3}>Status</Header.Column>
-        <Header.Column span={3}>Timestamp</Header.Column>
+        <Header.Column span={4}>Action</Header.Column>
+        <Header.Column span={4}>Title</Header.Column>
+        <Header.Column span={4}>Timestamp</Header.Column>
       </Header>
       {activities.map((a) => {
         return <ActivityTableRow activity={a} key={a._id.toString()} />;
@@ -25,18 +24,14 @@ export function ActivityTable({ activities }: { activities: ActivityDocWithMongo
 function ActivityTableRow({ activity }: { activity: ActivityDoc }) {
   return (
     <Row columns={12}>
-      <Row.Column span={3}>
-        <ActivityAvatar eventType={activity.groupType.toString()} />
-        <p>{}</p>
+      <Row.Column span={4} className="flex space-x-2 items-center">
+        <ActivityAvatar groupType={activity.groupType.toString()} />
+        <p>{activity.actionName}</p>
       </Row.Column>
-      <Row.Column span={3}>{activity.laborMarketTitle}</Row.Column>
-      <Row.Column span={3} className="text-black">
-        Active
-      </Row.Column>
-      <Row.Column span={2} className="text-black" color="dark.3">
+      <Row.Column span={4}>{activity.laborMarketTitle}</Row.Column>
+      <Row.Column span={4} className="text-black" color="dark.3">
         <Countdown date={activity.createdAtBlockTimestamp} />
       </Row.Column>
-      <Row.Column></Row.Column>
     </Row>
   );
 }

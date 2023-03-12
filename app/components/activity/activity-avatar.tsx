@@ -1,7 +1,7 @@
 type Props = {
-  eventType: string;
+  groupType: string;
 };
 
-export function ActivityAvatar({ eventType }: Props) {
-  return <img src={`/img/icons/activity-icons/${eventType}.svg`} alt="" />;
+export function ActivityAvatar({ groupType }: Props) {
+  return <img src={`/img/icons/activity-icons/${groupType}.svg`} alt="" />;
 }

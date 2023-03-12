@@ -118,11 +118,11 @@ function SearchAndFilter({ types }: { types: ActivityTypes[] }) {
       <Field>
         <Label>Type</Label>
         <ValidatedCombobox
-          name="eventType"
+          name="groupType"
           size="sm"
           onChange={handleChange}
           placeholder="Select option"
-          options={[{ label: "Marketplaces", value: "LaborMarketConfigured" }]}
+          options={[{ label: "Marketplaces", value: "LaborMarket" }]}
         />
       </Field>
     </ValidatedForm>

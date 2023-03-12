@@ -52,6 +52,7 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, block?: numb
   mongo.userActivity.insertOne({
     groupType: "LaborMarket",
     eventType: "LaborMarketConfigured",
+    actionName: "Create Marketplace",
     userAddress: configuration.owner,
     laborMarketAddress: address,
     laborMarketTitle: appData.title,

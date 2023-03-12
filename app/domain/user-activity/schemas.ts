@@ -9,6 +9,7 @@ export type ActivityTypes = z.infer<typeof ActivityTypeSchema>;
 export const ActivityDocSchema = z.object({
   groupType: ActivityGroupTypeSchema,
   eventType: ActivityTypeSchema,
+  actionName: z.string(),
   userAddress: z.string(),
   laborMarketTitle: z.string(),
   laborMarketAddress: EvmAddressSchema,
@@ -24,7 +25,7 @@ export type ActivityDoc = z.infer<typeof ActivityDocSchema>;
  */
 export const ActivityFilterSchema = z.object({
   q: z.string().optional(),
-  eventType: z.array(ActivityTypeSchema).optional(),
+  groupType: z.array(ActivityGroupTypeSchema).optional(),
 });
 
 export type ActivityFilter = z.infer<typeof ActivityFilterSchema>;

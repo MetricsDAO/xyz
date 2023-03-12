@@ -26,8 +26,8 @@ export function searchUserActivity(userAddress: string, search: ActivitySearch) 
  */
 function filterToMongo(filter: ActivityFilter): Parameters<typeof mongo.userActivity.find>[0] {
   return {
-    eventType: filter.eventType,
+    groupType: filter.groupType,
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
-    ...(filter.eventType ? { eventType: { $in: filter.eventType } } : {}),
+    ...(filter.groupType ? { groupType: { $in: filter.groupType } } : {}),
   };
 }
