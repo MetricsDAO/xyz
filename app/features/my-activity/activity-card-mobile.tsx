@@ -1,11 +1,13 @@
+import { Countdown, CountdownCard } from "~/components";
 import { Card } from "~/components/card";
 import type { ActivityDoc } from "~/domain";
+import type { ActivityDocWithMongoId } from "./activity-table-desktop";
 
-export function ActivityCards({ activities }: { activities: ActivityDoc[] }) {
+export function ActivityCards({ activities }: { activities: ActivityDocWithMongoId[] }) {
   return (
     <div className="space-y-4">
       {activities.map((a) => {
-        return <ActivityCard activity={a} key={a.id} />;
+        return <ActivityCard activity={a} key={a._id.toString()} />;
       })}
     </div>
   );
@@ -21,9 +23,7 @@ function ActivityCard({ activity }: { activity: ActivityDoc }) {
       <div>status</div>
       status
       <div>Timestamp</div>
-      <div className="text-black" color="dark.3">
-        timestamp
-      </div>
+      <Countdown date={activity.createdAtBlockTimestamp} />
     </Card>
   );
 }

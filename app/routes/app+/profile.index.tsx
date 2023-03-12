@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "@prisma/client";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -8,24 +7,19 @@ import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
-import { Field, Label, TabNav, ValidatedSelect } from "~/components";
-import { Checkbox } from "~/components/checkbox";
+import { Field, Label } from "~/components";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { ActivityDoc } from "~/domain";
 import { ActivityTypeSchema } from "~/domain";
 import type { ActivityTypes } from "~/domain";
 import { ActivitySearchSchema } from "~/domain";
-import { RewardsSearchSchema } from "~/domain/submission";
 import { searchUserActivity } from "~/domain/user-activity/function.server";
 import { ActivityCards } from "~/features/my-activity/activity-card-mobile";
+import type { ActivityDocWithMongoId } from "~/features/my-activity/activity-table-desktop";
 import { ActivityTable } from "~/features/my-activity/activity-table-desktop";
 import { getUser } from "~/services/session.server";
-import { searchUserSubmissions } from "~/services/submissions.server";
-import { listTokens } from "~/services/tokens.server";
-import { findAllWalletsForUser } from "~/services/wallet.server";
 
 const validator = withZod(ActivitySearchSchema);
 
@@ -55,7 +49,7 @@ export default function Profile() {
     <Container className="py-16">
       <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
         Activity
-        <span className="text-gray-400">(0)</span>
+        <span className="text-gray-400">{` (${userActivities.length})`}</span>
       </h2>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -75,7 +69,7 @@ export default function Profile() {
   );
 }
 
-function ProfileListView({ activities }: { activities: ActivityDoc[] }) {
+function ProfileListView({ activities }: { activities: ActivityDocWithMongoId[] }) {
   if (activities.length === 0) {
     return (
       <div className="flex">
@@ -88,11 +82,11 @@ function ProfileListView({ activities }: { activities: ActivityDoc[] }) {
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <ActivityTable activities={[]} />
+        <ActivityTable activities={activities} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <ActivityCards activities={[]} />
+        <ActivityCards activities={activities} />
       </div>
     </>
   );

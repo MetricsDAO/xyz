@@ -2,13 +2,15 @@ import { z } from "zod";
 import { EvmAddressSchema } from "../address";
 
 export const ActivityTypeSchema = z.enum(["LaborMarketConfigured"]);
+export const ActivityGroupTypeSchema = z.enum(["LaborMarket"]);
 
 export type ActivityTypes = z.infer<typeof ActivityTypeSchema>;
 
 export const ActivityDocSchema = z.object({
-  id: z.string(),
+  groupType: ActivityGroupTypeSchema,
   eventType: ActivityTypeSchema,
   userAddress: z.string(),
+  laborMarketTitle: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string().nullable(),
   createdAtBlockTimestamp: z.date(),

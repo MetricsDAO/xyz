@@ -1,18 +1,24 @@
+import type { ObjectId } from "mongodb";
+import { Countdown } from "~/components";
+import { ActivityAvatar } from "~/components/activity/activity-avatar";
 import { Header, Row, Table } from "~/components/table";
 import type { ActivityDoc } from "~/domain";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { mongo } from "~/services/mongo.server";
 
-export function ActivityTable({ activities }: { activities: ActivityDoc[] }) {
+export type ActivityDocWithMongoId = ActivityDoc & { _id: ObjectId };
+
+export function ActivityTable({ activities }: { activities: ActivityDocWithMongoId[] }) {
   return (
     <Table>
       <Header columns={12} className="mb-2">
-        <Header.Column span={3}>Challenge Title</Header.Column>
-        <Header.Column span={3}>Reward</Header.Column>
-        <Header.Column span={2}>Submitted</Header.Column>
-        <Header.Column span={3}>Rewarded</Header.Column>
-        <Header.Column>Status</Header.Column>
+        <Header.Column span={3}>Action</Header.Column>
+        <Header.Column span={3}>Title</Header.Column>
+        <Header.Column span={3}>Status</Header.Column>
+        <Header.Column span={3}>Timestamp</Header.Column>
       </Header>
       {activities.map((a) => {
-        return <ActivityTableRow activity={a} key={a.id} />;
+        return <ActivityTableRow activity={a} key={a._id.toString()} />;
       })}
     </Table>
   );
@@ -22,24 +28,17 @@ function ActivityTableRow({ activity }: { activity: ActivityDoc }) {
   return (
     <Row columns={12}>
       <Row.Column span={3}>
-        <p>title</p>
+        <ActivityAvatar eventType={activity.groupType.toString()} />
+        <p>{}</p>
       </Row.Column>
-      <Row.Column span={3}>column</Row.Column>
-      <Row.Column span={2} className="text-black">
-        timestamp
+      <Row.Column span={3}>{activity.laborMarketTitle}</Row.Column>
+      <Row.Column span={3} className="text-black">
+        Active
       </Row.Column>
-      <Row.Column span={3} className="text-black" color="dark.3">
-        testing
+      <Row.Column span={2} className="text-black" color="dark.3">
+        <Countdown date={activity.createdAtBlockTimestamp} />
       </Row.Column>
-      <Row.Column>
-        {/* {hasClaimed === false ? (
-          <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
-        ) : hasClaimed === true ? (
-          <span>Claimed</span>
-        ) : (
-          <></>
-        )} */}
-      </Row.Column>
+      <Row.Column></Row.Column>
     </Row>
   );
 }
