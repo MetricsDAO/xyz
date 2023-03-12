@@ -1,24 +1,16 @@
+import { DocumentDuplicateIcon } from "@heroicons/react/20/solid";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Link } from "@remix-run/react";
-import { useAccount, useContractRead, useDisconnect, useEnsAvatar, useEnsName } from "wagmi";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { fetchBalance } from "@wagmi/core";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { getUser } from "~/services/session.server";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { displayBalance, truncateAddress } from "~/utils/helpers";
-import { ReputationToken } from "labor-markets-abi";
-import { BigNumber } from "ethers";
-import { REPUTATION_TOKEN_ID } from "~/utils/constants";
-import invariant from "tiny-invariant";
+import { useAccount, useDisconnect, useEnsAvatar, useEnsName } from "wagmi";
+import { truncateAddress } from "~/utils/helpers";
 import { Button } from "../button";
-import { DocumentDuplicateIcon } from "@heroicons/react/20/solid";
 import { CopyToClipboard } from "../copy-to-clipboard";
 
 export const ProfileMenu = () => {
   //   console.log("BALANCE", balance);
 
-  const { address, isConnecting, isDisconnected } = useAccount();
+  const { address } = useAccount();
   const { disconnect } = useDisconnect();
 
   console.log("ADDRESS", address);
