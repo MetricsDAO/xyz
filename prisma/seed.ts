@@ -61,7 +61,7 @@ async function main() {
   });
 
   await prisma.network.createMany({
-    data: [{ name: "Polygon" }],
+    data: [{ name: "Polygon" }, { name: "Ethereum" }],
     skipDuplicates: true,
   });
 
