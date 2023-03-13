@@ -2,11 +2,17 @@ import type { Transactor } from "~/hooks/use-transactor";
 import { Button } from "../button";
 import { Modal } from "../modal";
 
-export function TxModal({ transactor }: { transactor: Transactor }) {
+type Props = {
+  transactor: Transactor;
+  title?: string;
+  confirmationMessage?: React.ReactNode;
+};
+
+export function TxModal({ transactor, title, confirmationMessage }: Props) {
   return (
     <Modal isOpen={transactor.state !== "idle"} onClose={transactor.cancel}>
       <div className="px-8 text-center mb-8 space-y-4">
-        <h1 className="text-base font-medium">Create Marketplace</h1>
+        <h1 className="text-base font-medium">{title ?? "Execute transaction"}</h1>
 
         {transactor.state === "preparing" ? <div>Preparing...</div> : null}
 
@@ -18,12 +24,19 @@ export function TxModal({ transactor }: { transactor: Transactor }) {
         ) : null}
 
         {transactor.state === "prepared" ? (
-          <p className="text-sm text-gray-600">Confirm that you would like to create a new marketplace.</p>
+          <p className="text-sm text-gray-600">
+            {confirmationMessage ?? "Confirm that you would like to exectute this transaction."}
+          </p>
         ) : null}
 
         {transactor.state === "writing" ? <div>Writing...</div> : null}
 
-        {transactor.state === "waiting" ? <div>Waiting for confirmation...</div> : null}
+        {transactor.state === "waiting" ? (
+          <div>
+            <p>Waiting for confirmation...</p>
+            <PolygonscanLink transactionHash={transactor.transactionHash} />
+          </div>
+        ) : null}
       </div>
 
       {transactor.state === "prepared" ? (
@@ -37,5 +50,18 @@ export function TxModal({ transactor }: { transactor: Transactor }) {
         </div>
       ) : null}
     </Modal>
+  );
+}
+
+function PolygonscanLink({ transactionHash }: { transactionHash: string }) {
+  return (
+    <a
+      className="text-blue-600"
+      target="_blank"
+      href={`https://polygonscan.com/tx/${transactionHash}`}
+      rel="noreferrer"
+    >
+      View on polygonscan
+    </a>
   );
 }

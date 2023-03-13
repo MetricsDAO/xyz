@@ -68,7 +68,11 @@ export function LaborMarketCreator({ projects, tokens, defaultValues }: LaborMar
 
   return (
     <FormProvider {...methods}>
-      <TxModal transactor={transactor} />
+      <TxModal
+        transactor={transactor}
+        title="Create Marketplace"
+        confirmationMessage="Confirm that you would like to create a new marketplace."
+      />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
         <LaborMarketCreatorFields projects={projects} type={mType} tokens={tokens} />
         <Button size="lg" type="submit">
