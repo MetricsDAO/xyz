@@ -115,7 +115,7 @@ export default function CreateServiceRequest() {
       <ValidatedForm
         method="post"
         defaultValues={{
-          language: "english",
+          laborMarketAddress: laborMarket.address,
           ...defaultValues,
         }}
         validator={validator}

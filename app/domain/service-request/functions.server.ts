@@ -61,28 +61,24 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
 /**
  * Prepare a new Challenge for submission to the contract.
  * @param {string} laborMarketAddress - The labor market address the service request belongs to
- * @param {ServiceRequestForm} form - service request form data
+ * @param {ServiceRequestFormValues} form - service request form data
  * @returns {ServiceRequestContract} - The prepared service request.
  */
-export const prepareServiceRequest = async (user: User, laborMarketAddress: string, form: ServiceRequestForm) => {
+export const prepareServiceRequest = async (user: User, laborMarketAddress: string, form: ServiceRequestFormValues) => {
   const metadata = ServiceRequestMetaSchema.parse(form); // Prune extra fields from form
   const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
-
-  const currentDate = new Date();
-  //calculates the claim to submit deadline, which is 75% of the submission deadline
-  const signalDeadline = claimDate(currentDate, parseDatetime(form.endDate, form.endTime));
 
   // parse for type safety
   const contractData = ServiceRequestContractSchema.parse({
     laborMarketAddress: laborMarketAddress,
-    title: form.title,
-    description: form.description,
-    pTokenAddress: form.rewardToken,
-    pTokenQuantity: form.rewardPool,
+    title: form.appData.title,
+    description: form.appData.description,
+    pTokenAddress: form.configuration.pToken,
+    pTokenQuantity: form.configuration.pTokenQuantity,
     uri: cid,
-    enforcementExpiration: parseDatetime(form.reviewEndDate, form.reviewEndTime),
-    submissionExpiration: parseDatetime(form.endDate, form.endTime),
-    signalExpiration: signalDeadline,
+    enforcementExpiration: form.configuration.enforcementExpiration,
+    submissionExpiration: form.configuration.submissionExpiration,
+    signalExpiration: form.configuration.signalExpiration,
   });
   return contractData;
 };
