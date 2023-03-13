@@ -41,7 +41,7 @@ import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
-import { findSubmission } from "~/services/submissions.server";
+import { findSubmission } from "~/domain/submission/functions.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";

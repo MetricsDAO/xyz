@@ -1,7 +1,7 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
-import type { SubmissionWithReviewsDoc } from "~/domain";
+import type { SubmissionWithReviewsDoc } from "~/domain/submission/schemas";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { useUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
