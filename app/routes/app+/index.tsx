@@ -1,7 +1,9 @@
+import { redirect } from "@remix-run/node";
+
+export const loader = async () => {
+  return redirect("/app/analyze");
+};
+
 export default function Index() {
-  return (
-    <>
-      <meta http-equiv="refresh" content="0;url=http://metricsdao.xyz/app/analyze" />
-    </>
-  );
+  return <></>;
 }
