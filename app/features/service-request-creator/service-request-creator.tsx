@@ -9,19 +9,18 @@ import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketNetwork__factory } from "~/contracts";
-import type { EvmAddress } from "~/domain/address";
+import type { ServiceRequestForm } from "~/domain/service-request/schemas";
+import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import { unixTimestamp } from "~/utils/date";
+import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { Button } from "../../components/button";
 import { ServiceRequestCreatorFields } from "./service-request-creator-fields.tsx";
-import type { ServiceRequestFormValues } from "./service-request-creator-values";
-import { ServiceRequestFormValuesSchema } from "./service-request-creator-values";
 
 interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
-  defaultValues?: DefaultValues<ServiceRequestFormValues>;
+  defaultValues?: DefaultValues<ServiceRequestForm>;
 }
 
 /**
@@ -37,8 +36,8 @@ function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.
 export function ServiceRequestCreator({ projects, tokens, defaultValues }: ServiceRequestFormProps) {
   const { mType } = useParams();
 
-  const methods = useForm<ServiceRequestFormValues>({
-    resolver: zodResolver(ServiceRequestFormValuesSchema),
+  const methods = useForm<ServiceRequestForm>({
+    resolver: zodResolver(ServiceRequestFormSchema),
     defaultValues,
   });
 
@@ -48,17 +47,22 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarketNetwork__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "RequestConfigured");
+        const event = getEventFromLogs(iface, receipt.logs, "submitRequest");
         if (event) navigate(`/app/market/${event.args["marketAddress"]}/request/${event.args["requestId"]}}`);
       },
       [navigate]
     ),
   });
 
-  const onSubmit = (values: ServiceRequestFormValues) => {
+  const onSubmit = (values: ServiceRequestForm) => {
     transactor.start({
-      metadata: values.appData,
-      config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
+      metadata: {
+        title: values.title,
+        description: values.description,
+        language: values.language,
+        projectSlugs: values.projectSlugs,
+      },
+      config: ({ cid }) => configureFromValues({ cid, values }),
     });
   };
 
@@ -75,26 +79,21 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
   );
 }
 
-function configureFromValues({
-  owner,
-  cid,
-  values,
-}: {
-  owner: EvmAddress;
-  cid: string;
-  values: ServiceRequestFormValues;
-}) {
+function configureFromValues({ cid, values }: { cid: string; values: ServiceRequestForm }) {
+  const currentDate = new Date();
+  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.endDate, values.endTime)));
+
   return configureWrite({
     abi: LaborMarket.abi,
-    address: values.laborMarketAddress as `0x${string}`,
+    address: LaborMarket.address,
     functionName: "submitRequest",
     args: [
-      values.configuration.pToken as `0x${string}`,
-      toTokenAmount(values.configuration.pTokenQuantity),
-      BigNumber.from(unixTimestamp(values.configuration.signalExpiration)),
-      BigNumber.from(unixTimestamp(values.configuration.submissionExpiration)),
-      BigNumber.from(unixTimestamp(values.configuration.enforcementExpiration)),
-      values.configuration.uri,
+      values.rewardToken as `0x${string}`,
+      toTokenAmount(values.rewardPool),
+      BigNumber.from(unixTimestamp(signalDeadline)),
+      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.endDate, values.endTime)))),
+      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.reviewEndDate, values.reviewEndTime)))),
+      cid,
     ],
   });
 }

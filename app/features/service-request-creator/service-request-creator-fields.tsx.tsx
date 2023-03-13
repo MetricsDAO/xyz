@@ -1,12 +1,13 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 // import MDEditor from "@uiw/react-md-editor";
-import { useState } from "react";
-import { ValidatedError, Field, ValidatedCombobox, ValidatedInput, ValidatedSelect } from "~/components";
 import type { SetStateAction } from "react";
-import { claimDate, parseDatetime } from "~/utils/date";
-import React from "react";
+import { useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
+import { Combobox, Error, Field, Input, Select } from "~/components";
+import type { ServiceRequestForm } from "~/domain/service-request/schemas";
+import { claimDate, parseDatetime } from "~/utils/date";
 import { MarkdownEditor } from "../markdown-editor/markdown.client";
 
 export function ServiceRequestCreatorFields({
@@ -18,6 +19,13 @@ export function ServiceRequestCreatorFields({
   validProjects: Project[];
   mType?: string;
 }) {
+  const {
+    register,
+    control,
+    watch,
+    formState: { errors },
+  } = useFormContext<ServiceRequestForm>();
+
   const [selectedSubmitDate, setSelectedSubmitDate] = useState("");
   const [selectedSubmitTime, setSelectedSubmitTime] = useState("");
 
@@ -49,8 +57,8 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
-          <ValidatedInput name="title" placeholder="Challenge Title" className="w-full" />
-          <ValidatedError name="title" />
+          <Input {...register("title")} name="title" placeholder="Challenge Title" className="w-full" />
+          <Error error={errors.title?.message} />
         </Field>
       </section>
       <section className="space-y-3">{mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}</section>
@@ -58,22 +66,26 @@ export function ServiceRequestCreatorFields({
         <div className="flex flex-col md:flex-row gap-2">
           <div className="flex-grow">
             <Field>
-              <ValidatedSelect
+              <Controller
                 name="language"
-                placeholder="Language"
-                options={[{ label: "English", value: "english" }]}
+                control={control}
+                render={({ field }) => {
+                  return <Select {...field} placeholder="English" options={[{ label: "English", value: "english" }]} />;
+                }}
               />
-              <ValidatedError name="language" />
+              <Error error={errors.language?.message} />
             </Field>
           </div>
           <div className="flex-grow">
             <Field>
-              <ValidatedCombobox
-                placeholder="Blockchain/Project(s)"
+              <Controller
+                control={control}
                 name="projectSlugs"
-                options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
+                render={({ field }) => (
+                  <Combobox {...field} options={validProjects.map((p) => ({ label: p.name, value: p.slug }))} />
+                )}
               />
-              <ValidatedError name="projectSlugs" />
+              <Error error={errors.projectSlugs?.message} />
             </Field>
           </div>
         </div>
@@ -82,12 +94,12 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">When must submissions be entered by?*</h2>
         <Field>
-          <ValidatedInput onChange={handleSubmitDateChange} type="date" name="endDate" placeholder="End date" />
-          <ValidatedError name="endDate" />
+          <Input {...register("endDate")} type="date" onChange={handleSubmitDateChange} />
+          <Error error={errors.endDate?.message} />
         </Field>
         <Field>
-          <ValidatedInput onChange={handleSubmitTimeChange} type="time" name="endTime" placeholder="End time" />
-          <ValidatedError name="endTime" />
+          <Input {...register("endTime")} type="time" onChange={handleSubmitTimeChange} />
+          <Error error={errors.endTime?.message} />
         </Field>
         <p className="text-gray-400 italic">
           {selectedSubmitDate &&
@@ -99,12 +111,12 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
         <Field>
-          <ValidatedInput onChange={handleReviewDateChange} type="date" name="reviewEndDate" placeholder="End date" />
-          <ValidatedError name="reviewEndDate" />
+          <Input {...register("reviewEndDate")} type="date" onChange={handleReviewDateChange} />
+          <Error error={errors.reviewEndDate?.message} />
         </Field>
         <Field>
-          <ValidatedInput onChange={handleReviewTimeChange} type="time" name="reviewEndTime" placeholder="End time" />
-          <ValidatedError name="reviewEndTime" />
+          <Input {...register("reviewEndTime")} type="time" onChange={handleReviewTimeChange} />
+          <Error error={errors.reviewEndTime?.message} />
         </Field>
         <p className="text-gray-400 italic">
           {selectedReviewDate &&
@@ -118,20 +130,31 @@ export function ServiceRequestCreatorFields({
         <div className="flex flex-col md:flex-row gap-2 items-baseline">
           <div className="flex-grow w-full">
             <Field>
-              <ValidatedSelect
+              <Controller
                 name="rewardToken"
-                placeholder="Token"
-                options={validTokens.map((t) => {
-                  return { label: t.symbol, value: t.contractAddress };
-                })}
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      {...field}
+                      options={validTokens.map((t) => {
+                        return { label: t.symbol, value: t.contractAddress };
+                      })}
+                    />
+                  );
+                }}
               />
-              <ValidatedError name="rewardToken" />
+              <Error error={errors.rewardToken?.message} />
             </Field>
           </div>
           <div className="flex-grow w-full">
             <Field>
-              <ValidatedInput name="rewardPool" placeholder="Token amount distributed across winners" />
-              <ValidatedError name="rewardPool" />
+              <Input
+                {...register("rewardPool")}
+                name="rewardPool"
+                placeholder="Token amount distributed across winners"
+              />
+              <Error error={errors.rewardPool?.message} />
             </Field>
           </div>
         </div>
