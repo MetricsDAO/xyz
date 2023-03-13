@@ -34,7 +34,14 @@ export function TxModal({ transactor, title, confirmationMessage }: Props) {
         {transactor.state === "waiting" ? (
           <div className="space-y-2">
             <p>Waiting for confirmation...</p>
-            <PolygonscanLink transactionHash={transactor.transactionHash} />
+            <a
+              className="text-blue-600"
+              target="_blank"
+              href={`https://polygonscan.com/tx/${transactor.transactionHash}`}
+              rel="noreferrer"
+            >
+              View on polygonscan
+            </a>
           </div>
         ) : null}
       </div>
@@ -50,18 +57,5 @@ export function TxModal({ transactor, title, confirmationMessage }: Props) {
         </div>
       ) : null}
     </Modal>
-  );
-}
-
-function PolygonscanLink({ transactionHash }: { transactionHash: string }) {
-  return (
-    <a
-      className="text-blue-600"
-      target="_blank"
-      href={`https://polygonscan.com/tx/${transactionHash}`}
-      rel="noreferrer"
-    >
-      View on polygonscan
-    </a>
   );
 }
