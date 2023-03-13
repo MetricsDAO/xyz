@@ -24,7 +24,7 @@ import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { countReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";

@@ -16,11 +16,11 @@ import { ValidatedInput } from "~/components/input/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
-import { ServiceRequestSearchSchema } from "~/domain/service-request";
+import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ProjectBadges } from "~/features/project-badges";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
 import { listProjects } from "~/services/projects.server";
-import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
+import { countServiceRequests, searchServiceRequests } from "~/domain/service-request/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
 

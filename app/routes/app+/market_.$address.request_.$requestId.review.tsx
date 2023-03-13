@@ -14,7 +14,7 @@ import type { ClaimToReviewContract, ClaimToReviewForm } from "~/domain";
 import { ClaimToReviewFormSchema } from "~/domain";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { ClaimToReviewWeb3Button } from "~/features/web3-button/claim-to-review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";

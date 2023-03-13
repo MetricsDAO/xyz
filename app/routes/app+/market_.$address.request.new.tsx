@@ -9,16 +9,16 @@ import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Button, Container, Modal } from "~/components";
-import type { ServiceRequestContract } from "~/domain";
-import { fakeServiceRequestFormData, ServiceRequestFormSchema } from "~/domain";
-import { ChallengeForm } from "~/features/challenge-form";
+import type { ServiceRequestContract } from "~/domain/service-request/schemas";
+import { fakeServiceRequestFormData, ServiceRequestFormSchema } from "~/domain/service-request/schemas";
+import { ServiceRequestCreatorFields } from "~/features/service-request-creator/service-request-creator-fields.tsx";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findProjectsBySlug } from "~/services/projects.server";
-import { prepareServiceRequest } from "~/services/service-request.server";
+import { findProjectsBySlug, listProjects } from "~/services/projects.server";
+import { prepareServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
@@ -26,8 +26,10 @@ import { isValidationError } from "~/utils/utils";
 import { toTokenAbbreviation } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { ServiceRequestCreator } from "~/features/service-request-creator/service-request-creator";
+import { ServiceRequestFormValuesSchema } from "~/features/service-request-creator/service-request-creator-values";
 
-const validator = withZod(ServiceRequestFormSchema);
+const validator = withZod(ServiceRequestFormValuesSchema);
 const paramsSchema = z.object({ address: z.string() });
 const serviceRequestMachine = createBlockchainTransactionStateMachine<ServiceRequestContract>();
 
@@ -104,6 +106,8 @@ export default function CreateServiceRequest() {
     setError(error);
   };
 
+  console.log("state", state.value, state.context);
+
   return (
     <Container className="max-w-3xl my-10 space-y-10">
       {mType === "brainstorm" ? <BrainstormHeader /> : <AnalyticsHeader />}
@@ -117,7 +121,7 @@ export default function CreateServiceRequest() {
         validator={validator}
         className="space-y-10"
       >
-        <ChallengeForm validTokens={tokens} validProjects={laborMarketProjects} mType={mType} />
+        <ServiceRequestCreatorFields validTokens={tokens} validProjects={laborMarketProjects} mType={mType} />
         <ConnectWalletWrapper>
           <Button variant="primary" type="submit">
             Next
@@ -167,24 +171,7 @@ export default function CreateServiceRequest() {
               </div>
             )}
             {state.matches("transactionPrepared.preapprove.success") && (
-              <div className="space-y-8">
-                <p className="text-sm text-center text-stone-500 max-w-xs">
-                  Confirm you would like to launch this challenge and transfer funds.
-                </p>
-                {error && <RPCError error={error} />}
-                <div className="flex flex-col sm:flex-row justify-center gap-2">
-                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
-                    Cancel
-                  </Button>
-                  {!error && (
-                    <CreateServiceRequestWeb3Button
-                      data={state.context.contractData}
-                      onWriteSuccess={onCreateServiceRequestWriteSuccess}
-                      onPrepareTransactionError={onPrepareTransactionError}
-                    />
-                  )}
-                </div>
-              </div>
+              <ServiceRequestCreator projects={laborMarketProjects} tokens={tokens} />
             )}
             {state.matches("transactionWait") && (
               <div className="text-sm text-center text-stone-500">

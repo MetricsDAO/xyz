@@ -1,6 +1,6 @@
 import { useRouteData } from "remix-utils";
 import { CountdownCard } from "~/components/countdown-card";
-import type { findServiceRequest } from "~/services/service-request.server";
+import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline } from "~/utils/helpers";
 

@@ -1,5 +1,5 @@
 import { Button } from "~/components";
-import type { ServiceRequestContract } from "~/domain";
+import type { ServiceRequestContract } from "~/domain/service-request/schemas";
 import { useCreateServiceRequest } from "~/hooks/use-create-service-request";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";

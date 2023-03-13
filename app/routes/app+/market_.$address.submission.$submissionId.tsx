@@ -39,7 +39,7 @@ import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/services/submissions.server";
 import { SCORE_COLOR } from "~/utils/constants";

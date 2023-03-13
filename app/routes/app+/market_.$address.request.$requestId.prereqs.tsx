@@ -8,7 +8,7 @@ import { PermissionIcon } from "~/features/permission-icon";
 import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useTokenData } from "~/hooks/use-token-data";
-import type { findServiceRequest } from "~/services/service-request.server";
+import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function ServiceIdPrereqs() {

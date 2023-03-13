@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
-import type { ServiceRequestDoc, SubmissionDoc, ReviewDoc } from "~/domain";
+import type { SubmissionDoc, ReviewDoc } from "~/domain";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
 

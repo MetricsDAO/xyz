@@ -16,7 +16,7 @@ import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";

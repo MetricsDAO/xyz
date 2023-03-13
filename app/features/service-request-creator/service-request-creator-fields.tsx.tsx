@@ -7,16 +7,16 @@ import type { SetStateAction } from "react";
 import { claimDate, parseDatetime } from "~/utils/date";
 import React from "react";
 import { ClientOnly } from "remix-utils";
-import { MarkdownEditor } from "./markdown-editor/markdown.client";
+import { MarkdownEditor } from "../markdown-editor/markdown.client";
 
-export function ChallengeForm({
+export function ServiceRequestCreatorFields({
   validTokens,
   validProjects,
   mType,
 }: {
   validTokens: Token[];
   validProjects: Project[];
-  mType: string;
+  mType?: string;
 }) {
   const [selectedSubmitDate, setSelectedSubmitDate] = useState("");
   const [selectedSubmitTime, setSelectedSubmitTime] = useState("");

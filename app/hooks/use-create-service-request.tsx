@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
-import type { ServiceRequestContract } from "~/domain";
+import type { ServiceRequestContract } from "~/domain/service-request/schemas";
 import type { Web3Hook } from "~/features/web3-button/types";
 import { unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";

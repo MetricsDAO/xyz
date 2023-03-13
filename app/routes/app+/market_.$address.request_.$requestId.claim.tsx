@@ -16,7 +16,7 @@ import { RPCError } from "~/features/rpc-error";
 import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import invariant from "tiny-invariant";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";

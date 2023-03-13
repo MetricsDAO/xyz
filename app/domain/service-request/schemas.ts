@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import { EvmAddressSchema } from "./address";
+import { EvmAddressSchema } from "../address";
 
 export const ServiceRequestSchema = z.object({
   id: z.string({ description: "The id of the service request." }),
@@ -151,8 +151,19 @@ export const ServiceRequestSearchSchema = z.object({
   first: z.number().default(12),
 });
 
+export const ServiceRequestConfigSchema = z.object({
+  requester: EvmAddressSchema,
+  pToken: EvmAddressSchema,
+  pTokenQuantity: z.string(),
+  signalExpiration: z.date(),
+  submissionExpiration: z.date(),
+  enforcementExpiration: z.date(),
+  uri: z.string(),
+});
+
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
 export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;
+export type ServiceRequestConfig = z.infer<typeof ServiceRequestConfigSchema>;

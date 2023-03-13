@@ -4,7 +4,8 @@ import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
-import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
+import { indexClaimToReview, indexClaimToSubmit } from "~/domain/service-request/functions.server";
+import { indexServiceRequest } from "~/domain/service-request/functions.server";
 import { indexSubmission } from "~/services/submissions.server";
 
 const worker = pine.createWorker({
