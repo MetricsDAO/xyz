@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
@@ -12,6 +12,7 @@ import { LaborMarketNetwork__factory } from "~/contracts";
 import type { ServiceRequestForm } from "~/domain/service-request/schemas";
 import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { useUser } from "~/hooks/use-user";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { Button } from "../../components/button";
@@ -35,15 +36,14 @@ function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.
 
 export function ServiceRequestCreator({ projects, tokens, defaultValues }: ServiceRequestFormProps) {
   const { mType } = useParams();
+  const user = useUser();
 
-  const methods = useForm<ServiceRequestForm>({
-    resolver: zodResolver(ServiceRequestFormSchema),
-    defaultValues,
-  });
+  const [values, setValues] = useState<ServiceRequestForm>();
+  const [approved, setApproved] = useState(false);
 
   const navigate = useNavigate();
 
-  const transactor = useTransactor({
+  const submitTransactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarketNetwork__factory.createInterface();
@@ -54,21 +54,78 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
     ),
   });
 
+  const approveTransactor = useTransactor({
+    onSuccess: useCallback((receipt) => {
+      const iface = LaborMarketNetwork__factory.createInterface();
+      const event = getEventFromLogs(iface, receipt.logs, "approve");
+      if (event) setApproved(true);
+    }, []),
+  });
+
+  useEffect(() => {
+    if (approved && values) {
+      console.log("STARTING");
+      submitTransactor.start({
+        metadata: {
+          title: values.title,
+          description: values.description,
+          language: values.language,
+          projectSlugs: values.projectSlugs,
+        },
+        config: ({ cid }) => configureFromValues({ cid, values }),
+      });
+    }
+  }, [approved, submitTransactor, values]);
+
+  const methods = useForm<ServiceRequestForm>({
+    resolver: zodResolver(ServiceRequestFormSchema),
+    defaultValues,
+  });
+
   const onSubmit = (values: ServiceRequestForm) => {
-    transactor.start({
-      metadata: {
-        title: values.title,
-        description: values.description,
-        language: values.language,
-        projectSlugs: values.projectSlugs,
-      },
-      config: ({ cid }) => configureFromValues({ cid, values }),
+    approveTransactor.start({
+      metadata: {},
+      config: ({}) =>
+        configureWrite({
+          address: values.rewardToken as `0x${string}`,
+          abi: [
+            {
+              constant: false,
+              inputs: [
+                { name: "spender", type: "address" },
+                { name: "value", type: "uint256" },
+              ],
+              name: "approve",
+              outputs: [{ name: "", type: "bool" }],
+              payable: false,
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ],
+          functionName: "approve",
+          args: [user.address, toTokenAmount(values.rewardPool)],
+        }),
     });
+    setValues(values);
   };
 
   return (
     <FormProvider {...methods}>
-      <TxModal transactor={transactor} />
+      {!approved && (
+        <TxModal
+          transactor={approveTransactor}
+          title="Approve Challenge"
+          confirmationMessage={"Approve the app to transfer the tokens on your behalf"}
+        />
+      )}
+      {approved && (
+        <TxModal
+          transactor={submitTransactor}
+          title="Launch Challenge"
+          confirmationMessage={"Confirm that you would like to launch this challenge and transfer the funds"}
+        />
+      )}
+
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
         <ServiceRequestCreatorFields validTokens={tokens} validProjects={projects} mType={mType} />
         <Button size="lg" type="submit">

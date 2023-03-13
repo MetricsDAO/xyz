@@ -5,9 +5,8 @@ import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketDoc } from "~/domain";
 import { ClaimToReviewEventSchema, ClaimToSubmitEventSchema } from "~/domain";
-import type { ServiceRequestDoc, ServiceRequestSearch } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request/schemas";
 import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request/schemas";
-import type { ServiceRequestFormValues } from "~/features/service-request-creator/service-request-creator-values";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
@@ -56,31 +55,6 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
   return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress, valid: true });
-};
-
-/**
- * Prepare a new Challenge for submission to the contract.
- * @param {string} laborMarketAddress - The labor market address the service request belongs to
- * @param {ServiceRequestFormValues} form - service request form data
- * @returns {ServiceRequestContract} - The prepared service request.
- */
-export const prepareServiceRequest = async (user: User, laborMarketAddress: string, form: ServiceRequestFormValues) => {
-  const metadata = ServiceRequestMetaSchema.parse(form); // Prune extra fields from form
-  const cid = await uploadJsonToIpfs(user, metadata, metadata.title);
-
-  // parse for type safety
-  const contractData = ServiceRequestContractSchema.parse({
-    laborMarketAddress: laborMarketAddress,
-    title: form.appData.title,
-    description: form.appData.description,
-    pTokenAddress: form.configuration.pToken,
-    pTokenQuantity: form.configuration.pTokenQuantity,
-    uri: cid,
-    enforcementExpiration: form.configuration.enforcementExpiration,
-    submissionExpiration: form.configuration.submissionExpiration,
-    signalExpiration: form.configuration.signalExpiration,
-  });
-  return contractData;
 };
 
 /**

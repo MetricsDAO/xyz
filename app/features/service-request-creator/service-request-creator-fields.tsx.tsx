@@ -22,7 +22,6 @@ export function ServiceRequestCreatorFields({
   const {
     register,
     control,
-    watch,
     formState: { errors },
   } = useFormContext<ServiceRequestForm>();
 
