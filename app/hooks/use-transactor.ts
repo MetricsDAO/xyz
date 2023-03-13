@@ -25,7 +25,7 @@ type State =
   | { state: "prepared"; prepared: WriteContractPreparedArgs<any, any> }
   | { state: "writing" }
   | { state: "written"; result: WriteContractResult }
-  | { state: "waiting" }
+  | { state: "waiting"; transactionHash: `0x${string}` }
   | { state: "success"; receipt: TransactionReceipt };
 
 export type Transactor = ReturnType<typeof useTransactor>;
@@ -58,7 +58,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     if (state.state !== "prepared") throw new Error("Cannot write contract without being prepared.");
     setState({ state: "writing" });
     const result = await writeContract(state.prepared!);
-    setState({ state: "waiting" });
+    setState({ state: "waiting", transactionHash: result.hash });
     const receipt = await result.wait(1);
     setState({ state: "success", receipt });
   };
