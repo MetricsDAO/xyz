@@ -25,14 +25,14 @@ export function TxModal({ transactor, title, confirmationMessage }: Props) {
 
         {transactor.state === "prepared" ? (
           <p className="text-sm text-gray-600">
-            {confirmationMessage ?? "Confirm that you would like to exectute this transaction."}
+            {confirmationMessage ?? "Confirm that you would like to execute this transaction."}
           </p>
         ) : null}
 
         {transactor.state === "writing" ? <div>Writing...</div> : null}
 
         {transactor.state === "waiting" ? (
-          <div>
+          <div className="space-y-2">
             <p>Waiting for confirmation...</p>
             <PolygonscanLink transactionHash={transactor.transactionHash} />
           </div>
