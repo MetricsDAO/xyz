@@ -1,4 +1,3 @@
-import { useTransition } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -6,15 +5,12 @@ import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
 import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
-import { ValidatedForm, validationError } from "remix-validated-form";
+import { validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
+import { Container } from "~/components";
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
-import { RPCError } from "~/features/rpc-error";
-import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
-import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
@@ -22,6 +18,7 @@ import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import SubmissionCreator from "~/features/submission-creator/submission-creator";
 
 const validator = withZod(SubmissionFormSchema);
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
@@ -80,53 +77,16 @@ export default function SubmitQuestion() {
     }
   }, [actionData, send]);
 
-  const onWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   if (laborMarket.appData?.type === "analyze") {
-    return (
-      <Analyze
-        isModalOpen={isModalOpen && !state.matches("transactionWait")}
-        closeModal={closeModal}
-        contractData={state.context.contractData}
-        onWriteSuccess={onWriteSuccess}
-      />
-    );
+    return <Analyze />;
   } else if (laborMarket.appData?.type === "brainstorm") {
-    return (
-      <Brainstorm
-        isModalOpen={isModalOpen && !state.matches("transactionWait")}
-        closeModal={closeModal}
-        contractData={state.context.contractData}
-        onWriteSuccess={onWriteSuccess}
-      />
-    );
+    return <Brainstorm />;
   } else {
     console.error("mtype is neither brainstorm nor analyze");
   }
 }
 
-function Brainstorm({
-  isModalOpen,
-  closeModal,
-  contractData,
-  onWriteSuccess,
-}: {
-  isModalOpen: boolean;
-  closeModal: () => void;
-  contractData: SubmissionContract | undefined;
-  onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
-}) {
-  const [error, setError] = useState<EthersError>();
-  const transition = useTransition();
-  const onPrepareTransactionError = (error: EthersError) => {
-    setError(error);
-  };
+function Brainstorm() {
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -139,58 +99,7 @@ function Brainstorm({
               rMETRIC from the challenge reward pool!
             </p>
           </div>
-          <ValidatedForm method="post" validator={validator}>
-            <div className="space-y-10">
-              <section className="space-y-3">
-                <h2 className="font-bold">Submission Title</h2>
-                <Field>
-                  <ValidatedInput name="title" placeholder="Submission Title" className="w-full" />
-                </Field>
-              </section>
-              <section className="space-y-3">
-                <h2 className="font-bold">What would you like Web3 analysts to address?</h2>
-                <Field>
-                  <ValidatedTextarea
-                    name="description"
-                    rows={7}
-                    placeholder="Enter an idea for something Web3 analysts should address. 
-
-                  Be specific. Define metrics. Specify time boundaries. Example: How many addresses have transferred SUSHI on Ethereum in the last 90 days?"
-                  />
-                </Field>
-                <p className="italic text-gray-500 text-sm">
-                  Important: You can’t edit this submission after submitting. Double check your work for typos and
-                  ensure your idea is good to go.{" "}
-                  <i className="text-blue-600">
-                    <a href="https://docs.metricsdao.xyz/metricsdao/code-of-conduct#plagiarism-17">
-                      Plagiarism Code of Conduct.
-                    </a>
-                  </i>
-                </p>
-              </section>
-              <Button type="submit">{transition.state === "submitting" ? "Loading..." : "Next"}</Button>
-            </div>
-          </ValidatedForm>
-          {contractData && (
-            <Modal title="Submit Idea" isOpen={isModalOpen} onClose={closeModal}>
-              <div className="space-y-8">
-                <p>Please confirm that you would like to submit this idea.</p>
-                {error && <RPCError error={error} />}
-                <div className="flex flex-col sm:flex-row justify-center gap-5">
-                  {!error && (
-                    <CreateSubmissionWeb3Button
-                      data={contractData}
-                      onWriteSuccess={onWriteSuccess}
-                      onPrepareTransactionError={onPrepareTransactionError}
-                    />
-                  )}
-                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </Modal>
-          )}
+          <SubmissionCreator />
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
@@ -233,17 +142,7 @@ function Brainstorm({
   );
 }
 
-function Analyze({
-  isModalOpen,
-  closeModal,
-  contractData,
-  onWriteSuccess,
-}: {
-  isModalOpen: boolean;
-  closeModal: () => void;
-  contractData: SubmissionContract | undefined;
-  onWriteSuccess: ((result: SendTransactionResult) => void) | undefined;
-}) {
+function Analyze() {
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -256,45 +155,7 @@ function Analyze({
               rMETRIC from the challenge reward pool!
             </p>
           </div>
-          <ValidatedForm method="post" validator={validator}>
-            <div className="space-y-10">
-              <section className="space-y-3">
-                <h2 className="font-bold">Submission Title</h2>
-                <Field>
-                  <ValidatedInput name="title" placeholder="Submission Title" className="w-full" />
-                </Field>
-              </section>
-              <section className="space-y-3">
-                <h2 className="font-bold">Public link to your work</h2>
-                <Field>
-                  <ValidatedInput name="description" placeholder="Public link to your work" />
-                </Field>
-                <p className="italic text-gray-500 text-sm">
-                  Important: You can’t edit this link after submitting. Double check that this link to work is correct,
-                  owned by you, published, and public.{" "}
-                  <i className="text-blue-600">
-                    <a href="https://docs.metricsdao.xyz/metricsdao/code-of-conduct#plagiarism-17">
-                      Plagiarism Code of Conduct.
-                    </a>
-                  </i>
-                </p>
-              </section>
-              <Button type="submit">Next</Button>
-            </div>
-          </ValidatedForm>
-          {contractData && (
-            <Modal title="Submit Work" isOpen={isModalOpen} onClose={closeModal}>
-              <div className="space-y-8">
-                <p>Please confirm that you would like to submit this work.</p>
-                <div className="flex flex-col sm:flex-row justify-center gap-5">
-                  <CreateSubmissionWeb3Button data={contractData} onWriteSuccess={onWriteSuccess} />
-                  <Button variant="cancel" size="md" onClick={closeModal} fullWidth>
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </Modal>
-          )}
+          <SubmissionCreator />
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
