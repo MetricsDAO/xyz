@@ -33,7 +33,6 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const activityTypes = Object.values(ActivityTypeSchema);
   const search = getParamsOrFail(url.searchParams, ActivitySearchSchema);
   const userActivities = await searchUserActivity(user.address, search);
-  console.log("userActivities", userActivities);
   return typedjson({
     userActivities,
     activityTypes,
@@ -121,6 +120,7 @@ function SearchAndFilter({ types }: { types: ActivityTypes[] }) {
           name="groupType"
           size="sm"
           onChange={handleChange}
+          value={["LaborMarket"]}
           placeholder="Select option"
           options={[{ label: "Marketplaces", value: "LaborMarket" }]}
         />
