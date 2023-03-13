@@ -14,9 +14,9 @@ import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { SubmissionSearchSchema } from "~/domain/submission";
+import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
-import { searchSubmissionsWithReviews } from "~/services/submissions.server";
+import { searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 
 const validator = withZod(SubmissionSearchSchema);
 

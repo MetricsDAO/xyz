@@ -12,14 +12,14 @@ import type {
   SubmissionSearch,
   SubmissionWithReviewsDoc,
   SubmissionWithServiceRequest,
-} from "~/domain/submission";
-import { SubmissionWithServiceRequestSchema } from "~/domain/submission";
-import { SubmissionEventSchema } from "~/domain/submission";
-import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
+} from "./schemas";
+import { SubmissionWithServiceRequestSchema } from "./schemas";
+import { SubmissionEventSchema } from "./schemas";
+import { SubmissionContractSchema, SubmissionFormSchema } from "./schemas";
 import { oneUnitAgo, utcDate } from "~/utils/date";
-import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
-import { mongo } from "./mongo.server";
-import { nodeProvider } from "./node.server";
+import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
+import { mongo } from "~/services/mongo.server";
+import { nodeProvider } from "~/services/node.server";
 
 /**
  * Returns an array of SubmissionDoc for a given Service Request.

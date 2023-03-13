@@ -1,5 +1,5 @@
 import { Button } from "~/components";
-import type { SubmissionContract } from "~/domain/submission";
+import type { SubmissionContract } from "~/domain/submission/schemas";
 import { useCreateSubmission } from "~/hooks/use-create-submission";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { Web3Hook } from "./types";

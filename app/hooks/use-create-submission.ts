@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
-import type { SubmissionContract } from "~/domain/submission";
+import type { SubmissionContract } from "~/domain/submission/schemas";
 import type { Web3Hook } from "~/features/web3-button/types";
 
 export function useCreateSubmission({ data, onWriteSuccess, onPrepareTransactionError }: Web3Hook<SubmissionContract>) {

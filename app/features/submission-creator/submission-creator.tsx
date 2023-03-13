@@ -10,8 +10,8 @@ import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketNetwork__factory } from "~/contracts";
 import { useCallback } from "react";
-import type { SubmissionContract, SubmissionForm } from "~/domain/submission";
-import { SubmissionFormSchema } from "~/domain/submission";
+import type { SubmissionContract, SubmissionForm } from "~/domain/submission/schemas";
+import { SubmissionFormSchema } from "~/domain/submission/schemas";
 import type { EvmAddress } from "~/domain/address";
 
 /**
@@ -25,8 +25,6 @@ function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.
 }
 
 export default function SubmissionCreator() {
-  const { mType } = useParams();
-
   const methods = useForm<SubmissionForm>({
     resolver: zodResolver(SubmissionFormSchema),
   });
@@ -44,7 +42,7 @@ export default function SubmissionCreator() {
     ),
   });
 
-  const onSubmit = (values: SubmissionContract) => {
+  const onSubmit = (values: SubmissionForm) => {
     transactor.start({
       metadata: values,
       config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
@@ -54,7 +52,7 @@ export default function SubmissionCreator() {
     <FormProvider {...methods}>
       <TxModal transactor={transactor} />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <SubmissionCreatorFields type={mType} />
+        <SubmissionCreatorFields />
         <Button size="lg" type="submit">
           Next
         </Button>
@@ -63,7 +61,7 @@ export default function SubmissionCreator() {
   );
 }
 
-function configureFromValues({ owner, cid, values }: { owner: EvmAddress; cid: string; values: SubmissionContract }) {
+function configureFromValues({ owner, cid, values }: { owner: EvmAddress; cid: string; values: SubmissionForm }) {
   return configureWrite({
     abi: LaborMarketNetwork.abi,
     address: LaborMarketNetwork.address,

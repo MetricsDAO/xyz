@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import type { ServiceRequest, ServiceRequestContract } from "~/domain";
 import type { LaborMarket } from "~/domain";
-import type { SubmissionIndexer } from "~/domain/submission";
+import type { SubmissionIndexer } from "~/domain/submission/schemas";
 
 // This module export utlity functions to generate fake data for testing and development
 // Uses domain types from ~/domain.

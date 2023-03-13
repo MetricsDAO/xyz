@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { EvmAddressSchema } from "./address";
-import { ServiceRequestDocSchema } from "./service-request";
-import { ReviewDocSchema } from "./review";
-import { LaborMarketWithIndexDataSchema } from "./labor-market/schemas";
+import { EvmAddressSchema } from "../address";
+import { ServiceRequestDocSchema } from "../service-request";
+import { ReviewDocSchema } from "../review";
+import { LaborMarketWithIndexDataSchema } from "../labor-market/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
