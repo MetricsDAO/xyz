@@ -46,6 +46,7 @@ model Project {
 // Represents a token that MDAO supports. Appear in labor market creation flows and search.
 model Token {
   id              String  @id @default(cuid())
+  decimals        Int
   symbol          String
   name            String
   networkName     String

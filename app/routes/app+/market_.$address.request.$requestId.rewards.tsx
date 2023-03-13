@@ -6,7 +6,7 @@ import { RewardBadge } from "~/components/reward-badge";
 import type { findServiceRequest } from "~/services/service-request.server";
 import type { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
-import { fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
+import { fromTokenAmount, findToken } from "~/utils/helpers";
 
 export default function ChallengeIdRewards() {
   const data = useRouteData<{
@@ -20,6 +20,8 @@ export default function ChallengeIdRewards() {
   const { serviceRequest, tokens } = data;
   invariant(serviceRequest, "serviceRequest must be specified");
 
+  const token = findToken(serviceRequest.configuration.pToken, tokens);
+  invariant(token, "token not found");
   return (
     <section className="space-y-3 w-full border-spacing-4 border-separate md:w-4/5">
       <Card className="p-6">
@@ -27,8 +29,8 @@ export default function ChallengeIdRewards() {
         <Detail>
           <DetailItem title="Total rewards to be distributed across winners">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
-              token={toTokenAbbreviation(serviceRequest.configuration.pToken, tokens) ?? ""}
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity, token.decimals)}
+              token={token.symbol}
               rMETRIC={REPUTATION_REWARD_POOL}
             />
           </DetailItem>

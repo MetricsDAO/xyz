@@ -12,25 +12,23 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-const DECIMALS = 18;
-
 /**
  * Take a string representation of an amount (to allow for really small or big numbers) and conver to BigNumber
  * @param amount string amount
  * @returns {BigNumber}
  */
-export const toTokenAmount = (amount: string) => {
-  return ethers.utils.parseUnits(amount, DECIMALS);
+export const toTokenAmount = (amount: string, decimals: number): BigNumber => {
+  return ethers.utils.parseUnits(amount, decimals);
 };
 
 /**
  * Convert units to a decimal representation
- * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001
+ * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001 USDC
  * @param units string units
  * @returns {string}
  */
-export const fromTokenAmount = (units: string) => {
-  return ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS).toString();
+export const fromTokenAmount = (units: string, decimals: number): string => {
+  return ethers.FixedNumber.fromValue(BigNumber.from(units), decimals).toString();
 };
 
 export function findProjectsBySlug(projects: Project[], slugs: string[]) {
@@ -47,8 +45,8 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
  * @param tokens List of tokens in the app
  * @returns {string}
  */
-export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
-  return tokens.find((t) => t.contractAddress === address)?.symbol;
+export const findToken = (address: string, tokens: Token[]) => {
+  return tokens.find((t) => t.contractAddress === address);
 };
 
 /**

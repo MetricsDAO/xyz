@@ -22,7 +22,7 @@ const DateSchema = z.preprocess((arg) => {
 
 const TokenAmountSchema = z.string().refine((r) => {
   try {
-    toTokenAmount(r);
+    toTokenAmount(r, 18); //TODO: get decimals dynamically. This refine may need to move to the whole form schema.
     return true;
   } catch (e) {
     return false;

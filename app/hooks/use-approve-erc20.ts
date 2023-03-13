@@ -4,6 +4,7 @@ import { toTokenAmount } from "~/utils/helpers";
 
 export type ApproveERC20ContractData = {
   ERC20address: string;
+  decimals: number;
   spender: `0x${string}`;
   amount: string;
 };
@@ -30,7 +31,7 @@ export function useApproveERC20({
       },
     ],
     functionName: "approve",
-    args: [data.spender, toTokenAmount(data.amount)],
+    args: [data.spender, toTokenAmount(data.amount, data.decimals)],
     onError(err) {
       onPrepareTransactionError?.(err);
     },

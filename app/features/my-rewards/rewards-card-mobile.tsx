@@ -1,4 +1,5 @@
 import type { Token, Wallet } from "@prisma/client";
+import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { RewardBadge } from "~/components/reward-badge";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
@@ -45,6 +46,7 @@ function RewardCard({
     action: "HAS_CLAIMED",
   });
   const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
+  invariant(token, "Token not found");
   const showReward = contractReward !== undefined && hasClaimed === false;
   const showRewarded = contractReward !== undefined && hasClaimed === true;
   return (
@@ -55,8 +57,8 @@ function RewardCard({
       <div>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
+            amount={fromTokenAmount(contractReward[0].toString(), token.decimals)}
+            token={token.symbol}
             rMETRIC={contractReward[1].toNumber()}
           />
         ) : (
@@ -69,8 +71,8 @@ function RewardCard({
       <div className="text-black" color="dark.3">
         {showRewarded ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
+            amount={fromTokenAmount(contractReward[0].toString(), token.decimals)}
+            token={token.symbol}
             rMETRIC={contractReward[1].toNumber()}
           />
         ) : (

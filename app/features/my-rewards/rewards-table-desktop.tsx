@@ -1,11 +1,12 @@
 import type { Token, Wallet } from "@prisma/client";
+import invariant from "tiny-invariant";
 import { RewardBadge } from "~/components/reward-badge";
 import { Header, Row, Table } from "~/components/table";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
 import { useGetReward } from "~/hooks/use-get-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";
-import { fromTokenAmount } from "~/utils/helpers";
+import { findToken, fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
 
 export function RewardsTable({
@@ -58,7 +59,8 @@ function RewardsTableRow({
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
+  const token = findToken(reward.sr.configuration.pToken, tokens);
+  invariant(token, "Token not found");
   const showReward = contractReward !== undefined && hasClaimed === false;
   const showRewarded = contractReward !== undefined && hasClaimed === true;
 
@@ -70,7 +72,7 @@ function RewardsTableRow({
       <Row.Column span={3}>
         {showReward ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
+            amount={fromTokenAmount(contractReward[0].toString(), token.decimals)}
             token={token?.symbol ?? "Unknown Token"}
             rMETRIC={contractReward[1].toNumber()}
           />
@@ -84,8 +86,8 @@ function RewardsTableRow({
       <Row.Column span={3} className="text-black" color="dark.3">
         {showRewarded ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
+            amount={fromTokenAmount(contractReward[0].toString(), token.decimals)}
+            token={token.symbol}
             rMETRIC={contractReward[1].toNumber()}
           />
         ) : (

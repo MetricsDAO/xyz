@@ -15,7 +15,7 @@ export function useCreateServiceRequest({ data, onWriteSuccess, onPrepareTransac
     functionName: "submitRequest",
     args: [
       data.pTokenAddress as `0x${string}`,
-      toTokenAmount(data.pTokenQuantity),
+      toTokenAmount(data.pTokenQuantity, 18), //TODO: get decimals from pToken
       BigNumber.from(unixTimestamp(data.signalExpiration)),
       BigNumber.from(unixTimestamp(data.submissionExpiration)),
       BigNumber.from(unixTimestamp(data.enforcementExpiration)),

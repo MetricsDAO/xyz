@@ -23,7 +23,7 @@ import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
-import { toTokenAbbreviation } from "~/utils/helpers";
+import { findToken } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
@@ -134,7 +134,7 @@ export default function CreateServiceRequest() {
                   Approve the app to transfer{" "}
                   <b className="text-neutral-800">
                     {`${state.context.contractData.pTokenQuantity}
-                    ${toTokenAbbreviation(state.context.contractData.pTokenAddress, tokens)}`}
+                    ${findToken(state.context.contractData.pTokenAddress, tokens)?.symbol}`}
                   </b>{" "}
                   on your behalf
                 </p>
@@ -147,6 +147,7 @@ export default function CreateServiceRequest() {
                       amount: state.context.contractData.pTokenQuantity,
                       ERC20address: state.context.contractData.pTokenAddress,
                       spender: state.context.contractData.laborMarketAddress as `0x${string}`,
+                      decimals: 18, // TODO: get decimal places dynamically
                     }}
                     onWriteSuccess={onERC20ApproveWriteSuccess}
                   />
@@ -160,10 +161,9 @@ export default function CreateServiceRequest() {
                   alt=""
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
-                <p>{`Approving ${state.context.contractData.pTokenQuantity} ${toTokenAbbreviation(
-                  state.context.contractData.pTokenAddress,
-                  tokens
-                )}`}</p>
+                <p>{`Approving ${state.context.contractData.pTokenQuantity} ${
+                  findToken(state.context.contractData.pTokenAddress, tokens)?.symbol
+                }`}</p>
               </div>
             )}
             {state.matches("transactionPrepared.preapprove.success") && (
@@ -193,10 +193,9 @@ export default function CreateServiceRequest() {
                   alt=""
                   className="mb-8 mt-5 mx-auto animate-[rotate360_3s_linear_infinite]"
                 />
-                <p>{`Transferring ${state.context.contractData.pTokenQuantity} ${toTokenAbbreviation(
-                  state.context.contractData.pTokenAddress,
-                  tokens
-                )}`}</p>
+                <p>{`Transferring ${state.context.contractData.pTokenQuantity} ${
+                  findToken(state.context.contractData.pTokenAddress, tokens)?.symbol
+                }`}</p>
               </div>
             )}
           </div>

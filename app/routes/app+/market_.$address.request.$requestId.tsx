@@ -30,6 +30,7 @@ import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import * as DOMPurify from "dompurify";
+import invariant from "tiny-invariant";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -62,6 +63,7 @@ export default function ServiceRequest() {
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  invariant(token, "Token not found");
 
   const description = serviceRequest.appData?.description ? serviceRequest.appData.description : "";
 
@@ -156,8 +158,8 @@ export default function ServiceRequest() {
           </div>
           <DetailItem title="Reward Pool">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
-              token={token?.symbol ?? ""}
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity, token.decimals)}
+              token={token.symbol}
               rMETRIC={REPUTATION_REWARD_POOL}
             />
           </DetailItem>

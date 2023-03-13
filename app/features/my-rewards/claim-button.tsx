@@ -13,7 +13,7 @@ import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import type { EthersError } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import type { ClaimRewardContractData } from "~/hooks/use-claim-reward";
-import { toNetworkName, toTokenAbbreviation } from "~/utils/helpers";
+import { toNetworkName, findToken } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 
 const machine = createBlockchainTransactionStateMachine<ClaimRewardContractData>();
@@ -29,7 +29,8 @@ export function ClaimButton({
   const [confirmedModalOpen, setConfirmedModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const tokenAbrev = toTokenAbbreviation(reward.sr.configuration.pToken ?? "", tokens);
+  const token = findToken(reward.sr.configuration.pToken, tokens);
+  invariant(token, "Token not found");
   const networkName = toNetworkName(reward.sr.configuration.pToken ?? "", tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);
 
@@ -89,7 +90,7 @@ export function ClaimButton({
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">{`todo ${tokenAbrev}`}</p>
+                <p className="text-yellow-700 text-2xl ml-2">{`todo ${token.symbol}`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">
                 <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
