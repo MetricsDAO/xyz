@@ -6,18 +6,20 @@ import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { ServiceRequestDoc } from "~/domain";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface ClaimToSubmitCreatorProps {
   serviceRequest: ServiceRequestDoc;
+  confirmationMessage: React.ReactNode;
 }
 
-export function ClaimToSubmitCreator({ serviceRequest }: ClaimToSubmitCreatorProps) {
+export function ClaimToSubmitCreator({ confirmationMessage, serviceRequest }: ClaimToSubmitCreatorProps) {
   const navigate = useNavigate();
 
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        navigate(`app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}/submit`);
+        navigate(`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}/submit`);
       },
       [navigate, serviceRequest.laborMarketAddress, serviceRequest.id]
     ),
@@ -29,13 +31,12 @@ export function ClaimToSubmitCreator({ serviceRequest }: ClaimToSubmitCreatorPro
     });
   };
 
-  // connect wallet wrapper?
   return (
     <>
-      <TxModal transactor={transactor} />
-      <Button size="lg" onClick={onClick}>
-        Claim to Submit
-      </Button>
+      <TxModal transactor={transactor} title="Claim to Submit" confirmationMessage={confirmationMessage} />
+      <ConnectWalletWrapper onClick={onClick}>
+        <Button size="lg">Next</Button>
+      </ConnectWalletWrapper>
     </>
   );
 }

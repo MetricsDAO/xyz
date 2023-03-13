@@ -80,8 +80,18 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <ClaimToSubmitCreator serviceRequest={serviceRequest} />
-        <Button variant="cancel" asChild>
+        <ClaimToSubmitCreator
+          serviceRequest={serviceRequest}
+          confirmationMessage={
+            <div className="space-y-8">
+              <p className="mt-2">Please confirm that you would like to claim a submission.</p>
+              <p>
+                This will lock <b>{laborMarket.configuration.reputationParams.submitMin} rMETRIC.</b>
+              </p>
+            </div>
+          }
+        />
+        <Button size="lg" variant="cancel" asChild>
           <Link to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}`}>Cancel</Link>
         </Button>
       </div>
