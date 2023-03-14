@@ -7,6 +7,7 @@ import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
+import { useMemo } from "react";
 
 export function RewardsTable({
   rewards,
@@ -57,8 +58,18 @@ function RewardsTableRow({
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
-  const showReward = contractReward !== undefined;
+
+  const rewardBadge = useMemo(() => {
+    if (contractReward === undefined) {
+      return undefined;
+    }
+    const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
+    return {
+      amount: fromTokenAmount(contractReward.paymentTokenAmount.toString(), 3),
+      rMETRIC: contractReward.reputationTokenAmount.toNumber(),
+      token: token,
+    };
+  }, [contractReward, tokens, reward.sr.configuration.pToken]);
 
   return (
     <Row columns={12}>
@@ -66,11 +77,11 @@ function RewardsTableRow({
         <p>{reward.sr.appData?.title}</p>
       </Row.Column>
       <Row.Column span={4}>
-        {showReward ? (
+        {rewardBadge ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward.paymentTokenAmount.toString(), 3)}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward.reputationTokenAmount.toNumber()}
+            amount={rewardBadge.amount}
+            token={rewardBadge.token?.symbol ?? "Unknown"}
+            rMETRIC={rewardBadge.rMETRIC}
           />
         ) : (
           <span>--</span>
@@ -80,8 +91,8 @@ function RewardsTableRow({
         {fromNow(reward.createdAtBlockTimestamp)}{" "}
       </Row.Column>
       <Row.Column span={2}>
-        {hasClaimed === false ? (
-          <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
+        {hasClaimed === false && rewardBadge ? (
+          <ClaimButton rewardAmount={rewardBadge.amount} reward={reward} wallets={wallets} tokens={tokens} />
         ) : hasClaimed === true ? (
           <span>Claimed</span>
         ) : (
