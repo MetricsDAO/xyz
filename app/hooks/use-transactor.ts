@@ -41,8 +41,13 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     setState({ state: "preparing" });
     let config: PrepareWriteContractConfig;
     if (params.metadata) {
-      const uploaded = await uploadMetadata(params.metadata);
-      config = params.config({ account: account.address, cid: uploaded.cid });
+      try {
+        const uploaded = await uploadMetadata(params.metadata);
+        config = params.config({ account: account.address, cid: uploaded.cid });
+      } catch (e) {
+        setState({ state: "failure", error: (e as Error)?.message ?? "unknown error" });
+        return;
+      }
     } else {
       config = params.config({ account: account.address! });
     }

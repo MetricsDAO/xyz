@@ -7,12 +7,12 @@ import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
 import { useCallback, useEffect, useState } from "react";
 import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
+import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import { LaborMarketNetwork__factory } from "~/contracts";
+import { LaborMarketNetwork__factory, LaborMarket__factory } from "~/contracts";
 import type { ServiceRequestForm } from "~/domain/service-request/schemas";
 import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import { useUser } from "~/hooks/use-user";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { Button } from "../../components/button";
@@ -36,10 +36,8 @@ function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.
 
 export function ServiceRequestCreator({ projects, tokens, defaultValues }: ServiceRequestFormProps) {
   const { mType } = useParams();
-  const user = useUser();
 
   const [values, setValues] = useState<ServiceRequestForm>();
-  console.log("values", values);
   const [approved, setApproved] = useState(false);
 
   const navigate = useNavigate();
@@ -47,9 +45,10 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
   const submitTransactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        const iface = LaborMarketNetwork__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "submitRequest");
-        if (event) navigate(`/app/market/${event.args["marketAddress"]}/request/${event.args["requestId"]}}`);
+        const iface = LaborMarket__factory.createInterface();
+        const event = getEventFromLogs(iface, receipt.logs, "RequestConfigured");
+        console.log("event", event?.args["requestId"]);
+        if (event) navigate(`/app/market/${event.args["marketAddress"]}/request/${event.args["requestId"]}`);
       },
       [navigate]
     ),
@@ -57,8 +56,8 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
 
   const approveTransactor = useTransactor({
     onSuccess: useCallback((receipt) => {
-      const iface = LaborMarketNetwork__factory.createInterface();
-      const event = getEventFromLogs(iface, receipt.logs, "approve");
+      const iface = LaborMarket__factory.createInterface();
+      const event = getEventFromLogs(iface, receipt.logs, "Approve");
     }, []),
   });
 
@@ -103,7 +102,7 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
             },
           ],
           functionName: "approve",
-          args: [user.address, toTokenAmount(values.rewardPool)],
+          args: [LaborMarket.address, toTokenAmount(values.rewardPool)],
         }),
     });
     setValues(values);
@@ -153,7 +152,4 @@ function configureFromValues({ cid, values }: { cid: string; values: ServiceRequ
       cid,
     ],
   });
-}
-function onPrepareTransactionError(err: any) {
-  throw new Error("Function not implemented.");
 }
