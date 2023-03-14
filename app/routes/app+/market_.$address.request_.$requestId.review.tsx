@@ -5,7 +5,6 @@ import { z } from "zod";
 import { Container } from "~/components/container";
 import { ClaimToReviewCreator } from "~/features/claim-to-review-creator/claim-to-review-creator";
 import { findServiceRequest } from "~/services/service-request.server";
-import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
