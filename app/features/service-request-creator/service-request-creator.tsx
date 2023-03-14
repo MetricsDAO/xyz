@@ -39,6 +39,7 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
   const user = useUser();
 
   const [values, setValues] = useState<ServiceRequestForm>();
+  console.log("values", values);
   const [approved, setApproved] = useState(false);
 
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
   const onSubmit = (values: ServiceRequestForm) => {
     approveTransactor.start({
       metadata: {},
-      config: ({}) =>
+      config: () =>
         configureWrite({
           address: values.rewardToken as `0x${string}`,
           abi: [
@@ -152,4 +153,7 @@ function configureFromValues({ cid, values }: { cid: string; values: ServiceRequ
       cid,
     ],
   });
+}
+function onPrepareTransactionError(err: any) {
+  throw new Error("Function not implemented.");
 }
