@@ -22,21 +22,35 @@ interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
+  laborMarketAddress: string;
+  mType: string;
 }
 
 /**
  * Filters and parses the logs for a specific event.
  */
-function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.Log[], eventName: string) {
-  return logs
-    .filter((log) => log.address === LaborMarketNetwork.address)
-    .map((log) => iface.parseLog(log))
-    .find((e) => e.name === eventName);
+function getEventFromLogs(
+  iface: ethers.utils.Interface,
+  logs: ethers.providers.Log[],
+  eventName: string,
+  laborMarketAddress: string
+) {
+  console.log("logs", logs);
+  const filtered = logs.filter((log) => log.address === laborMarketAddress);
+  console.log("filtered", filtered);
+  const mapped = filtered.map((log) => iface.parseLog(log));
+  console.log("mapped", mapped);
+  return mapped.find((e) => e.name === eventName);
 }
 
-export function ServiceRequestCreator({ projects, tokens, defaultValues }: ServiceRequestFormProps) {
-  const { mType } = useParams();
-
+export function ServiceRequestCreator({
+  projects,
+  tokens,
+  defaultValues,
+  laborMarketAddress,
+  mType,
+}: ServiceRequestFormProps) {
+  console.log("laborMarketAddress", laborMarketAddress);
   const [values, setValues] = useState<ServiceRequestForm>();
   const [approved, setApproved] = useState(false);
 
@@ -46,18 +60,18 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarket__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "RequestConfigured");
-        console.log("event", event?.args["requestId"]);
-        if (event) navigate(`/app/market/${event.args["marketAddress"]}/request/${event.args["requestId"]}`);
+        const event = getEventFromLogs(iface, receipt.logs, "RequestConfigured", laborMarketAddress);
+        console.log("event", event);
+        if (event) navigate(`/app/market/${laborMarketAddress}/request/${event.args[1]}`);
       },
-      [navigate]
+      [laborMarketAddress, navigate]
     ),
   });
 
   const approveTransactor = useTransactor({
     onSuccess: useCallback((receipt) => {
       const iface = LaborMarket__factory.createInterface();
-      const event = getEventFromLogs(iface, receipt.logs, "Approve");
+      const event = getEventFromLogs(iface, receipt.logs, "Approve", laborMarketAddress);
     }, []),
   });
 
@@ -71,10 +85,10 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
           language: values.language,
           projectSlugs: values.projectSlugs,
         },
-        config: ({ cid }) => configureFromValues({ cid, values }),
+        config: ({ cid }) => configureFromValues({ cid, values, laborMarketAddress }),
       });
     }
-  }, [approveTransactor, approved, submitTransactor, values]);
+  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values]);
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
@@ -102,7 +116,7 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
             },
           ],
           functionName: "approve",
-          args: [LaborMarket.address, toTokenAmount(values.rewardPool)],
+          args: [laborMarketAddress, toTokenAmount(values.rewardPool)],
         }),
     });
     setValues(values);
@@ -135,13 +149,21 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
   );
 }
 
-function configureFromValues({ cid, values }: { cid: string; values: ServiceRequestForm }) {
+function configureFromValues({
+  cid,
+  values,
+  laborMarketAddress,
+}: {
+  cid: string;
+  values: ServiceRequestForm;
+  laborMarketAddress: string;
+}) {
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.endDate, values.endTime)));
 
   return configureWrite({
     abi: LaborMarket.abi,
-    address: LaborMarket.address,
+    address: laborMarketAddress as `0x${string}`,
     functionName: "submitRequest",
     args: [
       values.rewardToken as `0x${string}`,

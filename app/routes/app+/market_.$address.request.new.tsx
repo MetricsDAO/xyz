@@ -1,4 +1,5 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { ethers } from "ethers";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { badRequest, notFound } from "remix-utils";
 import invariant from "tiny-invariant";
@@ -37,7 +38,13 @@ export default function CreateServiceRequest() {
   return (
     <div className="max-w-2xl mx-auto my-10 space-y-10">
       {mType === "brainstorm" ? <BrainstormHeader /> : <AnalyticsHeader />}
-      <ServiceRequestCreator projects={laborMarketProjects} tokens={tokens} defaultValues={defaultValues} />
+      <ServiceRequestCreator
+        projects={laborMarketProjects}
+        tokens={tokens}
+        defaultValues={defaultValues}
+        laborMarketAddress={ethers.utils.getAddress(laborMarket.address)}
+        mType={mType}
+      />
     </div>
   );
 }
