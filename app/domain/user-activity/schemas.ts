@@ -21,10 +21,10 @@ export type ActivityTypes = z.infer<typeof ActivityTypeSchema>;
 
 export const ActivityDocSchema = z.object({
   groupType: ActivityGroupTypeSchema,
+  eventType: activityConfigSchema,
   iconType: ActivityIconTypeSchema,
   actionName: z.string(),
   userAddress: z.string(),
-  config: activityConfigSchema,
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
 });

@@ -25,10 +25,10 @@ function ActivityTableRow({ activity }: { activity: ActivityDoc }) {
   return (
     <Row columns={12}>
       <Row.Column span={4} className="flex space-x-2 items-center">
-        <ActivityAvatar groupType={activity.groupType.toString()} />
+        <ActivityAvatar iconType={activity.iconType} />
         <p>{activity.actionName}</p>
       </Row.Column>
-      <Row.Column span={4}>{activity.laborMarketTitle}</Row.Column>
+      <Row.Column span={4}>{activity.eventType.config.laborMarketTitle}</Row.Column>
       <Row.Column span={4} className="text-black" color="dark.3">
         <Countdown date={activity.createdAtBlockTimestamp} />
       </Row.Column>

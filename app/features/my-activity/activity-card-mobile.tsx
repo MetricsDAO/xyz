@@ -18,9 +18,9 @@ function ActivityCard({ activity }: { activity: ActivityDoc }) {
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Action</div>
-      <ActivityAvatar groupType={activity.groupType.toString()} />
+      <ActivityAvatar iconType={activity.iconType.toString()} />
       <div>Title</div>
-      <div>{activity.laborMarketTitle}</div>
+      <div>{activity.eventType.config.laborMarketTitle}</div>
       <div>Timestamp</div>
       <Countdown date={activity.createdAtBlockTimestamp} />
     </Card>
