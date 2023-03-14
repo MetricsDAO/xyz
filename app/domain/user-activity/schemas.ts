@@ -3,17 +3,28 @@ import { EvmAddressSchema } from "../address";
 
 export const ActivityTypeSchema = z.enum(["LaborMarketConfigured"]);
 export const ActivityGroupTypeSchema = z.enum(["LaborMarket"]);
+export const ActivityIconTypeSchema = z.enum(["labor-market"]);
+
+export const LaborMarketConfiguredConfigSchema = z.object({
+  laborMarketAddress: EvmAddressSchema,
+  laborMarketTitle: z.string(),
+});
+
+export const activityConfigSchema = z.discriminatedUnion("eventType", [
+  z.object({
+    eventType: z.literal("LaborMarketConfigured"),
+    config: LaborMarketConfiguredConfigSchema,
+  }),
+]);
 
 export type ActivityTypes = z.infer<typeof ActivityTypeSchema>;
 
 export const ActivityDocSchema = z.object({
   groupType: ActivityGroupTypeSchema,
-  eventType: ActivityTypeSchema,
+  iconType: ActivityIconTypeSchema,
   actionName: z.string(),
   userAddress: z.string(),
-  laborMarketTitle: z.string(),
-  laborMarketAddress: EvmAddressSchema,
-  serviceRequestId: z.string().nullable(),
+  config: activityConfigSchema,
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
 });

@@ -51,12 +51,13 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, block?: numb
   //log this event in user activity collection
   mongo.userActivity.insertOne({
     groupType: "LaborMarket",
-    eventType: "LaborMarketConfigured",
+    iconType: "labor-market",
     actionName: "Create Marketplace",
     userAddress: configuration.owner,
-    laborMarketAddress: address,
-    laborMarketTitle: appData.title,
-    serviceRequestId: null,
+    config: {
+      eventType: "LaborMarketConfigured",
+      config: { laborMarketAddress: address, laborMarketTitle: appData.title },
+    },
     createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
     indexedAt: indexData.indexedAt,
   });
