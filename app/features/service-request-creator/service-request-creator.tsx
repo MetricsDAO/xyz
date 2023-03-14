@@ -61,10 +61,6 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
     }, []),
   });
 
-  console.log("APPROVE", approved);
-  console.log("APPROVE STATE", approveTransactor.state);
-  console.log("SUBMIT STATE", submitTransactor.state);
-
   useEffect(() => {
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
