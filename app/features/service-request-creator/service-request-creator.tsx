@@ -58,13 +58,16 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
     onSuccess: useCallback((receipt) => {
       const iface = LaborMarketNetwork__factory.createInterface();
       const event = getEventFromLogs(iface, receipt.logs, "approve");
-      if (event) setApproved(true);
     }, []),
   });
 
+  console.log("APPROVE", approved);
+  console.log("APPROVE STATE", approveTransactor.state);
+  console.log("SUBMIT STATE", submitTransactor.state);
+
   useEffect(() => {
-    if (approved && values) {
-      console.log("STARTING");
+    if (values && approveTransactor.state === "success" && !approved) {
+      setApproved(true);
       submitTransactor.start({
         metadata: {
           title: values.title,
@@ -75,7 +78,7 @@ export function ServiceRequestCreator({ projects, tokens, defaultValues }: Servi
         config: ({ cid }) => configureFromValues({ cid, values }),
       });
     }
-  }, [approved, submitTransactor, values]);
+  }, [approveTransactor, approved, submitTransactor, values]);
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
