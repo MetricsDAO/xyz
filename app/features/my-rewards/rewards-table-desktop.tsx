@@ -92,7 +92,7 @@ function RewardsTableRow({
       </Row.Column>
       <Row.Column span={2}>
         {hasClaimed === false && rewardBadge ? (
-          <ClaimButton rewardAmount={rewardBadge.amount} reward={reward} wallets={wallets} tokens={tokens} />
+          <ClaimButton rewardAmount={rewardBadge.amount} submission={reward} wallets={wallets} tokens={tokens} />
         ) : hasClaimed === true ? (
           <span>Claimed</span>
         ) : (
