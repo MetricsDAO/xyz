@@ -1,0 +1,274 @@
+import { useCallback } from "react";
+import { useNavigate } from "@remix-run/react";
+import type { DefaultValues } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { MarketNewValues } from "./schema";
+import { MarketNewValuesSchema } from "./schema";
+import {
+  LaborMarket,
+  LaborMarketNetwork,
+  ReputationModule,
+  ReputationToken,
+  ScalableLikertEnforcement,
+} from "labor-markets-abi";
+import { BigNumber, ethers } from "ethers";
+import { LaborMarketNetwork__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
+import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { Button } from "~/components/button";
+import { TxModal } from "~/components/tx-modal/tx-modal";
+import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
+import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
+import type { Project, Token } from "@prisma/client";
+
+/**
+ * Filters and parses the logs for a specific event.
+ */
+function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.Log[], eventName: string) {
+  return logs
+    .filter((log) => log.address === LaborMarketNetwork.address)
+    .map((log) => iface.parseLog(log))
+    .find((e) => e.name === eventName);
+}
+
+function configureFromValues(inputs: { owner: EvmAddress; cid: string; values: MarketNewValues }) {
+  const { owner, cid, values } = inputs;
+  return configureWrite({
+    abi: LaborMarketNetwork.abi,
+    address: LaborMarketNetwork.address,
+    functionName: "createLaborMarket",
+    args: [
+      LaborMarket.address,
+      {
+        marketUri: cid,
+        owner: owner as `0x${string}`,
+        modules: {
+          network: LaborMarketNetwork.address,
+          reputation: ReputationModule.address,
+          enforcement: ScalableLikertEnforcement.address,
+          enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
+        },
+        delegateBadge: {
+          token: values.configuration.delegateBadge.token as `0x${string}`,
+          tokenId: BigNumber.from(values.configuration.delegateBadge.tokenId),
+        },
+        maintainerBadge: {
+          token: values.configuration.maintainerBadge.token as `0x${string}`,
+          tokenId: BigNumber.from(values.configuration.maintainerBadge.tokenId),
+        },
+        reputationBadge: {
+          token: ReputationToken.address,
+          tokenId: BigNumber.from(REPUTATION_TOKEN_ID),
+        },
+        reputationParams: {
+          rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
+          reviewStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
+          provideStake: BigNumber.from(values.configuration.reputationParams.provideStake),
+          submitMin: BigNumber.from(values.configuration.reputationParams.submitMin),
+          submitMax: BigNumber.from(values.configuration.reputationParams.submitMax ?? ethers.constants.MaxUint256),
+        },
+      },
+    ],
+  });
+}
+
+export function NewMarket({
+  tokens,
+  projects,
+  defaultValues,
+}: {
+  tokens: Token[];
+  projects: Project[];
+  defaultValues: DefaultValues<MarketNewValues>;
+}) {
+  const navigate = useNavigate();
+
+  const {
+    register,
+    control,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<MarketNewValues>({
+    resolver: zodResolver(MarketNewValuesSchema),
+    defaultValues,
+  });
+
+  const transactor = useTransactor({
+    onSuccess: useCallback(
+      (receipt) => {
+        const iface = LaborMarketNetwork__factory.createInterface();
+        const event = getEventFromLogs(iface, receipt.logs, "LaborMarketCreated");
+        if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
+      },
+      [navigate]
+    ),
+  });
+
+  const onSubmit = (values: MarketNewValues) => {
+    transactor.start({
+      metadata: values.appData,
+      config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
+    });
+  };
+
+  // Filtering out MBETA for now. Might not be necessary later on.
+  const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
+
+  return (
+    <Container className="py-16">
+      <TxModal transactor={transactor} />
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
+          <Field>
+            <Label size="lg">Challenge Marketplace Title*</Label>
+            <Input {...register("appData.title")} type="text" placeholder="e.g Solana Breakpoint 2023" />
+            <Error error={errors.appData?.title?.message} />
+          </Field>
+
+          <Field>
+            <Label size="lg">Details*</Label>
+            <Textarea
+              {...register("appData.description")}
+              placeholder="What's the goal of this marketplace?"
+              rows={7}
+            />
+            <Error error={errors.appData?.description?.message} />
+          </Field>
+
+          <Field>
+            <Label size="lg">Blockchain/Project(s)*</Label>
+            <Controller
+              control={control}
+              name="appData.projectSlugs"
+              render={({ field }) => (
+                <Combobox {...field} options={projects.map((p) => ({ label: p.name, value: p.slug }))} />
+              )}
+            />
+            <Error error={errors.appData?.projectSlugs?.message} />
+          </Field>
+
+          <section className="space-y-4">
+            <Field>
+              <div className="flex items-center">
+                <Label size="lg" className="mr-auto">
+                  Who has permission to launch challenges?*
+                </Label>
+                <p className="flex text-sm space-x-3">
+                  <Button variant="link" size="none" asChild>
+                    <a href="https://www.trybadger.com/" target="_blank" rel="noreferrer">
+                      Launch Badger
+                    </a>
+                  </Button>
+                  <Button variant="link" size="none" asChild>
+                    <a href="https://flipside-crypto.gitbook.io/badger/what-is-badger" target="_blank" rel="noreferrer">
+                      Badger Docs
+                    </a>
+                  </Button>
+                </p>
+              </div>
+              <Controller
+                name="delegatePermission"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      {...field}
+                      options={[
+                        // { label: "Anyone", value: "anyone" }, // Not for MVP
+                        { label: "Delegates only", value: "delegates" },
+                      ]}
+                    />
+                  );
+                }}
+              />
+              <Error error={errors.delegatePermission?.message} />
+            </Field>
+
+            {watch("delegatePermission") === "delegates" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Field>
+                  <Label>Badger Contract Address*</Label>
+                  <Input {...register("configuration.delegateBadge.token")} />
+                  <Error error={errors.configuration?.delegateBadge?.token?.message} />
+                </Field>
+                <Field>
+                  <Label>Badger Token ID*</Label>
+                  <Input {...register("configuration.delegateBadge.tokenId")} />
+                  <Error error={errors.configuration?.delegateBadge?.tokenId?.message} />
+                </Field>
+              </div>
+            ) : null}
+          </section>
+
+          <section>
+            <h4 className="font-semibold mb-4">Challenge Rewards</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Field>
+                <Label>Reward Token Allowlist</Label>
+                <Controller
+                  control={control}
+                  name="appData.tokenAllowlist"
+                  render={({ field }) => <Combobox {...field} options={tokenAllowlist} />}
+                />
+                <Error error={errors.appData?.tokenAllowlist?.message} />
+              </Field>
+              <Field>
+                <Label>Reward Curve</Label>
+                <Controller
+                  control={control}
+                  name="configuration.modules.enforcement"
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      options={[{ label: "Scalable Likert", value: ScalableLikertEnforcement.address }]}
+                    />
+                  )}
+                />
+                <Error error={errors.configuration?.modules?.enforcement?.message} />
+              </Field>
+            </div>
+          </section>
+
+          <section>
+            <h4 className="font-semibold mb-4">Control who has permission to submit on challenges</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Field>
+                <Label>Minimum rMETRIC Balance*</Label>
+                <Input {...register("configuration.reputationParams.submitMin")} />
+                <Error error={errors.configuration?.reputationParams?.submitMin?.message} />
+              </Field>
+              <Field>
+                <Label>Maximum rMETRIC Balance</Label>
+                <Input {...register("configuration.reputationParams.submitMax")} />
+                <Error error={errors.configuration?.reputationParams?.submitMax?.message} />
+              </Field>
+            </div>
+          </section>
+
+          <Field>
+            <Label size="lg">Control who has permission to review challenge submissions</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Field>
+                <Label>Reviewer Badger Contract Address*</Label>
+                <Input {...register("configuration.maintainerBadge.token")} placeholder="0x..." />
+                <Error error={errors.configuration?.maintainerBadge?.token?.message} />
+              </Field>
+              <Field>
+                <Label>Reviewer Badger Token ID*</Label>
+                <Input {...register("configuration.maintainerBadge.tokenId")} placeholder="0x..." />
+                <Error error={errors.configuration?.maintainerBadge?.tokenId?.message} />
+              </Field>
+            </div>
+          </Field>
+
+          <Button size="lg" type="submit">
+            Next
+          </Button>
+        </form>
+      </div>
+    </Container>
+  );
+}

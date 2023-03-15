@@ -11,7 +11,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
+import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
