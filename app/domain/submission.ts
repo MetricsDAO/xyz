@@ -94,7 +94,6 @@ export const ShowcaseSearchSchema = z.object({
   project: z.array(z.string()).optional(),
   score: z.number().optional(),
   timeframe: z.enum(["day", "month", "week"]).default("month"),
-  type: z.array(z.enum(["analyze", "brainstorm"])).optional(),
 });
 
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
