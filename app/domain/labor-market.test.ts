@@ -36,7 +36,7 @@ describe("LaborMarketFormSchema", () => {
       projectSlugs: ["ethereum"],
       launch: {
         access: "delegates",
-        badgerAddress: faker.finance.ethereumAddress(),
+        badgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
         badgerTokenId: "1",
       },
     };

@@ -61,9 +61,9 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address as `0x${string}` });
-  const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
+  const reviewedByUser = user && (await findUserReview(submissionId, address as `0x${string}`, user.address));
 
-  const submission = await findSubmission(submissionId, address);
+  const submission = await findSubmission(submissionId, address as `0x${string}`);
   if (!submission) {
     throw notFound({ submissionId });
   }

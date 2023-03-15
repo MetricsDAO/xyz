@@ -1,7 +1,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { Error, Field, Label, SegmentedRadio } from "~/components";
 import { CountdownCard } from "~/components/countdown-card";
-import type { ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline } from "~/utils/helpers";
 import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";

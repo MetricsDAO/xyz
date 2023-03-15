@@ -1,15 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
-import { useNavigate, useParams } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
-import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
+import { LaborMarket } from "labor-markets-abi";
 import { useCallback, useEffect, useState } from "react";
 import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
-import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import { LaborMarketNetwork__factory, LaborMarket__factory } from "~/contracts";
+import { LaborMarket__factory } from "~/contracts";
 import type { ServiceRequestForm } from "~/domain/service-request/schemas";
 import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
