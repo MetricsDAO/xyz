@@ -118,7 +118,12 @@ export function NewMarket({
 
   return (
     <Container className="py-16">
-      <TxModal transactor={transactor} />
+      <TxModal
+        transactor={transactor}
+        title="Create Marketplace"
+        confirmationMessage="Confirm that you would like to create a new marketplace."
+      />
+
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
