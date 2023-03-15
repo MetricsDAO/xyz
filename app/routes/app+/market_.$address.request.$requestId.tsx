@@ -14,7 +14,7 @@ import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
+import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { useHasPerformed } from "~/hooks/use-has-performed";
