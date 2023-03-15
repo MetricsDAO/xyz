@@ -2,11 +2,12 @@ import type { Token, Wallet } from "@prisma/client";
 import { Card } from "~/components/card";
 import { RewardBadge } from "~/components/reward-badge";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
-import { useGetReward } from "~/hooks/use-get-reward";
+import { useReward } from "~/hooks/use-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
+import { useMemo } from "react";
 
 export function RewardsCards({
   rewards,
@@ -35,7 +36,7 @@ function RewardCard({
   wallets: Wallet[];
   tokens: Token[];
 }) {
-  const contractReward = useGetReward({
+  const contractReward = useReward({
     laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
   });
@@ -44,20 +45,30 @@ function RewardCard({
     id: reward.id,
     action: "HAS_CLAIMED",
   });
-  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
-  const showReward = contractReward !== undefined && hasClaimed === false;
-  const showRewarded = contractReward !== undefined && hasClaimed === true;
+
+  const rewardBadge = useMemo(() => {
+    if (contractReward === undefined) {
+      return undefined;
+    }
+    const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
+    return {
+      amount: fromTokenAmount(contractReward.paymentTokenAmount.toString(), 3),
+      rMETRIC: contractReward.reputationTokenAmount.toNumber(),
+      token: token,
+    };
+  }, [contractReward, tokens, reward.sr.configuration.pToken]);
+
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
       <p>{reward.sr.appData?.title}</p>
       <div>Reward</div>
       <div>
-        {showReward ? (
+        {rewardBadge ? (
           <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
+            amount={rewardBadge.amount}
+            token={rewardBadge.token?.symbol ?? "Unknown"}
+            rMETRIC={rewardBadge.rMETRIC}
           />
         ) : (
           <span>--</span>
@@ -65,21 +76,9 @@ function RewardCard({
       </div>
       <div>Submitted</div>
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
-      <div>Rewarded</div>
-      <div className="text-black" color="dark.3">
-        {showRewarded ? (
-          <RewardBadge
-            amount={fromTokenAmount(contractReward[0].toString())}
-            token={token?.symbol ?? "Unknown Token"}
-            rMETRIC={contractReward[1].toNumber()}
-          />
-        ) : (
-          <span>--</span>
-        )}
-      </div>
       <div>Status</div>
-      {hasClaimed === false ? (
-        <ClaimButton reward={reward} wallets={wallets} tokens={tokens} />
+      {hasClaimed === false && rewardBadge ? (
+        <ClaimButton rewardAmount={rewardBadge.amount} reward={reward} wallets={wallets} tokens={tokens} />
       ) : hasClaimed === true ? (
         <span>Claimed</span>
       ) : (

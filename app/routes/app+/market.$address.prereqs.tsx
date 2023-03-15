@@ -2,8 +2,7 @@ import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { PermissionIcon } from "~/features/permission-icon";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
-import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
-import { useTokenBalance } from "~/hooks/use-token-balance";
+import { usePrereqs } from "~/hooks/use-prereqs";
 import { useTokenData } from "~/hooks/use-token-data";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
@@ -13,23 +12,7 @@ export default function MarketplaceIdPrerequesites() {
   const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
   const delegateData = useTokenData(laborMarket.configuration.delegateBadge);
 
-  const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
-    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
-  });
-
-  const delegateBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.delegateBadge.token as `0x${string}`,
-    tokenId: laborMarket.configuration.delegateBadge.tokenId,
-  });
-
-  const reputationBalance = useReputationTokenBalance();
-
-  const canSubmit =
-    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
-    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
-  const canReview = maintainerBadgeTokenBalance?.gt(0);
-  const canLaunchChallenges = delegateBadgeTokenBalance?.gt(0);
+  const { canReview, canLaunchChallenges, canSubmit } = usePrereqs({ laborMarket });
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">

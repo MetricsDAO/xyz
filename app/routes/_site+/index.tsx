@@ -116,19 +116,6 @@ export default function Index() {
                   "bg-[url(/img/marketing/home-scroll-bg.svg)] rounded-3xl bg-cover bg-no-repeat block ": box === 1,
                 })}
               >
-                <img src="/img/marketing/brain.png" alt="" />
-                <p className="text-3xl font-bold text-white pt-2">Brainstorm</p>
-                <p className="text-white text-lg">
-                  Optionally source and prioritize the best questions for analysts to answer. Community question
-                  brainstorms generally focus around a partner’s project or a timely Web3 topic or event.
-                </p>
-              </div>
-              <div
-                className={clsx("py-10 px-12 space-y-3 mx-auto max-w-md", {
-                  "hidden text-white": box != 2,
-                  "bg-[url(/img/marketing/home-scroll-bg.svg)] rounded-3xl bg-cover bg-no-repeat block ": box === 2,
-                })}
-              >
                 <img src="/img/marketing/owl.png" alt="" />
                 <p className="text-3xl font-bold text-white pt-2">Peer Review</p>
                 <p className="text-white text-lg">
@@ -143,7 +130,7 @@ export default function Index() {
                 />
                 <EllipsisHorizontalIcon className="h-6 w-6" />
                 <ChevronRightIcon
-                  className={clsx("h-6 w-6 cursor-pointer", { "invisible text-white": box === 2 })}
+                  className={clsx("h-6 w-6 cursor-pointer", { "invisible text-white": box === 1 })}
                   onClick={() => setBox(box + 1)}
                 />
               </div>
