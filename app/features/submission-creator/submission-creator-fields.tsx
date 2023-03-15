@@ -1,4 +1,4 @@
-import { Button, Field, ValidatedInput, ValidatedTextarea } from "~/components";
+import { Button, Field, Input, Textarea } from "~/components";
 
 export default function SubmissionCreatorFields({ type }: { type: "brainstorm" | "analyze" }) {
   return type === "brainstorm" ? <BrainstormFields /> : <AnalyzeFields />;
@@ -10,13 +10,13 @@ function BrainstormFields() {
       <section className="space-y-3">
         <h2 className="font-bold">Submission Title</h2>
         <Field>
-          <ValidatedInput name="title" placeholder="Submission Title" className="w-full" />
+          <Input name="title" placeholder="Submission Title" className="w-full" />
         </Field>
       </section>
       <section className="space-y-3">
         <h2 className="font-bold">What would you like Web3 analysts to address?</h2>
         <Field>
-          <ValidatedTextarea
+          <Textarea
             name="description"
             rows={7}
             placeholder="Enter an idea for something Web3 analysts should address. 
@@ -45,13 +45,13 @@ function AnalyzeFields() {
       <section className="space-y-3">
         <h2 className="font-bold">Submission Title</h2>
         <Field>
-          <ValidatedInput name="title" placeholder="Submission Title" className="w-full" />
+          <Input name="title" placeholder="Submission Title" className="w-full" />
         </Field>
       </section>
       <section className="space-y-3">
         <h2 className="font-bold">Public link to your work</h2>
         <Field>
-          <ValidatedInput name="description" placeholder="Public link to your work" />
+          <Input name="description" placeholder="Public link to your work" />
         </Field>
         <p className="italic text-gray-500 text-sm">
           Important: You can’t edit this link after submitting. Double check that this link to work is correct, owned by
@@ -63,7 +63,6 @@ function AnalyzeFields() {
           </i>
         </p>
       </section>
-      <Button type="submit">Next</Button>
     </div>
   );
 }

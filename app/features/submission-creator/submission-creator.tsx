@@ -1,4 +1,3 @@
-import SubmissionCreatorFields from "./submission-creator-fields";
 import { Button } from "../../components/button";
 import { useNavigate } from "@remix-run/react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -13,6 +12,7 @@ import { useCallback } from "react";
 import type { SubmissionContract, SubmissionForm } from "~/domain/submission/schemas";
 import { SubmissionFormSchema } from "~/domain/submission/schemas";
 import type { EvmAddress } from "~/domain/address";
+import SubmissionCreatorFields from "./submission-creator-fields";
 
 /**
  * Filters and parses the logs for a specific event.
@@ -53,9 +53,7 @@ export default function SubmissionCreator({ type }: { type: "brainstorm" | "anal
       <TxModal transactor={transactor} />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
         <SubmissionCreatorFields type={type} />
-        <Button size="lg" type="submit">
-          Next
-        </Button>
+        <Button type="submit">Next</Button>
       </form>
     </FormProvider>
   );
