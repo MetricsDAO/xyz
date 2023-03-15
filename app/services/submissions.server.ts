@@ -317,7 +317,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
         $match: {
           $and: [
             { "sr.configuration.enforcementExpiration": { $lt: utcDate() } },
-            params.type ? { "lm.appData.type": { $in: params.type } } : {},
+            { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
             params.score ? { "score.avg": { $gte: params.score } } : {},
             params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
