@@ -53,11 +53,11 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
   }
   const serviceRequest = { id, laborMarketAddress, configuration, appData };
   const indexData: ServiceRequestIndexData = {
-    indexedAt: new Date().toDateString(),
-    submissionCount: "0",
+    createdAtBlockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : new Date(),
+    indexedAt: new Date(),
     claimsToReview: [],
     claimsToSubmit: [],
-    createdAtBlockTimestamp: event?.block.timestamp.toString() ?? new Date().toDateString(),
+    submissionCount: 0,
     valid: true,
   };
   return mongo.serviceRequests.updateOne(

@@ -39,11 +39,11 @@ export type LaborMarketConfig = z.infer<typeof ServiceRequestConfigSchema>;
  * Contains all aggregated and index-specific data for a LaborMarket.
  */
 export const ServiceRequestIndexDataSchema = z.object({
-  createdAtBlockTimestamp: z.coerce.string(),
-  indexedAt: z.coerce.string(),
-  claimsToReview: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.coerce.string() })),
-  claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.coerce.string() })),
-  submissionCount: z.coerce.string(),
+  createdAtBlockTimestamp: z.date(),
+  indexedAt: z.date().default(() => new Date()),
+  claimsToReview: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
+  claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
+  submissionCount: z.number(),
   valid: z.boolean(),
 });
 
@@ -99,7 +99,7 @@ export const ServiceRequestFormSchema = z
     title: z.string(),
     description: z.string(),
     language: z.enum(["english", "spanish"]),
-    projectSlugs: z.array(z.string()),
+    projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
     endDate: InputDateSchema,
     endTime: InputTimeSchema,
     reviewEndDate: InputDateSchema,

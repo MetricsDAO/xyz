@@ -1,4 +1,5 @@
 import type { User } from "@prisma/client";
+import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
@@ -31,8 +32,8 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function upsertIndexedLaborMarket(address: EvmAddress, block?: number) {
-  const configuration = await getLaborMarketConfig(address, block);
+export async function upsertIndexedLaborMarket(address: EvmAddress, event?: TracerEvent) {
+  const configuration = await getLaborMarketConfig(address, event?.block.number);
   let appData;
   try {
     appData = await getLaborMarketAppData(configuration.marketUri);
@@ -45,7 +46,7 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, block?: numb
     indexedAt: new Date(),
     serviceRequestCount: 0,
     serviceRequestRewardPools: [],
-    createdAtBlockTimestamp: new Date(),
+    createdAtBlockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : new Date(),
   };
   return mongo.laborMarkets.updateOne(
     { address },
