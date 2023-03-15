@@ -27,7 +27,7 @@ export default function ChallengeIdRewards() {
         <Detail>
           <DetailItem title="Total rewards to be distributed across winners">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQ)}
               token={toTokenAbbreviation(serviceRequest.configuration.pToken, tokens) ?? ""}
               rMETRIC={REPUTATION_REWARD_POOL}
             />

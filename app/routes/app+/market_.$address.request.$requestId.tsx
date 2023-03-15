@@ -1,5 +1,6 @@
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import * as DOMPurify from "dompurify";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, ClientOnly, notFound } from "remix-utils";
@@ -13,6 +14,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
@@ -24,17 +26,15 @@ import { useTokenBalance } from "~/hooks/use-token-balance";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { countReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
-import * as DOMPurify from "dompurify";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(requestId, address);
+  const serviceRequest = await getIndexedServiceRequest(address as `0x${string}`, requestId);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
@@ -44,7 +44,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   }
 
   if (!serviceRequest.appData) {
-    throw badRequest("Labor market app data is missing");
+    throw badRequest("service request app data is missing");
   }
 
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
@@ -61,7 +61,7 @@ export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
     useTypedLoaderData<typeof loader>();
 
-  const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
+  const claimDeadlinePassed = dateHasPassed(new Date(serviceRequest.configuration.signalExp));
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
@@ -159,19 +159,19 @@ export default function ServiceRequest() {
           </div>
           <DetailItem title="Reward Pool">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQ)}
               token={token?.symbol ?? ""}
               rMETRIC={REPUTATION_REWARD_POOL}
             />
           </DetailItem>
           <DetailItem title="Submissions">
-            <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
+            <Badge className="px-4 min-w-full">{serviceRequest.indexData.submissionCount}</Badge>
           </DetailItem>
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
           </DetailItem>
           <DetailItem title="Winner">
-            {!dateHasPassed(serviceRequest.configuration.enforcementExpiration) ? (
+            {!dateHasPassed(new Date(serviceRequest.configuration.enforcementExp)) ? (
               <Badge>Pending</Badge>
             ) : (
               <Badge>todo</Badge>
@@ -184,7 +184,7 @@ export default function ServiceRequest() {
 
       <TabNav className="mb-10">
         <TabNavLink to="" end>
-          Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
+          Submissions <span className="text-gray-400">{serviceRequest.indexData.submissionCount}</span>
         </TabNavLink>
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>

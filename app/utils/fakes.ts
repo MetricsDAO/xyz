@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
-import type { ServiceRequest, ServiceRequestContract } from "~/domain/service-request/schemas";
 import type { LaborMarket } from "~/domain";
+import type { ServiceRequest } from "~/domain/service-request/schemas";
 import type { SubmissionIndexer } from "~/domain/submission";
 
 // This module export utlity functions to generate fake data for testing and development
@@ -31,23 +31,29 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
   };
 };
 
-export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestContract => {
+export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequest => {
   const signal = faker.date.soon(7);
   const submission = faker.date.soon(7, signal);
   const enforcement = faker.date.soon(7, submission);
 
   return {
     id: faker.datatype.uuid(),
-    title: `Service Request - ${faker.random.words(3)}`,
-    description: faker.random.words(10),
+    appData: {
+      title: `Service Request - ${faker.random.words(3)}`,
+      description: faker.random.words(10),
+      projectSlugs: ["ethereum", "polygon"],
+      language: "english",
+    },
     laborMarketAddress: faker.finance.ethereumAddress() as `0x${string}`,
-    pTokenAddress: faker.finance.ethereumAddress() as `0x${string}`,
-    pTokenQuantity: faker.datatype.string(),
-    signalExpiration: signal,
-    submissionExpiration: submission,
-    enforcementExpiration: enforcement,
-    uri: faker.internet.url(),
-    createdAt: faker.date.past(),
+    configuration: {
+      serviceRequester: faker.finance.ethereumAddress() as `0x${string}`,
+      pToken: faker.finance.ethereumAddress() as `0x${string}`,
+      pTokenQ: faker.datatype.string(),
+      signalExp: signal.toDateString(),
+      submissionExp: submission.toDateString(),
+      enforcementExp: enforcement.toDateString(),
+      uri: faker.internet.url(),
+    },
     ...data,
   };
 };

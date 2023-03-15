@@ -5,16 +5,69 @@ import { zfd } from "zod-form-data";
 import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "../address";
+import { arrayToObject } from "../shared/utils";
 
-export const ServiceRequestSchema = z.object({
-  id: z.string({ description: "The id of the service request." }),
-  title: z.string({ description: "The title of the service request." }).min(1, "Required"),
-  description: z.string({ description: "The description of the service request." }).min(1, "Required"),
+/**
+ * AppData is any data that isn't stored by the contract directly but is stored in IPFS instead.
+ */
+export const ServiceRequestAppDataSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
   language: z.enum(["english", "spanish"]),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  laborMarketAddress: EvmAddressSchema,
-  createdAt: z.date({ description: "The date the service request was created." }),
 });
+export type ServiceRequestAppData = z.infer<typeof ServiceRequestAppDataSchema>;
+
+/**
+ * Normalizes the `configuration` method from the ServiceRequest contract so both the contract and the index can use the same type.
+ */
+export const ServiceRequestConfigSchema = z.preprocess(
+  arrayToObject,
+  z.object({
+    serviceRequester: EvmAddressSchema,
+    pToken: EvmAddressSchema,
+    pTokenQ: z.coerce.string(),
+    signalExp: z.coerce.string(),
+    submissionExp: z.coerce.string(),
+    enforcementExp: z.coerce.string(),
+    uri: z.string(),
+  })
+);
+export type LaborMarketConfig = z.infer<typeof ServiceRequestConfigSchema>;
+
+/**
+ * Contains all aggregated and index-specific data for a LaborMarket.
+ */
+export const ServiceRequestIndexDataSchema = z.object({
+  createdAtBlockTimestamp: z.coerce.string(),
+  indexedAt: z.coerce.string(),
+  claimsToReview: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.coerce.string() })),
+  claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.coerce.string() })),
+  submissionCount: z.coerce.string(),
+  valid: z.boolean(),
+});
+
+export type ServiceRequestIndexData = z.infer<typeof ServiceRequestIndexDataSchema>;
+
+/**
+ * This is the canonical shape of a ServiceRequest in our system.
+ * Data stored both in the database and the contract/ipfs should match this shape.
+ */
+export const ServiceRequestSchema = z.object({
+  id: z.string(),
+  laborMarketAddress: EvmAddressSchema,
+  appData: ServiceRequestAppDataSchema,
+  configuration: ServiceRequestConfigSchema,
+});
+export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
+
+/**
+ * This is the same as the ServiceRequest but with additional index-specific data.
+ */
+export const ServiceRequestWithIndexDataSchema = ServiceRequestSchema.extend({
+  indexData: ServiceRequestIndexDataSchema,
+});
+export type ServiceRequestWithIndexData = z.infer<typeof ServiceRequestWithIndexDataSchema>;
 
 const DateSchema = z.preprocess((arg) => {
   if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
@@ -41,13 +94,12 @@ function validDeadlines(reviewDate: string, reviewTime: string, submitDate: stri
   return parseDatetime(reviewDate, reviewTime) > parseDatetime(submitDate, submitTime);
 }
 
-export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
-  title: true,
-  description: true,
-  language: true,
-  projectSlugs: true,
-})
-  .extend({
+export const ServiceRequestFormSchema = z
+  .object({
+    title: z.string(),
+    description: z.string(),
+    language: z.enum(["english", "spanish"]),
+    projectSlugs: z.array(z.string()),
     endDate: InputDateSchema,
     endTime: InputTimeSchema,
     reviewEndDate: InputDateSchema,
@@ -60,11 +112,11 @@ export const ServiceRequestFormSchema = ServiceRequestSchema.pick({
     path: ["reviewEndTime"],
   });
 
-export const ServiceRequestMetaSchema = ServiceRequestSchema.pick({
-  title: true,
-  description: true,
-  language: true,
-  projectSlugs: true,
+export const ServiceRequestMetaSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  language: z.enum(["english", "spanish"]),
+  projectSlugs: z.array(z.string()),
 });
 
 export const ServiceRequestContractSchema = ServiceRequestSchema.pick({
@@ -85,18 +137,18 @@ export const ServiceRequestDocSchema = z.object({
   id: z.string().describe("The request id"),
   laborMarketAddress: EvmAddressSchema,
   valid: z.boolean(),
-  createdAtBlockTimestamp: z.date(),
-  indexedAt: z.date(),
+  createdAtBlockTimestamp: z.coerce.string(),
+  indexedAt: z.coerce.string(),
   configuration: z.object({
-    requester: EvmAddressSchema,
+    serviceRequester: EvmAddressSchema,
     pToken: EvmAddressSchema,
-    pTokenQuantity: z.string(),
-    signalExpiration: z.date(),
-    submissionExpiration: z.date(),
-    enforcementExpiration: z.date(),
+    pTokenQ: z.string(),
+    signalExp: z.coerce.string(),
+    submissionExp: z.coerce.string(),
+    enforcementExp: z.coerce.string(),
     uri: z.string(),
   }),
-  submissionCount: z.number(),
+  submissionCount: z.coerce.string(),
   claimsToReview: z.array(
     z.object({
       signaler: EvmAddressSchema,
@@ -151,17 +203,7 @@ export const ServiceRequestSearchSchema = z.object({
   first: z.number().default(12),
 });
 
-export const ServiceRequestConfigSchema = z.object({
-  requester: EvmAddressSchema,
-  pToken: EvmAddressSchema,
-  pTokenQuantity: z.string(),
-  signalExpiration: z.date(),
-  submissionExpiration: z.date(),
-  enforcementExpiration: z.date(),
-  uri: z.string(),
-});
-
-export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
+// export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;

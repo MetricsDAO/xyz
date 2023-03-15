@@ -17,17 +17,17 @@ export default function ServiceIdTimeline() {
   }
 
   const times = [
-    { label: "claim to submit deadline", time: serviceRequest.configuration?.signalExpiration },
-    { label: "submission deadline", time: serviceRequest.configuration?.submissionExpiration },
+    { label: "claim to submit deadline", time: serviceRequest.configuration?.signalExp },
+    { label: "submission deadline", time: serviceRequest.configuration?.submissionExp },
     {
       label: "claim to review deadline",
       time: claimToReviewDeadline(serviceRequest),
     },
-    { label: "review deadline & winners", time: serviceRequest.configuration?.enforcementExpiration },
+    { label: "review deadline & winners", time: serviceRequest.configuration?.enforcementExp },
   ];
 
-  const upcoming = times.filter((t) => t.time && !dateHasPassed(t.time));
-  const passed = times.filter((t) => t.time && dateHasPassed(t.time));
+  const upcoming = times.filter((t) => t.time && !dateHasPassed(new Date(t.time)));
+  const passed = times.filter((t) => t.time && dateHasPassed(new Date(t.time)));
 
   return (
     <section className="w-full border-spacing-4 border-separate space-y-14">
@@ -38,7 +38,11 @@ export default function ServiceIdTimeline() {
           <h3 className="font-semibold text-lg">Upcoming</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
             {upcoming.map((u) => (
-              <CountdownCard start={serviceRequest.createdAtBlockTimestamp} end={u.time} key={u.label}>
+              <CountdownCard
+                start={new Date(serviceRequest.indexData.createdAtBlockTimestamp)}
+                end={new Date(u.time)}
+                key={u.label}
+              >
                 {u.label}
               </CountdownCard>
             ))}
@@ -52,7 +56,11 @@ export default function ServiceIdTimeline() {
           <h3 className="font-semibold text-lg">Passed</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
             {passed.map((p) => (
-              <CountdownCard start={serviceRequest.createdAtBlockTimestamp} end={p.time} key={p.label}>
+              <CountdownCard
+                start={new Date(serviceRequest.indexData.createdAtBlockTimestamp)}
+                end={new Date(p.time)}
+                key={p.label}
+              >
                 {p.label}
               </CountdownCard>
             ))}

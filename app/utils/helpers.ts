@@ -1,8 +1,7 @@
 import type { Project, Token } from "@prisma/client";
-import { BigNumber } from "ethers";
-import { ethers } from "ethers";
-import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
+import { BigNumber, ethers } from "ethers";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -61,8 +60,11 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.networkName;
 };
 
-export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
-  return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
+export function claimToReviewDeadline(serviceRequest: ServiceRequestWithIndexData) {
+  return claimDate(
+    new Date(serviceRequest.indexData.createdAtBlockTimestamp),
+    new Date(serviceRequest.configuration.enforcementExp)
+  );
 }
 
 /**

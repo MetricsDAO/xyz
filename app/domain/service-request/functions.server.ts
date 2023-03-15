@@ -1,15 +1,90 @@
+import type { User } from "@prisma/client";
 import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
-import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketDoc } from "~/domain";
 import { ClaimToReviewEventSchema, ClaimToSubmitEventSchema } from "~/domain";
-import type { ServiceRequestDoc, ServiceRequestSearch } from "~/domain/service-request/schemas";
-import { ServiceRequestMetaSchema } from "~/domain/service-request/schemas";
-import { fetchIpfsJson } from "~/services/ipfs.server";
+import type {
+  ServiceRequestAppData,
+  ServiceRequestIndexData,
+  ServiceRequestSearch,
+  ServiceRequestWithIndexData,
+} from "~/domain/service-request/schemas";
+import {
+  ServiceRequestAppDataSchema,
+  ServiceRequestConfigSchema,
+  ServiceRequestWithIndexDataSchema,
+} from "~/domain/service-request/schemas";
+import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
+import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
-import { fromUnixTimestamp } from "~/utils/date";
+import type { EvmAddress } from "../address";
+
+/**
+ * Returns a ServiceRequestWithIndexData from mongodb, if it exists.
+ * If it doesn't exist, it probably means that it hasn't been indexed yet so we
+ * index it eagerly and return the result.
+ */
+export async function getIndexedServiceRequest(address: EvmAddress, id: string): Promise<ServiceRequestWithIndexData> {
+  const doc = await mongo.serviceRequests.findOne({ id, laborMarketAddress: address });
+  if (!doc) {
+    await upsertIndexedServiceRequest(address, id);
+    return getIndexedServiceRequest(address, id);
+  }
+  console.log("DOC", doc);
+  return ServiceRequestWithIndexDataSchema.parse(doc);
+}
+
+/**
+ * Creates a ServiceRequesttWithIndexData in mongodb from chain and ipfs data.
+ */
+export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress, id: string, event?: TracerEvent) {
+  const configuration = await getServiceRequestConfig(laborMarketAddress, id);
+  let appData;
+  try {
+    appData = await getIndexedServiceRequestAppData(configuration.uri);
+  } catch (e) {
+    logger.warn(
+      `Failed to fetch and parse service request app data for ${laborMarketAddress}. Id: ${id} Skipping indexing.`,
+      e
+    );
+    return;
+  }
+  const serviceRequest = { id, laborMarketAddress, configuration, appData };
+  const indexData: ServiceRequestIndexData = {
+    indexedAt: new Date().toDateString(),
+    submissionCount: "0",
+    claimsToReview: [],
+    claimsToSubmit: [],
+    createdAtBlockTimestamp: event?.block.timestamp.toString() ?? new Date().toDateString(),
+    valid: true,
+  };
+  return mongo.serviceRequests.updateOne(
+    { id },
+    { $set: serviceRequest, $setOnInsert: { indexData } },
+    { upsert: true }
+  );
+}
+
+/**
+ * Uploads a ServiceRequestAppData object to IPFS and returns the CID.
+ */
+export async function createServiceRequestAppData(appData: ServiceRequestAppData, user: User) {
+  const cid = await uploadJsonToIpfs(user, appData, appData.title);
+  return cid;
+}
+
+async function getServiceRequestConfig(address: string, id: string) {
+  const contract = LaborMarket__factory.connect(address, nodeProvider);
+  const data = await contract.serviceRequests(id);
+  return ServiceRequestConfigSchema.parse(data);
+}
+
+async function getIndexedServiceRequestAppData(marketUri: string): Promise<ServiceRequestAppData> {
+  const data = await fetchIpfsJson(marketUri);
+  return ServiceRequestAppDataSchema.parse(data);
+}
 
 /**
  * Returns an array of ServiceRequestDoc for a given Service Request.
@@ -54,73 +129,6 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
   return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as `0x${string}`, valid: true });
-};
-
-/**
- * Create a new ServiceRequestDoc from a TracerEvent.
- */
-export const indexServiceRequest = async (event: TracerEvent) => {
-  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
-  const requestId = z.string().parse(event.decoded.inputs.requestId);
-  const serviceRequest = await contract.serviceRequests(requestId, { blockTag: event.block.number });
-  const appData = await fetchIpfsJson(serviceRequest.uri)
-    .then(ServiceRequestMetaSchema.parse)
-    .catch(() => null);
-
-  const isValid = appData !== null;
-  // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<
-    ServiceRequestDoc,
-    "submissionCount" | "claimsToSubmit" | "claimsToReview" | "createdAtBlockTimestamp"
-  > = {
-    id: requestId,
-    laborMarketAddress: event.contract.address as `0x${string}`,
-    valid: isValid,
-    indexedAt: new Date(),
-    configuration: {
-      requester: serviceRequest.serviceRequester as `0x${string}`,
-      uri: serviceRequest.uri,
-      pToken: serviceRequest.pToken as `0x${string}`,
-      pTokenQuantity: serviceRequest.pTokenQ.toString(),
-      signalExpiration: fromUnixTimestamp(serviceRequest.signalExp.toNumber()),
-      submissionExpiration: fromUnixTimestamp(serviceRequest.submissionExp.toNumber()),
-      enforcementExpiration: fromUnixTimestamp(serviceRequest.enforcementExp.toNumber()),
-    },
-    appData,
-  };
-
-  if (isValid) {
-    const lm = await mongo.laborMarkets.findOne({ address: doc.laborMarketAddress });
-    await mongo.laborMarkets.updateOne(
-      { address: doc.laborMarketAddress },
-      {
-        $inc: {
-          "indexData.serviceRequestCount": 1,
-        },
-        $set: {
-          "indexData.serviceRequestRewardPools": calculateRewardPools(
-            lm?.indexData.serviceRequestRewardPools ?? [],
-            doc.configuration.pToken,
-            doc.configuration.pTokenQuantity
-          ),
-        },
-      }
-    );
-  }
-
-  return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, id: doc.id },
-    {
-      $set: doc,
-      $setOnInsert: {
-        submissionCount: 0,
-        claimsToSubmit: [],
-        claimsToReview: [],
-        createdAtBlockTimestamp: new Date(event.block.timestamp),
-      },
-    },
-    { upsert: true }
-  );
 };
 
 export const indexClaimToReview = async (event: TracerEvent) => {

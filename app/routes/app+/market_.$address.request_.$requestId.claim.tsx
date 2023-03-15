@@ -58,15 +58,15 @@ export default function ClaimToSubmit() {
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
             <CountdownCard
-              start={serviceRequest.createdAtBlockTimestamp}
-              end={serviceRequest.configuration?.signalExpiration}
+              start={new Date(serviceRequest.indexData.createdAtBlockTimestamp)}
+              end={new Date(serviceRequest.configuration?.signalExp)}
             />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
             <CountdownCard
-              start={serviceRequest.createdAtBlockTimestamp}
-              end={serviceRequest.configuration?.submissionExpiration}
+              start={new Date(serviceRequest.indexData.createdAtBlockTimestamp)}
+              end={new Date(serviceRequest.configuration?.submissionExp)}
             />
           </div>
         </div>

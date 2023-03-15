@@ -172,15 +172,15 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 </div>
               </Row.Column>
 
-              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQuantity)} ${toTokenAbbreviation(
+              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQ)} ${toTokenAbbreviation(
                 sr.configuration.pToken,
                 tokens
               )}`}</Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={new Date(sr.configuration?.submissionExp)} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={new Date(sr.configuration?.enforcementExp)} />
               </Row.Column>
             </Link>
           </Row>
@@ -212,16 +212,16 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
 
               <div>Reward Pool</div>
               <div>
-                {fromTokenAmount(sr.configuration.pTokenQuantity)}{" "}
+                {fromTokenAmount(sr.configuration.pTokenQ)}{" "}
                 {tokens.find((t) => t.contractAddress === sr.configuration.pToken)?.symbol}
               </div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={new Date(sr.configuration?.submissionExp)} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={new Date(sr.configuration?.enforcementExp)} />
               </div>
             </Link>
           </Card>
