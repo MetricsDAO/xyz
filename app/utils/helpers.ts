@@ -1,7 +1,8 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestDoc } from "~/domain";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -32,14 +33,6 @@ export const fromTokenAmount = (units: string) => {
   return ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS).toString();
 };
 
-/**
- * Removes leading zeros from an address 0x0000000000000000000000003592fd4c9e9b4b1286d4e2b400b5386a2429cca1 => 0x3592fd4C9E9B4b1286d4E2b400B5386A2429CCa1
- * @param str
- */
-export function removeLeadingZeros(str: string): string {
-  return ethers.utils.hexStripZeros(str);
-}
-
 export function findProjectsBySlug(projects: Project[], slugs: string[]) {
   return slugs
     .map((slug) => {
@@ -56,6 +49,16 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
  */
 export const toTokenAbbreviation = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.symbol;
+};
+
+/**
+ * Take a contract address and return the corresponing network name
+ * @param address Contract address of the token
+ * @param tokens List of tokens in the app
+ * @returns {string}
+ */
+export const toNetworkName = (address: string, tokens: Token[]) => {
+  return tokens.find((t) => t.contractAddress === address)?.networkName;
 };
 
 export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
@@ -77,6 +80,6 @@ export function displayBalance(balance: BigNumber): string {
   }
 }
 
-export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
+export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }

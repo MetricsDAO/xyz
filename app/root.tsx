@@ -3,6 +3,7 @@ import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeMod
 import WalletProvider from "~/contexts/wallet-provider";
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
+import mdEditorStyles from "@uiw/react-md-editor/dist/mdeditor.min.css";
 import { getUser } from "./services/session.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { Toaster } from "react-hot-toast";
@@ -25,7 +26,7 @@ export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
   return typedjson({
     user,
-    ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN, DEV_AUTO_INDEX: env.DEV_AUTO_INDEX },
+    ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN },
   });
 }
 
@@ -90,6 +91,7 @@ export const links: LinksFunction = () => {
     },
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: rainbowKitStyles },
+    { rel: "stylesheet", href: mdEditorStyles },
   ];
 };
 

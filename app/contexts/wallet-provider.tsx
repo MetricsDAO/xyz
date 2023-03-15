@@ -6,14 +6,29 @@ import {
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { SiweMessage } from "siwe";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
 import { mainnet, polygon } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { useOptionalUser } from "~/hooks/use-user";
 
 export declare type AuthenticationStatus = "loading" | "unauthenticated" | "authenticated";
+
+const { chains, provider } = configureChains([polygon, mainnet], [publicProvider()]);
+
+const { connectors } = getDefaultWallets({
+  appName: "MetricsDAO",
+  chains,
+});
+
+const client = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
 
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
@@ -23,29 +38,20 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   );
 };
 
-function useConfigs() {
-  return useMemo(() => {
-    const { chains, provider } = configureChains([polygon, mainnet], [publicProvider()]);
-
-    const { connectors } = getDefaultWallets({
-      appName: "MetricsDAO",
-      chains,
-    });
-
-    const client = createClient({
-      autoConnect: true,
-      connectors,
-      provider,
-    });
-
-    return { client, chains };
-  }, []);
-}
-
 /**
  * Return a wallet adapter for Rainbow Wallet SIWE.
  */
 function useAuthenticationAdapter() {
+  const user = useOptionalUser();
+  const account = useAccount();
+  // If the user is logged in but the account is different (e.g. they changed account in Metamask), log them out and reload the page.
+  useEffect(() => {
+    if (user?.address && user?.address !== account.address) {
+      fetch("/api/logout").then(() => {
+        window.location.reload();
+      });
+    }
+  }, [user?.address, account.address]);
   return useMemo(() => {
     return createAuthenticationAdapter({
       getNonce: async () => {
@@ -90,7 +96,6 @@ export default function WalletProvider({
   children: ReactNode;
   authStatus: AuthenticationStatus;
 }) {
-  const { client, chains } = useConfigs();
   const adapter = useAuthenticationAdapter();
   return (
     <WagmiConfig client={client}>

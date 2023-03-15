@@ -1,9 +1,8 @@
 import { Link, useParams } from "@remix-run/react";
-import { $path } from "remix-routes";
 import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
-import type { MarketplaceTableProps } from "~/routes/app/$mType";
+import type { MarketplaceTableProps } from "~/routes/app+/$mType";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
@@ -42,20 +41,17 @@ function MarketplacesTable({ marketplaces, projects, tokens }: MarketplaceTableP
         invariant(m.appData, "appdata must be valid");
         return (
           <Row asChild columns={6} key={m.address}>
-            <Link
-              to={$path("/app/:mType/m/:laborMarketAddress", { mType: m.appData.type, laborMarketAddress: m.address })}
-              className="text-sm font-medium"
-            >
+            <Link to={`/app/market/${m.address}`} className="text-sm font-medium">
               <Row.Column span={2}>{m.appData.title}</Row.Column>
               <Row.Column>
                 <ProjectBadges projects={findProjectsBySlug(projects, m.appData.projectSlugs)} />
               </Row.Column>
 
               <Row.Column span={2}>
-                <ChallengePoolBadges pools={m.serviceRequestRewardPools} tokens={tokens} />
+                <ChallengePoolBadges pools={m.indexData.serviceRequestRewardPools} tokens={tokens} />
               </Row.Column>
 
-              <Row.Column>{m.serviceRequestCount.toLocaleString()}</Row.Column>
+              <Row.Column>{m.indexData.serviceRequestCount.toLocaleString()}</Row.Column>
             </Link>
           </Row>
         );
@@ -74,10 +70,7 @@ function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTablePr
           invariant(m.appData, "marketplace type must be specified");
           return (
             <Card asChild key={m.address}>
-              <Link
-                to={`/app/${m.appData.type}/m/${m.address}`}
-                className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
-              >
+              <Link to={`/app/market/${m.address}`} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5">
                 <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
                 <div className="text-sm font-medium">{m.appData.title}</div>
 
@@ -87,10 +80,14 @@ function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTablePr
                 </div>
 
                 <div>Challenge Pool Totals</div>
-                <ChallengePoolBadges pools={m.serviceRequestRewardPools} tokens={tokens} />
+                {m.indexData.serviceRequestRewardPools.length === 0 ? (
+                  <p>--</p>
+                ) : (
+                  <ChallengePoolBadges pools={m.indexData.serviceRequestRewardPools} tokens={tokens} />
+                )}
 
                 <div>Active Challenges</div>
-                <div>{m.serviceRequestCount.toLocaleString()}</div>
+                <div>{m.indexData.serviceRequestCount.toLocaleString()}</div>
               </Link>
             </Card>
           );

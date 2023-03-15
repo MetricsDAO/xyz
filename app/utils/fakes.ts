@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { ServiceRequest, ServiceRequestIndexer } from "~/domain";
+import type { ServiceRequest, ServiceRequestContract } from "~/domain";
 import type { LaborMarket } from "~/domain";
 import type { SubmissionIndexer } from "~/domain/submission";
 
@@ -20,29 +20,28 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
     submitRepMax: faker.datatype.number(),
     launch: {
       access: "delegates",
-      badgerAddress: faker.finance.ethereumAddress(),
+      badgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
       badgerTokenId: faker.datatype.string(),
     },
-    sponsorAddress: faker.finance.ethereumAddress(),
-    reviewBadgerAddress: faker.finance.ethereumAddress(),
+    sponsorAddress: faker.finance.ethereumAddress() as `0x${string}`,
+    reviewBadgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
     reviewBadgerTokenId: faker.datatype.string(),
     projectSlugs: ["ethereum", "polygon"],
     ...data,
   };
 };
 
-export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestIndexer => {
+export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceRequestContract => {
   const signal = faker.date.soon(7);
   const submission = faker.date.soon(7, signal);
   const enforcement = faker.date.soon(7, submission);
 
   return {
     id: faker.datatype.uuid(),
-    contractId: faker.datatype.number().toString(),
     title: `Service Request - ${faker.random.words(3)}`,
     description: faker.random.words(10),
-    laborMarketAddress: faker.finance.ethereumAddress(),
-    pTokenAddress: faker.finance.ethereumAddress(),
+    laborMarketAddress: faker.finance.ethereumAddress() as `0x${string}`,
+    pTokenAddress: faker.finance.ethereumAddress() as `0x${string}`,
     pTokenQuantity: faker.datatype.string(),
     signalExpiration: signal,
     submissionExpiration: submission,
@@ -61,7 +60,7 @@ export const fakeSubmission = (data: Partial<SubmissionIndexer>): SubmissionInde
     title: `Submission - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     creatorId: faker.datatype.uuid(),
-    laborMarketAddress: faker.finance.ethereumAddress(),
+    laborMarketAddress: faker.finance.ethereumAddress() as `0x${string}`,
     score: 10,
     ...data,
   };

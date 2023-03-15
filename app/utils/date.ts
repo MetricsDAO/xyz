@@ -2,9 +2,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import duration from "dayjs/plugin/duration";
+import utc from "dayjs/plugin/utc";
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 /**
  * Get a relative description of a date , e.g. "2 days ago"
@@ -70,6 +72,10 @@ export function dateHasPassed(date: Date) {
   return dayjs(date).diff() < 0;
 }
 
+export function utcDate() {
+  return dayjs.utc().toDate();
+}
+
 /**
  * Returns a number between 0 and 100 representing how much time (in scale of seconds) has passed between start and end
  * @param start
@@ -87,4 +93,8 @@ export function progressTime(start: Date, end: Date): number {
 
 export function claimDate(createdAt: Date, expiration: Date) {
   return new Date((expiration.valueOf() - createdAt.valueOf()) * 0.75 + createdAt.valueOf());
+}
+
+export function oneUnitAgo(unit: "month" | "day" | "week") {
+  return dayjs().subtract(1, unit).toDate();
 }

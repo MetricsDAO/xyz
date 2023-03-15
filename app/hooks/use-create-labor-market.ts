@@ -2,15 +2,14 @@ import { BigNumber, ethers } from "ethers";
 import {
   LaborMarket,
   LaborMarketNetwork,
-  PaymentModule,
   ReputationModule,
-  ConstantLikertEnforcement,
   ReputationToken,
+  ScalableLikertEnforcement,
 } from "labor-markets-abi";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import type { LaborMarketContract } from "~/domain";
 import type { Web3Hook } from "~/features/web3-button/types";
-import { REPUTATION_REWARD_POOL, REPUTATION_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
+import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
 
 export function useCreateLaborMarket({
   data,
@@ -27,10 +26,10 @@ export function useCreateLaborMarket({
         marketUri: data.ipfsHash,
         owner: data.userAddress as `0x${string}`,
         modules: {
-          enforcement: ConstantLikertEnforcement.address,
           network: LaborMarketNetwork.address,
-          payment: PaymentModule.address,
           reputation: ReputationModule.address,
+          enforcement: ScalableLikertEnforcement.address,
+          enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
         },
         delegateBadge: {
           token: data.launch.badgerAddress as `0x${string}`,
@@ -46,7 +45,8 @@ export function useCreateLaborMarket({
         },
         reputationParams: {
           rewardPool: BigNumber.from(REPUTATION_REWARD_POOL),
-          signalStake: BigNumber.from(REPUTATION_SIGNAL_STAKE),
+          reviewStake: BigNumber.from(REPUTATION_REVIEW_SIGNAL_STAKE),
+          provideStake: BigNumber.from(data.submitRepMin),
           submitMin: BigNumber.from(data.submitRepMin),
           submitMax: BigNumber.from(data.submitRepMax !== undefined ? data.submitRepMax : ethers.constants.MaxUint256),
         },

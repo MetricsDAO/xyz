@@ -12,6 +12,17 @@ export const findUserByAddress = async (address: string) => {
 };
 
 /**
+ * Finds a user by its wallet address.
+ * @param {string} address - The address of the user to find.
+ * @returns {Promise<User | null>} - The submission or null if not found.
+ */
+export const findWalletsByUserAddress = async (address: string) => {
+  return prisma.wallet.findMany({
+    where: { user: { address: address } },
+  });
+};
+
+/**
  * Finds a user by its id in our database.
  * @param {string} id - The id of the user to find.
  * @returns {Promise<User | null>} - The User or null if not found.

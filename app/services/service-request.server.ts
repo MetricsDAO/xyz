@@ -125,11 +125,11 @@ export const indexServiceRequest = async (event: TracerEvent) => {
       { address: doc.laborMarketAddress },
       {
         $inc: {
-          serviceRequestCount: 1,
+          "indexData.serviceRequestCount": 1,
         },
         $set: {
-          serviceRequestRewardPools: calculateRewardPools(
-            lm?.serviceRequestRewardPools ?? [],
+          "indexData.serviceRequestRewardPools": calculateRewardPools(
+            lm?.indexData.serviceRequestRewardPools ?? [],
             doc.configuration.pToken,
             doc.configuration.pTokenQuantity
           ),

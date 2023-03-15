@@ -1,5 +1,8 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
+import { ServiceRequestDocSchema } from "./service-request";
+import { ReviewDocSchema } from "./review";
+import { LaborMarketWithIndexDataSchema } from "./labor-market/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -41,7 +44,6 @@ const SubmissionDocSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   valid: z.boolean(),
-  reviewed: z.boolean(),
   submissionUrl: z.string().nullable(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
@@ -49,7 +51,14 @@ const SubmissionDocSchema = z.object({
     serviceProvider: EvmAddressSchema,
     uri: z.string(),
   }),
-  reviewCount: z.number(),
+  score: z
+    .object({
+      reviewCount: z.number(),
+      reviewSum: z.number(),
+      avg: z.number(),
+      qualified: z.boolean(),
+    })
+    .optional(),
   appData: SubmissionFormSchema.nullable(),
 });
 
@@ -58,8 +67,47 @@ export const SubmissionEventSchema = z.object({
   submissionId: z.string(),
 });
 
+export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
+  sr: ServiceRequestDocSchema,
+});
+
+const CombinedSchema = SubmissionDocSchema.extend({
+  sr: ServiceRequestDocSchema,
+  lm: LaborMarketWithIndexDataSchema,
+});
+
+export const RewardsSearchSchema = z.object({
+  q: z.string().optional().describe("Search query."),
+  sortBy: z.enum(["sr[0].appData.title", "createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  first: z.number().default(10),
+  page: z.number().default(1),
+  token: z.array(z.string()).optional(),
+  isPastEnforcementExpiration: z.boolean().default(true),
+  serviceProvider: EvmAddressSchema.optional(),
+});
+
+export const ShowcaseSearchSchema = z.object({
+  q: z.string().optional().describe("Search query."),
+  count: z.number().default(0),
+  marketplace: z.array(EvmAddressSchema).optional(),
+  project: z.array(z.string()).optional(),
+  score: z.number().optional(),
+  timeframe: z.enum(["day", "month", "week"]).default("month"),
+  type: z.array(z.enum(["analyze", "brainstorm"])).optional(),
+});
+
+export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
+  reviews: z.array(ReviewDocSchema),
+});
+
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
+export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
+export type CombinedDoc = z.infer<typeof CombinedSchema>;
+export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
+export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;
+export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

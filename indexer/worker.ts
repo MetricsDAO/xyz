@@ -1,7 +1,7 @@
 import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
+import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import env from "~/env.server";
-import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
 import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
@@ -13,7 +13,7 @@ const worker = pine.createWorker({
   logger: logger,
   tracer: {
     namespace: env.PINE_NAMESPACE,
-    version: "1.4.2-2",
+    version: "1.6.0",
     blockchain: { name: "polygon", network: "mainnet" },
   },
 });
@@ -31,7 +31,7 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  return indexLaborMarket(event);
+  upsertIndexedLaborMarket(event.contract.address, event.block.number);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {

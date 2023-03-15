@@ -30,7 +30,6 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
   description: true,
   type: true,
   projectSlugs: true,
-  rewardTokens: true,
 });
 
 export const LaborMarketFormSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
@@ -61,7 +60,7 @@ export const LaborMarketContractSchema = LaborMarketFormSchema.extend({
 });
 
 // Used for searching and filtering marketplaces.
-export const LaborMarketSearchSchema = z.object({
+export const LaborMarketSearchSchema = zfd.formData({
   q: z.string().optional().describe("Search query."),
   sortBy: z
     .enum(["createdAtBlockTimestamp", "serviceRequestCount"])
@@ -71,8 +70,8 @@ export const LaborMarketSearchSchema = z.object({
   order: z.enum(["asc", "desc"]).default("desc").describe("Order of the results."),
   project: z.array(z.string()).optional().describe("Project slugs to filter by."),
   token: z.array(z.string()).optional().describe("Token symbols to filter by."),
-  page: z.number().min(1).default(1).describe("Page number."),
-  first: z.number().min(1).max(100).default(12).describe("The number of results to return."),
+  page: z.coerce.number().min(1).default(1).describe("Page number."),
+  first: z.coerce.number().min(1).max(100).default(12).describe("The number of results to return."),
 });
 
 const BadgePairSchema = z.object({
@@ -96,14 +95,15 @@ const LaborMarketDocSchema = z.object({
     reputationBadge: BadgePairSchema,
     reputationParams: z.object({
       rewardPool: z.string(),
-      signalStake: z.string(),
+      provideStake: z.string(),
+      reviewStake: z.string(),
       submitMin: z.string(),
       submitMax: z.string(),
     }),
     modules: z.object({
       network: EvmAddressSchema,
       enforcement: EvmAddressSchema,
-      payment: EvmAddressSchema,
+      enforcementKey: EvmAddressSchema,
       reputation: EvmAddressSchema,
     }),
   }),

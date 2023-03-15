@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { SCORE_COLOR, SCORE_COLOR_SECONDARY } from "~/utils/constants";
 
 type Props = {
-  score: string;
+  score: string | number;
 };
 
 export function Score({ score }: Props) {
@@ -16,7 +16,7 @@ export function Score({ score }: Props) {
   );
 }
 
-export function ScoreBadge({ score }: { score: string }) {
+export function ScoreBadge({ score }: Props) {
   const label = scoreToLabel(score);
   return (
     <div className={clsx(SCORE_COLOR_SECONDARY[label], "flex rounded-full items-center pr-1 h-8 w-fit")}>
@@ -29,16 +29,17 @@ export function ScoreBadge({ score }: { score: string }) {
 }
 
 export function scoreToLabel(score: number | string) {
+  let numberScore = score;
   if (typeof score === "string") {
-    return score === "4"
-      ? "Great"
-      : score === "3"
-      ? "Good"
-      : score === "2"
-      ? "Average"
-      : score === "1"
-      ? "Bad"
-      : "Spam";
+    numberScore = Number(score);
   }
-  return score >= 4 ? "Great" : score >= 3 ? "Good" : score >= 2 ? "Average" : score >= 1 ? "Bad" : "Spam";
+  return numberScore >= 100
+    ? "Great"
+    : numberScore >= 75
+    ? "Good"
+    : numberScore >= 50
+    ? "Average"
+    : numberScore >= 25
+    ? "Bad"
+    : "Spam";
 }
