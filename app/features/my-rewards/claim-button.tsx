@@ -38,7 +38,7 @@ export function ClaimButton({
           <div className="space-y-5 mt-5">
             <div className="space-y-2">
               <div className="flex items-center">
-                <img alt="trophy" src="/img/trophy.svg" className="h-8 w-8" />
+                <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
                 <p className="text-yellow-700 text-2xl ml-2">{`${rewardAmount} ${tokenAbrev}`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">

@@ -10,7 +10,6 @@ import { useOptionalUser } from "~/hooks/use-user";
 
 const primaryLinks = [
   { link: $path("/app/showcase"), label: "Showcase" },
-  { link: $path("/app/:mType", { mType: "brainstorm" }), label: "Brainstorm" },
   { link: $path("/app/:mType", { mType: "analyze" }), label: "Analyze" },
 ];
 
