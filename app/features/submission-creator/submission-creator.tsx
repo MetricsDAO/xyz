@@ -2,7 +2,7 @@ import { Button } from "../../components/button";
 import { useNavigate } from "@remix-run/react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LaborMarketNetwork } from "labor-markets-abi";
+import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
@@ -45,7 +45,7 @@ export default function SubmissionCreator({ type }: { type: "brainstorm" | "anal
   const onSubmit = (values: SubmissionForm) => {
     transactor.start({
       metadata: values,
-      config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
+      //todo - pass in lm address and correct data config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
     });
   };
   return (
@@ -59,10 +59,10 @@ export default function SubmissionCreator({ type }: { type: "brainstorm" | "anal
   );
 }
 
-function configureFromValues({ owner, cid, values }: { owner: EvmAddress; cid: string; values: SubmissionForm }) {
+function configureFromValues({ values, address }: { values: SubmissionForm; address: `0x${string}` }) {
   return configureWrite({
-    abi: LaborMarketNetwork.abi,
-    address: LaborMarketNetwork.address,
+    abi: LaborMarket.abi,
+    address: address,
     functionName: "provide",
     args: [BigNumber.from(values.serviceRequestId), values.uri],
   });
