@@ -1,6 +1,6 @@
 import SubmissionCreatorFields from "./submission-creator-fields";
 import { Button } from "../../components/button";
-import { useNavigate, useParams } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LaborMarketNetwork } from "labor-markets-abi";
@@ -24,7 +24,7 @@ function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.
     .find((e) => e.name === eventName);
 }
 
-export default function SubmissionCreator() {
+export default function SubmissionCreator({ type }: { type: "brainstorm" | "analyze" }) {
   const methods = useForm<SubmissionForm>({
     resolver: zodResolver(SubmissionFormSchema),
   });
@@ -35,8 +35,8 @@ export default function SubmissionCreator() {
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarketNetwork__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "LaborMarketCreated");
-        if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
+        const event = getEventFromLogs(iface, receipt.logs, "provide");
+        if (event) navigate(`/app/market/${event.args["marketAddress"]}/submission/${event.args["submissionId"]}}`);
       },
       [navigate]
     ),
@@ -52,7 +52,7 @@ export default function SubmissionCreator() {
     <FormProvider {...methods}>
       <TxModal transactor={transactor} />
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <SubmissionCreatorFields />
+        <SubmissionCreatorFields type={type} />
         <Button size="lg" type="submit">
           Next
         </Button>

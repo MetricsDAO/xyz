@@ -1,11 +1,7 @@
-import { useParams } from "@remix-run/react";
-import invariant from "tiny-invariant";
 import { Button, Field, ValidatedInput, ValidatedTextarea } from "~/components";
 
-export default function SubmissionCreatorFields() {
-  const { mType } = useParams();
-  invariant(mType, "Marketplace type required");
-  return mType === "brainstorm" ? <BrainstormFields /> : <AnalyzeFields />;
+export default function SubmissionCreatorFields({ type }: { type: "brainstorm" | "analyze" }) {
+  return type === "brainstorm" ? <BrainstormFields /> : <AnalyzeFields />;
 }
 
 function BrainstormFields() {

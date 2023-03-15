@@ -99,7 +99,7 @@ function Brainstorm() {
               rMETRIC from the challenge reward pool!
             </p>
           </div>
-          <SubmissionCreator />
+          <SubmissionCreator type={"brainstorm"} />
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
@@ -155,7 +155,7 @@ function Analyze() {
               rMETRIC from the challenge reward pool!
             </p>
           </div>
-          <SubmissionCreator />
+          <SubmissionCreator type={"analyze"} />
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
