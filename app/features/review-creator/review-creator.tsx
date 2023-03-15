@@ -23,7 +23,7 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
   const methods = useForm<ReviewFormValues>({
     resolver: zodResolver(ReviewFormValuesSchema),
     defaultValues: {
-      score: 2,
+      score: 2, // default to an average score
     },
   });
 
