@@ -64,7 +64,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
  * @param {String} id - The ID of the submission.
  * @returns - The Submission or null if not found.
  */
-export const findSubmission = async (id: string, laborMarketAddress: string) => {
+export const findSubmission = async (id: string, laborMarketAddress: `0x${string}`) => {
   return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
 };
 
@@ -92,13 +92,13 @@ export const indexSubmission = async (event: TracerEvent) => {
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
     id: submissionId,
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: event.contract.address as `0x${string}`,
     serviceRequestId: requestId,
     valid: isValid,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
-      serviceProvider: submission.serviceProvider,
+      serviceProvider: submission.serviceProvider as `0x${string}`,
       uri: submission.uri,
     },
     appData,

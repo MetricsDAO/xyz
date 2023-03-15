@@ -1,13 +1,12 @@
-import type { User } from "@prisma/client";
 import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { LaborMarketDoc } from "~/domain";
 import { ClaimToReviewEventSchema, ClaimToSubmitEventSchema } from "~/domain";
-import type { ServiceRequestDoc, ServiceRequestForm, ServiceRequestSearch } from "~/domain/service-request/schemas";
-import { ServiceRequestContractSchema, ServiceRequestMetaSchema } from "~/domain/service-request/schemas";
-import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
+import type { ServiceRequestDoc, ServiceRequestSearch } from "~/domain/service-request/schemas";
+import { ServiceRequestMetaSchema } from "~/domain/service-request/schemas";
+import { fetchIpfsJson } from "~/services/ipfs.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { fromUnixTimestamp } from "~/utils/date";
@@ -41,7 +40,7 @@ export const countServiceRequests = async (params: ServiceRequestSearch) => {
 const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
   return {
     valid: true,
-    ...(params.laborMarket ? { laborMarketAddress: params.laborMarket } : {}),
+    ...(params.laborMarket ? { laborMarketAddress: params.laborMarket as `0x${string}` } : {}),
     ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
     ...(params.language ? { "appData.language": { $in: params.language } } : {}),
     ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
@@ -54,7 +53,7 @@ const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.ser
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
-  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress, valid: true });
+  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as `0x${string}`, valid: true });
 };
 
 /**
@@ -75,13 +74,13 @@ export const indexServiceRequest = async (event: TracerEvent) => {
     "submissionCount" | "claimsToSubmit" | "claimsToReview" | "createdAtBlockTimestamp"
   > = {
     id: requestId,
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: event.contract.address as `0x${string}`,
     valid: isValid,
     indexedAt: new Date(),
     configuration: {
-      requester: serviceRequest.serviceRequester,
+      requester: serviceRequest.serviceRequester as `0x${string}`,
       uri: serviceRequest.uri,
-      pToken: serviceRequest.pToken,
+      pToken: serviceRequest.pToken as `0x${string}`,
       pTokenQuantity: serviceRequest.pTokenQ.toString(),
       signalExpiration: fromUnixTimestamp(serviceRequest.signalExp.toNumber()),
       submissionExpiration: fromUnixTimestamp(serviceRequest.submissionExp.toNumber()),
@@ -128,7 +127,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
 
   return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: event.contract.address, id: inputs.requestId },
+    { laborMarketAddress: event.contract.address as `0x${string}`, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };
@@ -137,7 +136,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
   const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
 
   return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: event.contract.address, id: inputs.requestId },
+    { laborMarketAddress: event.contract.address as `0x${string}`, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };
@@ -153,7 +152,7 @@ const calculateRewardPools = (
     pool.pTokenQuantity = BigNumber.from(pool.pTokenQuantity).add(pTokenQuantity).toString();
   } else {
     newPools.push({
-      pToken: pToken,
+      pToken: pToken as `0x${string}`,
       pTokenQuantity: pTokenQuantity,
     });
   }

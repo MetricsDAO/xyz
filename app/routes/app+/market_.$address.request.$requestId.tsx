@@ -38,7 +38,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }
@@ -50,7 +50,10 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
   const tokens = await listTokens();
 
-  const numOfReviews = await countReviews({ laborMarketAddress: address, serviceRequestId: requestId });
+  const numOfReviews = await countReviews({
+    laborMarketAddress: address as `0x${string}`,
+    serviceRequestId: requestId,
+  });
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 

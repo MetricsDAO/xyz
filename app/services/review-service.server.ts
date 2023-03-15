@@ -48,7 +48,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
  * @param {String} userAddress - The address of the user
  * @returns - the users submission or null if not found.
  */
-export const findUserReview = async (submissionId: string, laborMarketAddress: string, userAddress: string) => {
+export const findUserReview = async (submissionId: string, laborMarketAddress: `0x${string}`, userAddress: string) => {
   return mongo.reviews.findOne({
     laborMarketAddress,
     submissionId,
@@ -61,7 +61,7 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: s
  * @param {String} id - The ID of the review.
  * @returns - The Submission or null if not found.
  */
-export const findReview = async (id: string, laborMarketAddress: string) => {
+export const findReview = async (id: string, laborMarketAddress: `0x${string}`) => {
   return mongo.reviews.findOne({ valid: true, laborMarketAddress, id });
 };
 
@@ -86,7 +86,7 @@ export const indexReview = async (event: TracerEvent) => {
   });
 
   const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: event.contract.address as `0x${string}`,
     serviceRequestId: requestId,
     submissionId: submissionId,
     score: reviewScore,

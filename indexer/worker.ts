@@ -32,7 +32,7 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  upsertIndexedLaborMarket(event.contract.address, event.block.number);
+  upsertIndexedLaborMarket(event.contract.address as `0x${string}`, event.block.number);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {

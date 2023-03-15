@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useCallback } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import type { LaborMarketDoc, ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 

@@ -10,7 +10,7 @@ describe("LaborMarketFormSchema", () => {
       type: "brainstorm",
       submitRepMin: 1,
       submitRepMax: 100,
-      reviewBadgerAddress: faker.finance.ethereumAddress(),
+      reviewBadgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
       reviewBadgerTokenId: "foo",
       projectSlugs: ["ethereum"],
       // @ts-expect-error - so we can simulate a bad input from the client
@@ -31,7 +31,7 @@ describe("LaborMarketFormSchema", () => {
       type: "brainstorm",
       submitRepMin: 1,
       submitRepMax: 100,
-      reviewBadgerAddress: faker.finance.ethereumAddress(),
+      reviewBadgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
       reviewBadgerTokenId: "foo",
       projectSlugs: ["ethereum"],
       launch: {
