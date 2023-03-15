@@ -20,6 +20,7 @@ import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
+import type { LaborMarketWithIndexData } from "../labor-market/schemas";
 
 /**
  * Returns a ServiceRequestWithIndexData from mongodb, if it exists.
@@ -60,9 +61,36 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
     submissionCount: 0,
     valid: true,
   };
+
+  const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
+
+  await mongo.laborMarkets.updateOne(
+    { address: serviceRequest.laborMarketAddress },
+    {
+      $inc: {
+        "indexData.serviceRequestCount": 1,
+      },
+      $set: {
+        "indexData.serviceRequest.rewardPools": calculateRewardPools(
+          lm?.indexData.serviceRequestRewardPools ?? [],
+          serviceRequest.configuration.pToken,
+          serviceRequest.configuration.pTokenQ
+        ),
+      },
+    }
+  );
+
   return mongo.serviceRequests.updateOne(
-    { id },
-    { $set: serviceRequest, $setOnInsert: { indexData } },
+    { laborMarketAddress: serviceRequest.laborMarketAddress, id: serviceRequest.id },
+    {
+      $set: serviceRequest,
+      $setOnInsert: {
+        submissionCount: 0,
+        claimsToSubmit: [],
+        claimsToReview: [],
+        createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+      },
+    },
     { upsert: true }
   );
 }
@@ -150,7 +178,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
 };
 
 const calculateRewardPools = (
-  existingPools: LaborMarketDoc["serviceRequestRewardPools"],
+  existingPools: LaborMarketWithIndexData["indexData"]["serviceRequestRewardPools"],
   pToken: string,
   pTokenQuantity: string
 ) => {

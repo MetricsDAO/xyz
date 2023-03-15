@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { parseDatetime, validateDate, validateTime } from "~/utils/date";
+import { fromUnixTimestamp, parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
@@ -27,13 +27,13 @@ export const ServiceRequestConfigSchema = z.preprocess(
     serviceRequester: EvmAddressSchema,
     pToken: EvmAddressSchema,
     pTokenQ: z.coerce.string(),
-    signalExp: z.coerce.string(),
-    submissionExp: z.coerce.string(),
-    enforcementExp: z.coerce.string(),
+    signalExp: z.coerce.number().transform((s) => fromUnixTimestamp(s)),
+    submissionExp: z.coerce.number().transform((s) => fromUnixTimestamp(s)),
+    enforcementExp: z.coerce.number().transform((e) => fromUnixTimestamp(e)),
     uri: z.string(),
   })
 );
-export type LaborMarketConfig = z.infer<typeof ServiceRequestConfigSchema>;
+export type ServiceRequestConfig = z.infer<typeof ServiceRequestConfigSchema>;
 
 /**
  * Contains all aggregated and index-specific data for a LaborMarket.
@@ -189,12 +189,7 @@ export const ServiceRequestSearchSchema = z.object({
   laborMarket: z.string().optional(),
   q: z.string().optional(),
   sortBy: z
-    .enum([
-      "createdAtBlockTimestamp",
-      "appData.title",
-      "configuration.submissionExpiration",
-      "configuration.enforcementExpiration",
-    ])
+    .enum(["createdAtBlockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
     .default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   token: z.string().optional(),
@@ -208,4 +203,3 @@ export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
 export type ServiceRequestContract = z.infer<typeof ServiceRequestContractSchema>;
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;
 export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;
-export type ServiceRequestConfig = z.infer<typeof ServiceRequestConfigSchema>;
