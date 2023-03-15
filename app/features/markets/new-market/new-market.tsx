@@ -125,7 +125,17 @@ export function NewMarket({
       />
 
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
+        <section className="space-y-1">
+          <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
+          <p className="text-cyan-500 text-lg">
+            Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+            projects launch, grow and succeed.
+          </p>
+          <p className="text-sm text-gray-500">
+            Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These
+            parameters will be applied to all challenges in this marketplace.
+          </p>
+        </section>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
           <input type="hidden" {...register("appData.type", { value: "analyze" })} />
 

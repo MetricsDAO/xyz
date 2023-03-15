@@ -2,9 +2,6 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
-import { Breadcrumbs } from "~/components/breadcrumbs";
-import type { SendTransactionResult } from "@wagmi/core";
-import { useMachine } from "@xstate/react";
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { getParamsOrFail } from "remix-params-helper";
@@ -23,30 +20,28 @@ import {
   Detail,
   DetailItem,
   Drawer,
-  Modal,
   UserBadge,
   ValidatedSelect,
 } from "~/components";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
-import type { ReviewContract } from "~/domain/review";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { ReviewSearchSchema } from "~/domain/review";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { RPCError } from "~/features/rpc-error";
-import { ReviewSubmissionWeb3Button } from "~/features/web3-button/review-submission";
-import type { EthersError } from "~/features/web3-button/types";
-import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
+import { ReviewCreator } from "~/features/review-creator";
+import { useReward } from "~/hooks/use-reward";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
 import { findServiceRequest } from "~/services/service-request.server";
 import { getUser } from "~/services/session.server";
 import { findSubmission } from "~/domain/submission/functions.server";
+import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
-import { fromNow } from "~/utils/date";
-import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import type { LaborMarket } from "~/domain/labor-market/schemas";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { dateHasPassed, fromNow } from "~/utils/date";
+import { fromTokenAmount } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: z.string(),
@@ -62,6 +57,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
   const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
+  const tokens = await listTokens();
 
   const submission = await findSubmission(submissionId, address);
   if (!submission) {
@@ -73,13 +69,14 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
   invariant(serviceRequest, "Service request not found");
 
-  return typedjson({ submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest }, { status: 200 });
+  return typedjson(
+    { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens },
+    { status: 200 }
+  );
 };
 
-const reviewSubmissionMachine = createBlockchainTransactionStateMachine<ReviewContract>();
-
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest } =
+  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens } =
     useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -99,7 +96,17 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const isWinner = false;
+  const reward = useReward({
+    laborMarketAddress: submission.laborMarketAddress as `0x${string}`,
+    submissionId: submission.id,
+  });
+
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
+  const isWinner =
+    enforcementExpirationPassed &&
+    reward !== undefined &&
+    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0));
   const score = submission.score?.avg;
 
   return (
@@ -149,8 +156,13 @@ export default function ChallengeSubmission() {
             )}
           </DetailItem>
           {isWinner && (
-            <DetailItem title="Winner">
-              <RewardBadge amount={50} token="SOL" rMETRIC={5000} variant="winner" />
+            <DetailItem title="Reward">
+              <RewardBadge
+                variant="winner"
+                amount={fromTokenAmount(reward.paymentTokenAmount.toString())}
+                token={token?.symbol ?? "Unknown Token"}
+                rMETRIC={reward.reputationTokenAmount.toNumber()}
+              />
             </DetailItem>
           )}
         </Detail>
@@ -241,46 +253,7 @@ function ReviewQuestionDrawerButton({
   submission: SubmissionDoc;
   laborMarket: LaborMarket;
 }) {
-  const [selected, setSelected] = useState<number>(2);
-  const [scoreSelectionOpen, setScoreSelectionOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [state, send] = useMachine(reviewSubmissionMachine, {
-    actions: {
-      notifyTransactionWait: (context) => {
-        defaultNotifyTransactionActions.notifyTransactionWait(context);
-      },
-      notifyTransactionSuccess: (context) => {
-        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
-      },
-      notifyTransactionFailure: () => {
-        defaultNotifyTransactionActions.notifyTransactionFailure();
-      },
-    },
-  });
-
-  const handleReviewSubmission = () => {
-    send({ type: "RESET_TRANSACTION" });
-    send({
-      type: "PREPARE_TRANSACTION_READY",
-      data: {
-        laborMarketAddress: submission.laborMarketAddress,
-        submissionId: submission.id,
-        requestId: submission.serviceRequestId,
-        score: selected,
-      },
-    });
-    setIsModalOpen(true);
-  };
-
-  const onWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
-  };
-
-  const [error, setError] = useState<EthersError>();
-  const onPrepareTransactionError = (error: EthersError) => {
-    setError(error);
-  };
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   const maintainerBadgeTokenBalance = useTokenBalance({
     tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
@@ -294,7 +267,7 @@ function ReviewQuestionDrawerButton({
       {hasMaintainerBadge && (
         <ConnectWalletWrapper
           onClick={() => {
-            setScoreSelectionOpen(true);
+            setDrawerOpen(true);
           }}
         >
           <Button size="lg">
@@ -302,101 +275,16 @@ function ReviewQuestionDrawerButton({
           </Button>
         </ConnectWalletWrapper>
       )}
-      <Drawer
-        open={scoreSelectionOpen && !state.matches("transactionWait")}
-        onClose={() => setScoreSelectionOpen(false)}
-      >
-        {scoreSelectionOpen && (
-          <div className="flex flex-col mx-auto space-y-10 px-2">
-            <div className="space-y-3">
-              <p className="text-3xl font-semibold">Review & Score</p>
-              <p className="italic text-gray-500 text-sm">
-                Important: You can't edit this score after submitting. Double check your score and ensure it's good to
-                go
-              </p>
-            </div>
-            <div className="flex flex-col space-y-3">
-              <Button
-                variant="gray"
-                onClick={() => setSelected(4)}
-                className={clsx("hover:bg-lime-100", {
-                  "bg-lime-100": selected === 4,
-                })}
-              >
-                Great
-              </Button>
-              <Button
-                variant="gray"
-                onClick={() => setSelected(3)}
-                className={clsx("hover:bg-blue-200", {
-                  "bg-blue-200": selected === 3,
-                })}
-              >
-                Good
-              </Button>
-              <Button
-                variant="gray"
-                onClick={() => setSelected(2)}
-                className={clsx("hover:bg-neutral-200", {
-                  "bg-neutral-200": selected === 2,
-                })}
-              >
-                Average
-              </Button>
-              <Button
-                variant="gray"
-                onClick={() => setSelected(1)}
-                className={clsx("hover:bg-orange-200", {
-                  "bg-orange-200": selected === 1,
-                })}
-              >
-                Bad
-              </Button>
-              <Button
-                variant="gray"
-                onClick={() => setSelected(0)}
-                className={clsx("hover:bg-rose-200", {
-                  "bg-rose-200": selected === 0,
-                })}
-              >
-                Spam
-              </Button>
-            </div>
-            <div className="flex gap-2 w-full">
-              <Button variant="cancel" fullWidth onClick={() => setScoreSelectionOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleReviewSubmission} fullWidth>
-                Submit Score
-              </Button>
-            </div>
-          </div>
+      <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
+        {isDrawerOpen && (
+          <ReviewCreator
+            laborMarketAddress={submission.laborMarketAddress}
+            requestId={submission.serviceRequestId}
+            submissionId={submission.id}
+            onCancel={() => setDrawerOpen(false)}
+          />
         )}
       </Drawer>
-      {state.context.contractData && isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-          <div className="space-y-5">
-            <p className="text-3xl font-semibold">Review & Score</p>
-            <p>
-              Please confirm that you would like to give this submission a score of
-              <b>{` ${scoreToLabel(state.context.contractData.score * 25)}`}</b>.
-            </p>
-            {error && <RPCError error={error} />}
-            <div className="flex flex-col sm:flex-row justify-center gap-2">
-              <Button variant="cancel" size="md" fullWidth onClick={() => setIsModalOpen(false)}>
-                Back
-              </Button>
-              {!error && (
-                <ReviewSubmissionWeb3Button
-                  data={state.context.contractData}
-                  onWriteSuccess={onWriteSuccess}
-                  onPrepareTransactionError={onPrepareTransactionError}
-                />
-              )}
-            </div>
-          </div>
-        </Modal>
-      )}
     </>
   );
 }
