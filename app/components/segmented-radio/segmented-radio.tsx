@@ -11,11 +11,11 @@ type Option = { value: string; label: React.ReactNode };
 
 export function SegmentedRadio({
   value,
-  setValue,
+  onChange,
   ...props
-}: Props & { value: string; setValue: (value: string) => void }) {
+}: Props & { value: string; onChange: (value: string) => void }) {
   return (
-    <RadioGroup value={value} onChange={setValue} name={props.name}>
+    <RadioGroup value={value} onChange={onChange} name={props.name}>
       <div className="flex flex-wrap gap-x-8 gap-y-3">
         {props.options?.map((option) => (
           <RadioGroup.Option
@@ -35,5 +35,5 @@ export function SegmentedRadio({
 
 export function ValidatedSegmentedRadio(props: Props) {
   const [value, setValue] = useControlField<string>(props.name);
-  return <SegmentedRadio value={value} setValue={setValue} {...props} />;
+  return <SegmentedRadio value={value} onChange={setValue} {...props} />;
 }
