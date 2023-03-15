@@ -6,13 +6,14 @@ import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface ClaimToSubmitCreatorProps {
   serviceRequest: ServiceRequestDoc;
-  lockAmount: string;
+  confirmationMessage: React.ReactNode;
 }
 
-export function ClaimToSubmitCreator({ lockAmount, serviceRequest }: ClaimToSubmitCreatorProps) {
+export function ClaimToSubmitCreator({ confirmationMessage, serviceRequest }: ClaimToSubmitCreatorProps) {
   const navigate = useNavigate();
 
   const transactor = useTransactor({
@@ -30,24 +31,12 @@ export function ClaimToSubmitCreator({ lockAmount, serviceRequest }: ClaimToSubm
     });
   };
 
-  // connect wallet wrapper?
   return (
     <>
-      <TxModal
-        transactor={transactor}
-        title="Claim to Submit"
-        confirmationMessage={
-          <div className="space-y-8">
-            <p className="mt-2">Please confirm that you would like to claim a submission.</p>
-            <p>
-              This will lock <b>{lockAmount} rMETRIC.</b>
-            </p>
-          </div>
-        }
-      />
-      <Button size="lg" onClick={onClick}>
-        Claim to Submit
-      </Button>
+      <TxModal transactor={transactor} title="Claim to Submit" confirmationMessage={confirmationMessage} />
+      <ConnectWalletWrapper onClick={onClick}>
+        <Button size="lg">Next</Button>
+      </ConnectWalletWrapper>
     </>
   );
 }

@@ -52,7 +52,7 @@ export function TxModal({ transactor, title, confirmationMessage }: Props) {
             Cancel
           </Button>
           <Button variant="primary" size="md" onClick={transactor.write}>
-            Create
+            Confirm
           </Button>
         </div>
       ) : null}

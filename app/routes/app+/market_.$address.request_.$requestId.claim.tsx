@@ -1,25 +1,15 @@
 import { Link } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import type { SendTransactionResult } from "@wagmi/core";
-import { useMachine } from "@xstate/react";
-import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
+import invariant from "tiny-invariant";
 import { z } from "zod";
-import { Modal } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
-import type { ClaimToSubmitPrepared } from "~/domain";
-import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { RPCError } from "~/features/rpc-error";
-import { ClaimToSubmitWeb3Button } from "~/features/web3-button/claim-to-submit";
-import type { EthersError } from "~/features/web3-button/types";
-import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findServiceRequest } from "~/domain/service-request/functions.server";
-import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import invariant from "tiny-invariant";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
+import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
@@ -36,49 +26,10 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
   return typedjson({ serviceRequest, laborMarket }, { status: 200 });
 };
 
-const claimToSubmitMachine = createBlockchainTransactionStateMachine<ClaimToSubmitPrepared>();
-
 export default function ClaimToSubmit() {
   const { serviceRequest, laborMarket } = useTypedLoaderData<typeof loader>();
   const mType = laborMarket.appData?.type;
   invariant(mType, "marketplace type must be specified");
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [state, send] = useMachine(claimToSubmitMachine, {
-    actions: {
-      notifyTransactionWait: (context) => {
-        defaultNotifyTransactionActions.notifyTransactionWait(context);
-      },
-      notifyTransactionSuccess: (context) => {
-        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
-      },
-      notifyTransactionFailure: () => {
-        defaultNotifyTransactionActions.notifyTransactionFailure();
-      },
-    },
-  });
-
-  const handleClaimToSubmit = () => {
-    send({ type: "RESET_TRANSACTION" });
-    send({
-      type: "PREPARE_TRANSACTION_READY",
-      data: {
-        laborMarketAddress: serviceRequest.laborMarketAddress,
-        serviceRequestId: serviceRequest.id,
-      },
-    });
-    setIsModalOpen(true);
-  };
-
-  const onWriteSuccess = (result: SendTransactionResult) => {
-    send({ type: "SUBMIT_TRANSACTION", transactionHash: result.hash, transactionPromise: result.wait(1) });
-  };
-
-  const [error, setError] = useState<EthersError>();
-  const onPrepareTransactionError = (error: EthersError) => {
-    setError(error);
-  };
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
@@ -129,43 +80,22 @@ export default function ClaimToSubmit() {
         </p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <ConnectWalletWrapper onClick={handleClaimToSubmit}>
-          <Button>
-            <span> Claim to Submit</span>
-          </Button>
-        </ConnectWalletWrapper>
-        <Button variant="cancel" asChild>
+        <ClaimToSubmitCreator
+          serviceRequest={serviceRequest}
+          confirmationMessage={
+            <div className="space-y-8">
+              <p className="mt-2">Please confirm that you would like to claim a submission.</p>
+              <p>
+                This will lock <b>{laborMarket.configuration.reputationParams.submitMin} rMETRIC.</b>
+              </p>
+            </div>
+          }
+        />
+        <Button size="lg" variant="cancel" asChild>
           <Link to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}`}>Cancel</Link>
         </Button>
       </div>
       <div className="invisible"></div>
-      {state.context.contractData && (
-        <Modal
-          title="Claim to Submit"
-          isOpen={isModalOpen && !state.matches("transactionWait")}
-          onClose={() => setIsModalOpen(false)}
-        >
-          <div className="space-y-8">
-            <p className="mt-2">Please confirm that you would like to claim a submission.</p>
-            <p>
-              This will lock <b>{laborMarket.configuration.reputationParams.submitMin} rMETRIC.</b>
-            </p>
-            {error && <RPCError error={error} />}
-            <div className="flex flex-col sm:flex-row justify-center gap-5">
-              {!error && (
-                <ClaimToSubmitWeb3Button
-                  data={state.context.contractData}
-                  onWriteSuccess={onWriteSuccess}
-                  onPrepareTransactionError={onPrepareTransactionError}
-                />
-              )}
-              <Button variant="cancel" size="md" onClick={() => setIsModalOpen(false)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </Modal>
-      )}
     </Container>
   );
 }
