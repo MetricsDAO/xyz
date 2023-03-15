@@ -30,7 +30,7 @@ export function fakeLaborMarketFormValues(): MarketNewValues {
     appData: {
       title: faker.commerce.productName(),
       description: faker.lorem.paragraphs(2),
-      type: "brainstorm",
+      type: "analyze",
       projectSlugs: ["ethereum", "polygon"],
       tokenAllowlist: ["eth"],
     },

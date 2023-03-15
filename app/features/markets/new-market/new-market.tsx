@@ -122,6 +122,8 @@ export function NewMarket({
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
+          <input type="hidden" {...register("appData.type", { value: "analyze" })} />
+
           <Field>
             <Label size="lg">Challenge Marketplace Title*</Label>
             <Input {...register("appData.title")} type="text" placeholder="e.g Solana Breakpoint 2023" />

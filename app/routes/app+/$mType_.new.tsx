@@ -8,9 +8,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const projects = await listProjects();
   const tokens = await listTokens();
-  const defaultValues = url.searchParams.get("fake")
-    ? fakeLaborMarketFormValues()
-    : { appData: { type: params.type as "analyze" | "brainstorm" } };
+  const defaultValues = url.searchParams.get("fake") ? fakeLaborMarketFormValues() : {};
   return typedjson({ projects, tokens, defaultValues });
 };
 
