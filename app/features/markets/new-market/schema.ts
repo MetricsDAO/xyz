@@ -6,7 +6,7 @@ import {
   LaborMarketReputationParams,
 } from "~/domain/labor-market/schemas";
 
-export const LaborMarketFormValuesSchema = z.object({
+export const MarketNewValuesSchema = z.object({
   appData: LaborMarketAppDataSchema,
   delegatePermission: z.enum(["anyone", "delegates"]).default("anyone"),
   configuration: LaborMarketConfigSchema.sourceType()
@@ -22,15 +22,15 @@ export const LaborMarketFormValuesSchema = z.object({
     }),
 });
 
-export type LaborMarketFormValues = z.infer<typeof LaborMarketFormValuesSchema>;
+export type MarketNewValues = z.infer<typeof MarketNewValuesSchema>;
 
-export function fakeLaborMarketFormValues(): LaborMarketFormValues {
+export function fakeLaborMarketFormValues(): MarketNewValues {
   return {
     delegatePermission: "delegates",
     appData: {
       title: faker.commerce.productName(),
       description: faker.lorem.paragraphs(2),
-      type: "brainstorm",
+      type: "analyze",
       projectSlugs: ["ethereum", "polygon"],
       tokenAllowlist: ["eth"],
     },
