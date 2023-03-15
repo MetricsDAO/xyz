@@ -1,7 +1,8 @@
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/20/solid";
 import type { Token, Wallet } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import { useState } from "react";
+import { CopyToClipboard } from "~/components";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import type { SubmissionWithServiceRequest } from "~/domain/submission";
@@ -46,7 +47,14 @@ export function ClaimButton({
                 </p>
                 <div className="flex items-center p-3">
                   <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
-                  <p className="text-sm text-gray-600">{truncateAddress(wallet.address)}</p>
+                  <p className="text-sm text-gray-600">
+                    <CopyToClipboard
+                      displayContent={truncateAddress(wallet.address)}
+                      content={wallet.address}
+                      iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
+                      hideTooltip={true}
+                    />
+                  </p>
                 </div>
               </div>
               <p className="text-xs">
