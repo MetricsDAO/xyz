@@ -55,7 +55,7 @@ export default function Showcase() {
       <section className="space-y-2 max-w-3xl mb-16">
         <h1 className="text-3xl font-semibold">Showcase</h1>
         <div>
-          <p className="text-lg text-sky-500">Discover top brainstorm and analytics submissions across the ecosystem</p>
+          <p className="text-lg text-sky-500">Discover top analytics submissions across the ecosystem</p>
           <p className="text-gray-500 text-sm">Quickly surface winning submissions from any Marketplace</p>
         </div>
       </section>
@@ -107,10 +107,6 @@ function SearchAndFilter({
         size="sm"
         iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
       />
-
-      <h3 className="font-semibold">Filter</h3>
-      <Checkbox name="type" label="Analyze" value="analyze" />
-      <Checkbox name="type" label="Brainstorm" value="brainstorm" />
 
       <Field>
         <Label>Chain/Project</Label>

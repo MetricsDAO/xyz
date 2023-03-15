@@ -8,7 +8,7 @@ import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, Input, Select } from "~/components";
 import type { ServiceRequestForm } from "~/domain/service-request/schemas";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { MarkdownEditor } from "../markdown-editor/markdown.client";
+import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 
 export function ServiceRequestCreatorFields({
   validTokens,

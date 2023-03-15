@@ -1,22 +1,23 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Outlet } from "@remix-run/react";
+import DOMPurify from "dompurify";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
-import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
+import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { ParsedMarkdown } from "~/features/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
+import { usePrereqs } from "~/hooks/use-prereqs";
+import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { EvmAddressSchema } from "~/domain/address";
-import DOMPurify from "dompurify";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -36,17 +37,23 @@ export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
 
+  const user = useOptionalUser();
+  const userSignedIn = !!user;
+  const { canLaunchChallenges } = usePrereqs({ laborMarket });
+
   return (
     <Container className="pb-16 pt-7 px-10">
       <Breadcrumbs crumbs={[{ link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" }]} />
       <section className="flex flex-wrap gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
         <div className="flex flex-wrap gap-5">
-          <ConnectWalletWrapper>
-            <Button size="lg" asChild>
-              <Link to={`/app/market/${laborMarket.address}/request/new`}>Launch Challenge</Link>
-            </Button>
-          </ConnectWalletWrapper>
+          <WalletGuardedButtonLink
+            buttonText="Launch Challenge"
+            link={`/app/market/${laborMarket.address}/request/new`}
+            disabled={userSignedIn && !canLaunchChallenges}
+            disabledTooltip="Check for Prerequisites"
+            size="lg"
+          />
         </div>
       </section>
       <section className="flex flex-col space-y-7 pb-12">
