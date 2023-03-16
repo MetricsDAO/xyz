@@ -5,7 +5,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { Field, Label, ValidatedSelect } from "~/components";
@@ -28,7 +28,8 @@ const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await getUser(request);
-  invariant(user, "Could not find user, please sign in");
+  if (!user) return redirect("/app/login?redirectto=app/rewards");
+
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);

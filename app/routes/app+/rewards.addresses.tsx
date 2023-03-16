@@ -3,7 +3,7 @@ import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useEffect, useState } from "react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { ValidatedInput } from "~/components";
@@ -55,7 +55,8 @@ export async function action({ request }: ActionArgs) {
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
-  invariant(user, "Could not find user, please sign in");
+  if (!user) return redirect("/app/login?redirectto=app/rewards/addresses");
+
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
     serviceProvider: user.address as `0x${string}`,

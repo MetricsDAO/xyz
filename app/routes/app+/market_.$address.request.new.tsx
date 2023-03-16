@@ -1,4 +1,5 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ import { isValidationError } from "~/utils/utils";
 import { toTokenAbbreviation } from "~/utils/helpers";
 import { RPCError } from "~/features/rpc-error";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { LaborMarket } from "labor-markets-abi";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ address: z.string() });
@@ -51,7 +53,8 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const user = await getUser(request);
-  invariant(user, "You must be logged in to create a service request");
+  if (!user) return redirect(`/app/login?redirectto=app/${LaborMarket.address}/request/new`);
+
   const result = await validator.validate(await request.formData());
   const { address } = paramsSchema.parse(params);
   if (result.error) return validationError(result.error);

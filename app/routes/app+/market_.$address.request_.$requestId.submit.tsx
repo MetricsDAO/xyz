@@ -4,7 +4,7 @@ import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
-import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { redirect, typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
@@ -30,7 +30,7 @@ const submissionMachine = createBlockchainTransactionStateMachine<SubmissionCont
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
   const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
+  if (!user) return redirect("app/login?redirectto=/app/rewards");
 
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
