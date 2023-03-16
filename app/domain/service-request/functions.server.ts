@@ -149,14 +149,14 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
-  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as EvmAddress, valid: true });
+  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as `0x${string}`, valid: true });
 };
 
 export const indexClaimToReview = async (event: TracerEvent) => {
   const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
 
   return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: event.contract.address as EvmAddress, id: inputs.requestId },
+    { laborMarketAddress: event.contract.address as `0x${string}`, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };
@@ -165,7 +165,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
   const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
 
   return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: event.contract.address as EvmAddress, id: inputs.requestId },
+    { laborMarketAddress: event.contract.address as `0x${string}`, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
   );
 };

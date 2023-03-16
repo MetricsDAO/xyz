@@ -11,7 +11,7 @@ export function useTokenData({ token, tokenId }: Props) {
   const { data } = useContractReads({
     contracts: [
       {
-        address: token as EvmAddress,
+        address: token as `0x${string}`,
         abi: ReputationToken.abi,
         functionName: "uri",
         args: [BigNumber.from(tokenId)],

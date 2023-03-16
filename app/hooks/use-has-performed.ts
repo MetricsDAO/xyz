@@ -27,7 +27,7 @@ export function useHasPerformed({ laborMarketAddress, id, action }: Props) {
     address: laborMarketAddress,
     abi: LaborMarket.abi,
     functionName: "hasPerformed",
-    args: [BigNumber.from(id), userAddress as EvmAddress, ACTIONS[action] as EvmAddress],
+    args: [BigNumber.from(id), userAddress as `0x${string}`, ACTIONS[action] as `0x${string}`],
   });
 
   return data;

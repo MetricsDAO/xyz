@@ -32,7 +32,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address as EvmAddress });
+  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
   const tokens = await listTokens();
   return typedjson({
     wallets,

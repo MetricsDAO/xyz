@@ -1,7 +1,6 @@
 import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
 import { z } from "zod";
-import type { EvmAddress } from "~/domain/address";
 import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import {
   indexClaimToReview,
@@ -37,12 +36,12 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  upsertIndexedLaborMarket(event.contract.address as EvmAddress, event);
+  upsertIndexedLaborMarket(event.contract.address as `0x${string}`, event);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
   const requestId = z.string().parse(event.decoded.inputs.requestId);
-  const laborMarketAddress = event.contract.address as EvmAddress;
+  const laborMarketAddress = event.contract.address as `0x${string}`;
 
   return upsertIndexedServiceRequest(laborMarketAddress, requestId, event);
 });

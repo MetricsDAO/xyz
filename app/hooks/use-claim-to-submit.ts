@@ -6,7 +6,7 @@ import type { Web3Hook } from "~/features/web3-button/types";
 
 export function useClaimToSubmit({ data, onWriteSuccess, onPrepareTransactionError }: Web3Hook<ClaimToSubmitPrepared>) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress as EvmAddress,
+    address: data.laborMarketAddress as `0x${string}`,
     abi: LaborMarket.abi,
     functionName: "signal",
     args: [BigNumber.from(data.serviceRequestId)],

@@ -22,7 +22,7 @@ export default function ServiceIdParticipants() {
             return (
               <Card asChild className="px-6 py-4" key={s.contractId}>
                 <div className="flex justify-between items-center">
-                  <UserBadge address={s.creatorId as EvmAddress} />
+                  <UserBadge address={s.creatorId as `0x${string}`} />
                   <p className="text-sm text-gray-500">{fromNow(s.createdAt)}</p>
                 </div>
               </Card>

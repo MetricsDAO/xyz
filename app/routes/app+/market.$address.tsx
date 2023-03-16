@@ -10,7 +10,6 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import { ProjectBadges } from "~/features/project-badges";
@@ -62,7 +61,7 @@ export default function Marketplace() {
           <Detail>
             {laborMarket.configuration.owner ? (
               <DetailItem title="Sponsor">
-                <UserBadge address={laborMarket.configuration.owner as EvmAddress} />
+                <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
               </DetailItem>
             ) : (
               <></>

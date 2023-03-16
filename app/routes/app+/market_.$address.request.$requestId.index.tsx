@@ -25,7 +25,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const laborMarket = await getIndexedLaborMarket(address as EvmAddress);
+  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
   const submissions = await searchSubmissionsWithReviews({
     ...search,
     laborMarketAddress: laborMarket?.address,

@@ -9,7 +9,6 @@ import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
-import type { EvmAddress } from "~/domain/address";
 import type { ServiceRequestForm } from "~/domain/service-request/schemas";
 import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
@@ -100,7 +99,7 @@ export function ServiceRequestCreator({
       metadata: {},
       config: () =>
         configureWrite({
-          address: values.rewardToken as EvmAddress,
+          address: values.rewardToken as `0x${string}`,
           abi: [
             {
               constant: false,
@@ -163,10 +162,10 @@ function configureFromValues({
 
   return configureWrite({
     abi: LaborMarket.abi,
-    address: laborMarketAddress as EvmAddress,
+    address: laborMarketAddress as `0x${string}`,
     functionName: "submitRequest",
     args: [
-      values.rewardToken as EvmAddress,
+      values.rewardToken as `0x${string}`,
       toTokenAmount(values.rewardPool),
       BigNumber.from(unixTimestamp(signalDeadline)),
       BigNumber.from(unixTimestamp(new Date(parseDatetime(values.endDate, values.endTime)))),

@@ -14,7 +14,7 @@ export function UserBadge({ address, variant }: { address: `0x${string}`; varian
   });
 
   const { data: ensAvatarUrl } = useEnsAvatar({
-    address: address as EvmAddress,
+    address: address as `0x${string}`,
     chainId: 1,
   });
 

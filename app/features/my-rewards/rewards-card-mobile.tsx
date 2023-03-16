@@ -37,11 +37,11 @@ function RewardCard({
   tokens: Token[];
 }) {
   const contractReward = useReward({
-    laborMarketAddress: reward.laborMarketAddress as EvmAddress,
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     submissionId: reward.id,
   });
   const hasClaimed = useHasPerformed({
-    laborMarketAddress: reward.laborMarketAddress as EvmAddress,
+    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
     id: reward.id,
     action: "HAS_CLAIMED",
   });

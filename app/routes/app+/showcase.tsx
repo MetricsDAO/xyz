@@ -213,7 +213,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
                 </div>
               </Row.Column>
               <Row.Column span={2}>
-                <RMetricBadge address={s.configuration.serviceProvider as EvmAddress} />
+                <RMetricBadge address={s.configuration.serviceProvider as `0x${string}`} />
               </Row.Column>
               <Row.Column span={3}>{s.sr.appData?.title}</Row.Column>
               <Row.Column span={2}>
@@ -257,7 +257,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
                 </div>
               </div>
               <p>User rMETRIC</p>
-              <RMetricBadge address={s.configuration.serviceProvider as EvmAddress} />
+              <RMetricBadge address={s.configuration.serviceProvider as `0x${string}`} />
               <p>Challenge</p>
               <p>{s.sr.appData?.title}</p>
               <p>Chain/Project</p>

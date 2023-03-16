@@ -14,7 +14,7 @@ export function useReputationTokenBalance(): BigNumber | undefined {
     address: ReputationToken.address,
     abi: ReputationToken.abi,
     functionName: "balanceOf",
-    args: [userAddress as EvmAddress, BigNumber.from(REPUTATION_TOKEN_ID)],
+    args: [userAddress as `0x${string}`, BigNumber.from(REPUTATION_TOKEN_ID)],
   });
 
   return reputationBalance;

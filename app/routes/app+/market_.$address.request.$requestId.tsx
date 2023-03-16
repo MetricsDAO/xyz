@@ -33,11 +33,11 @@ import { usePrereqs } from "~/hooks/use-prereqs";
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
-  const serviceRequest = await getIndexedServiceRequest(address as EvmAddress, requestId);
+  const serviceRequest = await getIndexedServiceRequest(address as `0x${string}`, requestId);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
-  const laborMarket = await getIndexedLaborMarket(address as EvmAddress);
+  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }
@@ -50,7 +50,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   const tokens = await listTokens();
 
   const numOfReviews = await countReviews({
-    laborMarketAddress: address as EvmAddress,
+    laborMarketAddress: address as `0x${string}`,
     serviceRequestId: requestId,
   });
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
@@ -68,19 +68,19 @@ export default function ServiceRequest() {
   const description = serviceRequest.appData?.description ? serviceRequest.appData.description : "";
 
   const hasClaimedToSubmit = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress as EvmAddress,
+    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
     id: serviceRequest.id,
     action: "HAS_SIGNALED",
   });
 
   const hasSubmitted = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress as EvmAddress,
+    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
     id: serviceRequest.id,
     action: "HAS_SUBMITTED",
   });
 
   const reviewSignal = useReviewSignals({
-    laborMarketAddress: serviceRequest.laborMarketAddress as EvmAddress,
+    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
     serviceRequestId: serviceRequest.id,
   });
 
@@ -139,7 +139,7 @@ export default function ServiceRequest() {
       <section className="flex flex-col space-y-7 pb-12">
         <Detail className="mb-6 flex flex-wrap gap-y-2">
           <DetailItem title="Sponsor">
-            <UserBadge address={laborMarket.configuration.owner as EvmAddress} />
+            <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
           </DetailItem>
           <div className="flex space-x-4">
             {serviceRequestProjects && (

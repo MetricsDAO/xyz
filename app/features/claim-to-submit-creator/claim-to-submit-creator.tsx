@@ -44,7 +44,7 @@ export function ClaimToSubmitCreator({ confirmationMessage, serviceRequest }: Cl
 function configureFromValues({ serviceRequest }: { serviceRequest: ServiceRequestWithIndexData }) {
   return configureWrite({
     abi: LaborMarket.abi,
-    address: serviceRequest.laborMarketAddress as EvmAddress,
+    address: serviceRequest.laborMarketAddress as `0x${string}`,
     functionName: "signal",
     args: [BigNumber.from(serviceRequest.id)],
   });

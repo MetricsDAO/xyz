@@ -5,12 +5,12 @@ import { useTokenBalance } from "./use-token-balance";
 // Determines which actions a user can perform by looking at token balances.
 export function usePrereqs({ laborMarket }: { laborMarket: LaborMarketWithIndexData }) {
   const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token as EvmAddress,
+    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
     tokenId: laborMarket.configuration.maintainerBadge.tokenId,
   });
 
   const delegateBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.delegateBadge.token as EvmAddress,
+    tokenAddress: laborMarket.configuration.delegateBadge.token as `0x${string}`,
     tokenId: laborMarket.configuration.delegateBadge.tokenId,
   });
 
