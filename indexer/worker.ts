@@ -1,3 +1,4 @@
+import { getAddress } from "ethers/lib/utils.js";
 import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
 import { z } from "zod";
@@ -36,12 +37,12 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  upsertIndexedLaborMarket(event.contract.address as `0x${string}`, event);
+  upsertIndexedLaborMarket(getAddress(event.contract.address), event);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
   const requestId = z.string().parse(event.decoded.inputs.requestId);
-  const laborMarketAddress = event.contract.address as `0x${string}`;
+  const laborMarketAddress = getAddress(event.contract.address);
 
   return upsertIndexedServiceRequest(laborMarketAddress, requestId, event);
 });

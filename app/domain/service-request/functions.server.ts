@@ -1,5 +1,6 @@
 import type { User } from "@prisma/client";
 import { BigNumber } from "ethers";
+import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import { ClaimToReviewEventSchema, ClaimToSubmitEventSchema } from "~/domain";
@@ -69,7 +70,7 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
         "indexData.serviceRequestCount": 1,
       },
       $set: {
-        "indexData.serviceRequest.rewardPools": calculateRewardPools(
+        "indexData.serviceRequestRewardPools": calculateRewardPools(
           lm?.indexData.serviceRequestRewardPools ?? [],
           serviceRequest.configuration.pToken,
           serviceRequest.configuration.pTokenQ
@@ -139,7 +140,7 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
   return {
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
     ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
-    ...(filter.laborMarket ? { laborMarketAddress: filter.laborMarket } : {}),
+    ...(filter.laborMarket ? { laborMarketAddress: filter.laborMarket as `0x${string}` } : {}),
     ...(filter.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: filter.token } } } } : {}),
   };
 }
@@ -155,18 +156,20 @@ export const findServiceRequest = async (id: string, laborMarketAddress: string)
 
 export const indexClaimToReview = async (event: TracerEvent) => {
   const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
+  const laborMarketAddress = getAddress(event.contract.address);
 
   return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: event.contract.address as EvmAddress, id: inputs.requestId },
+    { laborMarketAddress, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
   );
 };
 
 export const indexClaimToSubmit = async (event: TracerEvent) => {
   const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
+  const laborMarketAddress = getAddress(event.contract.address);
 
   return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: event.contract.address as EvmAddress, id: inputs.requestId },
+    { laborMarketAddress: laborMarketAddress, id: inputs.requestId },
     { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
   );
 };
