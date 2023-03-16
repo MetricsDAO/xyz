@@ -6,10 +6,7 @@ describe("ServiceRequestFormSchema", () => {
     const sr = {
       contractId: faker.datatype.string(),
       laborMarketAddress: faker.finance.ethereumAddress(),
-      title: "Test",
-      description: "Test",
-      language: "english",
-      projectSlugs: ["ethereum"],
+      appData: { title: "Test", description: "Test", language: "english", projectSlugs: ["ethereum"] },
       startDate: "2021-01-01",
       startTime: "12:00",
       endDate: "2021-01-01",
