@@ -7,7 +7,7 @@ export const EvmAddressSchema = z
   .refine((address) => {
     return ethers.utils.isAddress(address);
   }, "Must be a valid EVM address.")
-  .transform((address) => ethers.utils.getAddress(address).toLowerCase());
+  .transform((address) => ethers.utils.getAddress(address));
 
 export type EvmAddress = z.infer<typeof EvmAddressSchema>;
 
