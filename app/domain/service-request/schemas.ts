@@ -189,11 +189,11 @@ export const ServiceRequestFilterSchema = z.object({
   token: z.array(z.string()).optional(),
   project: z.array(z.string()).optional(),
   language: z.array(z.string()).optional(),
+  laborMarket: z.string().optional(),
 });
 export type ServiceRequestFilter = z.infer<typeof ServiceRequestFilterSchema>;
 
 export const ServiceRequestSearchSchema = ServiceRequestFilterSchema.extend({
-  laborMarket: z.string().optional(),
   sortBy: z
     .enum(["createdAtBlockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
     .default("createdAtBlockTimestamp"),
