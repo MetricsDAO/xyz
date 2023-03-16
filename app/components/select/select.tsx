@@ -31,51 +31,54 @@ const sizeStyles = {
 
 /** Controlled select input with support for multiple values. */
 export const Select = forwardRef<HTMLDivElement, Props>(
-  ({ isError, size = "md", value, onChange, options, placeholder }, ref) => {
+  ({ isError, size = "md", value, name, onChange, options, placeholder }, ref) => {
     const selected = options.find((option) => option.value === value);
     return (
-      <Listbox value={value} onChange={onChange}>
-        {({ open }) => (
-          <div className="relative" ref={ref}>
-            <Listbox.Button className={clsx(buttonStyles, sizeStyles[size])}>
-              <span className="flex-1 outline-none px-3 text-left text-sm block truncate">
-                {selected ? (
-                  selected.selectedLabel ?? selected.label
-                ) : (
-                  <span className="text-gray-400">{placeholder}</span>
-                )}
-              </span>
-              <span className="pointer-events-none px-2">
-                <ChevronDownIcon className="h-3 w-3 text-gray-600" />
-              </span>
-            </Listbox.Button>
-            <Transition
-              show={open}
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="-translate-y-2 opacity-0"
-              enterTo="translate-y-0 opacity-100"
-              leave="transition ease-out duration-200"
-              leaveFrom="translate-y-0 opaciry-100"
-              leaveTo="-translate-y-2 opacity-0"
-            >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-60 min-w-full overflow-auto rounded-lg bg-white border border-gray-200 focus:outline-none">
-                {options.map((option) => (
-                  <Listbox.Option
-                    className={({ active }) =>
-                      clsx("cursor-default relative py-3 px-5 text-sm", { "bg-gray-100": active })
-                    }
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </Transition>
-          </div>
-        )}
-      </Listbox>
+      <>
+        {value ? <input type="hidden" name={name} value={value} /> : null}
+        <Listbox value={value} onChange={onChange}>
+          {({ open }) => (
+            <div className="relative" ref={ref}>
+              <Listbox.Button className={clsx(buttonStyles, sizeStyles[size])}>
+                <span className="flex-1 outline-none px-3 text-left text-sm block truncate">
+                  {selected ? (
+                    selected.selectedLabel ?? selected.label
+                  ) : (
+                    <span className="text-gray-400">{placeholder}</span>
+                  )}
+                </span>
+                <span className="pointer-events-none px-2">
+                  <ChevronDownIcon className="h-3 w-3 text-gray-600" />
+                </span>
+              </Listbox.Button>
+              <Transition
+                show={open}
+                as={Fragment}
+                enter="transition ease-out duration-200"
+                enterFrom="-translate-y-2 opacity-0"
+                enterTo="translate-y-0 opacity-100"
+                leave="transition ease-out duration-200"
+                leaveFrom="translate-y-0 opaciry-100"
+                leaveTo="-translate-y-2 opacity-0"
+              >
+                <Listbox.Options className="absolute z-10 mt-1 max-h-60 min-w-full overflow-auto rounded-lg bg-white border border-gray-200 focus:outline-none">
+                  {options.map((option) => (
+                    <Listbox.Option
+                      className={({ active }) =>
+                        clsx("cursor-default relative py-3 px-5 text-sm", { "bg-gray-100": active })
+                      }
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Transition>
+            </div>
+          )}
+        </Listbox>
+      </>
     );
   }
 );
@@ -105,10 +108,5 @@ export function ValidatedSelect({ onChange, ...props }: Props & { name: string }
     }
   }, [value, prevValue, onChange]);
 
-  return (
-    <>
-      <Select {...props} value={value} onChange={handleChange} isError={Boolean(error)} />
-      {value ? <input type="hidden" name={props.name} value={value} /> : null}
-    </>
-  );
+  return <Select {...props} value={value} onChange={handleChange} isError={Boolean(error)} />;
 }
