@@ -45,7 +45,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
         const uploaded = await uploadMetadata(params.metadata);
         config = params.config({ account: account.address, cid: uploaded.cid });
       } catch (e) {
-        setState({ state: "failure", error: (e as Error)?.message ?? "unknown error" });
+        setState({ state: "failure", error: (e as Error)?.message ?? "error uploading metadata" });
         return;
       }
     } else {
@@ -55,7 +55,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
       const prepared = await prepareWriteContract(config);
       setState({ state: "prepared", prepared });
     } catch (e) {
-      setState({ state: "failure", error: (e as EthersError)?.reason ?? "unknown error" });
+      setState({ state: "failure", error: (e as EthersError)?.reason ?? "error preparing transaction" });
     }
   };
 

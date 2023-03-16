@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
+import { ServiceRequestFormSchema } from "~/features/service-request-creator/schema";
 
 describe("ServiceRequestFormSchema", () => {
   test("base test", () => {
