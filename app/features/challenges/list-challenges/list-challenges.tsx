@@ -30,7 +30,7 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestDo
       </Header>
       {serviceRequests.map((sr) => {
         return (
-          <Row asChild columns={6} key={sr.id}>
+          <Row asChild columns={6} key={sr.laborMarketAddress + sr.id}>
             <Link to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`} className="text-sm font-medium">
               <Row.Column span={2}>{sr.appData?.title}</Row.Column>
               <Row.Column>
@@ -60,7 +60,7 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestDoc
     <div className="space-y-4">
       {serviceRequests.map((sr) => {
         return (
-          <Card asChild key={sr.id}>
+          <Card asChild key={sr.laborMarketAddress + sr.id}>
             <Link
               to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"

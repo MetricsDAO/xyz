@@ -1,10 +1,13 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { useRef } from "react";
+import { useSubmit } from "react-router-dom";
 import { getSearchParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Container } from "~/components";
 import { Pagination } from "~/components/pagination";
 import { ServiceRequestSearchSchema } from "~/domain";
 import { ListChallenges } from "~/features/challenges/list-challenges/list-challenges";
+import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
 import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -16,6 +19,12 @@ export async function loader({ request }: DataFunctionArgs) {
 
 export default function Challenges() {
   const { serviceRequests, totalResults, searchParams } = useTypedLoaderData<typeof loader>();
+  const submit = useSubmit();
+  const searchRef = useRef<HTMLFormElement>(null);
+  const onSearch = () => {
+    submit(searchRef.current);
+  };
+
   return (
     <Container className="py-16 px-10">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
@@ -31,14 +40,17 @@ export default function Challenges() {
           </p>
         </div>
       </header>
-      <div className="flex flex-col md:flex-row">
+
+      <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <div className="flex-1">
           <ListChallenges serviceRequests={serviceRequests} />
           <div className="w-fit m-auto">
             <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
           </div>
         </div>
-        <aside className="md:w-1/5">Search</aside>
+        <aside className="md:w-1/5">
+          <SearchChallenges ref={searchRef} onSubmit={onSearch} defaultValues={searchParams} />
+        </aside>
       </div>
     </Container>
   );
