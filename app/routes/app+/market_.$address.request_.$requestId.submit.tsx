@@ -1,92 +1,34 @@
 import type { DataFunctionArgs } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/server-runtime";
-import { withZod } from "@remix-validated-form/with-zod";
-import { useMachine } from "@xstate/react";
-import { useEffect, useState } from "react";
-import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
-import type { ValidationErrorResponseData } from "remix-validated-form";
-import { validationError } from "remix-validated-form";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Container } from "~/components";
-import type { SubmissionContract } from "~/domain/submission/schemas";
-import { SubmissionFormSchema } from "~/domain/submission/schemas";
-import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findServiceRequest } from "~/services/service-request.server";
-import { getUser } from "~/services/session.server";
-import { prepareSubmission } from "~/domain/submission/functions.server";
-import { createBlockchainTransactionStateMachine } from "~/utils/machine";
-import { isValidationError } from "~/utils/utils";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import SubmissionCreator from "~/features/submission-creator/submission-creator";
 
-const validator = withZod(SubmissionFormSchema);
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
-const submissionMachine = createBlockchainTransactionStateMachine<SubmissionContract>();
-
-type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
-export const action = async ({ request, params }: ActionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "You must be logged in to create a marketplace");
-
-  const { requestId, address } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(requestId, address);
-  invariant(serviceRequest, "service request must exist");
-
-  const result = await validator.validate(await request.formData());
-  if (result.error) return validationError(result.error);
-
-  const preparedSubmission = await prepareSubmission(user, address, requestId, result.data);
-  return typedjson({ preparedSubmission });
-};
 
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const { address } = paramsSchema.parse(params);
+  const { address, requestId } = paramsSchema.parse(params);
   const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "labormarket must exist");
 
-  return typedjson({ laborMarket }, { status: 200 });
+  return typedjson({ laborMarket, requestId }, { status: 200 });
 };
 
 export default function SubmitQuestion() {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
-  const actionData = useTypedActionData<ActionResponse>();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [state, send] = useMachine(submissionMachine, {
-    actions: {
-      notifyTransactionWait: (context) => {
-        defaultNotifyTransactionActions.notifyTransactionWait(context);
-      },
-      notifyTransactionSuccess: (context) => {
-        defaultNotifyTransactionActions.notifyTransactionSuccess(context);
-      },
-      notifyTransactionFailure: () => {
-        defaultNotifyTransactionActions.notifyTransactionFailure();
-      },
-    },
-  });
-
-  useEffect(() => {
-    if (actionData && !isValidationError(actionData)) {
-      send({ type: "RESET_TRANSACTION" });
-      send({
-        type: "PREPARE_TRANSACTION_READY",
-        data: actionData.preparedSubmission,
-      });
-      setIsModalOpen(true);
-    }
-  }, [actionData, send]);
+  const { laborMarket, requestId } = useTypedLoaderData<typeof loader>();
 
   if (laborMarket.appData?.type === "analyze") {
-    return <Analyze />;
+    return <Analyze address={laborMarket.address} requestId={requestId} />;
   } else if (laborMarket.appData?.type === "brainstorm") {
-    return <Brainstorm />;
+    return <Brainstorm address={laborMarket.address} requestId={requestId} />;
   } else {
     console.error("mtype is neither brainstorm nor analyze");
   }
 }
 
-function Brainstorm() {
+function Brainstorm({ address, requestId }: { address: string; requestId: string }) {
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -99,7 +41,7 @@ function Brainstorm() {
               rMETRIC from the challenge reward pool!
             </p>
           </div>
-          <SubmissionCreator type={"brainstorm"} />
+          <SubmissionCreator type={"brainstorm"} laborMarketAddress={address} serviceRequestId={requestId} />
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">
@@ -142,7 +84,7 @@ function Brainstorm() {
   );
 }
 
-function Analyze() {
+function Analyze({ address, requestId }: { address: string; requestId: string }) {
   return (
     <Container className="py-16 mx-auto`">
       <div className="flex flex-col-reverse justify-center lg:flex-row  space-y-reverse space-y-8 lg:space-y-0 lg:space-x-16">
@@ -155,7 +97,7 @@ function Analyze() {
               rMETRIC from the challenge reward pool!
             </p>
           </div>
-          <SubmissionCreator type={"analyze"} />
+          <SubmissionCreator type={"analyze"} laborMarketAddress={address} serviceRequestId={requestId} />
         </main>
         <aside className="lg:basis-1/3 ">
           <div className="rounded-lg border-2 p-5 bg-blue-300 bg-opacity-5 space-y-6 text-sm">

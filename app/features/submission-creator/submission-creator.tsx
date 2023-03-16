@@ -9,9 +9,8 @@ import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketNetwork__factory } from "~/contracts";
 import { useCallback } from "react";
-import type { SubmissionContract, SubmissionForm } from "~/domain/submission/schemas";
+import type { SubmissionForm } from "~/domain/submission/schemas";
 import { SubmissionFormSchema } from "~/domain/submission/schemas";
-import type { EvmAddress } from "~/domain/address";
 import SubmissionCreatorFields from "./submission-creator-fields";
 
 /**
@@ -24,7 +23,15 @@ function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.
     .find((e) => e.name === eventName);
 }
 
-export default function SubmissionCreator({ type }: { type: "brainstorm" | "analyze" }) {
+export default function SubmissionCreator({
+  type,
+  laborMarketAddress,
+  serviceRequestId,
+}: {
+  type: "brainstorm" | "analyze";
+  laborMarketAddress: string;
+  serviceRequestId: string;
+}) {
   const methods = useForm<SubmissionForm>({
     resolver: zodResolver(SubmissionFormSchema),
   });
@@ -45,7 +52,7 @@ export default function SubmissionCreator({ type }: { type: "brainstorm" | "anal
   const onSubmit = (values: SubmissionForm) => {
     transactor.start({
       metadata: values,
-      //todo - pass in lm address and correct data config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
+      config: ({ cid }) => configureFromValues({ cid, address: laborMarketAddress as `0x${string}`, serviceRequestId }),
     });
   };
   return (
@@ -59,11 +66,19 @@ export default function SubmissionCreator({ type }: { type: "brainstorm" | "anal
   );
 }
 
-function configureFromValues({ values, address }: { values: SubmissionForm; address: `0x${string}` }) {
+function configureFromValues({
+  cid,
+  address,
+  serviceRequestId,
+}: {
+  cid: string;
+  address: `0x${string}`;
+  serviceRequestId: string;
+}) {
   return configureWrite({
     abi: LaborMarket.abi,
     address: address,
     functionName: "provide",
-    args: [BigNumber.from(values.serviceRequestId), values.uri],
+    args: [BigNumber.from(serviceRequestId), cid],
   });
 }
