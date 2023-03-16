@@ -151,7 +151,6 @@ export const prepareSubmission = async (
  * Returns an array of Submissions with their Reviews for a given Service Request.
  */
 export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {
-  console.log("params", params);
   return mongo.submissions
     .aggregate<SubmissionWithReviewsDoc>([
       {
