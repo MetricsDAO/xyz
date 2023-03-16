@@ -75,12 +75,7 @@ export function ServiceRequestCreator({
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
       submitTransactor.start({
-        metadata: {
-          title: values.title,
-          description: values.description,
-          language: values.language,
-          projectSlugs: values.projectSlugs,
-        },
+        metadata: values.appData,
         config: ({ cid }) => configureFromValues({ cid, values, laborMarketAddress }),
       });
     }

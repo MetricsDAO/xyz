@@ -151,7 +151,7 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
-  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as EvmAddress, valid: true });
+  return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as EvmAddress });
 };
 
 export const indexClaimToReview = async (event: TracerEvent) => {

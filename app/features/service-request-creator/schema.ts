@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "~/domain/address";
+import { ServiceRequestAppDataSchema } from "~/domain/service-request/schemas";
 import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 
@@ -29,10 +30,7 @@ function validDeadlines(reviewDate: string, reviewTime: string, submitDate: stri
 
 export const ServiceRequestFormSchema = z
   .object({
-    title: z.string(),
-    description: z.string(),
-    language: z.enum(["english", "spanish"]),
-    projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+    appData: ServiceRequestAppDataSchema,
     endDate: InputDateSchema,
     endTime: InputTimeSchema,
     reviewEndDate: InputDateSchema,
@@ -54,10 +52,12 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   const endDate = faker.date.between(startDate, reviewDate);
 
   return {
-    title: faker.commerce.productName(),
-    description: faker.lorem.paragraphs(2),
-    language: "english",
-    projectSlugs: [],
+    appData: {
+      title: faker.commerce.productName(),
+      description: faker.lorem.paragraphs(2),
+      language: "english",
+      projectSlugs: [],
+    },
     endDate: dayjs(endDate).format("YYYY-MM-DD"),
     endTime: dayjs(endDate).format("HH:mm"),
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),

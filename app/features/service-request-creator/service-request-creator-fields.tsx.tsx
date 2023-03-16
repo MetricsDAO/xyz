@@ -56,8 +56,8 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
-          <Input {...register("title")} name="title" placeholder="Challenge Title" className="w-full" />
-          <Error error={errors.title?.message} />
+          <Input {...register("appData.title")} name="title" placeholder="Challenge Title" className="w-full" />
+          <Error error={errors.appData?.title?.message} />
         </Field>
       </section>
       <section className="space-y-3">{mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}</section>
@@ -66,25 +66,25 @@ export function ServiceRequestCreatorFields({
           <div className="flex-grow">
             <Field>
               <Controller
-                name="language"
+                name="appData.language"
                 control={control}
                 render={({ field }) => {
                   return <Select {...field} placeholder="English" options={[{ label: "English", value: "english" }]} />;
                 }}
               />
-              <Error error={errors.language?.message} />
+              <Error error={errors.appData?.language?.message} />
             </Field>
           </div>
           <div className="flex-grow">
             <Field>
               <Controller
                 control={control}
-                name="projectSlugs"
+                name="appData.projectSlugs"
                 render={({ field }) => (
                   <Combobox {...field} options={validProjects.map((p) => ({ label: p.name, value: p.slug }))} />
                 )}
               />
-              <Error error={errors.projectSlugs?.message} />
+              <Error error={errors.appData?.projectSlugs?.message} />
             </Field>
           </div>
         </div>
