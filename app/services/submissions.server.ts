@@ -117,7 +117,7 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   return mongo.submissions.updateOne(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: event.block.timestamp } },
+    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
     { upsert: true }
   );
 };

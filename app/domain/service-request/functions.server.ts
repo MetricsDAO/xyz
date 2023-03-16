@@ -157,7 +157,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress: event.contract.address as `0x${string}`, id: inputs.requestId },
-    { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
+    { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
   );
 };
 
@@ -166,7 +166,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress: event.contract.address as `0x${string}`, id: inputs.requestId },
-    { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: inputs.signalAmount } } }
+    { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
   );
 };
 
