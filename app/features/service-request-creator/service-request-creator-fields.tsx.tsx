@@ -1,7 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
-import type { SetStateAction } from "react";
-import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, Input, Select } from "~/components";
@@ -12,11 +10,9 @@ import type { ServiceRequestForm } from "./schema";
 export function ServiceRequestCreatorFields({
   validTokens,
   validProjects,
-  mType,
 }: {
   validTokens: Token[];
   validProjects: Project[];
-  mType?: string;
 }) {
   const {
     register,
@@ -26,27 +22,11 @@ export function ServiceRequestCreatorFields({
     formState: { errors },
   } = useFormContext<ServiceRequestForm>();
 
-  const [selectedSubmitDate, setSelectedSubmitDate] = useState("");
-  const [selectedSubmitTime, setSelectedSubmitTime] = useState("");
+  const selectedSubmitDate = watch("endDate");
+  const selectedSubmitTime = watch("endTime");
 
-  const [selectedReviewDate, setSelectedReviewDate] = useState("");
-  const [selectedReviewTime, setSelectedReviewTime] = useState("");
-
-  const handleSubmitDateChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedSubmitDate(event.target.value);
-  };
-
-  const handleSubmitTimeChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedSubmitTime(event.target.value);
-  };
-
-  const handleReviewDateChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedReviewDate(event.target.value);
-  };
-
-  const handleReviewTimeChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedReviewTime(event.target.value);
-  };
+  const selectedReviewDate = watch("reviewEndDate");
+  const selectedReviewTime = watch("reviewEndTime");
 
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
@@ -111,11 +91,11 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">When must submissions be entered by?*</h2>
         <Field>
-          <Input {...register("endDate")} type="date" onChange={handleSubmitDateChange} />
+          <Input {...register("endDate")} type="date" />
           <Error error={errors.endDate?.message} />
         </Field>
         <Field>
-          <Input {...register("endTime")} type="time" onChange={handleSubmitTimeChange} />
+          <Input {...register("endTime")} type="time" />
           <Error error={errors.endTime?.message} />
         </Field>
         <p className="text-gray-400 italic">
@@ -128,11 +108,11 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
         <Field>
-          <Input {...register("reviewEndDate")} type="date" onChange={handleReviewDateChange} />
+          <Input {...register("reviewEndDate")} type="date" />
           <Error error={errors.reviewEndDate?.message} />
         </Field>
         <Field>
-          <Input {...register("reviewEndTime")} type="time" onChange={handleReviewTimeChange} />
+          <Input {...register("reviewEndTime")} type="time" />
           <Error error={errors.reviewEndTime?.message} />
         </Field>
         <p className="text-gray-400 italic">
