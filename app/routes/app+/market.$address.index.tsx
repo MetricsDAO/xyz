@@ -179,10 +179,10 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 tokens
               )}`}</Row.Column>
               <Row.Column>
-                <Countdown date={new Date(sr.configuration?.submissionExp)} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={new Date(sr.configuration?.enforcementExp)} />
+                <Countdown date={sr.configuration?.enforcementExp} />
               </Row.Column>
             </Link>
           </Row>
@@ -219,11 +219,11 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
               </div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={new Date(sr.configuration?.submissionExp)} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={new Date(sr.configuration?.enforcementExp)} />
+                <Countdown date={sr.configuration?.enforcementExp} />
               </div>
             </Link>
           </Card>

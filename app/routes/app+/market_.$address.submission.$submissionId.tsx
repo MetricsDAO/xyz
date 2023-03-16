@@ -103,7 +103,7 @@ export default function ChallengeSubmission() {
   });
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
-  const enforcementExpirationPassed = dateHasPassed(new Date(serviceRequest.configuration.enforcementExp));
+  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const isWinner =
     enforcementExpirationPassed &&
     reward !== undefined &&

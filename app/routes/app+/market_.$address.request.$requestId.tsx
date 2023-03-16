@@ -60,7 +60,7 @@ export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
     useTypedLoaderData<typeof loader>();
 
-  const claimDeadlinePassed = dateHasPassed(new Date(serviceRequest.configuration.signalExp));
+  const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);

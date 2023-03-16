@@ -181,7 +181,7 @@ const calculateRewardPools = (
     pool.pTokenQuantity = BigNumber.from(pool.pTokenQuantity).add(pTokenQuantity).toString();
   } else {
     newPools.push({
-      pToken: pToken as `0x${string}`,
+      pToken: pToken as EvmAddress,
       pTokenQuantity: pTokenQuantity,
     });
   }

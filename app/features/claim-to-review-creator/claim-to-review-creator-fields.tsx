@@ -37,16 +37,13 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
       <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-5">
         <div className="space-y-2">
           <h2 className="font-semibold">Claim to Review Deadline</h2>
-          <CountdownCard
-            start={new Date(serviceRequest.indexData.createdAtBlockTimestamp)}
-            end={new Date(claimToReviewDeadline(serviceRequest))}
-          />
+          <CountdownCard start={serviceRequest.createdAtBlockTimestamp} end={claimToReviewDeadline(serviceRequest)} />
         </div>
         <div className="space-y-2">
           <h2 className="font-semibold">Review Deadline</h2>
           <CountdownCard
-            start={new Date(serviceRequest.indexData.createdAtBlockTimestamp)}
-            end={new Date(serviceRequest.configuration?.enforcementExp)}
+            start={serviceRequest.createdAtBlockTimestamp}
+            end={serviceRequest.configuration?.enforcementExp}
           />
         </div>
       </div>
