@@ -66,6 +66,10 @@ export default function CreateServiceRequest() {
   const mType = laborMarket.appData?.type;
   invariant(mType, "Labor Market must have a type");
 
+  const validTokens = laborMarket.appData.tokenAllowlist
+    .map((symbol) => tokens.find((t) => t.symbol === symbol))
+    .filter((t): t is typeof tokens[number] => !!t);
+
   const [state, send] = useMachine(serviceRequestMachine, {
     actions: {
       ...defaultNotifyTransactionActions,
@@ -117,7 +121,7 @@ export default function CreateServiceRequest() {
         validator={validator}
         className="space-y-10"
       >
-        <ChallengeForm validTokens={tokens} validProjects={laborMarketProjects} mType={mType} />
+        <ChallengeForm validTokens={validTokens} validProjects={laborMarketProjects} mType={mType} />
         <ConnectWalletWrapper>
           <Button variant="primary" type="submit">
             Next
