@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Field, Input, Label, Select } from "~/components";
 import type { ServiceRequestSearch } from "~/domain";
@@ -15,13 +15,17 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
     const tokens = useTokens();
     const projects = useProjects();
 
-    const { register, control, handleSubmit } = useForm<ServiceRequestSearch>({ defaultValues });
+    const { register, control, handleSubmit, watch } = useForm<ServiceRequestSearch>({ defaultValues });
+
+    useEffect(() => {
+      const subscription = watch(() => handleSubmit(onSubmit)());
+      return () => subscription.unsubscribe();
+    }, [handleSubmit, onSubmit, watch]);
 
     return (
       <form
         ref={ref}
         onSubmit={handleSubmit(onSubmit)}
-        onChange={handleSubmit(onSubmit)}
         className="space-y-3 p-4 border border-gray-300/50 rounded-lg bg-blue-300 bg-opacity-5 text-sm"
       >
         <Input
