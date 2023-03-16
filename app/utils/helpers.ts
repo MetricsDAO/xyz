@@ -67,7 +67,7 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
 
 export function claimToReviewDeadline(serviceRequest: ServiceRequestWithIndexData) {
   return claimDate(
-    new Date(serviceRequest.indexData.createdAtBlockTimestamp),
+    new Date(serviceRequest.createdAtBlockTimestamp),
     new Date(serviceRequest.configuration.enforcementExp)
   );
 }

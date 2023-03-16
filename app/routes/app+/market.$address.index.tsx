@@ -37,6 +37,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
   console.log("serviceRequests", serviceRequests);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
+  console.log("totalResults", totalResults);
   const projects = await listProjects();
   const tokens = await listTokens();
 
@@ -101,8 +102,8 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         options={[
           { label: "New", value: "createdAtBlockTimestamp" },
           { label: "Title", value: "appData.title" },
-          { label: "Submit Deadline", value: "configuration.submissionExpiration" },
-          { label: "Review Deadline", value: "configuration.enforcementExpiration" },
+          { label: "Submit Deadline", value: "configuration.submissionExp" },
+          { label: "Review Deadline", value: "configuration.enforcementExp" },
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>

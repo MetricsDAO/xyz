@@ -44,7 +44,6 @@ export const ServiceRequestIndexDataSchema = z.object({
   claimsToReview: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
   claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
   submissionCount: z.number(),
-  valid: z.boolean(),
 });
 
 export type ServiceRequestIndexData = z.infer<typeof ServiceRequestIndexDataSchema>;
@@ -64,9 +63,7 @@ export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 /**
  * This is the same as the ServiceRequest but with additional index-specific data.
  */
-export const ServiceRequestWithIndexDataSchema = ServiceRequestSchema.extend({
-  indexData: ServiceRequestIndexDataSchema,
-});
+export const ServiceRequestWithIndexDataSchema = ServiceRequestSchema.merge(ServiceRequestIndexDataSchema);
 export type ServiceRequestWithIndexData = z.infer<typeof ServiceRequestWithIndexDataSchema>;
 
 const DateSchema = z.preprocess((arg) => {
@@ -184,18 +181,25 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   };
 }
 
-export const ServiceRequestSearchSchema = z.object({
-  page: z.number().default(1),
-  laborMarket: z.string().optional(),
+/**
+ * For filtering labor markets.
+ */
+export const ServiceRequestFilterSchema = z.object({
   q: z.string().optional(),
+  token: z.array(z.string()).optional(),
+  project: z.array(z.string()).optional(),
+  language: z.array(z.string()).optional(),
+});
+export type ServiceRequestFilter = z.infer<typeof ServiceRequestFilterSchema>;
+
+export const ServiceRequestSearchSchema = ServiceRequestFilterSchema.extend({
+  laborMarket: z.string().optional(),
   sortBy: z
     .enum(["createdAtBlockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
     .default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
-  token: z.string().optional(),
-  project: z.array(z.string()).optional(),
-  language: z.array(z.string()).optional(),
-  first: z.number().default(12),
+  page: z.coerce.number().min(1).default(1),
+  first: z.coerce.number().min(1).max(100).default(12),
 });
 
 // export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;

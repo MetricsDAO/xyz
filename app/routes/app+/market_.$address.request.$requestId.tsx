@@ -154,7 +154,7 @@ export default function ServiceRequest() {
             />
           </DetailItem>
           <DetailItem title="Submissions">
-            <Badge className="px-4 min-w-full">{serviceRequest.indexData.submissionCount}</Badge>
+            <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
           </DetailItem>
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
@@ -166,7 +166,7 @@ export default function ServiceRequest() {
 
       <TabNav className="mb-10">
         <TabNavLink to="" end>
-          Submissions <span className="text-gray-400">{serviceRequest.indexData.submissionCount}</span>
+          Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
         </TabNavLink>
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>

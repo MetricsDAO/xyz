@@ -2,10 +2,10 @@ import type { User } from "@prisma/client";
 import { BigNumber } from "ethers";
 import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
-import type { LaborMarketDoc } from "~/domain";
 import { ClaimToReviewEventSchema, ClaimToSubmitEventSchema } from "~/domain";
 import type {
   ServiceRequestAppData,
+  ServiceRequestFilter,
   ServiceRequestIndexData,
   ServiceRequestSearch,
   ServiceRequestWithIndexData,
@@ -33,7 +33,6 @@ export async function getIndexedServiceRequest(address: EvmAddress, id: string):
     await upsertIndexedServiceRequest(address, id);
     return getIndexedServiceRequest(address, id);
   }
-  console.log("DOC", doc);
   return ServiceRequestWithIndexDataSchema.parse(doc);
 }
 
@@ -59,7 +58,6 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
     claimsToReview: [],
     claimsToSubmit: [],
     submissionCount: 0,
-    valid: true,
   };
 
   const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
@@ -115,40 +113,35 @@ async function getIndexedServiceRequestAppData(marketUri: string): Promise<Servi
 }
 
 /**
- * Returns an array of ServiceRequestDoc for a given Service Request.
+ * Counts the number of LaborMarkets that match a given LaborMarketSearch.
  */
-export const searchServiceRequests = async (params: ServiceRequestSearch) => {
-  return mongo.serviceRequests
-    .find(searchParams(params))
-    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
-    .skip(params.first * (params.page - 1))
-    .limit(params.first)
-    .toArray();
-};
+export function countServiceRequests(filter: ServiceRequestFilter) {
+  return mongo.serviceRequests.countDocuments(filterToMongo(filter));
+}
 
 /**
- * Counts the number of ServiceRequests that match a given ServiceRequestSearch.
- * @param {ServiceRequestSearch} params - The search parameters.
- * @returns {number} - The number of service requests that match the search.
+ * Returns an array of LaborMarketsWithIndexData for a given LaborMarketSearch.
  */
-export const countServiceRequests = async (params: ServiceRequestSearch) => {
-  return mongo.serviceRequests.countDocuments(searchParams(params));
-};
+export function searchServiceRequests(search: ServiceRequestSearch) {
+  return mongo.serviceRequests
+    .find(filterToMongo(search))
+    .sort({ [search.sortBy]: search.order === "asc" ? 1 : -1 })
+    .skip(search.first * (search.page - 1))
+    .limit(search.first)
+    .toArray();
+}
 
 /**
  * Convenience function to share the search parameters between search and count.
- * @param {ServiceRequestSearch} params - The search parameters.
  * @returns criteria to find labor market in MongoDb
  */
-const searchParams = (params: ServiceRequestSearch): Parameters<typeof mongo.serviceRequests.find>[0] => {
+function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.serviceRequests.find>[0] {
   return {
-    valid: true,
-    ...(params.laborMarket ? { laborMarketAddress: params.laborMarket as `0x${string}` } : {}),
-    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
-    ...(params.language ? { "appData.language": { $in: params.language } } : {}),
-    ...(params.project ? { "appData.projectSlugs": { $in: params.project } } : {}),
+    ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
+    ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
+    ...(filter.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: filter.token } } } } : {}),
   };
-};
+}
 
 /**
  * Finds a ServiceRequest by its ID.
