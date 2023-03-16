@@ -1,8 +1,5 @@
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
-// import MDEditor from "@uiw/react-md-editor";
-import type { SetStateAction } from "react";
-import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, Input, Select } from "~/components";
@@ -13,39 +10,23 @@ import type { ServiceRequestForm } from "./schema";
 export function ServiceRequestCreatorFields({
   validTokens,
   validProjects,
-  mType,
 }: {
   validTokens: Token[];
   validProjects: Project[];
-  mType?: string;
 }) {
   const {
     register,
+    setValue,
+    watch,
     control,
     formState: { errors },
   } = useFormContext<ServiceRequestForm>();
 
-  const [selectedSubmitDate, setSelectedSubmitDate] = useState("");
-  const [selectedSubmitTime, setSelectedSubmitTime] = useState("");
+  const selectedSubmitDate = watch("endDate");
+  const selectedSubmitTime = watch("endTime");
 
-  const [selectedReviewDate, setSelectedReviewDate] = useState("");
-  const [selectedReviewTime, setSelectedReviewTime] = useState("");
-
-  const handleSubmitDateChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedSubmitDate(event.target.value);
-  };
-
-  const handleSubmitTimeChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedSubmitTime(event.target.value);
-  };
-
-  const handleReviewDateChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedReviewDate(event.target.value);
-  };
-
-  const handleReviewTimeChange = (event: { target: { value: SetStateAction<string> } }) => {
-    setSelectedReviewTime(event.target.value);
-  };
+  const selectedReviewDate = watch("reviewEndDate");
+  const selectedReviewTime = watch("reviewEndTime");
 
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
@@ -56,11 +37,28 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
-          <Input {...register("appData.title")} name="title" placeholder="Challenge Title" className="w-full" />
+          <Input {...register("appData.title")} type="text" placeholder="Challenge Title" className="w-full" />
           <Error error={errors.appData?.title?.message} />
         </Field>
       </section>
-      <section className="space-y-3">{mType === "brainstorm" ? <BrainstormTextArea /> : <AnalyticsTextArea />}</section>
+      <section className="space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center">
+          <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?*</h2>
+          <InformationTooltip />
+        </div>
+        <ClientOnly>
+          {() => (
+            <div className="container overflow-auto">
+              <MarkdownEditor
+                value={watch("appData.description")}
+                onChange={(v) => {
+                  setValue("appData.description", v ?? "");
+                }}
+              />
+            </div>
+          )}
+        </ClientOnly>
+      </section>
       <section className="space-y-3">
         <div className="flex flex-col md:flex-row gap-2">
           <div className="flex-grow">
@@ -93,11 +91,11 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">When must submissions be entered by?*</h2>
         <Field>
-          <Input {...register("endDate")} type="date" onChange={handleSubmitDateChange} />
+          <Input {...register("endDate")} type="date" />
           <Error error={errors.endDate?.message} />
         </Field>
         <Field>
-          <Input {...register("endTime")} type="time" onChange={handleSubmitTimeChange} />
+          <Input {...register("endTime")} type="time" />
           <Error error={errors.endTime?.message} />
         </Field>
         <p className="text-gray-400 italic">
@@ -110,11 +108,11 @@ export function ServiceRequestCreatorFields({
       <section className="space-y-3">
         <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
         <Field>
-          <Input {...register("reviewEndDate")} type="date" onChange={handleReviewDateChange} />
+          <Input {...register("reviewEndDate")} type="date" />
           <Error error={errors.reviewEndDate?.message} />
         </Field>
         <Field>
-          <Input {...register("reviewEndTime")} type="time" onChange={handleReviewTimeChange} />
+          <Input {...register("reviewEndTime")} type="time" />
           <Error error={errors.reviewEndTime?.message} />
         </Field>
         <p className="text-gray-400 italic">
@@ -165,71 +163,42 @@ export function ServiceRequestCreatorFields({
   );
 }
 
-function BrainstormTextArea() {
+function InformationTooltip() {
   return (
-    <>
-      <h2 className="font-bold">Ask the community what they would like to see Web3 analysts address</h2>
-      <ClientOnly>
-        {() => (
-          <div className="container overflow-auto">
-            <MarkdownEditor />
-          </div>
-        )}
-      </ClientOnly>
-    </>
-  );
-}
-
-function AnalyticsTextArea() {
-  return (
-    <>
-      <div className="flex flex-col lg:flex-row lg:items-center">
-        <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?*</h2>
-        <div className="group">
-          <InformationCircleIcon className="h-5 w-5 text-neutral-400 ml-1" />
-          <div className="absolute z-30 hidden group-hover:block rounded-lg border-2 p-5 bg-blue-100 space-y-6 text-sm max-w-lg">
-            <p className="font-bold">Be specific:</p>
-            <div className="text-gray-500 space-y-3">
-              <p>"How many people actively use Sushi?"</p>
-              <p>
-                The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person? Are we
-                talking Ethereum? What about Polygon?
-              </p>
-              <p className="font-medium italic">
-                UPDATE: How many addresses actively use the SUSHI token on Ethereum?{" "}
-              </p>
-            </div>
-            <p className="font-bold">Define metrics:</p>
-            <div className="text-gray-500 space-y-3">
-              <p>
-                What is “active“? What is “use”? These terms can (and will) mean different things to different people.
-                It doesn't matter what definition you use as long as you communicate your expectations. Alternatively,
-                you can ask for the metric to be defined as part of the question.
-              </p>
-              <p className="font-medium italic">UPDATE: How many addresses have transferred SUSHI on Ethereum?</p>
-            </div>
-            <div className="space-y-3">
-              <p className="font-bold">Specify time boundaries:</p>
-              <div className="text-gray-500 space-y-3">
-                <p>
-                  We still haven't fully defined “active”. Specifying time makes the result easier to understand, don't
-                  rely on the person answering the question to specify time for you if you didn’t ask them to.
-                </p>
-                <p className="font-medium italic">
-                  UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?
-                </p>
-              </div>
-            </div>
+    <div className="group">
+      <InformationCircleIcon className="h-5 w-5 text-neutral-400 ml-1" />
+      <div className="absolute z-30 hidden group-hover:block rounded-lg border-2 p-5 bg-blue-100 space-y-6 text-sm max-w-lg">
+        <p className="font-bold">Be specific:</p>
+        <div className="text-gray-500 space-y-3">
+          <p>"How many people actively use Sushi?"</p>
+          <p>
+            The original question has many interpretations: SUSHI the token? SUSHI the dex? What is a person? Are we
+            talking Ethereum? What about Polygon?
+          </p>
+          <p className="font-medium italic">UPDATE: How many addresses actively use the SUSHI token on Ethereum? </p>
+        </div>
+        <p className="font-bold">Define metrics:</p>
+        <div className="text-gray-500 space-y-3">
+          <p>
+            What is “active“? What is “use”? These terms can (and will) mean different things to different people. It
+            doesn't matter what definition you use as long as you communicate your expectations. Alternatively, you can
+            ask for the metric to be defined as part of the question.
+          </p>
+          <p className="font-medium italic">UPDATE: How many addresses have transferred SUSHI on Ethereum?</p>
+        </div>
+        <div className="space-y-3">
+          <p className="font-bold">Specify time boundaries:</p>
+          <div className="text-gray-500 space-y-3">
+            <p>
+              We still haven't fully defined “active”. Specifying time makes the result easier to understand, don't rely
+              on the person answering the question to specify time for you if you didn’t ask them to.
+            </p>
+            <p className="font-medium italic">
+              UPDATE: How many addresses have transferred SUSHI on Ethereum in the last 90 days?
+            </p>
           </div>
         </div>
       </div>
-      <ClientOnly>
-        {() => (
-          <div className="container overflow-auto">
-            <MarkdownEditor />
-          </div>
-        )}
-      </ClientOnly>
-    </>
+    </div>
   );
 }
