@@ -86,7 +86,7 @@ export const indexReview = async (event: TracerEvent) => {
   });
 
   const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
-    laborMarketAddress: event.contract.address as `0x${string}`,
+    laborMarketAddress: event.contract.address as EvmAddress,
     serviceRequestId: requestId,
     submissionId: submissionId,
     score: reviewScore,

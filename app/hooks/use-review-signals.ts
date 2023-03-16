@@ -16,7 +16,7 @@ export function useReviewSignals({
     address: laborMarketAddress,
     abi: LaborMarket.abi,
     functionName: "reviewSignals",
-    args: [BigNumber.from(serviceRequestId), userAddress as `0x${string}`],
+    args: [BigNumber.from(serviceRequestId), userAddress as EvmAddress],
   });
 
   return data;

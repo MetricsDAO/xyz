@@ -9,10 +9,10 @@ type Props = Web3Hook<ClaimRewardContractData>;
 
 export function useClaimReward({ data, onWriteSuccess, onPrepareTransactionError }: Props) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress as `0x${string}`,
+    address: data.laborMarketAddress as EvmAddress,
     abi: LaborMarket.abi,
     functionName: "claim",
-    args: [BigNumber.from(data.submissionId), data.payoutAddress as `0x${string}`],
+    args: [BigNumber.from(data.submissionId), data.payoutAddress as EvmAddress],
     onError(err) {
       onPrepareTransactionError?.(err);
     },

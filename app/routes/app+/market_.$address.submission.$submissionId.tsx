@@ -55,16 +55,16 @@ export const loader = async (data: DataFunctionArgs) => {
   const { address, submissionId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address as `0x${string}` });
-  const reviewedByUser = user && (await findUserReview(submissionId, address as `0x${string}`, user.address));
+  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address as EvmAddress });
+  const reviewedByUser = user && (await findUserReview(submissionId, address as EvmAddress, user.address));
 
   const tokens = await listTokens();
 
-  const submission = await findSubmission(submissionId, address as `0x${string}`);
+  const submission = await findSubmission(submissionId, address as EvmAddress);
   if (!submission) {
     throw notFound({ submissionId });
   }
-  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
+  const laborMarket = await getIndexedLaborMarket(address as EvmAddress);
   invariant(laborMarket, "Labor market not found");
 
   const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
@@ -98,7 +98,7 @@ export default function ChallengeSubmission() {
   };
 
   const reward = useReward({
-    laborMarketAddress: submission.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: submission.laborMarketAddress as EvmAddress,
     submissionId: submission.id,
   });
 
@@ -136,7 +136,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
+            <UserBadge address={submission.configuration.serviceProvider as EvmAddress} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
@@ -192,7 +192,7 @@ export default function ChallengeSubmission() {
                         >
                           <p>{scoreToLabel(Number(r.score) * 25)}</p>
                         </div>
-                        <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
+                        <UserBadge address={r.reviewer as EvmAddress} variant="separate" />
                       </div>
                       <p className="text-sm">{fromNow(r.createdAtBlockTimestamp)}</p>
                     </div>
@@ -257,7 +257,7 @@ function ReviewQuestionDrawerButton({
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
+    tokenAddress: laborMarket.configuration.maintainerBadge.token as EvmAddress,
     tokenId: laborMarket.configuration.maintainerBadge.tokenId,
   });
 

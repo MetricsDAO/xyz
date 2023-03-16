@@ -14,7 +14,7 @@ const paramsSchema = z.object({ address: z.string() });
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
-  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
+  const laborMarket = await getIndexedLaborMarket(address as EvmAddress);
   if (!laborMarket) {
     throw notFound("Labor market not found");
   }

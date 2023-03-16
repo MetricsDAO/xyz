@@ -92,13 +92,13 @@ export const indexSubmission = async (event: TracerEvent) => {
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
     id: submissionId,
-    laborMarketAddress: event.contract.address as `0x${string}`,
+    laborMarketAddress: event.contract.address as EvmAddress,
     serviceRequestId: requestId,
     valid: isValid,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
-      serviceProvider: submission.serviceProvider as `0x${string}`,
+      serviceProvider: submission.serviceProvider as EvmAddress,
       uri: submission.uri,
     },
     appData,
@@ -117,7 +117,7 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   return mongo.submissions.updateOne(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: event.block.timestamp } },
+    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
     { upsert: true }
   );
 };
@@ -317,7 +317,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
         $match: {
           $and: [
             { "sr.configuration.enforcementExpiration": { $lt: utcDate() } },
-            { "lm.appData.type": "analyze" },
+            params.type ? { "lm.appData.type": { $in: params.type } } : {},
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
             params.score ? { "score.avg": { $gte: params.score } } : {},
             params.score ? { "score.avg": { $lt: params.score + 25 } } : {},

@@ -46,7 +46,7 @@ export function SubmissionCard({
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.createdAtBlockTimestamp)} by </span>
-        <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
+        <UserBadge address={submission.configuration.serviceProvider as EvmAddress} />
       </div>
     </Card>
   );

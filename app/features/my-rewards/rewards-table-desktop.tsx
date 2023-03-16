@@ -50,11 +50,11 @@ function RewardsTableRow({
   tokens: Token[];
 }) {
   const contractReward = useReward({
-    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: reward.laborMarketAddress as EvmAddress,
     submissionId: reward.id,
   });
   const hasClaimed = useHasPerformed({
-    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: reward.laborMarketAddress as EvmAddress,
     id: reward.id,
     action: "HAS_CLAIMED",
   });

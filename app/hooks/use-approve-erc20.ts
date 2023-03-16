@@ -14,7 +14,7 @@ export function useApproveERC20({
   onPrepareTransactionError,
 }: Web3Hook<ApproveERC20ContractData>) {
   const { config } = usePrepareContractWrite({
-    address: data.ERC20address as `0x${string}`,
+    address: data.ERC20address as EvmAddress,
     abi: [
       {
         constant: false,

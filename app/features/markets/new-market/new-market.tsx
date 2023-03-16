@@ -42,19 +42,19 @@ function configureFromValues(inputs: { owner: EvmAddress; cid: string; values: M
       LaborMarket.address,
       {
         marketUri: cid,
-        owner: owner as `0x${string}`,
+        owner: owner as EvmAddress,
         modules: {
           network: LaborMarketNetwork.address,
           reputation: ReputationModule.address,
           enforcement: ScalableLikertEnforcement.address,
-          enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
+          enforcementKey: ethers.utils.formatBytes32String("aggressive") as EvmAddress,
         },
         delegateBadge: {
-          token: values.configuration.delegateBadge.token as `0x${string}`,
+          token: values.configuration.delegateBadge.token as EvmAddress,
           tokenId: BigNumber.from(values.configuration.delegateBadge.tokenId),
         },
         maintainerBadge: {
-          token: values.configuration.maintainerBadge.token as `0x${string}`,
+          token: values.configuration.maintainerBadge.token as EvmAddress,
           tokenId: BigNumber.from(values.configuration.maintainerBadge.tokenId),
         },
         reputationBadge: {

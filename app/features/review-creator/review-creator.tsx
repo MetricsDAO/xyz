@@ -43,7 +43,7 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
     transactor.start({
       config: () =>
         configureFromValues({
-          laborMarketAddress: laborMarketAddress as `0x${string}`,
+          laborMarketAddress: laborMarketAddress as EvmAddress,
           submissionId,
           requestId,
           formValues,

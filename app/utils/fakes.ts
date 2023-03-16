@@ -20,11 +20,11 @@ export const fakeLaborMarket = (data: Partial<LaborMarket>): LaborMarket => {
     submitRepMax: faker.datatype.number(),
     launch: {
       access: "delegates",
-      badgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
+      badgerAddress: faker.finance.ethereumAddress() as EvmAddress,
       badgerTokenId: faker.datatype.string(),
     },
-    sponsorAddress: faker.finance.ethereumAddress() as `0x${string}`,
-    reviewBadgerAddress: faker.finance.ethereumAddress() as `0x${string}`,
+    sponsorAddress: faker.finance.ethereumAddress() as EvmAddress,
+    reviewBadgerAddress: faker.finance.ethereumAddress() as EvmAddress,
     reviewBadgerTokenId: faker.datatype.string(),
     projectSlugs: ["ethereum", "polygon"],
     ...data,
@@ -44,10 +44,10 @@ export const fakeServiceRequest = (data: Partial<ServiceRequest>): ServiceReques
       projectSlugs: ["ethereum", "polygon"],
       language: "english",
     },
-    laborMarketAddress: faker.finance.ethereumAddress() as `0x${string}`,
+    laborMarketAddress: faker.finance.ethereumAddress() as EvmAddress,
     configuration: {
-      serviceRequester: faker.finance.ethereumAddress() as `0x${string}`,
-      pToken: faker.finance.ethereumAddress() as `0x${string}`,
+      serviceRequester: faker.finance.ethereumAddress() as EvmAddress,
+      pToken: faker.finance.ethereumAddress() as EvmAddress
       pTokenQ: faker.datatype.string(),
       signalExp: signal,
       submissionExp: submission,
@@ -66,7 +66,7 @@ export const fakeSubmission = (data: Partial<SubmissionIndexer>): SubmissionInde
     title: `Submission - ${faker.random.words(3)}`,
     description: faker.random.words(10),
     creatorId: faker.datatype.uuid(),
-    laborMarketAddress: faker.finance.ethereumAddress() as `0x${string}`,
+    laborMarketAddress: faker.finance.ethereumAddress() as EvmAddress,
     score: 10,
     ...data,
   };

@@ -10,11 +10,11 @@ type Props = Web3Hook<ServiceRequestContract>;
 
 export function useCreateServiceRequest({ data, onWriteSuccess, onPrepareTransactionError }: Props) {
   const { config } = usePrepareContractWrite({
-    address: data.laborMarketAddress as `0x${string}`,
+    address: data.laborMarketAddress as EvmAddress,
     abi: LaborMarket.abi,
     functionName: "submitRequest",
     args: [
-      data.pTokenAddress as `0x${string}`,
+      data.pTokenAddress as EvmAddress
       toTokenAmount(data.pTokenQuantity),
       BigNumber.from(unixTimestamp(data.signalExpiration)),
       BigNumber.from(unixTimestamp(data.submissionExpiration)),

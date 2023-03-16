@@ -24,19 +24,19 @@ export function useCreateLaborMarket({
       LaborMarket.address,
       {
         marketUri: data.ipfsHash,
-        owner: data.userAddress as `0x${string}`,
+        owner: data.userAddress as EvmAddress,
         modules: {
           network: LaborMarketNetwork.address,
           reputation: ReputationModule.address,
           enforcement: ScalableLikertEnforcement.address,
-          enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
+          enforcementKey: ethers.utils.formatBytes32String("aggressive") as EvmAddress,
         },
         delegateBadge: {
-          token: data.launch.badgerAddress as `0x${string}`,
+          token: data.launch.badgerAddress as EvmAddress,
           tokenId: BigNumber.from(data.launch.badgerTokenId),
         },
         maintainerBadge: {
-          token: data.reviewBadgerAddress as `0x${string}`,
+          token: data.reviewBadgerAddress as EvmAddress
           tokenId: BigNumber.from(data.reviewBadgerTokenId),
         },
         reputationBadge: {

@@ -58,7 +58,7 @@ export const loader = async (data: DataFunctionArgs) => {
   invariant(user, "Could not find user, please sign in");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
-    serviceProvider: user.address as `0x${string}`,
+    serviceProvider: user.address as EvmAddress,
   });
   const networks = await listNetworks();
   return typedjson({
@@ -193,7 +193,7 @@ function AddAddressButton() {
           defaultValues={{
             payment: {
               networkName: "Polygon",
-              address: "" as `0x${string}`,
+              address: "" as EvmAddress,
             },
           }}
           method="post"

@@ -12,7 +12,7 @@ export function useTokenBalance({ tokenAddress, tokenId }: Props) {
     address: tokenAddress,
     abi: ReputationToken.abi, // same abi as rep token
     functionName: "balanceOf",
-    args: [userAddress as `0x${string}`, BigNumber.from(tokenId)],
+    args: [userAddress as EvmAddress, BigNumber.from(tokenId)],
   });
 
   return data;

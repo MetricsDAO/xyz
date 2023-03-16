@@ -45,7 +45,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
-  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
+  const laborMarket = await getIndexedLaborMarket(address as EvmAddress);
   invariant(laborMarket, "labormarket must exist");
 
   return typedjson({ laborMarket }, { status: 200 });
