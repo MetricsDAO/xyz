@@ -6,9 +6,9 @@ import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, Input, Select } from "~/components";
-import type { ServiceRequestForm } from "~/domain/service-request/schemas";
 import { claimDate, parseDatetime } from "~/utils/date";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
+import type { ServiceRequestForm } from "./schema";
 
 export function ServiceRequestCreatorFields({
   validTokens,

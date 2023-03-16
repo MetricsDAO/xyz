@@ -9,12 +9,12 @@ import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
-import type { ServiceRequestForm } from "~/domain/service-request/schemas";
-import { ServiceRequestFormSchema } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { Button } from "../../components/button";
+import type { ServiceRequestForm } from "./schema";
+import { ServiceRequestFormSchema } from "./schema";
 import { ServiceRequestCreatorFields } from "./service-request-creator-fields.tsx";
 
 interface ServiceRequestFormProps {
@@ -68,10 +68,7 @@ export function ServiceRequestCreator({
   });
 
   const approveTransactor = useTransactor({
-    onSuccess: useCallback((receipt) => {
-      const iface = LaborMarket__factory.createInterface();
-      const event = getEventFromLogs(iface, receipt.logs, "Approve", laborMarketAddress);
-    }, []),
+    onSuccess: useCallback((receipt) => {}, []),
   });
 
   useEffect(() => {
