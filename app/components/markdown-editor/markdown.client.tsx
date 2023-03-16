@@ -1,13 +1,16 @@
+import type { MDEditorProps } from "@uiw/react-md-editor";
 import MDEditor from "@uiw/react-md-editor";
-import { useState } from "react";
 
-export const MarkdownEditor = () => {
-  const [value, setValue] = useState<string>();
-
+export const MarkdownEditor = ({
+  value,
+  onChange,
+}: {
+  value: MDEditorProps["value"];
+  onChange: MDEditorProps["onChange"];
+}) => {
   return (
     <div>
-      <MDEditor data-color-mode="light" value={value} onChange={setValue} />
-      <input type="hidden" name="description" value={value} />
+      <MDEditor data-color-mode="light" value={value} onChange={onChange} />
     </div>
   );
 };
