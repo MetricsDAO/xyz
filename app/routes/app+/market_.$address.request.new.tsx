@@ -5,7 +5,7 @@ import { badRequest, notFound } from "remix-utils";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { fakeServiceRequestFormData } from "~/domain/service-request/schemas";
+import { fakeServiceRequestFormData } from "~/features/service-request-creator/schema";
 import { ServiceRequestCreator } from "~/features/service-request-creator/service-request-creator";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
