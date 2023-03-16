@@ -8,11 +8,7 @@ export const MarkdownEditor = ({
   value: MDEditorProps["value"];
   onChange: MDEditorProps["onChange"];
 }) => {
-  return (
-    <div>
-      <MDEditor data-color-mode="light" value={value} onChange={onChange} />
-    </div>
-  );
+  return <MDEditor data-color-mode="light" value={value} onChange={onChange} />;
 };
 
 export function ParsedMarkdown({ text }: { text: string }) {
