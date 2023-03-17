@@ -1,8 +1,7 @@
 import type { Project, Token } from "@prisma/client";
-import { BigNumber } from "ethers";
-import { ethers } from "ethers";
-import type { ServiceRequestDoc } from "~/domain";
+import { BigNumber, ethers } from "ethers";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -15,7 +14,7 @@ export const truncateAddress = (address: string) => {
 const DECIMALS = 18;
 
 /**
- * Take a string representation of an amount (to allow for really small or big numbers) and conver to BigNumber
+ * Take a string representation of an amount (to allow for really small or big numbers) and convert to BigNumber
  * @param amount string amount
  * @returns {BigNumber}
  */
@@ -27,10 +26,15 @@ export const toTokenAmount = (amount: string) => {
  * Convert units to a decimal representation
  * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001
  * @param units string units
+ * @param round string decimals
  * @returns {string}
  */
-export const fromTokenAmount = (units: string) => {
-  return ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS).toString();
+export const fromTokenAmount = (units: string, roundDecimals?: number) => {
+  const fixed = ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS);
+  if (roundDecimals) {
+    return fixed.round(roundDecimals).toString();
+  }
+  return fixed.toString();
 };
 
 export function findProjectsBySlug(projects: Project[], slugs: string[]) {
@@ -61,8 +65,8 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.networkName;
 };
 
-export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
-  return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExpiration);
+export function claimToReviewDeadline(serviceRequest: ServiceRequestWithIndexData) {
+  return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExp);
 }
 
 /**

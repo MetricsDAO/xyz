@@ -1,4 +1,6 @@
 import type { User } from "@prisma/client";
+import { getAddress } from "ethers/lib/utils.js";
+import type { TracerEvent } from "pinekit/types";
 import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
@@ -31,21 +33,22 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function upsertIndexedLaborMarket(address: EvmAddress, block?: number) {
-  const configuration = await getLaborMarketConfig(address, block);
+export async function upsertIndexedLaborMarket(address: EvmAddress, event?: TracerEvent) {
+  const checksumAddress = getAddress(address);
+  const configuration = await getLaborMarketConfig(checksumAddress, event?.block.number);
   let appData;
   try {
     appData = await getLaborMarketAppData(configuration.marketUri);
   } catch (e) {
-    logger.warn(`Failed to fetch and parse labor market app data for ${address}. Skipping indexing.`, e);
+    logger.warn(`Failed to fetch and parse labor market app data for ${checksumAddress}. Skipping indexing.`, e);
     return;
   }
-  const laborMarket = { address, configuration, appData };
+  const laborMarket = { checksumAddress, configuration, appData };
   const indexData: LaborMarketIndexData = {
     indexedAt: new Date(),
     serviceRequestCount: 0,
     serviceRequestRewardPools: [],
-    createdAtBlockTimestamp: new Date(),
+    createdAtBlockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : new Date(),
   };
 
   //log this event in user activity collection
@@ -118,4 +121,8 @@ async function getLaborMarketConfig(address: string, block?: number) {
 async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppData> {
   const data = await fetchIpfsJson(marketUri);
   return LaborMarketAppDataSchema.parse(data);
+}
+
+export async function findLaborMarkets() {
+  return mongo.laborMarkets.find({ valid: true }).toArray();
 }

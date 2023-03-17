@@ -11,9 +11,9 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ProfileMenu } from "~/components/connect-menu/dropdown";
 
 const primaryLinks = [
-  //{ link: $path("/app/ecosystem"), label: "Ecosystem" },
-  { link: $path("/app/:mType", { mType: "brainstorm" }), label: "Brainstorm" },
-  { link: $path("/app/:mType", { mType: "analyze" }), label: "Analyze" },
+  { link: $path("/app/showcase"), label: "Showcase" },
+  { link: $path("/app/challenges"), label: "Challenges" },
+  { link: $path("/app/:mType", { mType: "analyze" }), label: "Marketplaces" },
 ];
 
 const userLinks = [

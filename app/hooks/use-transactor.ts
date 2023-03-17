@@ -15,13 +15,17 @@ type StartFn = (
   params: { config: ConfigWithCidFn; metadata: JsonObject } | { config: ConfigWithoutCidFn; metadata?: undefined }
 ) => void;
 
+// https://github.com/wagmi-dev/wagmi/discussions/233#discussioncomment-2609115
+type EthersError = Error & { reason?: string; code?: string };
+
 type State =
   | { state: "idle" }
   | { state: "preparing" }
+  | { state: "failure"; error: string }
   | { state: "prepared"; prepared: WriteContractPreparedArgs<any, any> }
   | { state: "writing" }
   | { state: "written"; result: WriteContractResult }
-  | { state: "waiting" }
+  | { state: "waiting"; transactionHash: `0x${string}` }
   | { state: "success"; receipt: TransactionReceipt };
 
 export type Transactor = ReturnType<typeof useTransactor>;
@@ -37,20 +41,29 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     setState({ state: "preparing" });
     let config: PrepareWriteContractConfig;
     if (params.metadata) {
-      const uploaded = await uploadMetadata(params.metadata);
-      config = params.config({ account: account.address, cid: uploaded.cid });
+      try {
+        const uploaded = await uploadMetadata(params.metadata);
+        config = params.config({ account: account.address, cid: uploaded.cid });
+      } catch (e) {
+        setState({ state: "failure", error: (e as Error)?.message ?? "error uploading metadata" });
+        return;
+      }
     } else {
       config = params.config({ account: account.address! });
     }
-    const prepared = await prepareWriteContract(config);
-    setState({ state: "prepared", prepared });
+    try {
+      const prepared = await prepareWriteContract(config);
+      setState({ state: "prepared", prepared });
+    } catch (e) {
+      setState({ state: "failure", error: (e as EthersError)?.reason ?? "error preparing transaction" });
+    }
   };
 
   const write = async () => {
     if (state.state !== "prepared") throw new Error("Cannot write contract without being prepared.");
     setState({ state: "writing" });
     const result = await writeContract(state.prepared!);
-    setState({ state: "waiting" });
+    setState({ state: "waiting", transactionHash: result.hash });
     const receipt = await result.wait(1);
     setState({ state: "success", receipt });
   };

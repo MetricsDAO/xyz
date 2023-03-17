@@ -5,10 +5,9 @@ import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
 import type { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import { PermissionIcon } from "~/features/permission-icon";
-import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
-import { useTokenBalance } from "~/hooks/use-token-balance";
+import { usePrereqs } from "~/hooks/use-prereqs";
 import { useTokenData } from "~/hooks/use-token-data";
-import type { findServiceRequest } from "~/services/service-request.server";
+import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function ServiceIdPrereqs() {
@@ -26,17 +25,7 @@ export default function ServiceIdPrereqs() {
 
   const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
 
-  const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
-    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
-  });
-
-  const reputationBalance = useReputationTokenBalance();
-
-  const canReview = maintainerBadgeTokenBalance?.gt(0);
-  const canSubmit =
-    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
-    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
+  const { canSubmit, canReview } = usePrereqs({ laborMarket });
 
   return (
     <section>

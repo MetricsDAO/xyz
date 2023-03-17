@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
-import { ServiceRequestDocSchema } from "./service-request";
+import { ServiceRequestWithIndexDataSchema } from "../domain/service-request/schemas";
 import { ReviewDocSchema } from "./review";
+import { LaborMarketWithIndexDataSchema } from "./labor-market/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -52,9 +53,9 @@ const SubmissionDocSchema = z.object({
   }),
   score: z
     .object({
-      reviewCount: z.string(),
-      reviewSum: z.string(),
-      avg: z.string(),
+      reviewCount: z.number(),
+      reviewSum: z.number(),
+      avg: z.number(),
       qualified: z.boolean(),
     })
     .optional(),
@@ -67,7 +68,12 @@ export const SubmissionEventSchema = z.object({
 });
 
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
-  sr: ServiceRequestDocSchema,
+  sr: ServiceRequestWithIndexDataSchema,
+});
+
+const CombinedSchema = SubmissionDocSchema.extend({
+  sr: ServiceRequestWithIndexDataSchema,
+  lm: LaborMarketWithIndexDataSchema,
 });
 
 export const RewardsSearchSchema = z.object({
@@ -81,6 +87,15 @@ export const RewardsSearchSchema = z.object({
   serviceProvider: EvmAddressSchema.optional(),
 });
 
+export const ShowcaseSearchSchema = z.object({
+  q: z.string().optional().describe("Search query."),
+  count: z.number().default(0),
+  marketplace: z.array(EvmAddressSchema).optional(),
+  project: z.array(z.string()).optional(),
+  score: z.number().optional(),
+  timeframe: z.enum(["day", "month", "week"]).default("month"),
+});
+
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
   reviews: z.array(ReviewDocSchema),
 });
@@ -91,5 +106,7 @@ export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
+export type CombinedDoc = z.infer<typeof CombinedSchema>;
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
+export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;
 export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

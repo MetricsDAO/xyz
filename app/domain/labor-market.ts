@@ -1,4 +1,3 @@
-import { faker } from "@faker-js/faker";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "./address";
@@ -33,25 +32,6 @@ export const LaborMarketMetaSchema = LaborMarketSchema.pick({
 });
 
 export const LaborMarketFormSchema = LaborMarketSchema.omit({ address: true, sponsorAddress: true });
-
-// Generate a fake LaborMarketNew for testing using faker.
-export function fakeLaborMarketNew(): LaborMarketForm {
-  return {
-    title: faker.commerce.productName(),
-    description: faker.lorem.paragraphs(2),
-    type: "brainstorm",
-    launch: {
-      access: "delegates",
-      badgerAddress: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-      badgerTokenId: "2",
-    },
-    submitRepMin: faker.datatype.number(100),
-    submitRepMax: faker.datatype.number(100),
-    reviewBadgerAddress: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-    reviewBadgerTokenId: "3",
-    projectSlugs: ["ethereum", "polygon"],
-  };
-}
 
 // Schema for a labor market with an IPFS CID.
 export const LaborMarketContractSchema = LaborMarketFormSchema.extend({
@@ -119,7 +99,6 @@ const LaborMarketDocSchema = z.object({
 
 export type LaborMarketDoc = z.infer<typeof LaborMarketDocSchema>;
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
-export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
 export type LaborMarketContract = z.infer<typeof LaborMarketContractSchema>;
 export type LaborMarketMeta = z.infer<typeof LaborMarketMetaSchema>;
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;

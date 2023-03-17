@@ -1,9 +1,13 @@
 import type { User } from "@prisma/client";
+import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
 import type {
+  CombinedDoc,
   RewardsSearch,
+  ShowcaseSearch,
   SubmissionContract,
   SubmissionDoc,
   SubmissionForm,
@@ -14,7 +18,7 @@ import type {
 import { SubmissionWithServiceRequestSchema } from "~/domain/submission";
 import { SubmissionEventSchema } from "~/domain/submission";
 import { SubmissionContractSchema, SubmissionFormSchema } from "~/domain/submission";
-import { utcDate } from "~/utils/date";
+import { oneUnitAgo, utcDate } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "./ipfs.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
@@ -62,7 +66,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
  * @param {String} id - The ID of the submission.
  * @returns - The Submission or null if not found.
  */
-export const findSubmission = async (id: string, laborMarketAddress: string) => {
+export const findSubmission = async (id: string, laborMarketAddress: EvmAddress) => {
   return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
 };
 
@@ -79,7 +83,8 @@ export const countSubmissionsOnServiceRequest = async (serviceRequestId: string)
  * Create a new SubmissionDoc from a TracerEvent.
  */
 export const indexSubmission = async (event: TracerEvent) => {
-  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const contractAddress = getAddress(event.contract.address);
+  const contract = LaborMarket__factory.connect(contractAddress, nodeProvider);
   const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
   const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
   const appData = await fetchIpfsJson(submission.uri)
@@ -90,13 +95,13 @@ export const indexSubmission = async (event: TracerEvent) => {
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
     id: submissionId,
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: contractAddress,
     serviceRequestId: requestId,
     valid: isValid,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
-      serviceProvider: submission.serviceProvider,
+      serviceProvider: submission.serviceProvider as `0x${string}`,
       uri: submission.uri,
     },
     appData,
@@ -191,16 +196,17 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
 };
 
 /**
- * Returns an array of Submissions with their Service Request for a given user
+ * Returns an array of Submissions with their Service Request and LaborMarket
  */
+
 export const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
   const submissionsDocs = await mongo.submissions
     .aggregate([
       {
         $match: {
           $and: [
-            { "configuration.serviceProvider": params.serviceProvider },
-            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+            // params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
       },
@@ -238,7 +244,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
         ? [
             {
               $match: {
-                $and: [{ "sr.configuration.enforcementExpiration": { $lt: utcDate() } }],
+                $and: [{ "sr.configuration.enforcementExp": { $lt: utcDate() } }],
               },
             },
           ]
@@ -250,4 +256,81 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
     .toArray();
 
   return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
+};
+
+/**
+ * Returns an array of Submissions with their Service Request and LaborMarket sorted by score
+ */
+export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
+  const timeframe = oneUnitAgo(params.timeframe);
+  return mongo.submissions
+    .aggregate<CombinedDoc>([
+      {
+        $match: {
+          $and: [
+            { "score.avg": { $gte: 75 } },
+            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "serviceRequests",
+          let: {
+            sr_id: "$serviceRequestId",
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "sr",
+        },
+      },
+      {
+        $lookup: {
+          from: "laborMarkets",
+          let: {
+            m_addr: "$laborMarketAddress",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$address", "$$m_addr"] }],
+                },
+              },
+            },
+          ],
+          as: "lm",
+        },
+      },
+      {
+        $unwind: "$sr",
+      },
+      {
+        $unwind: "$lm",
+      },
+      {
+        $match: {
+          $and: [
+            { "sr.configuration.enforcementExpiration": { $lt: utcDate() } },
+            { "lm.appData.type": "analyze" },
+            params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
+            params.score ? { "score.avg": { $gte: params.score } } : {},
+            params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
+            { createdAtBlockTimestamp: { $gte: timeframe } },
+            params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
+          ],
+        },
+      },
+    ])
+    .sort({ createdAtBlockTimestamp: -1 })
+    .limit(5 + params.count)
+    .toArray();
 };
