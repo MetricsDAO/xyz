@@ -22,9 +22,10 @@ import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { EvmAddressSchema } from "~/domain/address";
 
 const validator = withZod(SubmissionFormSchema);
-const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 const submissionMachine = createBlockchainTransactionStateMachine<SubmissionContract>();
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
@@ -45,7 +46,7 @@ export const action = async ({ request, params }: ActionArgs) => {
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
-  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
+  const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "labormarket must exist");
 
   return typedjson({ laborMarket }, { status: 200 });

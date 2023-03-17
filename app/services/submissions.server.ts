@@ -3,6 +3,7 @@ import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
 import type {
   CombinedDoc,
   RewardsSearch,
@@ -65,7 +66,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
  * @param {String} id - The ID of the submission.
  * @returns - The Submission or null if not found.
  */
-export const findSubmission = async (id: string, laborMarketAddress: `0x${string}`) => {
+export const findSubmission = async (id: string, laborMarketAddress: EvmAddress) => {
   return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
 };
 

@@ -29,15 +29,16 @@ import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
+import { EvmAddressSchema } from "~/domain/address";
 
-const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
-  const serviceRequest = await getIndexedServiceRequest(address as `0x${string}`, requestId);
+  const serviceRequest = await getIndexedServiceRequest(address, requestId);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
-  const laborMarket = await getIndexedLaborMarket(address as `0x${string}`);
+  const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }
@@ -50,7 +51,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   const tokens = await listTokens();
 
   const numOfReviews = await countReviews({
-    laborMarketAddress: address as `0x${string}`,
+    laborMarketAddress: address,
     serviceRequestId: requestId,
   });
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
