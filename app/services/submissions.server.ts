@@ -244,7 +244,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
         ? [
             {
               $match: {
-                $and: [{ "sr.configuration.enforcementExpiration": { $lt: utcDate() } }],
+                $and: [{ "sr.configuration.enforcementExp": { $lt: utcDate() } }],
               },
             },
           ]
