@@ -1,6 +1,8 @@
+import { getAddress } from "ethers/lib/utils.js";
 import { ScalableLikertEnforcement } from "labor-markets-abi";
 import type { TracerEvent } from "pinekit/types";
 import { ScalableLikertEnforcement__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
 import { mongo } from "./mongo.server";
@@ -48,7 +50,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
  * @param {String} userAddress - The address of the user
  * @returns - the users submission or null if not found.
  */
-export const findUserReview = async (submissionId: string, laborMarketAddress: string, userAddress: string) => {
+export const findUserReview = async (submissionId: string, laborMarketAddress: EvmAddress, userAddress: string) => {
   return mongo.reviews.findOne({
     laborMarketAddress,
     submissionId,
@@ -61,7 +63,7 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: s
  * @param {String} id - The ID of the review.
  * @returns - The Submission or null if not found.
  */
-export const findReview = async (id: string, laborMarketAddress: string) => {
+export const findReview = async (id: string, laborMarketAddress: EvmAddress) => {
   return mongo.reviews.findOne({ valid: true, laborMarketAddress, id });
 };
 
@@ -78,15 +80,16 @@ export const countReviewsOnSubmission = async (submissionId: string) => {
  * Create a new ReviewDoc from a TracerEvent.
  */
 export const indexReview = async (event: TracerEvent) => {
+  const contractAddress = getAddress(event.contract.address);
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
   // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)
   const enforceContract = ScalableLikertEnforcement__factory.connect(ScalableLikertEnforcement.address, nodeProvider);
-  const submissionToScore = await enforceContract.submissionToScore(event.contract.address, submissionId, {
+  const submissionToScore = await enforceContract.submissionToScore(contractAddress, submissionId, {
     blockTag: event.block.number,
   });
 
   const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: contractAddress,
     serviceRequestId: requestId,
     submissionId: submissionId,
     score: reviewScore,

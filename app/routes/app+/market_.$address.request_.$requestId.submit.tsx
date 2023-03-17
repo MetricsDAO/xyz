@@ -3,10 +3,11 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Container } from "~/components";
+import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import SubmissionCreator from "~/features/submission-creator/submission-creator";
 
-const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);

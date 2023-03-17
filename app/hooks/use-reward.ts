@@ -1,9 +1,10 @@
 import { BigNumber } from "ethers";
 import { ScalableLikertEnforcement } from "labor-markets-abi";
 import { useContractRead } from "wagmi";
+import type { EvmAddress } from "~/domain/address";
 
 type Props = {
-  laborMarketAddress: `0x${string}`;
+  laborMarketAddress: EvmAddress;
   submissionId: string;
 };
 

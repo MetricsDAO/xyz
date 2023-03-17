@@ -7,7 +7,7 @@ import type { getIndexedLaborMarket } from "~/domain/labor-market/functions.serv
 import { PermissionIcon } from "~/features/permission-icon";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useTokenData } from "~/hooks/use-token-data";
-import type { findServiceRequest } from "~/services/service-request.server";
+import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function ServiceIdPrereqs() {

@@ -3,7 +3,7 @@ import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
 import { RewardBadge } from "~/components/reward-badge";
-import type { findServiceRequest } from "~/services/service-request.server";
+import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import type { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
@@ -27,7 +27,7 @@ export default function ChallengeIdRewards() {
         <Detail>
           <DetailItem title="Total rewards to be distributed across winners">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQ)}
               token={toTokenAbbreviation(serviceRequest.configuration.pToken, tokens) ?? ""}
               rMETRIC={REPUTATION_REWARD_POOL}
             />
