@@ -1,7 +1,9 @@
 import type { User } from "@prisma/client";
+import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
 import type {
   CombinedDoc,
   RewardsSearch,
@@ -64,7 +66,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
  * @param {String} id - The ID of the submission.
  * @returns - The Submission or null if not found.
  */
-export const findSubmission = async (id: string, laborMarketAddress: string) => {
+export const findSubmission = async (id: string, laborMarketAddress: EvmAddress) => {
   return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
 };
 
@@ -81,7 +83,8 @@ export const countSubmissionsOnServiceRequest = async (serviceRequestId: string)
  * Create a new SubmissionDoc from a TracerEvent.
  */
 export const indexSubmission = async (event: TracerEvent) => {
-  const contract = LaborMarket__factory.connect(event.contract.address, nodeProvider);
+  const contractAddress = getAddress(event.contract.address);
+  const contract = LaborMarket__factory.connect(contractAddress, nodeProvider);
   const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
   const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
   const appData = await fetchIpfsJson(submission.uri)
@@ -92,13 +95,13 @@ export const indexSubmission = async (event: TracerEvent) => {
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
     id: submissionId,
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: contractAddress,
     serviceRequestId: requestId,
     valid: isValid,
     submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
-      serviceProvider: submission.serviceProvider,
+      serviceProvider: submission.serviceProvider as `0x${string}`,
       uri: submission.uri,
     },
     appData,

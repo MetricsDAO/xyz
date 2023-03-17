@@ -2,7 +2,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Field, Input, Label, Select } from "~/components";
-import type { ServiceRequestSearch } from "~/domain";
+import type { ServiceRequestSearch } from "~/domain/service-request/schemas";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 
 type SearchChallengesProps = {
@@ -63,7 +63,7 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
             control={control}
             name="token"
             render={({ field }) => (
-              <Select {...field} options={tokens.map((t) => ({ value: t.symbol, label: t.name }))} />
+              <Combobox {...field} options={tokens.map((t) => ({ value: t.symbol, label: t.name }))} />
             )}
           />
         </Field>

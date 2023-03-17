@@ -1,10 +1,10 @@
 import { Link } from "@remix-run/react";
 import { Card, Countdown, Header, Row, Table } from "~/components";
 import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
-import type { ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { ProjectBadgesBySlugs } from "~/features/project-badges";
 
-export function ListChallenges(props: { serviceRequests: ServiceRequestDoc[] }) {
+export function ListChallenges(props: { serviceRequests: ServiceRequestWithIndexData[] }) {
   return (
     <div>
       <div className="hidden lg:block">
@@ -18,7 +18,7 @@ export function ListChallenges(props: { serviceRequests: ServiceRequestDoc[] }) 
   );
 }
 
-function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestDoc[] }) {
+function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestWithIndexData[] }) {
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
@@ -39,13 +39,13 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestDo
                 </div>
               </Row.Column>
               <Row.Column>
-                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQuantity} />
+                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={sr.configuration?.enforcementExp} />
               </Row.Column>
             </Link>
           </Row>
@@ -55,7 +55,7 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestDo
   );
 }
 
-function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestDoc[] }) {
+function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestWithIndexData[] }) {
   return (
     <div className="space-y-4">
       {serviceRequests.map((sr) => {
@@ -75,15 +75,15 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestDoc
 
               <div>Reward Pool</div>
               <div>
-                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQuantity} />
+                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
               </div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </div>
             </Link>
           </Card>

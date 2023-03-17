@@ -1,12 +1,13 @@
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useAccount, useContractRead } from "wagmi";
+import type { EvmAddress } from "~/domain/address";
 
 export function useReviewSignals({
   laborMarketAddress,
   serviceRequestId,
 }: {
-  laborMarketAddress: `0x${string}`;
+  laborMarketAddress: EvmAddress;
   serviceRequestId: string;
 }) {
   const { address: userAddress } = useAccount();

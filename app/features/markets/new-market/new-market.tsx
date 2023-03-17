@@ -21,7 +21,6 @@ import { TxModal } from "~/components/tx-modal/tx-modal";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
 import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
 import type { Project, Token } from "@prisma/client";
-import { DevTool } from "@hookform/devtools";
 
 /**
  * Filters and parses the logs for a specific event.

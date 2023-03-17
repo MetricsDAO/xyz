@@ -1,6 +1,6 @@
 import { useRouteData } from "remix-utils";
 import { Badge } from "~/components";
-import type { findServiceRequest } from "~/services/service-request.server";
+import type { findServiceRequest } from "~/domain/service-request/functions.server";
 
 export default function ServiceIdParticipants() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
