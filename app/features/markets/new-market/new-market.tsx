@@ -106,7 +106,7 @@ export function NewMarket({
         reputationParams: {
           rewardPool: 100,
           provideStake: 100,
-          signalStake: 100,
+          reviewStake: 100,
         },
       },
       ...defaultValues,
