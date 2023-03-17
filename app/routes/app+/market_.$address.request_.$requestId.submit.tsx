@@ -16,15 +16,16 @@ import { RPCError } from "~/features/rpc-error";
 import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submission";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { EvmAddressSchema } from "~/domain/address";
 
 const validator = withZod(SubmissionFormSchema);
-const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 const submissionMachine = createBlockchainTransactionStateMachine<SubmissionContract>();
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;

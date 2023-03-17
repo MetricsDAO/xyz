@@ -1,12 +1,12 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { Error, Field, Label, SegmentedRadio } from "~/components";
 import { CountdownCard } from "~/components/countdown-card";
-import type { ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline } from "~/utils/helpers";
 import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";
 
-export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest: ServiceRequestDoc }) {
+export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest: ServiceRequestWithIndexData }) {
   const {
     control,
     formState: { errors },
@@ -43,7 +43,7 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
           <h2 className="font-semibold">Review Deadline</h2>
           <CountdownCard
             start={serviceRequest.createdAtBlockTimestamp}
-            end={serviceRequest.configuration?.enforcementExpiration}
+            end={serviceRequest.configuration?.enforcementExp}
           />
         </div>
       </div>

@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { usePrevious } from "react-use";
 
 type Props = {
+  name?: string;
   multiple?: boolean;
   size?: "sm" | "md";
   options: Option[];
@@ -24,7 +25,7 @@ const sizeStyles = {
 };
 
 export const Combobox = forwardRef<HTMLDivElement, Props>(
-  ({ size = "md", value, options, onChange, placeholder }, ref) => {
+  ({ size = "md", value, options, onChange, name, placeholder }, ref) => {
     const [query, setQuery] = useState("");
 
     const filteredOptions = options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()));
@@ -36,6 +37,8 @@ export const Combobox = forwardRef<HTMLDivElement, Props>(
 
     return (
       <HCombobox as="div" value={selected} onChange={handleChange} multiple>
+        {value ? value.map((v) => <input key={v} type="hidden" name={name} value={v} />) : null}
+
         <div className="relative" ref={ref}>
           <div className={clsx(buttonStyles, sizeStyles[size])}>
             {selected?.length > 0 && (
@@ -132,10 +135,5 @@ export function ValidatedCombobox({ onChange, ...props }: Props & { name: string
     }
   }, [value, prevValue, onChange]);
 
-  return (
-    <>
-      <Combobox {...getInputProps(props)} value={value} onChange={handleChange} />
-      {value ? value.map((v) => <input key={v} type="hidden" name={props.name} value={v} />) : null}
-    </>
-  );
+  return <Combobox {...getInputProps(props)} value={value} onChange={handleChange} />;
 }

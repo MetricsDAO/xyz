@@ -5,7 +5,7 @@ import { LaborMarket } from "labor-markets-abi";
 import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import type { ServiceRequestDoc } from "~/domain";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { Button } from "../../components/button";
@@ -15,7 +15,7 @@ import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";
 import { ClaimToReviewFormValuesSchema } from "./claim-to-review-creator-values";
 
 interface ClaimToReviewFormProps {
-  serviceRequest: ServiceRequestDoc;
+  serviceRequest: ServiceRequestWithIndexData;
 }
 
 export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps) {
@@ -77,7 +77,7 @@ function configureFromValues({
   serviceRequest,
   formValues,
 }: {
-  serviceRequest: ServiceRequestDoc;
+  serviceRequest: ServiceRequestWithIndexData;
   formValues: ClaimToReviewFormValues;
 }) {
   return configureWrite({

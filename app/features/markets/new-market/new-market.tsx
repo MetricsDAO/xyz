@@ -92,7 +92,25 @@ export function NewMarket({
     formState: { errors },
   } = useForm<MarketNewValues>({
     resolver: zodResolver(MarketNewValuesSchema),
-    defaultValues,
+    defaultValues: {
+      configuration: {
+        modules: {
+          network: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+          enforcementKey: "aggressive",
+          reputation: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+        },
+        reputationBadge: {
+          token: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
+          tokenId: "4",
+        },
+        reputationParams: {
+          rewardPool: 100,
+          provideStake: 100,
+          signalStake: 100,
+        },
+      },
+      ...defaultValues,
+    },
   });
 
   const transactor = useTransactor({

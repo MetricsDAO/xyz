@@ -13,6 +13,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { ProjectBadges } from "~/features/project-badges";
@@ -22,18 +23,18 @@ import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { countReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/services/service-request.server";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
+import { EvmAddressSchema } from "~/domain/address";
 
-const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
-  const serviceRequest = await findServiceRequest(requestId, address);
+  const serviceRequest = await getIndexedServiceRequest(address, requestId);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
@@ -43,13 +44,16 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   }
 
   if (!serviceRequest.appData) {
-    throw badRequest("Labor market app data is missing");
+    throw badRequest("service request app data is missing");
   }
 
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
   const tokens = await listTokens();
 
-  const numOfReviews = await countReviews({ laborMarketAddress: address, serviceRequestId: requestId });
+  const numOfReviews = await countReviews({
+    laborMarketAddress: address,
+    serviceRequestId: requestId,
+  });
   return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
 };
 
@@ -57,7 +61,7 @@ export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
     useTypedLoaderData<typeof loader>();
 
-  const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExpiration);
+  const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
@@ -145,7 +149,7 @@ export default function ServiceRequest() {
           </div>
           <DetailItem title="Reward Pool">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQuantity)}
+              amount={fromTokenAmount(serviceRequest.configuration.pTokenQ)}
               token={token?.symbol ?? ""}
               rMETRIC={REPUTATION_REWARD_POOL}
             />

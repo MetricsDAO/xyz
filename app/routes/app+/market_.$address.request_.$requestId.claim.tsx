@@ -7,11 +7,12 @@ import { z } from "zod";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
+import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
-import { findServiceRequest } from "~/services/service-request.server";
 
-const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
@@ -59,14 +60,14 @@ export default function ClaimToSubmit() {
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
             <CountdownCard
               start={serviceRequest.createdAtBlockTimestamp}
-              end={serviceRequest.configuration?.signalExpiration}
+              end={serviceRequest.configuration?.signalExp}
             />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
             <CountdownCard
               start={serviceRequest.createdAtBlockTimestamp}
-              end={serviceRequest.configuration?.submissionExpiration}
+              end={serviceRequest.configuration?.submissionExp}
             />
           </div>
         </div>

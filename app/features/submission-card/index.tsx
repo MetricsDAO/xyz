@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
 import type { SubmissionWithReviewsDoc } from "~/domain";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
-import { useUser } from "~/hooks/use-user";
+import { useOptionalUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
 
 export function SubmissionCard({
@@ -13,7 +13,7 @@ export function SubmissionCard({
   laborMarket: LaborMarket;
   submission: SubmissionWithReviewsDoc;
 }) {
-  const user = useUser();
+  const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
   const score = submission.score?.avg;

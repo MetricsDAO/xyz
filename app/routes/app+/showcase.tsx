@@ -5,7 +5,6 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
 import { Link, useSearchParams, useSubmit } from "@remix-run/react";
-import { Checkbox } from "~/components/checkbox";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { CombinedDoc } from "~/domain";
 import { ShowcaseSearchSchema } from "~/domain";
