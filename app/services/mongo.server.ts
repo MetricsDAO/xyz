@@ -1,8 +1,9 @@
 import { MongoClient } from "mongodb";
-import type { SubmissionDoc, ReviewDoc } from "~/domain";
+import type { ReviewDoc } from "~/domain";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
 
 const client = new MongoClient(env.MONGODB_URI);
 

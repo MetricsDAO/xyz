@@ -8,10 +8,10 @@ import {
   indexClaimToSubmit,
   upsertIndexedServiceRequest,
 } from "~/domain/service-request/functions.server";
+import { indexSubmission } from "~/domain/submission/functions.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
-import { indexSubmission } from "~/services/submissions.server";
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),

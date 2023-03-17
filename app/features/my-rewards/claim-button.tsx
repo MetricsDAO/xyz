@@ -7,7 +7,7 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
 import { RPCError } from "~/features/rpc-error";
 import { ClaimRewardWeb3Button } from "~/features/web3-button/claim-reward";
 import type { EthersError } from "~/features/web3-button/types";

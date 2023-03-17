@@ -24,7 +24,7 @@ import { truncateAddress } from "~/utils/helpers";
 import { namedAction } from "remix-utils";
 import { useFetcher } from "@remix-run/react";
 import { isValidationError } from "~/utils/utils";
-import { countSubmissions } from "~/services/submissions.server";
+import { countSubmissions } from "~/domain/submission/functions.server";
 import invariant from "tiny-invariant";
 
 export const addWalletValidator = withZod(WalletAddSchema);
