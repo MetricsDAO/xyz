@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
 import { useAccount, useContractRead } from "wagmi";
+import type { EvmAddress } from "~/domain/address";
 
 // These constants should be the same as the internals on the contract
 const ACTIONS = {
@@ -10,7 +11,7 @@ const ACTIONS = {
 } as const;
 
 type Props = {
-  laborMarketAddress: `0x${string}`;
+  laborMarketAddress: EvmAddress;
   id: string; // Could be a service request id or submissionid
   action: "HAS_SIGNALED" | "HAS_SUBMITTED" | "HAS_CLAIMED";
 };

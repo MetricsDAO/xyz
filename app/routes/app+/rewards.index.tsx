@@ -14,13 +14,13 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
-import { RewardsSearchSchema } from "~/domain/submission";
+import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
+import { RewardsSearchSchema } from "~/domain/submission/schemas";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
 import { getUser } from "~/services/session.server";
-import { searchUserSubmissions } from "~/services/submissions.server";
+import { searchUserSubmissions } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
@@ -32,7 +32,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
+  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
   const tokens = await listTokens();
   return typedjson({
     wallets,

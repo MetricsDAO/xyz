@@ -26,7 +26,7 @@ import {
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
-import type { SubmissionDoc } from "~/domain";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { ReviewSearchSchema } from "~/domain/review";
@@ -35,16 +35,17 @@ import { ReviewCreator } from "~/features/review-creator";
 import { useReward } from "~/hooks/use-reward";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/services/service-request.server";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
-import { findSubmission } from "~/services/submissions.server";
+import { findSubmission } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
+import { EvmAddressSchema } from "~/domain/address";
 
 const paramsSchema = z.object({
-  address: z.string(),
+  address: EvmAddressSchema,
   submissionId: z.string(),
 });
 
@@ -57,6 +58,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
   const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
+
   const tokens = await listTokens();
 
   const submission = await findSubmission(submissionId, address);
@@ -97,12 +99,12 @@ export default function ChallengeSubmission() {
   };
 
   const reward = useReward({
-    laborMarketAddress: submission.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: submission.laborMarketAddress,
     submissionId: submission.id,
   });
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
-  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExpiration);
+  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const isWinner =
     enforcementExpirationPassed &&
     reward !== undefined &&
@@ -135,7 +137,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Author">
-            <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
+            <UserBadge address={submission.configuration.serviceProvider} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>

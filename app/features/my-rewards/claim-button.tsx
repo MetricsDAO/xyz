@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CopyToClipboard } from "~/components";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
 import { toNetworkName, toTokenAbbreviation, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 

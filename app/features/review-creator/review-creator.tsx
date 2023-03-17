@@ -6,6 +6,7 @@ import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { scoreToLabel } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
+import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import { ReviewCreatorFields } from "./review-creator-fields";
@@ -84,7 +85,7 @@ function configureFromValues({
   submissionId,
   requestId,
 }: {
-  laborMarketAddress: `0x${string}`;
+  laborMarketAddress: EvmAddress;
   submissionId: string;
   requestId: string;
   formValues: ReviewFormValues;

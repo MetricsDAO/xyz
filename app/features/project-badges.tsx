@@ -1,5 +1,6 @@
 import type { Project } from "@prisma/client";
 import { Badge, ProjectAvatar } from "~/components";
+import { useProjects } from "~/hooks/use-root-data";
 
 const MAX = 3;
 
@@ -32,4 +33,9 @@ export function ProjectBadges({ projects }: { projects: Project[] }) {
       )}
     </div>
   );
+}
+
+export function ProjectBadgesBySlugs({ slugs }: { slugs: string[] }) {
+  const projects = useProjects();
+  return <ProjectBadges projects={projects.filter((p) => slugs.includes(p.slug))} />;
 }

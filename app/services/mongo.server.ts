@@ -1,7 +1,9 @@
 import { MongoClient } from "mongodb";
-import type { ServiceRequestDoc, SubmissionDoc, ReviewDoc } from "~/domain";
+import type { ReviewDoc } from "~/domain";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
 
 const client = new MongoClient(env.MONGODB_URI);
 
@@ -10,7 +12,7 @@ const client = new MongoClient(env.MONGODB_URI);
 const db = client.db(env.PINE_SUBSCRIBER);
 
 const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
-const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
+const serviceRequests = db.collection<ServiceRequestWithIndexData>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");
 

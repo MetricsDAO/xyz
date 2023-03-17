@@ -1,7 +1,7 @@
 import type { Token, Wallet } from "@prisma/client";
 import { RewardBadge } from "~/components/reward-badge";
 import { Header, Row, Table } from "~/components/table";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
+import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
 import { useReward } from "~/hooks/use-reward";
 import { useHasPerformed } from "~/hooks/use-has-performed";
 import { fromNow } from "~/utils/date";

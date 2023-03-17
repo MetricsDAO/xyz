@@ -13,14 +13,15 @@ import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
+import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { SubmissionSearchSchema } from "~/domain/submission";
+import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
-import { searchSubmissionsWithReviews } from "~/services/submissions.server";
+import { searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 
 const validator = withZod(SubmissionSearchSchema);
 
-const paramSchema = z.object({ address: z.string(), requestId: z.string() });
+const paramSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
