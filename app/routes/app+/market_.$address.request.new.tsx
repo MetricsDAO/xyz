@@ -35,15 +35,18 @@ export default function CreateServiceRequest() {
   const mType = laborMarket.appData?.type;
   invariant(mType, "Labor Market must have a type");
 
+  const validTokens = laborMarket.appData.tokenAllowlist
+    .map((symbol) => tokens.find((t) => t.symbol === symbol))
+    .filter((t): t is typeof tokens[number] => !!t);
+
   return (
     <div className="max-w-2xl mx-auto my-10 space-y-10">
       {mType === "brainstorm" ? <BrainstormHeader /> : <AnalyticsHeader />}
       <ServiceRequestCreator
         projects={laborMarketProjects}
-        tokens={tokens}
+        tokens={validTokens}
         defaultValues={defaultValues}
         laborMarketAddress={ethers.utils.getAddress(laborMarket.address)}
-        mType={mType}
       />
     </div>
   );

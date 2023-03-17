@@ -22,7 +22,6 @@ interface ServiceRequestFormProps {
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
   laborMarketAddress: string;
-  mType: string;
 }
 
 /**
@@ -44,7 +43,6 @@ export function ServiceRequestCreator({
   tokens,
   defaultValues,
   laborMarketAddress,
-  mType,
 }: ServiceRequestFormProps) {
   const [values, setValues] = useState<ServiceRequestForm>();
   const [approved, setApproved] = useState(false);
