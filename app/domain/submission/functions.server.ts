@@ -26,7 +26,7 @@ import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { SubmissionDocSchema } from "./schemas";
 
 /**
- * Returns a ServiceRequestDoc from mongodb, if it exists.
+ * Returns a SubmissionDoc from mongodb, if it exists.
  * If it doesn't exist, it probably means that it hasn't been indexed yet so we
  * index it eagerly and return the result.
  */
