@@ -35,9 +35,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: address };
   const serviceRequests = await searchServiceRequests(paramsWithLaborMarketId);
-  console.log("serviceRequests", serviceRequests);
   const totalResults = await countServiceRequests(paramsWithLaborMarketId);
-  console.log("totalResults", totalResults);
   const projects = await listProjects();
   const tokens = await listTokens();
 
