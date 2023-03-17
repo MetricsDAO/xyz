@@ -35,9 +35,9 @@ import { ReviewCreator } from "~/features/review-creator";
 import { useReward } from "~/hooks/use-reward";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/domain/service-request/functions.server";
+import { findServiceRequest, getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
-import { findSubmission } from "~/domain/submission/functions.server";
+import { findSubmission, getIndexedSubmission } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
@@ -61,14 +61,14 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const tokens = await listTokens();
 
-  const submission = await findSubmission(submissionId, address);
+  const submission = await getIndexedSubmission(address, submissionId);
   if (!submission) {
     throw notFound({ submissionId });
   }
   const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
-  const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
+  const serviceRequest = await getIndexedServiceRequest(address, submission.serviceRequestId);
   invariant(serviceRequest, "Service request not found");
 
   return typedjson(

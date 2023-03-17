@@ -23,6 +23,25 @@ import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { SubmissionForm } from "~/features/submission-creator/schema";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
+import { SubmissionDocSchema } from "./schemas";
+
+/**
+ * Returns a ServiceRequestDoc from mongodb, if it exists.
+ * If it doesn't exist, it probably means that it hasn't been indexed yet so we
+ * index it eagerly and return the result.
+ */
+export async function getIndexedSubmission(
+  address: EvmAddress,
+  id: string,
+  event?: TracerEvent
+): Promise<SubmissionDoc> {
+  const doc = await mongo.submissions.findOne({ id, laborMarketAddress: address });
+  if (!doc) {
+    await indexSubmission(address, id, event);
+    return getIndexedSubmission(address, id, event);
+  }
+  return SubmissionDocSchema.parse(doc);
+}
 
 /**
  * Returns an array of SubmissionDoc for a given Service Request.
@@ -83,11 +102,11 @@ export const countSubmissionsOnServiceRequest = async (serviceRequestId: string)
 /**
  * Create a new SubmissionDoc from a TracerEvent.
  */
-export const indexSubmission = async (event: TracerEvent) => {
-  const contractAddress = getAddress(event.contract.address);
+export const indexSubmission = async (address: EvmAddress, id: string, event?: TracerEvent) => {
+  const contractAddress = getAddress(address);
   const contract = LaborMarket__factory.connect(contractAddress, nodeProvider);
-  const { submissionId, requestId } = SubmissionEventSchema.parse(event.decoded.inputs);
-  const submission = await contract.serviceSubmissions(submissionId, { blockTag: event.block.number });
+
+  const submission = await contract.serviceSubmissions(id);
   const appData = await fetchIpfsJson(submission.uri)
     .then(SubmissionFormSchema.parse)
     .catch(() => null);
@@ -95,9 +114,9 @@ export const indexSubmission = async (event: TracerEvent) => {
   const isValid = appData !== null;
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
-    id: submissionId,
+    id: id,
     laborMarketAddress: contractAddress,
-    serviceRequestId: requestId,
+    serviceRequestId: submission.requestId.toString(),
     valid: isValid,
     indexedAt: new Date(),
     configuration: {
@@ -106,6 +125,8 @@ export const indexSubmission = async (event: TracerEvent) => {
     },
     appData,
   };
+
+  const createdAtBlockTimestamp = event?.block.timestamp ? new Date(event?.block.timestamp) : new Date();
 
   if (isValid) {
     await mongo.serviceRequests.updateOne(
@@ -120,7 +141,10 @@ export const indexSubmission = async (event: TracerEvent) => {
 
   return mongo.submissions.updateOne(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
+    {
+      $set: doc,
+      $setOnInsert: { createdAtBlockTimestamp: createdAtBlockTimestamp },
+    },
     { upsert: true }
   );
 };
