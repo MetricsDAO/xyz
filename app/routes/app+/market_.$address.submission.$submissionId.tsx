@@ -21,28 +21,28 @@ import {
   DetailItem,
   Drawer,
   UserBadge,
-  ValidatedSelect,
+  ValidatedSelect
 } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
-import type { SubmissionDoc } from "~/domain/submission/schemas";
+import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { ReviewSearchSchema } from "~/domain/review";
+import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
+import { getIndexedSubmission } from "~/domain/submission/functions.server";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { useReward } from "~/hooks/use-reward";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
-import { findServiceRequest, getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
-import { findSubmission, getIndexedSubmission } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
-import { EvmAddressSchema } from "~/domain/address";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
