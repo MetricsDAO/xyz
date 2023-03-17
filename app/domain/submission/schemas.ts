@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { EvmAddressSchema } from "../address";
 import { LaborMarketWithIndexDataSchema } from "../labor-market/schemas";
 import { ReviewDocSchema } from "../review";
@@ -22,12 +23,6 @@ export const SubmissionContractSchema = z.object({
   uri: z.string(),
 });
 
-export const SubmissionFormSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  submissionUrl: z.string().optional(),
-});
-
 export const SubmissionIndexerSchema = z.object({
   id: z.string(),
   contractId: z.string(),
@@ -44,7 +39,6 @@ const SubmissionDocSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   valid: z.boolean(),
-  submissionUrl: z.string().nullable(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
   configuration: z.object({
@@ -102,7 +96,6 @@ export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
 
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
-export type SubmissionForm = z.infer<typeof SubmissionFormSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;

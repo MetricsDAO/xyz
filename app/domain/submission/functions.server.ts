@@ -10,18 +10,19 @@ import type {
   ShowcaseSearch,
   SubmissionContract,
   SubmissionDoc,
-  SubmissionForm,
   SubmissionSearch,
   SubmissionWithReviewsDoc,
   SubmissionWithServiceRequest,
 } from "./schemas";
 import { SubmissionWithServiceRequestSchema } from "./schemas";
 import { SubmissionEventSchema } from "./schemas";
-import { SubmissionContractSchema, SubmissionFormSchema } from "./schemas";
+import { SubmissionContractSchema } from "./schemas";
 import { oneUnitAgo, utcDate } from "~/utils/date";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
+import type { SubmissionForm } from "~/features/submission-creator/schema";
+import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 
 /**
  * Returns an array of SubmissionDoc for a given Service Request.
@@ -98,7 +99,6 @@ export const indexSubmission = async (event: TracerEvent) => {
     laborMarketAddress: contractAddress,
     serviceRequestId: requestId,
     valid: isValid,
-    submissionUrl: appData?.submissionUrl ? appData.submissionUrl : null,
     indexedAt: new Date(),
     configuration: {
       serviceProvider: submission.serviceProvider as `0x${string}`,
