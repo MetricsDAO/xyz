@@ -34,11 +34,8 @@ function getEventFromLogs(
   eventName: string,
   laborMarketAddress: string
 ) {
-  console.log("logs", logs);
   const filtered = logs.filter((log) => log.address === laborMarketAddress);
-  console.log("filtered", filtered);
   const mapped = filtered.map((log) => iface.parseLog(log));
-  console.log("mapped", mapped);
   return mapped.find((e) => e.name === eventName);
 }
 
@@ -49,7 +46,6 @@ export function ServiceRequestCreator({
   laborMarketAddress,
   mType,
 }: ServiceRequestFormProps) {
-  console.log("laborMarketAddress", laborMarketAddress);
   const [values, setValues] = useState<ServiceRequestForm>();
   const [approved, setApproved] = useState(false);
 
@@ -60,7 +56,6 @@ export function ServiceRequestCreator({
       (receipt) => {
         const iface = LaborMarket__factory.createInterface();
         const event = getEventFromLogs(iface, receipt.logs, "RequestConfigured", laborMarketAddress);
-        console.log("event", event);
         if (event) navigate(`/app/market/${laborMarketAddress}/request/${event.args[1]}`);
       },
       [laborMarketAddress, navigate]

@@ -60,7 +60,7 @@ export function ServiceRequestCreatorFields({
         </ClientOnly>
       </section>
       <section className="space-y-3">
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col md:flex-row gap-2 items-center">
           <div className="flex-grow">
             <Field>
               <Controller
@@ -124,7 +124,7 @@ export function ServiceRequestCreatorFields({
 
       <section className="space-y-3">
         <h2 className="font-bold">Rewards*</h2>
-        <div className="flex flex-col md:flex-row gap-2 items-baseline">
+        <div className="flex flex-col md:flex-row gap-2 items-center">
           <div className="flex-grow w-full">
             <Field>
               <Controller
