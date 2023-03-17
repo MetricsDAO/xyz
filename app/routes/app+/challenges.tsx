@@ -5,10 +5,10 @@ import { getSearchParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Container } from "~/components";
 import { Pagination } from "~/components/pagination";
-import { ServiceRequestSearchSchema } from "~/domain";
+import { countServiceRequests, searchServiceRequests } from "~/domain/service-request/functions.server";
+import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ListChallenges } from "~/features/challenges/list-challenges/list-challenges";
 import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
-import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
 
 export async function loader({ request }: DataFunctionArgs) {
   const searchParams = getSearchParamsOrFail(request, ServiceRequestSearchSchema);
