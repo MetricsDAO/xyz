@@ -84,6 +84,10 @@ export function searchLaborMarkets(search: LaborMarketSearch) {
     .toArray();
 }
 
+export function findLaborMarketsByAddresses(addresses: string[]) {
+  return mongo.laborMarkets.find({ address: { $in: addresses } }).toArray();
+}
+
 /**
  * Convenience function to share the search parameters between search and count.
  * @returns criteria to find labor market in MongoDb

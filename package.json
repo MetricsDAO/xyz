@@ -104,6 +104,7 @@
     "zod-form-data": "^2.0.0"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.3.1",
     "@ladle/react": "^2.4.4",
     "@remix-run/dev": "^1.14.0",
     "@remix-run/eslint-config": "^1.14.0",
