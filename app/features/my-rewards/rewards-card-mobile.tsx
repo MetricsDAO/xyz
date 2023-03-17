@@ -78,7 +78,7 @@ function RewardCard({
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
       <div>Status</div>
       {hasClaimed === false && rewardBadge ? (
-        <ClaimButton rewardAmount={rewardBadge.amount} reward={reward} wallets={wallets} tokens={tokens} />
+        <ClaimButton rewardAmount={rewardBadge.amount} submission={reward} wallets={wallets} tokens={tokens} />
       ) : hasClaimed === true ? (
         <span>Claimed</span>
       ) : (
