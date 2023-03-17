@@ -50,6 +50,21 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, event?: Trac
     serviceRequestRewardPools: [],
     createdAtBlockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : new Date(),
   };
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "LaborMarket",
+    eventType: {
+      eventType: "LaborMarketConfigured",
+      config: { laborMarketAddress: address, laborMarketTitle: laborMarket.appData.title },
+    },
+    iconType: "labor-market",
+    actionName: "Create Marketplace",
+    userAddress: configuration.owner,
+    createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+    indexedAt: indexData.indexedAt,
+  });
+
   return mongo.laborMarkets.updateOne(
     { address },
     { $set: laborMarket, $setOnInsert: { indexData } },

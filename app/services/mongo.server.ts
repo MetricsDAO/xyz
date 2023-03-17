@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import type { ReviewDoc } from "~/domain";
+import type { ActivityDoc, ReviewDoc } from "~/domain";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
@@ -15,9 +15,11 @@ const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestWithIndexData>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");
+const userActivity = db.collection<ActivityDoc>("userActivity");
 
 laborMarkets.createIndex({ "appData.title": "text" });
 serviceRequests.createIndex({ "appData.title": "text" });
+userActivity.createIndex({ laborMarketTitle: "text" });
 
 export const mongo = {
   db,
@@ -25,4 +27,5 @@ export const mongo = {
   serviceRequests,
   submissions,
   reviews,
+  userActivity,
 };

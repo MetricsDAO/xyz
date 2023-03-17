@@ -7,7 +7,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <div className="relative min-h-screen">
       <Blurs />
       <AppHeader />
-      <main className="relative flex-grow z-10">{children}</main>
+      <main className="relative flex-grow z-100">{children}</main>
       <AppFooter />
     </div>
   );
