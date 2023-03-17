@@ -11,7 +11,6 @@ import type {
   ServiceRequestSearch,
   ServiceRequestWithIndexData,
 } from "~/domain/service-request/schemas";
-import { ServiceRequestWithIndexDataSchema } from "~/domain/service-request/schemas";
 import { ServiceRequestAppDataSchema, ServiceRequestConfigSchema } from "~/domain/service-request/schemas";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
@@ -31,7 +30,7 @@ export async function getIndexedServiceRequest(address: EvmAddress, id: string):
     await upsertIndexedServiceRequest(address, id);
     return getIndexedServiceRequest(address, id);
   }
-  return ServiceRequestWithIndexDataSchema.parse(doc);
+  return doc;
 }
 
 /**
