@@ -10,11 +10,13 @@ import { fakeServiceRequestFormData } from "~/features/service-request-creator/s
 import { ServiceRequestCreator } from "~/features/service-request-creator/service-request-creator";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
+import { requireUser } from "~/services/session.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
+  await requireUser(request, `/app/login?redirectto=app/market/${address}/request/new`);
   const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");

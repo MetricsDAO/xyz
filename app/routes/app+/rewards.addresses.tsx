@@ -1,9 +1,11 @@
 import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
 import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useEffect, useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { namedAction } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { ValidatedInput } from "~/components";
@@ -13,20 +15,16 @@ import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
+import { countSubmissions } from "~/domain/submission/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
-import { getUser, requireUser } from "~/services/session.server";
+import { requireUser } from "~/services/session.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
-import { namedAction } from "remix-utils";
-import { useFetcher } from "@remix-run/react";
 import { isValidationError } from "~/utils/utils";
-import { countSubmissions } from "~/domain/submission/functions.server";
-import invariant from "tiny-invariant";
-
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
 
@@ -35,7 +33,7 @@ type WalletWithChain = Wallet & { chain: Network };
 type ActionResponse = { wallet: Wallet } | ValidationErrorResponseData;
 
 export async function action({ request }: ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUser(request, "/app/login?redirectto=app/rewards/addresses");
 
   return namedAction(request, {
     async create() {
@@ -54,8 +52,7 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const loader = async (data: DataFunctionArgs) => {
-  const user = await getUser(data.request);
-  invariant(user, "Could not find user, please sign in");
+  const user = await requireUser(data.request, "/app/login?redirectto=app/rewards/addresses");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
     serviceProvider: user.address as `0x${string}`,
