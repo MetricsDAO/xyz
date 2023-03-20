@@ -51,11 +51,11 @@ function RewardsTableRow({
   tokens: Token[];
 }) {
   const contractReward = useReward({
-    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: reward.laborMarketAddress,
     submissionId: reward.id,
   });
   const hasClaimed = useHasPerformed({
-    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: reward.laborMarketAddress,
     id: reward.id,
     action: "HAS_CLAIMED",
   });
@@ -77,7 +77,7 @@ function RewardsTableRow({
   return (
     <Row columns={12}>
       <Row.Column span={4}>
-        <Link className="text-blue-500" to={`/app/market/${reward.laborMarketAddress}/submission/${reward.id}`}>
+        <Link className="text-blue-600" to={`/app/market/${reward.laborMarketAddress}/submission/${reward.id}`}>
           {reward.sr.appData.title}
         </Link>
       </Row.Column>

@@ -8,6 +8,7 @@ import { fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
 import { useMemo } from "react";
+import { Link } from "@remix-run/react";
 
 export function RewardsCards({
   rewards,
@@ -37,11 +38,11 @@ function RewardCard({
   tokens: Token[];
 }) {
   const contractReward = useReward({
-    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: reward.laborMarketAddress,
     submissionId: reward.id,
   });
   const hasClaimed = useHasPerformed({
-    laborMarketAddress: reward.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: reward.laborMarketAddress,
     id: reward.id,
     action: "HAS_CLAIMED",
   });
@@ -58,10 +59,14 @@ function RewardCard({
     };
   }, [contractReward, tokens, reward.sr.configuration.pToken]);
 
+  const hasReward = contractReward?.paymentTokenAmount.gt(0) && contractReward.reputationTokenAmount.gt(0);
+
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
-      <p>{reward.sr.appData?.title}</p>
+      <Link className="text-blue-600" to={`/app/market/${reward.laborMarketAddress}/submission/${reward.id}`}>
+        {reward.sr.appData.title}
+      </Link>
       <div>Reward</div>
       <div>
         {rewardBadge ? (
@@ -77,7 +82,9 @@ function RewardCard({
       <div>Submitted</div>
       <p className="text-black">{fromNow(reward.createdAtBlockTimestamp)} </p>
       <div>Status</div>
-      {hasClaimed === false && rewardBadge ? (
+      {!hasReward ? (
+        <span>No reward</span>
+      ) : hasClaimed === false && rewardBadge ? (
         <ClaimButton rewardAmount={rewardBadge.amount} submission={reward} wallets={wallets} tokens={tokens} />
       ) : hasClaimed === true ? (
         <span>Claimed</span>
