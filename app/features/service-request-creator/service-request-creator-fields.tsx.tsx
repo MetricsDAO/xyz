@@ -6,7 +6,7 @@ import { Combobox, Error, Field, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import type { ServiceRequestForm } from "./schema";
-import { invariant } from "@remix-run/router/dist/history";
+import invariant from "tiny-invariant";
 
 export function ServiceRequestCreatorFields({
   validTokens,

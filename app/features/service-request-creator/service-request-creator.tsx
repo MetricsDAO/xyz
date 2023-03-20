@@ -79,8 +79,6 @@ export function ServiceRequestCreator({
     defaultValues,
   });
 
-  console.log("errors", methods.formState.errors);
-
   const onSubmit = (values: ServiceRequestForm) => {
     approveTransactor.start({
       metadata: {},
