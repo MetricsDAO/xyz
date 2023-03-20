@@ -70,11 +70,13 @@ async function main() {
       {
         name: "Metrics Beta",
         networkName: "Polygon",
+        decimals: 18,
         contractAddress: "0xe1805534B191029731907737042623e1bc6b87D8",
         symbol: "MBETA",
       },
       {
         name: "Metrics Beta 2",
+        decimals: 18,
         networkName: "Polygon",
         contractAddress: "0xCce422781e1818821f50226C14E6289a7144a898",
         symbol: "MBETA2",

@@ -8,20 +8,8 @@ import { Button } from "../button";
 import { CopyToClipboard } from "../copy-to-clipboard";
 
 export const ProfileMenu = () => {
-  //   console.log("BALANCE", balance);
-
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
-
-  console.log("ADDRESS", address);
-  //   invariant(address, "Must be connected to view profile");
-
-  const ensAvatar = useEnsAvatar({
-    address: address,
-    chainId: 1,
-  });
-
-  console.log("ENS AVATAR", ensAvatar.data);
 
   const { data: ensName } = useEnsName({
     address: address,

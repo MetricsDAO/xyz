@@ -84,7 +84,7 @@ export function ServiceRequestCreator({
       metadata: {},
       config: () =>
         configureWrite({
-          address: values.rewardToken as `0x${string}`,
+          address: values.rewardToken,
           abi: [
             {
               constant: false,
@@ -100,7 +100,7 @@ export function ServiceRequestCreator({
             },
           ],
           functionName: "approve",
-          args: [laborMarketAddress, toTokenAmount(values.rewardPool)],
+          args: [laborMarketAddress, toTokenAmount(values.rewardPool, values.rewardTokenDecimals)],
         }),
     });
     setValues(values);
@@ -151,7 +151,7 @@ function configureFromValues({
     functionName: "submitRequest",
     args: [
       values.rewardToken as `0x${string}`,
-      toTokenAmount(values.rewardPool),
+      toTokenAmount(values.rewardPool, values.rewardTokenDecimals),
       BigNumber.from(unixTimestamp(signalDeadline)),
       BigNumber.from(unixTimestamp(new Date(parseDatetime(values.endDate, values.endTime)))),
       BigNumber.from(unixTimestamp(new Date(parseDatetime(values.reviewEndDate, values.reviewEndTime)))),

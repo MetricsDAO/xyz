@@ -60,7 +60,7 @@ export default function Rewards() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={rewards} wallets={wallets} tokens={tokens} />
+            <RewardsListView rewards={rewards} wallets={wallets} />
             <div className="w-fit m-auto">
               <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
             </div>
@@ -74,15 +74,7 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({
-  rewards,
-  wallets,
-  tokens,
-}: {
-  rewards: SubmissionWithServiceRequest[];
-  wallets: Wallet[];
-  tokens: Token[];
-}) {
+function RewardsListView({ rewards, wallets }: { rewards: SubmissionWithServiceRequest[]; wallets: Wallet[] }) {
   if (rewards.length === 0) {
     return (
       <div className="flex">
@@ -95,11 +87,11 @@ function RewardsListView({
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable rewards={rewards} wallets={wallets} tokens={tokens} />
+        <RewardsTable rewards={rewards} wallets={wallets} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards rewards={rewards} wallets={wallets} tokens={tokens} />
+        <RewardsCards rewards={rewards} wallets={wallets} />
       </div>
     </>
   );

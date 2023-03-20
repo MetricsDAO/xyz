@@ -14,6 +14,7 @@ describe("ServiceRequestFormSchema", () => {
       reviewEndDate: "2021-02-01",
       reviewEndTime: "12:00",
       rewardToken: faker.finance.ethereumAddress(),
+      rewardTokenDecimals: 18,
       rewardPool: "0.005",
     };
     const result = ServiceRequestFormSchema.safeParse(sr);

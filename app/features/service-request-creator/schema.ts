@@ -6,14 +6,14 @@ import { ServiceRequestAppDataSchema } from "~/domain/service-request/schemas";
 import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 
-const TokenAmountSchema = z.string().refine((r) => {
+const validTokenAmount = (amount: string, decimals: number) => {
   try {
-    toTokenAmount(r);
+    toTokenAmount(amount, decimals);
     return true;
   } catch (e) {
     return false;
   }
-}, "Invalid amount");
+};
 
 const InputDateSchema = z.string().refine((d) => {
   return validateDate(d);
@@ -35,11 +35,16 @@ export const ServiceRequestFormSchema = z
     reviewEndDate: InputDateSchema,
     reviewEndTime: InputTimeSchema,
     rewardToken: EvmAddressSchema,
-    rewardPool: TokenAmountSchema,
+    rewardTokenDecimals: z.coerce.number().int().positive(),
+    rewardPool: z.string(),
   })
   .refine((data) => validDeadlines(data.reviewEndDate, data.reviewEndTime, data.endDate, data.endTime), {
     message: "Review deadline cannot be before submission deadline.",
     path: ["reviewEndTime"],
+  })
+  .refine((data) => validTokenAmount(data.rewardPool, data.rewardTokenDecimals), {
+    message: "Token amount is invalid.",
+    path: ["rewardPool"],
   });
 
 export type ServiceRequestForm = z.infer<typeof ServiceRequestFormSchema>;
@@ -62,6 +67,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
     reviewEndTime: dayjs(reviewDate).format("HH:mm"),
     rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    rewardTokenDecimals: 18,
     rewardPool: "0.000001",
   };
 }

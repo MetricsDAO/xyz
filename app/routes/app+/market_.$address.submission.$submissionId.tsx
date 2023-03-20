@@ -26,23 +26,23 @@ import {
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
-import type { SubmissionDoc } from "~/domain/submission/schemas";
+import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { ReviewSearchSchema } from "~/domain/review";
+import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
+import { getIndexedSubmission } from "~/domain/submission/functions.server";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { useReward } from "~/hooks/use-reward";
 import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
-import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { getUser } from "~/services/session.server";
-import { findSubmission } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
-import { EvmAddressSchema } from "~/domain/address";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -61,14 +61,14 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const tokens = await listTokens();
 
-  const submission = await findSubmission(submissionId, address);
+  const submission = await getIndexedSubmission(address, submissionId);
   if (!submission) {
     throw notFound({ submissionId });
   }
   const laborMarket = await getIndexedLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
-  const serviceRequest = await findServiceRequest(submission.serviceRequestId, address);
+  const serviceRequest = await getIndexedServiceRequest(address, submission.serviceRequestId);
   invariant(serviceRequest, "Service request not found");
 
   return typedjson(
@@ -98,12 +98,13 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const reward = useReward({
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const { data: reward } = useReward({
     laborMarketAddress: submission.laborMarketAddress,
     submissionId: submission.id,
+    tokenDecimals: token?.decimals ?? 18,
   });
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const isWinner =
     enforcementExpirationPassed &&
@@ -161,9 +162,13 @@ export default function ChallengeSubmission() {
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
-                amount={fromTokenAmount(reward.paymentTokenAmount.toString())}
-                token={token?.symbol ?? "Unknown Token"}
-                rMETRIC={reward.reputationTokenAmount.toNumber()}
+                paymentTokenAmount={reward.displayPaymentTokenAmount}
+                paymentTooltipAmount={`${fromTokenAmount(
+                  reward.paymentTokenAmount.toString(),
+                  token?.decimals ?? 18
+                )} ${token?.symbol ?? ""}`}
+                reputationTokenAmount={reward.displayReputationTokenAmount}
+                tokenSymbol={token?.symbol ?? ""}
               />
             </DetailItem>
           )}

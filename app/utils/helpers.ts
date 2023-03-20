@@ -11,28 +11,27 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-const DECIMALS = 18;
-
 /**
  * Take a string representation of an amount (to allow for really small or big numbers) and convert to BigNumber
  * @param amount string amount
  * @returns {BigNumber}
  */
-export const toTokenAmount = (amount: string) => {
-  return ethers.utils.parseUnits(amount, DECIMALS);
+export const toTokenAmount = (amount: string, decimals: number): BigNumber => {
+  return ethers.utils.parseUnits(amount, decimals);
 };
 
 /**
  * Convert units to a decimal representation
- * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001
- * @param units string units
- * @param round string decimals
+ * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001 USDC (decimals = 6)
+ * @param units string number of units
+ * @param decimals number of decimals used by the token (e.g. 6 for USDC)
+ * @param round number of decimals to round to
  * @returns {string}
  */
-export const fromTokenAmount = (units: string, roundDecimals?: number) => {
-  const fixed = ethers.FixedNumber.fromValue(BigNumber.from(units), DECIMALS);
-  if (roundDecimals) {
-    return fixed.round(roundDecimals).toString();
+export const fromTokenAmount = (units: string, decimals: number, round?: number) => {
+  const fixed = ethers.FixedNumber.fromValue(BigNumber.from(units), decimals);
+  if (typeof round === "number") {
+    return fixed.round(round).toString();
   }
   return fixed.toString();
 };

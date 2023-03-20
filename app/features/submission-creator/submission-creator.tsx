@@ -47,7 +47,6 @@ export default function SubmissionCreator({
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        console.log("receipt", receipt);
         const iface = LaborMarket__factory.createInterface();
         const event = getEventFromLogs(iface, receipt.logs, "RequestFulfilled", laborMarketAddress);
         if (event) navigate(`/app/market/${laborMarketAddress}/submission/${event.args["submissionId"]?.toString()}`);

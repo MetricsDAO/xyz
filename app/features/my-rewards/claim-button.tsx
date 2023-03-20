@@ -1,26 +1,26 @@
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "@prisma/client";
+import type { Wallet } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import { useState } from "react";
 import { CopyToClipboard } from "~/components";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
-import { toNetworkName, toTokenAbbreviation, truncateAddress } from "~/utils/helpers";
+import { useTokens } from "~/hooks/use-root-data";
+import { toNetworkName, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
 export function ClaimButton({
   submission,
   wallets,
-  tokens,
   rewardAmount,
 }: {
   submission: SubmissionWithServiceRequest;
   wallets: Wallet[];
-  tokens: Token[];
   rewardAmount: string;
 }) {
-  const tokenAbrev = toTokenAbbreviation(submission.sr.configuration.pToken ?? "", tokens);
+  const tokens = useTokens();
+  const token = tokens.find((t) => t.contractAddress === submission.sr.configuration.pToken);
   const networkName = toNetworkName(submission.sr.configuration.pToken ?? "", tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);
 
@@ -39,7 +39,7 @@ export function ClaimButton({
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">{`${rewardAmount} ${tokenAbrev}`}</p>
+                <p className="text-yellow-700 text-2xl ml-2">{`${rewardAmount} ${token?.symbol ?? ""}`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">
                 <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
