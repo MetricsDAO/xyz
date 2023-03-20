@@ -34,6 +34,8 @@ const serviceRequestMachine = createBlockchainTransactionStateMachine<ServiceReq
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
+  const user = await requireUser(request, `/app/login?redirectto=app/${LaborMarket.address}/request/new`);
+
   const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");

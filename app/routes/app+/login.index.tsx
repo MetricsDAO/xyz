@@ -22,7 +22,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 export default function LoginPage() {
   return (
     <Container className="py-24 px-10">
-      <div className="flex flex-col h-full items-center justify-center bg-white z-50">
+      <div className="flex flex-col h-full items-center justify-center z-50">
         <div className="flex flex-col gap-4 items-center justify-center">
           <p>Please Sign in to view this page.</p>
           <CustomConnectButton />
