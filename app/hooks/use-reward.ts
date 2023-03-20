@@ -12,7 +12,6 @@ export type Reward = ReturnType<typeof useReward>["data"];
 
 /**
  * Get the user's reward for a submission. The payment token and reputation token.
- * @returns { Reward | undefined} - undefined if still fetching from Wagmi
  */
 export function useReward({ laborMarketAddress, submissionId }: Props) {
   return useContractRead({
