@@ -52,7 +52,10 @@ worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
-  return indexSubmission(event);
+  const submissionId = z.string().parse(event.decoded.inputs.submissionId);
+  const laborMarketAddress = getAddress(event.contract.address);
+
+  return indexSubmission(laborMarketAddress, submissionId, event);
 });
 
 worker.onEvent(LaborMarket, "RequestSignal", async (event) => {

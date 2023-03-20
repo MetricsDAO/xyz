@@ -34,7 +34,7 @@ export const SubmissionIndexerSchema = z.object({
   description: z.string(),
 });
 
-const SubmissionDocSchema = z.object({
+export const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
