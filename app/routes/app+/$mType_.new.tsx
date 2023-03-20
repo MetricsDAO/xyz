@@ -3,9 +3,12 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { fakeLaborMarketFormValues, NewMarket } from "~/features/markets/new-market";
+import { requireUser } from "~/services/session.server";
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
+  await requireUser(request, `/app/login?redirectto=app/analyze/new`);
+
   const projects = await listProjects();
   const tokens = await listTokens();
   const defaultValues = url.searchParams.get("fake") ? fakeLaborMarketFormValues() : {};

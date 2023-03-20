@@ -7,7 +7,6 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { Field, Label, ValidatedSelect } from "~/components";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -19,7 +18,7 @@ import { RewardsSearchSchema } from "~/domain/submission/schemas";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
-import { getUser } from "~/services/session.server";
+import { requireUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
@@ -27,8 +26,8 @@ import { findAllWalletsForUser } from "~/services/wallet.server";
 const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "Could not find user, please sign in");
+  const user = await requireUser(request, "/app/login?redirectto=app/rewards");
+
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
