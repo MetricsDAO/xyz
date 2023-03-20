@@ -19,12 +19,12 @@ export function RewardsCards({ rewards, wallets }: { rewards: SubmissionWithServ
 
 function RewardCard({ reward, wallets }: { reward: SubmissionWithServiceRequest; wallets: Wallet[] }) {
   const tokens = useTokens();
+  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const { data: contractReward } = useReward({
     laborMarketAddress: reward.laborMarketAddress,
     submissionId: reward.id,
+    tokenDecimals: token?.decimals ?? 18,
   });
-
-  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
 
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">

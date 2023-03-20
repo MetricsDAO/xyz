@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Token" ADD COLUMN     "decimals" INTEGER NOT NULL DEFAULT 18;

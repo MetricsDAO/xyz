@@ -6,6 +6,7 @@ import { Combobox, Error, Field, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import type { ServiceRequestForm } from "./schema";
+import invariant from "tiny-invariant";
 
 export function ServiceRequestCreatorFields({
   validTokens,
@@ -134,6 +135,12 @@ export function ServiceRequestCreatorFields({
                   return (
                     <Select
                       {...field}
+                      onChange={(v) => {
+                        const token = validTokens.find((t) => t.contractAddress === v);
+                        invariant(token, "Token not found");
+                        setValue("rewardTokenDecimals", token.decimals);
+                        field.onChange(v);
+                      }}
                       options={validTokens.map((t) => {
                         return { label: t.symbol, value: t.contractAddress };
                       })}

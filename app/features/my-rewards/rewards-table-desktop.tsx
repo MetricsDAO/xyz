@@ -27,12 +27,12 @@ export function RewardsTable({ rewards, wallets }: { rewards: SubmissionWithServ
 
 function RewardsTableRow({ reward, wallets }: { reward: SubmissionWithServiceRequest; wallets: Wallet[] }) {
   const tokens = useTokens();
+  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
   const { data: contractReward } = useReward({
     laborMarketAddress: reward.laborMarketAddress,
     submissionId: reward.id,
+    tokenDecimals: token?.decimals ?? 18,
   });
-
-  const token = tokens.find((t) => t.contractAddress === reward.sr.configuration.pToken);
 
   return (
     <Row columns={12}>
