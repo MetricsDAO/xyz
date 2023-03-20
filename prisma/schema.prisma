@@ -47,6 +47,7 @@ model Project {
 model Token {
   id              String  @id @default(cuid())
   symbol          String
+  decimals        Int
   name            String
   networkName     String
   contractAddress String

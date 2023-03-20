@@ -98,12 +98,13 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
   const { data: reward } = useReward({
     laborMarketAddress: submission.laborMarketAddress,
     submissionId: submission.id,
+    tokenDecimals: token?.decimals ?? 18,
   });
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const isWinner =
     enforcementExpirationPassed &&
@@ -162,7 +163,10 @@ export default function ChallengeSubmission() {
               <RewardBadge
                 variant="winner"
                 paymentTokenAmount={reward.displayPaymentTokenAmount}
-                paymentTooltipAmount={`${fromTokenAmount(reward.paymentTokenAmount.toString())} ${token?.symbol ?? ""}`}
+                paymentTooltipAmount={`${fromTokenAmount(
+                  reward.paymentTokenAmount.toString(),
+                  token?.decimals ?? 18
+                )} ${token?.symbol ?? ""}`}
                 reputationTokenAmount={reward.displayReputationTokenAmount}
                 tokenSymbol={token?.symbol ?? ""}
               />

@@ -22,7 +22,7 @@ export function ChallengePoolBadges({
             <Badge key={token?.id}>
               <TokenAvatar token={token} />
               <span className="mx-1">
-                {fromTokenAmount(p.pTokenQuantity)} {token.symbol}
+                {fromTokenAmount(p.pTokenQuantity, token.decimals)} {token.symbol}
               </span>
             </Badge>
           );
@@ -39,7 +39,7 @@ export function ChallengePoolBadges({
                   <Badge key={token?.id}>
                     <TokenAvatar token={token} />
                     <span className="mx-1">
-                      {fromTokenAmount(p.pTokenQuantity)} {token.symbol}
+                      {fromTokenAmount(p.pTokenQuantity, token.decimals)} {token.symbol}
                     </span>
                   </Badge>
                 );

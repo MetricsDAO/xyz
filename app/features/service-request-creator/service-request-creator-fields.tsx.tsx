@@ -22,11 +22,15 @@ export function ServiceRequestCreatorFields({
     formState: { errors },
   } = useFormContext<ServiceRequestForm>();
 
+  const selectedTokenContractAddress = watch("rewardToken");
   const selectedSubmitDate = watch("endDate");
   const selectedSubmitTime = watch("endTime");
 
   const selectedReviewDate = watch("reviewEndDate");
   const selectedReviewTime = watch("reviewEndTime");
+
+  const selectedToken = validTokens.find((t) => t.contractAddress === selectedTokenContractAddress);
+  console.log("selectedToken", selectedToken, selectedToken?.decimals);
 
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
@@ -35,6 +39,7 @@ export function ServiceRequestCreatorFields({
   return (
     <>
       <section className="space-y-3">
+        <input type="hidden" {...register("rewardTokenDecimals", { value: selectedToken?.decimals })} />
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
           <Input {...register("appData.title")} type="text" placeholder="Challenge Title" className="w-full" />
