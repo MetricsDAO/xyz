@@ -19,7 +19,7 @@ export function ClaimToSubmitCreator({ confirmationMessage, serviceRequest }: Cl
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        navigate(`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}/submit`);
+        navigate(`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}`);
       },
       [navigate, serviceRequest.laborMarketAddress, serviceRequest.id]
     ),
