@@ -3,8 +3,8 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
 import { z } from "zod";
 import { Container } from "~/components/container";
+import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToReviewCreator } from "~/features/claim-to-review-creator/claim-to-review-creator";
-import { findServiceRequest } from "~/services/service-request.server";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {

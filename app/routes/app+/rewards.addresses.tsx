@@ -15,17 +15,16 @@ import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
+import { countSubmissions } from "~/domain/submission/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
 import { requireUser } from "~/services/session.server";
-import { countSubmissions } from "~/services/submissions.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
 import { isValidationError } from "~/utils/utils";
-
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
 

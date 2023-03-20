@@ -4,7 +4,6 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { $params } from "remix-routes";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
@@ -33,7 +32,7 @@ export type MarketplaceTableProps = {
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
-  url.searchParams.set("type", $params("/app/:mType", params).mType);
+  url.searchParams.set("type", "analyze");
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
 
   const marketplaces = await searchLaborMarkets(searchParams);
@@ -49,7 +48,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   });
 };
 
-export default function MarketplaceCollection() {
+export default function Marketplaces() {
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -63,7 +62,7 @@ export default function MarketplaceCollection() {
   };
 
   return (
-    <Container className="py-24 px-10">
+    <Container className="py-16 px-10">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
         {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
         <aside>

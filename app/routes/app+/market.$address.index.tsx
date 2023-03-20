@@ -16,11 +16,11 @@ import { ValidatedInput } from "~/components/input/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
-import { ServiceRequestSearchSchema } from "~/domain/service-request";
+import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ProjectBadges } from "~/features/project-badges";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
 import { listProjects } from "~/services/projects.server";
-import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
+import { countServiceRequests, searchServiceRequests } from "~/domain/service-request/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
 
@@ -100,8 +100,8 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         options={[
           { label: "New", value: "createdAtBlockTimestamp" },
           { label: "Title", value: "appData.title" },
-          { label: "Submit Deadline", value: "configuration.submissionExpiration" },
-          { label: "Review Deadline", value: "configuration.enforcementExpiration" },
+          { label: "Submit Deadline", value: "configuration.submissionExp" },
+          { label: "Review Deadline", value: "configuration.enforcementExp" },
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
@@ -172,15 +172,15 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 </div>
               </Row.Column>
 
-              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQuantity)} ${toTokenAbbreviation(
+              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQ)} ${toTokenAbbreviation(
                 sr.configuration.pToken,
                 tokens
               )}`}</Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={sr.configuration?.enforcementExp} />
               </Row.Column>
             </Link>
           </Row>
@@ -212,16 +212,16 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
 
               <div>Reward Pool</div>
               <div>
-                {fromTokenAmount(sr.configuration.pTokenQuantity)}{" "}
+                {fromTokenAmount(sr.configuration.pTokenQ)}{" "}
                 {tokens.find((t) => t.contractAddress === sr.configuration.pToken)?.symbol}
               </div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={sr.configuration?.enforcementExp} />
               </div>
             </Link>
           </Card>

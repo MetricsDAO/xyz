@@ -12,6 +12,8 @@ import env from "./env.server";
 import { Blurs } from "./features/shell";
 import { Error as ErrorBoundary } from "./components/error-boundary";
 import { withSentry } from "@sentry/remix";
+import { listProjects } from "./services/projects.server";
+import { listTokens } from "./services/tokens.server";
 
 // add types for window.ENV
 declare global {
@@ -24,8 +26,12 @@ declare global {
 
 export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
+  const projects = await listProjects();
+  const tokens = await listTokens();
   return typedjson({
     user,
+    projects,
+    tokens,
     ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN },
   });
 }

@@ -44,8 +44,7 @@ export async function requireUser(request: Request, redirectUrl: string): Promis
   const user = await getUser(request);
   if (user) return user;
 
- throw redirect(redirectUrl);
-
+  throw redirect(redirectUrl);
 }
 
 /**

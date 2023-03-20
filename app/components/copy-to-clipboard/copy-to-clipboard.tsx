@@ -8,11 +8,13 @@ export function CopyToClipboard({
   displayContent,
   className,
   iconRight,
+  hideTooltip,
 }: {
   content: string;
   displayContent?: string; // Can be set to display a different string than the one that is copied to clipboard
   className?: string;
   iconRight?: React.ReactNode;
+  hideTooltip?: boolean;
 }) {
   const [, copyToClipboard] = useCopyToClipboard();
   const [isCopiedTooltip, setIsCopiedTooltip] = useState(false);
@@ -26,13 +28,13 @@ export function CopyToClipboard({
   }, [isCopiedTooltip]);
 
   return (
-    <Tooltip content={isCopiedTooltip ? "Copied to clipboard!" : content}>
+    <Tooltip hide={hideTooltip} content={isCopiedTooltip ? "Copied to clipboard!" : content}>
       <span
         onClick={() => {
           copyToClipboard(content);
           setIsCopiedTooltip(true);
         }}
-        className={clsx("flex items-center", className)}
+        className={clsx("flex items-center cursor-pointer", className)}
       >
         {displayContent ?? content} {iconRight}
       </span>
