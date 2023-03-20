@@ -6,6 +6,7 @@ import { Combobox, Error, Field, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import type { ServiceRequestForm } from "./schema";
+import { invariant } from "@remix-run/router/dist/history";
 
 export function ServiceRequestCreatorFields({
   validTokens,
@@ -22,15 +23,11 @@ export function ServiceRequestCreatorFields({
     formState: { errors },
   } = useFormContext<ServiceRequestForm>();
 
-  const selectedTokenContractAddress = watch("rewardToken");
   const selectedSubmitDate = watch("endDate");
   const selectedSubmitTime = watch("endTime");
 
   const selectedReviewDate = watch("reviewEndDate");
   const selectedReviewTime = watch("reviewEndTime");
-
-  const selectedToken = validTokens.find((t) => t.contractAddress === selectedTokenContractAddress);
-  console.log("selectedToken", selectedToken, selectedToken?.decimals);
 
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
@@ -39,7 +36,6 @@ export function ServiceRequestCreatorFields({
   return (
     <>
       <section className="space-y-3">
-        <input type="hidden" {...register("rewardTokenDecimals", { value: selectedToken?.decimals })} />
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
           <Input {...register("appData.title")} type="text" placeholder="Challenge Title" className="w-full" />
@@ -139,6 +135,12 @@ export function ServiceRequestCreatorFields({
                   return (
                     <Select
                       {...field}
+                      onChange={(v) => {
+                        const token = validTokens.find((t) => t.contractAddress === v);
+                        invariant(token, "Token not found");
+                        setValue("rewardTokenDecimals", token.decimals);
+                        field.onChange(v);
+                      }}
                       options={validTokens.map((t) => {
                         return { label: t.symbol, value: t.contractAddress };
                       })}
