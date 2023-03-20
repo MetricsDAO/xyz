@@ -42,6 +42,7 @@ import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
+import { fromTokenAmount } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -161,6 +162,7 @@ export default function ChallengeSubmission() {
               <RewardBadge
                 variant="winner"
                 paymentTokenAmount={reward.displayPaymentTokenAmount}
+                paymentTooltipAmount={`${fromTokenAmount(reward.paymentTokenAmount.toString())} ${token?.symbol ?? ""}`}
                 reputationTokenAmount={reward.displayReputationTokenAmount}
                 tokenSymbol={token?.symbol ?? ""}
               />

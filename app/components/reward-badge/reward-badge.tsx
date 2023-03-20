@@ -1,14 +1,17 @@
 import clsx from "clsx";
+import { Tooltip } from "../tooltip";
 
 type Variant = "default" | "winner";
 
 export function RewardBadge({
   paymentTokenAmount,
+  paymentTooltipAmount,
   reputationTokenAmount,
   tokenSymbol,
   variant = "default",
 }: {
   paymentTokenAmount: string;
+  paymentTooltipAmount?: string;
   reputationTokenAmount: string;
   tokenSymbol: string;
   variant?: Variant;
@@ -29,7 +32,9 @@ export function RewardBadge({
         <p
           className={clsx("text-sm", { "text-black": variant === "default", "text-yellow-700": variant === "winner" })}
         >
-          {variant === "winner" ? <b>🏆</b> : <></>} {paymentTokenAmount} {tokenSymbol}
+          <Tooltip hide={paymentTooltipAmount === undefined} content={paymentTooltipAmount}>
+            {variant === "winner" ? <b>🏆</b> : <></>} {paymentTokenAmount} {tokenSymbol}
+          </Tooltip>
         </p>
       </div>
       <p
