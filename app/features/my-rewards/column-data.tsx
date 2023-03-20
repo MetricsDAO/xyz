@@ -10,7 +10,7 @@ export function Reward({ reward, token }: { reward: RewardHook; token?: Token })
     <>
       {reward?.hasReward ? (
         <RewardBadge
-          paymentTokenAmount={reward.displayReputationTokenAmount}
+          paymentTokenAmount={reward.displayPaymentTokenAmount}
           tokenSymbol={token?.symbol ?? ""}
           reputationTokenAmount={reward.displayReputationTokenAmount}
         />
