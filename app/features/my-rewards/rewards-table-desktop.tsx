@@ -8,6 +8,7 @@ import { fromNow } from "~/utils/date";
 import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
 import { useMemo } from "react";
+import { Link } from "@remix-run/react";
 
 export function RewardsTable({
   rewards,
@@ -71,10 +72,14 @@ function RewardsTableRow({
     };
   }, [contractReward, tokens, reward.sr.configuration.pToken]);
 
+  const hasReward = contractReward?.paymentTokenAmount.gt(0) && contractReward.reputationTokenAmount.gt(0);
+
   return (
     <Row columns={12}>
       <Row.Column span={4}>
-        <p>{reward.sr.appData?.title}</p>
+        <Link className="text-blue-500" to={`/app/market/${reward.laborMarketAddress}/submission/${reward.id}`}>
+          {reward.sr.appData.title}
+        </Link>
       </Row.Column>
       <Row.Column span={4}>
         {rewardBadge ? (
@@ -91,7 +96,9 @@ function RewardsTableRow({
         {fromNow(reward.createdAtBlockTimestamp)}{" "}
       </Row.Column>
       <Row.Column span={2}>
-        {hasClaimed === false && rewardBadge ? (
+        {!hasReward ? (
+          <span>No reward</span>
+        ) : hasClaimed === false && rewardBadge ? (
           <ClaimButton rewardAmount={rewardBadge.amount} submission={reward} wallets={wallets} tokens={tokens} />
         ) : hasClaimed === true ? (
           <span>Claimed</span>

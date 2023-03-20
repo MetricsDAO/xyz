@@ -26,8 +26,6 @@ const validator = withZod(ActivitySearchSchema);
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await getUser(request);
   invariant(user, "Could not find user, please sign in");
-  console.log("user", user);
-  invariant(user.address, "Could not find user, please sign in");
 
   const url = new URL(request.url);
   const activityTypes = Object.values(ActivityTypeSchema);
