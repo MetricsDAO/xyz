@@ -319,7 +319,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $match: {
           $and: [
-            { "sr.configuration.enforcementExpiration": { $lt: utcDate() } },
+            { "sr.configuration.enforcementExp": { $lt: utcDate() } },
             { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
             params.score ? { "score.avg": { $gte: params.score } } : {},
