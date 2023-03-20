@@ -107,6 +107,25 @@ export const indexSubmission = async (event: TracerEvent) => {
     appData,
   };
 
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "Submission",
+    eventType: {
+      eventType: "RequestFulfilled",
+      config: {
+        laborMarketAddress: contractAddress,
+        requestId: requestId,
+        submissionId: submissionId,
+        title: appData?.title ?? "",
+      },
+    },
+    iconType: "submission",
+    actionName: "Submission",
+    userAddress: doc.configuration.serviceProvider,
+    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    indexedAt: new Date(),
+  });
+
   if (isValid) {
     await mongo.serviceRequests.updateOne(
       { laborMarketAddress: doc.laborMarketAddress, id: doc.serviceRequestId },

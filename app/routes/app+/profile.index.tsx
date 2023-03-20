@@ -1,33 +1,25 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { withZod } from "@remix-validated-form/with-zod";
-import { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { Field, Label } from "~/components";
-import { ValidatedCombobox } from "~/components/combobox";
+import { Combobox } from "~/components/combobox";
 import { Container } from "~/components/container";
-import { ValidatedInput } from "~/components/input";
+import { Input } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import { ActivityTypeSchema } from "~/domain";
-import type { ActivityTypes } from "~/domain";
-import { ActivitySearchSchema } from "~/domain";
+import type { ActivitySearch } from "~/domain";
+import { ActivitySearchSchema, ActivityTypeSchema } from "~/domain";
 import { searchUserActivity } from "~/domain/user-activity/function.server";
 import { ActivityCards } from "~/features/my-activity/activity-card-mobile";
 import type { ActivityDocWithMongoId } from "~/features/my-activity/activity-table-desktop";
 import { ActivityTable } from "~/features/my-activity/activity-table-desktop";
-import { getUser } from "~/services/session.server";
-
-const validator = withZod(ActivitySearchSchema);
+import { requireUser } from "~/services/session.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "Could not find user, please sign in");
-  console.log("user", user);
-  invariant(user.address, "Could not find user, please sign in");
+  const user = await requireUser(request, "/app/login?redirectto=app/profile");
 
   const url = new URL(request.url);
   const activityTypes = Object.values(ActivityTypeSchema);
@@ -42,7 +34,13 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function Profile() {
-  const { userActivities, search, activityTypes } = useTypedLoaderData<typeof loader>();
+  const { userActivities, search } = useTypedLoaderData<typeof loader>();
+
+  const submit = useSubmit();
+  const searchRef = useRef<HTMLFormElement>(null);
+  const onSearch = () => {
+    submit(searchRef.current);
+  };
 
   return (
     <Container className="py-16">
@@ -61,7 +59,7 @@ export default function Profile() {
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter types={activityTypes} />
+          <SearchAndFilter ref={searchRef} onSubmit={onSearch} defaultValues={search} />
         </aside>
       </section>
     </Container>
@@ -91,40 +89,54 @@ function ProfileListView({ activities }: { activities: ActivityDocWithMongoId[] 
   );
 }
 
-function SearchAndFilter({ types }: { types: ActivityTypes[] }) {
-  const submit = useSubmit();
-  const formRef = useRef<HTMLFormElement>(null);
+type SearchActivitiesProps = {
+  defaultValues?: ActivitySearch;
+  onSubmit: (values: ActivitySearch) => void;
+};
 
-  const handleChange = () => {
-    if (formRef.current) {
-      submit(formRef.current, { replace: true });
-    }
-  };
-  return (
-    <ValidatedForm
-      formRef={formRef}
-      method="get"
-      validator={validator}
-      onChange={handleChange}
-      className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
-    >
-      <ValidatedInput
-        placeholder="Search"
-        name="q"
-        iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-      />
-      <p className="text-lg font-semibold">Filter:</p>
-      <Field>
-        <Label>Type</Label>
-        <ValidatedCombobox
-          name="groupType"
+export const SearchAndFilter = React.forwardRef<HTMLFormElement, SearchActivitiesProps>(
+  ({ defaultValues, onSubmit }, ref) => {
+    const { register, control, handleSubmit, watch } = useForm<ActivitySearch>({ defaultValues });
+
+    useEffect(() => {
+      const subscription = watch(() => handleSubmit(onSubmit)());
+      return () => subscription.unsubscribe();
+    }, [handleSubmit, onSubmit, watch]);
+
+    return (
+      <form
+        ref={ref}
+        method="get"
+        onChange={handleSubmit(onSubmit)}
+        className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
+      >
+        <Input
+          {...register("q")}
+          type="search"
+          placeholder="Search Activities"
           size="sm"
-          onChange={handleChange}
-          value={["LaborMarket"]}
-          placeholder="Select option"
-          options={[{ label: "Marketplaces", value: "LaborMarket" }]}
+          iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
         />
-      </Field>
-    </ValidatedForm>
-  );
-}
+        <p className="text-lg font-semibold">Filter:</p>
+        <Field>
+          <Label>Type</Label>
+          <Controller
+            control={control}
+            name="groupType"
+            render={({ field }) => (
+              <Combobox
+                {...field}
+                options={[
+                  { label: "Marketplaces", value: "LaborMarket" },
+                  { label: "Challenges", value: "ServiceRequest" },
+                  { label: "Submissions", value: "Submission" },
+                  { label: "Reviews", value: "Review" },
+                ]}
+              />
+            )}
+          />
+        </Field>
+      </form>
+    );
+  }
+);

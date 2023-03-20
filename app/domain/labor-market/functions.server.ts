@@ -56,7 +56,7 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, event?: Trac
     groupType: "LaborMarket",
     eventType: {
       eventType: "LaborMarketConfigured",
-      config: { laborMarketAddress: address, laborMarketTitle: laborMarket.appData.title },
+      config: { laborMarketAddress: address, title: laborMarket.appData.title },
     },
     iconType: "labor-market",
     actionName: "Create Marketplace",

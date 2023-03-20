@@ -28,7 +28,7 @@ function ActivityTableRow({ activity }: { activity: ActivityDoc }) {
         <ActivityAvatar iconType={activity.iconType} />
         <p>{activity.actionName}</p>
       </Row.Column>
-      <Row.Column span={4}>{activity.eventType.config.laborMarketTitle}</Row.Column>
+      <Row.Column span={4}>{activity.eventType.config.title}</Row.Column>
       <Row.Column span={4} className="text-black" color="dark.3">
         <Countdown date={activity.createdAtBlockTimestamp} />
       </Row.Column>
