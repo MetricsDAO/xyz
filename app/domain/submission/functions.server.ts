@@ -140,7 +140,7 @@ export const indexSubmission = async (address: EvmAddress, id: string, event?: T
     iconType: "submission",
     actionName: "Submission",
     userAddress: doc.configuration.serviceProvider,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    createdAtBlockTimestamp: createdAtBlockTimestamp,
     indexedAt: new Date(),
   });
 
