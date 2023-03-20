@@ -98,7 +98,7 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const reward = useReward({
+  const { data: reward } = useReward({
     laborMarketAddress: submission.laborMarketAddress,
     submissionId: submission.id,
   });
@@ -161,9 +161,10 @@ export default function ChallengeSubmission() {
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
-                amount={fromTokenAmount(reward.paymentTokenAmount.toString())}
-                token={token?.symbol ?? "Unknown Token"}
-                rMETRIC={reward.reputationTokenAmount.toNumber()}
+                paymentTokenAmount={reward.displayPaymentTokenAmount}
+                paymentTooltipAmount={`${fromTokenAmount(reward.paymentTokenAmount.toString())} ${token?.symbol ?? ""}`}
+                reputationTokenAmount={reward.displayReputationTokenAmount}
+                tokenSymbol={token?.symbol ?? ""}
               />
             </DetailItem>
           )}
