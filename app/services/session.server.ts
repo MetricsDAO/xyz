@@ -40,9 +40,11 @@ export async function getUser(request: Request): Promise<User | null> {
   throw await logout(request);
 }
 
-export async function requireUser(request: Request, redirectUrl: string): Promise<User> {
+export async function requireUser(request: Request, redirectUrl?: string): Promise<User> {
   const user = await getUser(request);
   if (user) return user;
+
+  if (!redirectUrl) throw await logout(request);
 
   throw redirect(redirectUrl);
 }
