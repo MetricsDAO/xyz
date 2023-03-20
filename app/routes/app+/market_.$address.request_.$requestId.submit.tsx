@@ -1,15 +1,16 @@
-import { useTransition } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/node";
+import { useTransition } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
 import { useEffect, useState } from "react";
-import { redirect, typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
+import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Button, Container, Field, Modal, ValidatedInput, ValidatedTextarea } from "~/components";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { SubmissionContract } from "~/domain/submission";
 import { SubmissionFormSchema } from "~/domain/submission";
 import { RPCError } from "~/features/rpc-error";
@@ -17,11 +18,10 @@ import { CreateSubmissionWeb3Button } from "~/features/web3-button/create-submis
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findServiceRequest } from "~/services/service-request.server";
-import { getUser } from "~/services/session.server";
+import { requireUser } from "~/services/session.server";
 import { prepareSubmission } from "~/services/submissions.server";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 
 const validator = withZod(SubmissionFormSchema);
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
@@ -29,8 +29,7 @@ const submissionMachine = createBlockchainTransactionStateMachine<SubmissionCont
 
 type ActionResponse = { preparedSubmission: SubmissionContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
-  const user = await getUser(request);
-  if (!user) return redirect("app/login?redirectto=/app/rewards");
+  const user = await requireUser(request, "app/login?redirectto=/app/rewards");
 
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);

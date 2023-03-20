@@ -5,9 +5,8 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
-import { redirect, typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { Field, Label, ValidatedSelect } from "~/components";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -19,7 +18,7 @@ import { RewardsSearchSchema } from "~/domain/submission";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
-import { getUser } from "~/services/session.server";
+import { requireUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/services/submissions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
@@ -27,8 +26,7 @@ import { findAllWalletsForUser } from "~/services/wallet.server";
 const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  const user = await getUser(request);
-  if (!user) return redirect("/app/login?redirectto=app/rewards");
+  const user = await requireUser(request, "/app/login?redirectto=app/rewards");
 
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);

@@ -1,7 +1,7 @@
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useMachine } from "@xstate/react";
+import { LaborMarket } from "labor-markets-abi";
 import { useEffect, useState } from "react";
 import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import { badRequest, notFound } from "remix-utils";
@@ -12,22 +12,21 @@ import { z } from "zod";
 import { Button, Container, Modal } from "~/components";
 import type { ServiceRequestContract } from "~/domain";
 import { fakeServiceRequestFormData, ServiceRequestFormSchema } from "~/domain";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import { ChallengeForm } from "~/features/challenge-form";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { RPCError } from "~/features/rpc-error";
 import { ApproveERC20TransferWeb3Button } from "~/features/web3-button/approve-erc20-transfer";
 import { CreateServiceRequestWeb3Button } from "~/features/web3-button/create-service-request";
 import type { EthersError, SendTransactionResult } from "~/features/web3-button/types";
 import { defaultNotifyTransactionActions } from "~/features/web3-transaction-toasts";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { prepareServiceRequest } from "~/services/service-request.server";
-import { getUser } from "~/services/session.server";
+import { requireUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
+import { toTokenAbbreviation } from "~/utils/helpers";
 import { createBlockchainTransactionStateMachine } from "~/utils/machine";
 import { isValidationError } from "~/utils/utils";
-import { toTokenAbbreviation } from "~/utils/helpers";
-import { RPCError } from "~/features/rpc-error";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { LaborMarket } from "labor-markets-abi";
 
 const validator = withZod(ServiceRequestFormSchema);
 const paramsSchema = z.object({ address: z.string() });
@@ -52,8 +51,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 
 type ActionResponse = { preparedServiceRequest: ServiceRequestContract } | ValidationErrorResponseData;
 export const action = async ({ request, params }: ActionArgs) => {
-  const user = await getUser(request);
-  if (!user) return redirect(`/app/login?redirectto=app/${LaborMarket.address}/request/new`);
+  const user = await requireUser(request, `/app/login?redirectto=app/${LaborMarket.address}/request/new`);
 
   const result = await validator.validate(await request.formData());
   const { address } = paramsSchema.parse(params);

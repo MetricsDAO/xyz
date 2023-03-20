@@ -11,9 +11,7 @@ const paramSchema = z.object({ redirectto: z.string() });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
 
-  console.log("request", request);
   const { redirectto } = getParamsOrFail(url.searchParams, paramSchema);
-  console.log("redirect", redirectto);
   const user = await getUser(request);
   if (user) {
     return redirect(`/${redirectto}`);
