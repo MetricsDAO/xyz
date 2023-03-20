@@ -13,7 +13,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 import {
   Badge,
-  Button,p
+  Button,
   Card,
   Checkbox,
   Container,
@@ -21,7 +21,7 @@ import {
   DetailItem,
   Drawer,
   UserBadge,
-  ValidatedSelect
+  ValidatedSelect,
 } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";

@@ -18,7 +18,7 @@ import type {
   SubmissionDoc,
   SubmissionSearch,
   SubmissionWithReviewsDoc,
-  SubmissionWithServiceRequest
+  SubmissionWithServiceRequest,
 } from "./schemas";
 import { SubmissionContractSchema, SubmissionDocSchema, SubmissionWithServiceRequestSchema } from "./schemas";
 
@@ -103,7 +103,7 @@ export const indexSubmission = async (address: EvmAddress, id: string, event?: T
   const contractAddress = getAddress(address);
   const contract = LaborMarket__factory.connect(contractAddress, nodeProvider);
 
-  const submission = await contract.serviceSubmissions(id);
+  const submission = await contract.serviceSubmissions(id, { blockTag: event?.block.number });
   const appData = await fetchIpfsJson(submission.uri)
     .then(SubmissionFormSchema.parse)
     .catch(() => null);
