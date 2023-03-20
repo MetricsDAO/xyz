@@ -1,25 +1,25 @@
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "@prisma/client";
+import type { Wallet } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import { useState } from "react";
 import { CopyToClipboard } from "~/components";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
+import { useTokens } from "~/hooks/use-root-data";
 import { toNetworkName, toTokenAbbreviation, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
 export function ClaimButton({
   submission,
   wallets,
-  tokens,
   rewardAmount,
 }: {
   submission: SubmissionWithServiceRequest;
   wallets: Wallet[];
-  tokens: Token[];
   rewardAmount: string;
 }) {
+  const tokens = useTokens();
   const tokenAbrev = toTokenAbbreviation(submission.sr.configuration.pToken ?? "", tokens);
   const networkName = toNetworkName(submission.sr.configuration.pToken ?? "", tokens);
   const wallet = wallets.find((w) => w.networkName === networkName);

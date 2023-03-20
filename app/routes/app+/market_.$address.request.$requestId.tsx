@@ -149,9 +149,9 @@ export default function ServiceRequest() {
           </div>
           <DetailItem title="Reward Pool">
             <RewardBadge
-              amount={fromTokenAmount(serviceRequest.configuration.pTokenQ)}
-              token={token?.symbol ?? ""}
-              rMETRIC={REPUTATION_REWARD_POOL}
+              paymentTokenAmount={fromTokenAmount(serviceRequest.configuration.pTokenQ)}
+              reputationTokenAmount={REPUTATION_REWARD_POOL.toLocaleString()}
+              tokenSymbol={token?.symbol ?? ""}
             />
           </DetailItem>
           <DetailItem title="Submissions">

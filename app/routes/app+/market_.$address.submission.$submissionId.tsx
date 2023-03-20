@@ -41,7 +41,6 @@ import { findSubmission } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { fromTokenAmount } from "~/utils/helpers";
 import { EvmAddressSchema } from "~/domain/address";
 
 const paramsSchema = z.object({
@@ -98,7 +97,7 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const reward = useReward({
+  const { data: reward } = useReward({
     laborMarketAddress: submission.laborMarketAddress,
     submissionId: submission.id,
   });
@@ -161,9 +160,9 @@ export default function ChallengeSubmission() {
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
-                amount={fromTokenAmount(reward.paymentTokenAmount.toString())}
-                token={token?.symbol ?? "Unknown Token"}
-                rMETRIC={reward.reputationTokenAmount.toNumber()}
+                paymentTokenAmount={reward.displayPaymentTokenAmount}
+                reputationTokenAmount={reward.displayReputationTokenAmount}
+                tokenSymbol={token?.symbol ?? ""}
               />
             </DetailItem>
           )}
