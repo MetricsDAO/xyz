@@ -56,7 +56,7 @@ function BrainstormInfo({ submission }: { submission: SubmissionWithReviewsDoc }
   return (
     <main className="space-y-2 flex-1 break-words text-ellipsis overflow-hidden max-h-96">
       <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
-      <section className="text-gray-900">{submission.appData?.description}</section>
+      <section className="text-gray-900">{submission.appData?.submissionUrl}</section>
     </main>
   );
 }
