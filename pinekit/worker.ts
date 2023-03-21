@@ -49,7 +49,8 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
     return newContract;
   }
 
-  const FROM_BLOCK = 40602204;
+  // Hack to do a "fromBlock" type functionality until Pine supports it.
+  const FROM_BLOCK = 40606150;
   /**
    * Registers an event handler for a contract event
    *
