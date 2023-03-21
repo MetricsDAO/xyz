@@ -258,7 +258,7 @@ export function NewMarket({
                   render={({ field }) => (
                     <Select
                       {...field}
-                      options={[{ label: "Scalable Likert", value: ScalableLikertEnforcement.address }]}
+                      options={[{ label: "Constant Likert", value: ScalableLikertEnforcement.address }]}
                     />
                   )}
                 />
