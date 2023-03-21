@@ -77,8 +77,8 @@ export default function SubmissionCreator({
           <section className="space-y-3">
             <h2 className="font-bold">Public link to your work</h2>
             <Field>
-              <Input {...register("description")} placeholder="Public link to your work" />
-              <Error error={errors.description?.message} />
+              <Input {...register("submissionUrl")} placeholder="Public link to your work" />
+              <Error error={errors.submissionUrl?.message} />
             </Field>
             <p className="italic text-gray-500 text-sm">
               Important: You can’t edit this link after submitting. Double check that this link to work is correct,
