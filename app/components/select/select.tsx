@@ -35,7 +35,6 @@ export const Select = forwardRef<HTMLDivElement, Props>(
     const selected = options.find((option) => option.value === value);
     return (
       <>
-        {value ? <input type="hidden" name={name} value={value} /> : null}
         <Listbox value={value} onChange={onChange}>
           {({ open }) => (
             <div className="relative" ref={ref}>
@@ -78,6 +77,7 @@ export const Select = forwardRef<HTMLDivElement, Props>(
             </div>
           )}
         </Listbox>
+        {value ? <input type="hidden" name={name} value={value} /> : null}
       </>
     );
   }
