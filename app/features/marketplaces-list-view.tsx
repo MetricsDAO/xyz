@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
-import type { MarketplaceTableProps } from "~/routes/app+/market";
+import type { MarketplaceTableProps } from "~/routes/app+/analyze";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
