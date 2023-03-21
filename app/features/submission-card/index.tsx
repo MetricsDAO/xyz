@@ -23,11 +23,9 @@ export function SubmissionCard({
         to={`/app/market/${submission.laborMarketAddress}/submission/${submission.id}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
-        {laborMarket.appData?.type === "brainstorm" ? (
-          <BrainstormInfo submission={submission} />
-        ) : (
-          <AnalyticsInfo submission={submission} />
-        )}
+        <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
+          {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+        </main>
         <div className="flex flex-col items-center gap-2 md:mr-7 md:ml-24">
           {score && <Score score={score} />}
           <div className="flex text-xs text-gray-500 items-center">
@@ -49,22 +47,5 @@ export function SubmissionCard({
         <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
       </div>
     </Card>
-  );
-}
-
-function BrainstormInfo({ submission }: { submission: SubmissionWithReviewsDoc }) {
-  return (
-    <main className="space-y-2 flex-1 break-words text-ellipsis overflow-hidden max-h-96">
-      <h4 className="font-medium text-gray-900">{submission.appData?.title}</h4>
-      <section className="text-gray-900">{submission.appData?.submissionUrl}</section>
-    </main>
-  );
-}
-
-function AnalyticsInfo({ submission }: { submission: SubmissionWithReviewsDoc }) {
-  return (
-    <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
-      {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
-    </main>
   );
 }

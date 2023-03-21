@@ -1,8 +1,8 @@
-import { Link, useParams } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
-import type { MarketplaceTableProps } from "~/routes/app+/$mType";
+import type { MarketplaceTableProps } from "~/routes/app+/market";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
@@ -27,12 +27,10 @@ export function MarketplacesListView(props: MarketplaceTableProps) {
 }
 
 function MarketplacesTable({ marketplaces, projects, tokens }: MarketplaceTableProps) {
-  const { mType } = useParams();
-
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
-        <Header.Column span={2}>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</Header.Column>
+        <Header.Column span={2}>Analytics Marketplace</Header.Column>
         <Header.Column>Chain/Project</Header.Column>
         <Header.Column span={2}>Challenge Pool Totals</Header.Column>
         <Header.Column>Active Challenges</Header.Column>
@@ -61,8 +59,6 @@ function MarketplacesTable({ marketplaces, projects, tokens }: MarketplaceTableP
 }
 
 function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTableProps) {
-  const { mType } = useParams();
-
   return (
     <div>
       <div className="space-y-4">
@@ -71,7 +67,7 @@ function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTablePr
           return (
             <Card asChild key={m.address}>
               <Link to={`/app/market/${m.address}`} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5">
-                <div>{mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplace</div>
+                <div>Analytics Marketplace</div>
                 <div className="text-sm font-medium">{m.appData.title}</div>
 
                 <div>Chain/Project</div>

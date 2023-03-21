@@ -200,7 +200,7 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
         return (
           <Card asChild key={sr.id}>
             <Link
-              to={`/app/${laborMarket?.appData?.type}/m/${laborMarket.address}/sr/${sr.id}`}
+              to={`/app/market/${laborMarket.address}/request/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenge</div>
