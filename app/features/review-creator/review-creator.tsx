@@ -1,9 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
 import { LaborMarket } from "labor-markets-abi";
-import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { scoreToLabel } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
@@ -28,16 +27,11 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
     },
   });
 
-  const navigate = useNavigate();
-
   const transactor = useTransactor({
-    onSuccess: useCallback(
-      (receipt) => {
-        // reload the page
-        navigate(0);
-      },
-      [navigate]
-    ),
+    onSuccess: (receipt) => {
+      onCancel();
+      toast.success("Successfully reviewed submission. Please check back in a few moments.");
+    },
   });
 
   const onSubmit = (formValues: ReviewFormValues) => {

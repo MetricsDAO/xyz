@@ -153,7 +153,7 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Toaster position="bottom-right" />
+        <Toaster position="top-center" />
       </body>
     </html>
   );
