@@ -20,7 +20,7 @@ function ActivityCard({ activity }: { activity: ActivityDoc }) {
       <div>Action</div>
       <ActivityAvatar iconType={activity.iconType.toString()} />
       <div>Title</div>
-      <div>{activity.eventType.config.laborMarketTitle}</div>
+      <div>{activity.eventType.config.title}</div>
       <div>Timestamp</div>
       <Countdown date={activity.createdAtBlockTimestamp} />
     </Card>

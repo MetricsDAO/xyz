@@ -57,6 +57,20 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
     submissionCount: 0,
   };
 
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "ServiceRequest",
+    eventType: {
+      eventType: "RequestConfigured",
+      config: { laborMarketAddress: laborMarketAddress, requestId: id, title: appData.title },
+    },
+    iconType: "service-request",
+    actionName: "Launch Challenge",
+    userAddress: configuration.serviceRequester,
+    createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+    indexedAt: indexData.indexedAt,
+  });
+
   const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
 
   await mongo.laborMarkets.updateOne(
@@ -154,6 +168,29 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
   const laborMarketAddress = getAddress(event.contract.address);
 
+  const serviceRequest = await mongo.serviceRequests.findOne({
+    laborMarketAddress: laborMarketAddress,
+    id: inputs.requestId,
+  });
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "Review",
+    eventType: {
+      eventType: "ReviewSignal",
+      config: {
+        laborMarketAddress: laborMarketAddress,
+        requestId: inputs.requestId,
+        title: serviceRequest?.appData.title ?? "",
+      },
+    },
+    iconType: "review",
+    actionName: "Claim to Review",
+    userAddress: inputs.signaler,
+    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    indexedAt: new Date(),
+  });
+
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress, id: inputs.requestId },
     { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
@@ -163,6 +200,29 @@ export const indexClaimToReview = async (event: TracerEvent) => {
 export const indexClaimToSubmit = async (event: TracerEvent) => {
   const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
   const laborMarketAddress = getAddress(event.contract.address);
+
+  const serviceRequest = await mongo.serviceRequests.findOne({
+    laborMarketAddress: laborMarketAddress,
+    id: inputs.requestId,
+  });
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "Submission",
+    eventType: {
+      eventType: "RequestSignal",
+      config: {
+        laborMarketAddress: laborMarketAddress,
+        requestId: inputs.requestId,
+        title: serviceRequest?.appData.title ?? "",
+      },
+    },
+    iconType: "submission",
+    actionName: "Claim to Submit",
+    userAddress: inputs.signaler,
+    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    indexedAt: new Date(),
+  });
 
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress: laborMarketAddress, id: inputs.requestId },
