@@ -7,7 +7,7 @@ export function TokenBadge({ token, quantity }: { token: Token; quantity?: strin
   return (
     <Badge>
       {quantity ? (
-        <span className="text-xs mt-0.5 mr-1"> {fromTokenAmount(quantity, token?.decimals ?? 18)}</span>
+        <span className="text-xs mt-0.5"> {`${fromTokenAmount(quantity, token?.decimals ?? 18)} `} </span>
       ) : null}
       <span className="text-sm">{token.symbol}</span>
     </Badge>

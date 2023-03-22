@@ -163,7 +163,6 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
         <Header.Column>Review Deadline</Header.Column>
       </Header>
       {serviceRequests.map((sr) => {
-        const token = tokens.find((t) => t.contractAddress === sr.configuration.pToken);
         return (
           <Row asChild columns={6} key={sr.id}>
             <Link to={`/app/market/${laborMarket.address}/request/${sr.id}`} className="text-sm font-medium">
@@ -197,7 +196,6 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
   return (
     <div className="space-y-4">
       {serviceRequests.map((sr) => {
-        const token = tokens.find((t) => t.contractAddress === sr.configuration.pToken);
         return (
           <Card asChild key={sr.id}>
             <Link
