@@ -192,7 +192,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
         return (
           <Row asChild columns={12} key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
-              to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
+              to={`/app/market/${s.laborMarketAddress}/submission/${s.id}`}
               className={clsx("text-sm text-stone-500", {
                 "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.serviceProvider,
               })}
@@ -236,7 +236,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
         return (
           <Card asChild key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
-              to={`/app/market/${s.laborMarketAddress}/request/${s.serviceRequestId}`}
+              to={`/app/market/${s.laborMarketAddress}/submission/${s.id}`}
               className={clsx("text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
                 "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.serviceProvider,
               })}

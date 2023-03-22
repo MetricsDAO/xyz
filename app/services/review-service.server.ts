@@ -97,6 +97,30 @@ export const indexReview = async (event: TracerEvent) => {
     indexedAt: new Date(),
   };
 
+  const submission = await mongo.submissions.findOne({
+    laborMarketAddress: doc.laborMarketAddress,
+    id: doc.submissionId,
+  });
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "Review",
+    eventType: {
+      eventType: "RequestReviewed",
+      config: {
+        laborMarketAddress: contractAddress,
+        requestId: requestId,
+        submissionId: submissionId,
+        title: submission?.appData?.title ?? "",
+      },
+    },
+    iconType: "submission",
+    actionName: "Submission",
+    userAddress: reviewer,
+    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    indexedAt: new Date(),
+  });
+
   await mongo.submissions.updateOne(
     { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
     {
