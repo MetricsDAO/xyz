@@ -1,5 +1,4 @@
 import { Countdown } from "~/components";
-import { ActivityAvatar } from "~/components/activity/activity-avatar";
 import { Card } from "~/components/card";
 import type { ActivityDoc } from "~/domain";
 import type { ActivityDocWithMongoId } from "./activity-table-desktop";
@@ -18,7 +17,7 @@ function ActivityCard({ activity }: { activity: ActivityDoc }) {
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Action</div>
-      <ActivityAvatar iconType={activity.iconType.toString()} />
+      {activity.eventType.config.title}
       <div>Title</div>
       <div>{activity.eventType.config.title}</div>
       <div>Timestamp</div>

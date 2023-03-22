@@ -57,51 +57,59 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
     submissionCount: 0,
   };
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "ServiceRequest",
-    eventType: {
-      eventType: "RequestConfigured",
-      config: { laborMarketAddress: laborMarketAddress, requestId: id, title: appData.title },
-    },
-    iconType: "service-request",
-    actionName: "Launch Challenge",
-    userAddress: configuration.serviceRequester,
-    createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
-    indexedAt: indexData.indexedAt,
-  });
+  const serviceRequestAlreadyIndexed = await mongo.serviceRequests.findOne({
+    laborMarketAddress: serviceRequest.laborMarketAddress,
+    appData: serviceRequest.appData,
+  }) !== null;
 
-  const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
 
-  await mongo.laborMarkets.updateOne(
-    { address: serviceRequest.laborMarketAddress },
-    {
-      $inc: {
-        "indexData.serviceRequestCount": 1,
+  if (!serviceRequestAlreadyIndexed) {
+    //log this event in user activity collection
+    mongo.userActivity.insertOne({
+      groupType: "ServiceRequest",
+      eventType: {
+        eventType: "RequestConfigured",
+        config: { laborMarketAddress: laborMarketAddress, requestId: id, title: appData.title },
       },
-      $set: {
-        "indexData.serviceRequestRewardPools": calculateRewardPools(
-          lm?.indexData.serviceRequestRewardPools ?? [],
-          serviceRequest.configuration.pToken,
-          serviceRequest.configuration.pTokenQ
-        ),
-      },
-    }
-  );
+      iconType: "service-request",
+      actionName: "Launch Challenge",
+      userAddress: configuration.serviceRequester,
+      createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+      indexedAt: indexData.indexedAt,
+    });
 
-  return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: serviceRequest.laborMarketAddress, id: serviceRequest.id },
-    {
-      $set: serviceRequest,
-      $setOnInsert: {
-        submissionCount: 0,
-        claimsToSubmit: [],
-        claimsToReview: [],
-        createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+    const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
+
+    await mongo.laborMarkets.updateOne(
+      { address: serviceRequest.laborMarketAddress },
+      {
+        $inc: {
+          "indexData.serviceRequestCount": 1,
+        },
+        $set: {
+          "indexData.serviceRequestRewardPools": calculateRewardPools(
+            lm?.indexData.serviceRequestRewardPools ?? [],
+            serviceRequest.configuration.pToken,
+            serviceRequest.configuration.pTokenQ
+          ),
+        },
+      }
+    );
+
+    return mongo.serviceRequests.updateOne(
+      { laborMarketAddress: serviceRequest.laborMarketAddress, id: serviceRequest.id },
+      {
+        $set: serviceRequest,
+        $setOnInsert: {
+          submissionCount: 0,
+          claimsToSubmit: [],
+          claimsToReview: [],
+          createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
+        },
       },
-    },
-    { upsert: true }
-  );
+      { upsert: true }
+    );
+  }
 }
 
 /**
@@ -173,28 +181,36 @@ export const indexClaimToReview = async (event: TracerEvent) => {
     id: inputs.requestId,
   });
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "Review",
-    eventType: {
-      eventType: "ReviewSignal",
-      config: {
-        laborMarketAddress: laborMarketAddress,
-        requestId: inputs.requestId,
-        title: serviceRequest?.appData.title ?? "",
-      },
-    },
-    iconType: "review",
-    actionName: "Claim to Review",
-    userAddress: inputs.signaler,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
-    indexedAt: new Date(),
+  const alreadyIndexed = mongo.serviceRequests.findOne({
+    laborMarketAddress: laborMarketAddress,
+    id: inputs.requestId,
+    "claimsToReview.signaler": inputs.signaler,
   });
 
-  return mongo.serviceRequests.updateOne(
-    { laborMarketAddress, id: inputs.requestId },
-    { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
-  );
+  if (!alreadyIndexed) {
+    //log this event in user activity collection
+    mongo.userActivity.insertOne({
+      groupType: "Review",
+      eventType: {
+        eventType: "ReviewSignal",
+        config: {
+          laborMarketAddress: laborMarketAddress,
+          requestId: inputs.requestId,
+          title: serviceRequest?.appData.title ?? "",
+        },
+      },
+      iconType: "review",
+      actionName: "Claim to Review",
+      userAddress: inputs.signaler,
+      createdAtBlockTimestamp: new Date(event.block.timestamp),
+      indexedAt: new Date(),
+    });
+
+    return mongo.serviceRequests.updateOne(
+      { laborMarketAddress, id: inputs.requestId },
+      { $push: { claimsToReview: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
+    );
+  }
 };
 
 export const indexClaimToSubmit = async (event: TracerEvent) => {
@@ -206,28 +222,36 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
     id: inputs.requestId,
   });
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "Submission",
-    eventType: {
-      eventType: "RequestSignal",
-      config: {
-        laborMarketAddress: laborMarketAddress,
-        requestId: inputs.requestId,
-        title: serviceRequest?.appData.title ?? "",
-      },
-    },
-    iconType: "submission",
-    actionName: "Claim to Submit",
-    userAddress: inputs.signaler,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
-    indexedAt: new Date(),
+  const alreadyIndexed = mongo.serviceRequests.findOne({
+    laborMarketAddress: laborMarketAddress,
+    id: inputs.requestId,
+    "claimsToSubmit.signaler": inputs.signaler,
   });
 
-  return mongo.serviceRequests.updateOne(
-    { laborMarketAddress: laborMarketAddress, id: inputs.requestId },
-    { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
-  );
+  if (!alreadyIndexed) {
+    //log this event in user activity collection
+    mongo.userActivity.insertOne({
+      groupType: "Submission",
+      eventType: {
+        eventType: "RequestSignal",
+        config: {
+          laborMarketAddress: laborMarketAddress,
+          requestId: inputs.requestId,
+          title: serviceRequest?.appData.title ?? "",
+        },
+      },
+      iconType: "submission",
+      actionName: "Claim to Submit",
+      userAddress: inputs.signaler,
+      createdAtBlockTimestamp: new Date(event.block.timestamp),
+      indexedAt: new Date(),
+    });
+
+    return mongo.serviceRequests.updateOne(
+      { laborMarketAddress: laborMarketAddress, id: inputs.requestId },
+      { $push: { claimsToSubmit: { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
+    );
+  }
 };
 
 const calculateRewardPools = (

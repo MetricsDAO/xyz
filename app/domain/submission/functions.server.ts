@@ -125,44 +125,53 @@ export const indexSubmission = async (address: EvmAddress, id: string, event?: T
 
   const createdAtBlockTimestamp = event?.block.timestamp ? new Date(event?.block.timestamp) : new Date();
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "Submission",
-    eventType: {
-      eventType: "RequestFulfilled",
-      config: {
-        laborMarketAddress: contractAddress,
-        requestId: doc.serviceRequestId,
-        submissionId: id,
-        title: appData?.title ?? "",
-      },
-    },
-    iconType: "submission",
-    actionName: "Submission",
-    userAddress: doc.configuration.serviceProvider,
-    createdAtBlockTimestamp: createdAtBlockTimestamp,
-    indexedAt: new Date(),
-  });
+  const submissionAlreadyIndexed = await mongo.submissions.findOne({
+    laborMarketAddress: contractAddress,
+    appData: appData,
+  }) !== null;
 
-  if (isValid) {
-    await mongo.serviceRequests.updateOne(
-      { laborMarketAddress: doc.laborMarketAddress, id: doc.serviceRequestId },
-      {
-        $inc: {
-          submissionCount: 1,
+  console.log("submissionAlreadyIndexed", submissionAlreadyIndexed);
+
+  if (!submissionAlreadyIndexed) {
+    //log this event in user activity collection
+    mongo.userActivity.insertOne({
+      groupType: "Submission",
+      eventType: {
+        eventType: "RequestFulfilled",
+        config: {
+          laborMarketAddress: contractAddress,
+          requestId: doc.serviceRequestId,
+          submissionId: id,
+          title: appData?.title ?? "",
         },
-      }
+      },
+      iconType: "submission",
+      actionName: "Submission",
+      userAddress: doc.configuration.serviceProvider,
+      createdAtBlockTimestamp: createdAtBlockTimestamp,
+      indexedAt: new Date(),
+    });
+
+    if (isValid) {
+      await mongo.serviceRequests.updateOne(
+        { laborMarketAddress: doc.laborMarketAddress, id: doc.serviceRequestId },
+        {
+          $inc: {
+            submissionCount: 1,
+          },
+        }
+      );
+    }
+
+    return mongo.submissions.updateOne(
+      { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
+      {
+        $set: doc,
+        $setOnInsert: { createdAtBlockTimestamp: createdAtBlockTimestamp },
+      },
+      { upsert: true }
     );
   }
-
-  return mongo.submissions.updateOne(
-    { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
-    {
-      $set: doc,
-      $setOnInsert: { createdAtBlockTimestamp: createdAtBlockTimestamp },
-    },
-    { upsert: true }
-  );
 };
 /**
  * Prepare a new Submission for writing to chain

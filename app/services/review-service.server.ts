@@ -102,44 +102,54 @@ export const indexReview = async (event: TracerEvent) => {
     id: doc.submissionId,
   });
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "Review",
-    eventType: {
-      eventType: "RequestReviewed",
-      config: {
-        laborMarketAddress: contractAddress,
-        requestId: requestId,
-        submissionId: submissionId,
-        title: submission?.appData?.title ?? "",
-      },
-    },
-    iconType: "submission",
-    actionName: "Submission",
-    userAddress: reviewer,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
-    indexedAt: new Date(),
-  });
+  const reviewAlreadyIndexed =
+    await mongo.reviews.findOne({
+      laborMarketAddress: doc.laborMarketAddress,
+      requestId: doc.serviceRequestId,
+      submissionId: doc.submissionId,
+      reviewer: doc.reviewer,
+    }) !== null;
 
-  await mongo.submissions.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
-    {
-      $set: {
-        score: {
-          reviewCount: submissionToScore.reviewCount.toNumber(),
-          reviewSum: submissionToScore.reviewSum.toNumber(),
-          avg: submissionToScore.avg.toNumber(),
-          qualified: submissionToScore.qualified,
+  if (!reviewAlreadyIndexed) {
+    //log this event in user activity collection
+    mongo.userActivity.insertOne({
+      groupType: "Review",
+      eventType: {
+        eventType: "RequestReviewed",
+        config: {
+          laborMarketAddress: contractAddress,
+          requestId: requestId,
+          submissionId: submissionId,
+          title: submission?.appData?.title ?? "",
         },
       },
-    }
-  );
+      iconType: "submission",
+      actionName: "Submission",
+      userAddress: reviewer,
+      createdAtBlockTimestamp: new Date(event.block.timestamp),
+      indexedAt: new Date(),
+    });
 
-  return mongo.reviews.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId, reviewer: doc.reviewer },
-    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
-    { upsert: true }
-  );
+    await mongo.submissions.updateOne(
+      { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
+      {
+        $set: {
+          score: {
+            reviewCount: submissionToScore.reviewCount.toNumber(),
+            reviewSum: submissionToScore.reviewSum.toNumber(),
+            avg: submissionToScore.avg.toNumber(),
+            qualified: submissionToScore.qualified,
+          },
+        },
+      }
+    );
+
+    return mongo.reviews.updateOne(
+      { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId, reviewer: doc.reviewer },
+      { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
+      { upsert: true }
+    );
+  }
 };
 
 /**
