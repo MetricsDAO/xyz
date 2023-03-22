@@ -117,12 +117,7 @@ export async function upsertIndexedServiceRequest(
     { laborMarketAddress: serviceRequest.laborMarketAddress, id: serviceRequest.id },
     {
       $set: serviceRequest,
-      $setOnInsert: {
-        submissionCount: 0,
-        claimsToSubmit: [],
-        claimsToReview: [],
-        createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
-      },
+      $setOnInsert: indexData,
     },
     { upsert: true, returnDocument: "after" }
   );
