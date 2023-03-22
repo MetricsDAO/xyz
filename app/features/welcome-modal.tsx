@@ -19,7 +19,6 @@ export default function WelcomeModal({ opened, redirectPath }: { opened: boolean
         <img src="/img/mdao-purple-icon.png" alt="" className="mx-auto pb-5" />
         <h3 className="font-medium text-center">Welcome to the MetricsDAO ecosystem!</h3>
         <ul className="pb-10 pt-2 text-sm text-stone-500 list-disc list-outside pl-5">
-          <li>You should not use the primary address you store assets in to connect to the app.</li>
           <li>
             This app is in beta and is subject to change and future code audits. See{" "}
             <a href="https://metricsdao.gitbook.io/metrics-app/" target="_blank" rel="noreferrer">

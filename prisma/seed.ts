@@ -81,6 +81,13 @@ async function main() {
         contractAddress: "0xCce422781e1818821f50226C14E6289a7144a898",
         symbol: "MBETA2",
       },
+      {
+        name: "USDC",
+        decimals: 6,
+        networkName: "Polygon",
+        contractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+        symbol: "USDC",
+      },
     ],
   });
 }

@@ -22,6 +22,8 @@ export interface TracerConfig {
     network: string;
   };
   contracts: TracerContract[];
+  fromBlock?: number;
+  toBlock?: number;
 }
 
 export type TracerStateName = "TRACER_STATE_BACKFILL" | "TRACER_STATE_REALTIME";

@@ -1,19 +1,59 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "../address";
 
-export const ActivityTypeSchema = z.enum(["LaborMarketConfigured"]);
-export const ActivityGroupTypeSchema = z.enum(["LaborMarket"]);
-export const ActivityIconTypeSchema = z.enum(["labor-market"]);
+export const ActivityTypeSchema = z.enum([
+  "LaborMarketConfigured",
+  "RequestConfigured",
+  "RequestSignal",
+  "ReviewSignal",
+  "RequestFulfilled",
+  "RequestReviewed",
+]);
+export const ActivityGroupTypeSchema = z.enum(["LaborMarket", "ServiceRequest", "Submission", "Review"]);
+export const ActivityIconTypeSchema = z.enum(["labor-market", "service-request", "submission", "review"]);
 
-export const LaborMarketConfiguredConfigSchema = z.object({
+export const LaborMarketConfigSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
-  laborMarketTitle: z.string(),
+  title: z.string(),
+});
+
+export const RequestConfigSchema = z.object({
+  laborMarketAddress: EvmAddressSchema,
+  requestId: z.string(),
+  title: z.string(),
+});
+
+export const SubmissionConfigSchema = z.object({
+  laborMarketAddress: EvmAddressSchema,
+  requestId: z.string(),
+  submissionId: z.string(),
+  title: z.string(),
 });
 
 export const activityConfigSchema = z.discriminatedUnion("eventType", [
   z.object({
     eventType: z.literal("LaborMarketConfigured"),
-    config: LaborMarketConfiguredConfigSchema,
+    config: LaborMarketConfigSchema,
+  }),
+  z.object({
+    eventType: z.literal("RequestConfigured"),
+    config: RequestConfigSchema,
+  }),
+  z.object({
+    eventType: z.literal("RequestSignal"),
+    config: RequestConfigSchema,
+  }),
+  z.object({
+    eventType: z.literal("ReviewSignal"),
+    config: RequestConfigSchema,
+  }),
+  z.object({
+    eventType: z.literal("RequestFulfilled"),
+    config: SubmissionConfigSchema,
+  }),
+  z.object({
+    eventType: z.literal("RequestReviewed"),
+    config: SubmissionConfigSchema,
   }),
 ]);
 
@@ -36,7 +76,10 @@ export type ActivityDoc = z.infer<typeof ActivityDocSchema>;
  */
 export const ActivityFilterSchema = z.object({
   q: z.string().optional(),
-  groupType: z.array(ActivityGroupTypeSchema).optional(),
+  groupType: z
+    .array(ActivityGroupTypeSchema)
+    .optional()
+    .default(["LaborMarket", "ServiceRequest", "Review", "Submission"]),
 });
 
 export type ActivityFilter = z.infer<typeof ActivityFilterSchema>;

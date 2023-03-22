@@ -104,9 +104,9 @@ export default function ServiceRequest() {
           { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
         ]}
       />
-      <header className="flex flex-wrap gap-5 justify-between pb-16">
-        <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
-        <div className="flex flex-wrap gap-5">
+      <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
+        <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
+        <div className="flex flex-wrap gap-5 md:basis-1/3">
           {showClaimToReview && (
             <WalletGuardedButtonLink
               buttonText="Claim to Review"

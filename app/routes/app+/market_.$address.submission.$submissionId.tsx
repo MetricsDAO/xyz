@@ -28,15 +28,15 @@ import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import type { LaborMarket } from "~/domain/labor-market/schemas";
+import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import { ReviewSearchSchema } from "~/domain/review";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import { getIndexedSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
+import { usePrereqs } from "~/hooks/use-prereqs";
 import { useReward } from "~/hooks/use-reward";
-import { useTokenBalance } from "~/hooks/use-token-balance";
 import { findUserReview, searchReviews } from "~/services/review-service.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
@@ -124,16 +124,18 @@ export default function ChallengeSubmission() {
           },
         ]}
       />
-      <section className="flex flex-wrap gap-5 justify-between pb-10 items-center">
-        <div className="flex items-center gap-2">
+      <section className="flex flex-col md:flex-row gap-5 justify-between pb-10 items-center">
+        <div className="flex items-center gap-2 md:basis-3/4">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
-        {!submittedByUser ? (
-          <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-        ) : (
-          <p className="text-sm">Your Submission!</p>
-        )}
+        <div className="flex md:basis-1/4 md:justify-end">
+          {!submittedByUser ? (
+            <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+          ) : (
+            <p className="text-sm">Your Submission!</p>
+          )}
+        </div>
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
@@ -258,20 +260,14 @@ function ReviewQuestionDrawerButton({
   laborMarket,
 }: {
   submission: SubmissionDoc;
-  laborMarket: LaborMarket;
+  laborMarket: LaborMarketWithIndexData;
 }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
-    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
-  });
-
-  const hasMaintainerBadge = maintainerBadgeTokenBalance?.gt(0);
+  const { canReview } = usePrereqs({ laborMarket });
 
   return (
     <>
-      {hasMaintainerBadge && (
+      {canReview && (
         <ConnectWalletWrapper
           onClick={() => {
             setDrawerOpen(true);
@@ -300,11 +296,11 @@ function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
-        {submission.appData?.description}
+        {submission.appData?.submissionUrl}
       </p>
       <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
         <a
-          href={submission.appData?.description}
+          href={submission.appData?.submissionUrl}
           target="_blank"
           className="text-blue-600 text-sm flex flex-row items-center"
           rel="noreferrer"
@@ -320,7 +316,7 @@ function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
   return (
     <>
       <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
-        {submission.appData?.description}
+        {submission.appData?.submissionUrl}
       </p>
     </>
   );
