@@ -31,7 +31,7 @@ export type MarketplaceTableProps = {
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
-  url.searchParams.set("type", "analyze"); //todo - remove
+  url.searchParams.set("type", "analyze");
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
 
   const marketplaces = await searchLaborMarkets(searchParams);
