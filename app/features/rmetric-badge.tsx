@@ -1,13 +1,14 @@
 import { BigNumber } from "ethers";
-import { ReputationToken } from "labor-markets-abi";
 import { useContractRead } from "wagmi";
+import { useContracts } from "~/hooks/use-root-data";
 import { REPUTATION_TOKEN_ID } from "~/utils/constants";
 import { displayBalance } from "~/utils/helpers";
 
 export function RMetricBadge({ address }: { address: `0x${string}` }) {
+  const contracts = useContracts();
   const { data: reputationBalance } = useContractRead({
-    address: ReputationToken.address,
-    abi: ReputationToken.abi,
+    address: contracts.ReputationToken.address,
+    abi: contracts.ReputationToken.abi,
     functionName: "balanceOf",
     args: [address, BigNumber.from(REPUTATION_TOKEN_ID)],
   });

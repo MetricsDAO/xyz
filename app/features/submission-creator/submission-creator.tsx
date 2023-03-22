@@ -2,13 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Field, Input, Error, Button } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import type { SubmissionForm } from "./schema";
 import { SubmissionFormSchema } from "./schema";
@@ -34,6 +34,7 @@ export default function SubmissionCreator({
   laborMarketAddress: EvmAddress;
   serviceRequestId: string;
 }) {
+  const contracts = useContracts();
   const {
     register,
     handleSubmit,
@@ -58,7 +59,7 @@ export default function SubmissionCreator({
   const onSubmit = (values: SubmissionForm) => {
     transactor.start({
       metadata: values,
-      config: ({ cid }) => configureFromValues({ cid, address: laborMarketAddress, serviceRequestId }),
+      config: ({ cid }) => configureFromValues({ contracts, cid, address: laborMarketAddress, serviceRequestId }),
     });
   };
 
@@ -98,16 +99,18 @@ export default function SubmissionCreator({
 }
 
 function configureFromValues({
+  contracts,
   cid,
   address,
   serviceRequestId,
 }: {
+  contracts: ReturnType<typeof useContracts>;
   cid: string;
   address: EvmAddress;
   serviceRequestId: string;
 }) {
   return configureWrite({
-    abi: LaborMarket.abi,
+    abi: contracts.LaborMarket.abi,
     address: address,
     functionName: "provide",
     args: [BigNumber.from(serviceRequestId), cid],

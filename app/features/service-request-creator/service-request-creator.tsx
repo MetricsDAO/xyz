@@ -3,12 +3,12 @@ import type { Project, Token } from "@prisma/client";
 import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { useCallback, useEffect, useState } from "react";
 import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
@@ -44,6 +44,7 @@ export function ServiceRequestCreator({
   defaultValues,
   laborMarketAddress,
 }: ServiceRequestFormProps) {
+  const contracts = useContracts();
   const [values, setValues] = useState<ServiceRequestForm>();
   const [approved, setApproved] = useState(false);
 
@@ -69,10 +70,10 @@ export function ServiceRequestCreator({
       setApproved(true);
       submitTransactor.start({
         metadata: values.appData,
-        config: ({ cid }) => configureFromValues({ cid, values, laborMarketAddress }),
+        config: ({ cid }) => configureFromValues({ contracts, cid, values, laborMarketAddress }),
       });
     }
-  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values]);
+  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
@@ -134,10 +135,12 @@ export function ServiceRequestCreator({
 }
 
 function configureFromValues({
+  contracts,
   cid,
   values,
   laborMarketAddress,
 }: {
+  contracts: ReturnType<typeof useContracts>;
   cid: string;
   values: ServiceRequestForm;
   laborMarketAddress: string;
@@ -146,7 +149,7 @@ function configureFromValues({
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.endDate, values.endTime)));
 
   return configureWrite({
-    abi: LaborMarket.abi,
+    abi: contracts.LaborMarket.abi,
     address: laborMarketAddress as `0x${string}`,
     functionName: "submitRequest",
     args: [

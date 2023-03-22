@@ -13,3 +13,9 @@ export function useTokens() {
   invariant(data, "No data found for root route");
   return data.tokens;
 }
+
+export function useContracts() {
+  const data = useTypedRouteLoaderData<typeof rootLoader>("root");
+  invariant(data, "No data found for root route");
+  return data.contracts;
+}

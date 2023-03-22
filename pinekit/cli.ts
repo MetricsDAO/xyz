@@ -1,8 +1,7 @@
 import { Command } from "commander";
-import { testAddresses } from "contracts/test-addresses";
-import { LaborMarket, LaborMarketNetwork } from "labor-markets-abi";
 import { Client } from "pinekit";
 import env from "~/env.server";
+import { getContracts } from "~/utils/contracts.server";
 
 require("dotenv").config();
 
@@ -16,10 +15,9 @@ program
   .command("create-tracer")
   .description("Create a new tracer")
   .option("-d, --dev", "Use development contracts", false)
-  .action(async () => {
-    const laborMarketNetworkAddress = program.opts().dev
-      ? testAddresses.LaborMarketNetwork
-      : LaborMarketNetwork.address;
+  .action(async (options) => {
+    const isProd = !options.dev;
+    const contracts = getContracts(isProd);
     const res = await pine.createTracer({
       namespace: env.PINE_NAMESPACE,
       version: "1.6.0",
@@ -28,11 +26,15 @@ program
         network: "mainnet",
       },
       contracts: [
-        { name: "LaborMarketNetwork", addresses: [laborMarketNetworkAddress], schema: LaborMarketNetwork.abi },
+        {
+          name: "LaborMarketNetwork",
+          addresses: [contracts.LaborMarketNetwork.address],
+          schema: contracts.LaborMarketNetwork.abi,
+        },
         {
           name: "LaborMarket",
           addresses: ["LaborMarketCreated.marketAddress@LaborMarketNetwork"],
-          schema: LaborMarket.abi,
+          schema: contracts.LaborMarket.abi,
         },
       ],
     });
