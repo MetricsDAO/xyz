@@ -31,7 +31,6 @@ body:
       label: Workflow Impacted
       description: Which flow in the app are you using?
       options:
-        - Brainstorm
         - Analyze
         - My Rewards
     validations:
