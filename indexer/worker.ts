@@ -4,9 +4,9 @@ import * as pine from "pinekit";
 import { z } from "zod";
 import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import {
+  handleRequestConfiguredEvent,
   indexClaimToReview,
   indexClaimToSubmit,
-  upsertIndexedServiceRequest,
 } from "~/domain/service-request/functions.server";
 import { indexSubmission } from "~/domain/submission/functions.server";
 import env from "~/env.server";
@@ -41,10 +41,7 @@ worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
-  const requestId = z.string().parse(event.decoded.inputs.requestId);
-  const laborMarketAddress = getAddress(event.contract.address);
-
-  return upsertIndexedServiceRequest(laborMarketAddress, requestId, event);
+  return handleRequestConfiguredEvent(event);
 });
 
 worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {

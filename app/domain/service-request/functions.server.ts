@@ -2,6 +2,8 @@ import type { User } from "@prisma/client";
 import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
+import invariant from "tiny-invariant";
+import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import { ClaimToReviewEventSchema, ClaimToSubmitEventSchema } from "~/domain";
 import type {
@@ -17,7 +19,8 @@ import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
-import type { LaborMarketWithIndexData } from "../labor-market/schemas";
+import { EvmAddressSchema } from "../address";
+import type { RewardPool } from "../labor-market/schemas";
 
 /**
  * Returns a ServiceRequestWithIndexData from mongodb, if it exists.
@@ -27,16 +30,69 @@ import type { LaborMarketWithIndexData } from "../labor-market/schemas";
 export async function getIndexedServiceRequest(address: EvmAddress, id: string): Promise<ServiceRequestWithIndexData> {
   const doc = await mongo.serviceRequests.findOne({ id, laborMarketAddress: address });
   if (!doc) {
-    await upsertIndexedServiceRequest(address, id);
-    return getIndexedServiceRequest(address, id);
+    const newDoc = await upsertIndexedServiceRequest(address, id);
+    invariant(newDoc, "Service request should have been indexed");
+    return newDoc;
   }
   return doc;
+}
+
+export async function handleRequestConfiguredEvent(event: TracerEvent) {
+  const requestId = z.string().parse(event.decoded.inputs.requestId);
+  const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
+  const serviceRequest = await upsertIndexedServiceRequest(laborMarketAddress, requestId, event);
+  if (!serviceRequest) {
+    logger.warn("Service request was not indexed", { requestId, laborMarketAddress });
+    return;
+  }
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "ServiceRequest",
+    eventType: {
+      eventType: "RequestConfigured",
+      config: {
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        requestId: serviceRequest.id,
+        title: serviceRequest.appData.title,
+      },
+    },
+    iconType: "service-request",
+    actionName: "Launch Challenge",
+    userAddress: serviceRequest.configuration.serviceRequester,
+    createdAtBlockTimestamp: serviceRequest.createdAtBlockTimestamp,
+    indexedAt: serviceRequest.indexedAt,
+  });
+
+  // Update labor market
+  const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
+  const rewardPools = calculateRewardPools(
+    lm?.indexData.serviceRequestRewardPools ?? [],
+    serviceRequest.configuration.pToken,
+    serviceRequest.configuration.pTokenQ
+  );
+
+  await mongo.laborMarkets.updateOne(
+    { address: serviceRequest.laborMarketAddress },
+    {
+      $inc: {
+        "indexData.serviceRequestCount": 1,
+      },
+      $set: {
+        "indexData.serviceRequestRewardPools": rewardPools,
+      },
+    }
+  );
 }
 
 /**
  * Creates a ServiceRequesttWithIndexData in mongodb from chain and ipfs data.
  */
-export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress, id: string, event?: TracerEvent) {
+export async function upsertIndexedServiceRequest(
+  laborMarketAddress: EvmAddress,
+  id: string,
+  event?: TracerEvent
+): Promise<ServiceRequestWithIndexData | null> {
   const configuration = await getServiceRequestConfig(laborMarketAddress, id);
   let appData;
   try {
@@ -46,7 +102,7 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
       `Failed to fetch and parse service request app data for ${laborMarketAddress}. Id: ${id} Skipping indexing.`,
       e
     );
-    return;
+    return null;
   }
   const serviceRequest = { id, laborMarketAddress, configuration, appData };
   const indexData: ServiceRequestIndexData = {
@@ -57,39 +113,7 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
     submissionCount: 0,
   };
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "ServiceRequest",
-    eventType: {
-      eventType: "RequestConfigured",
-      config: { laborMarketAddress: laborMarketAddress, requestId: id, title: appData.title },
-    },
-    iconType: "service-request",
-    actionName: "Launch Challenge",
-    userAddress: configuration.serviceRequester,
-    createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
-    indexedAt: indexData.indexedAt,
-  });
-
-  const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
-
-  await mongo.laborMarkets.updateOne(
-    { address: serviceRequest.laborMarketAddress },
-    {
-      $inc: {
-        "indexData.serviceRequestCount": 1,
-      },
-      $set: {
-        "indexData.serviceRequestRewardPools": calculateRewardPools(
-          lm?.indexData.serviceRequestRewardPools ?? [],
-          serviceRequest.configuration.pToken,
-          serviceRequest.configuration.pTokenQ
-        ),
-      },
-    }
-  );
-
-  return mongo.serviceRequests.updateOne(
+  const res = await mongo.serviceRequests.findOneAndUpdate(
     { laborMarketAddress: serviceRequest.laborMarketAddress, id: serviceRequest.id },
     {
       $set: serviceRequest,
@@ -100,8 +124,10 @@ export async function upsertIndexedServiceRequest(laborMarketAddress: EvmAddress
         createdAtBlockTimestamp: indexData.createdAtBlockTimestamp,
       },
     },
-    { upsert: true }
+    { upsert: true, returnDocument: "after" }
   );
+
+  return res.value;
 }
 
 /**
@@ -231,17 +257,17 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
 };
 
 const calculateRewardPools = (
-  existingPools: LaborMarketWithIndexData["indexData"]["serviceRequestRewardPools"],
-  pToken: string,
+  existingPools: RewardPool[],
+  pToken: EvmAddress,
   pTokenQuantity: string
-) => {
+): RewardPool[] => {
   const newPools = [...existingPools];
   const pool = newPools.find((pool) => pool.pToken === pToken);
   if (pool) {
     pool.pTokenQuantity = BigNumber.from(pool.pTokenQuantity).add(pTokenQuantity).toString();
   } else {
     newPools.push({
-      pToken: pToken as EvmAddress,
+      pToken: pToken,
       pTokenQuantity: pTokenQuantity,
     });
   }

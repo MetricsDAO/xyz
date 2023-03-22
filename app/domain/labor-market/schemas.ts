@@ -61,6 +61,13 @@ export const LaborMarketAppDataSchema = z.object({
 });
 export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
 
+const RewardPoolSchema = z.object({
+  pToken: EvmAddressSchema,
+  pTokenQuantity: z.coerce.string(),
+});
+
+export type RewardPool = z.infer<typeof RewardPoolSchema>;
+
 /**
  * Contains all aggregated and index-specific data for a LaborMarket.
  */
@@ -68,12 +75,7 @@ export const LaborMarketIndexDataSchema = z.object({
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date().default(() => new Date()),
   serviceRequestCount: z.number(),
-  serviceRequestRewardPools: z.array(
-    z.object({
-      pToken: EvmAddressSchema,
-      pTokenQuantity: z.coerce.string(),
-    })
-  ),
+  serviceRequestRewardPools: z.array(RewardPoolSchema),
 });
 export type LaborMarketIndexData = z.infer<typeof LaborMarketIndexDataSchema>;
 
