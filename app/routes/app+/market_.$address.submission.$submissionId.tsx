@@ -122,16 +122,18 @@ export default function ChallengeSubmission() {
           },
         ]}
       />
-      <section className="flex flex-wrap gap-5 justify-between pb-10 items-center">
-        <div className="flex items-center gap-2">
+      <section className="flex flex-col md:flex-row gap-5 justify-between pb-10 items-center">
+        <div className="flex items-center gap-2 md:basis-3/4">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
-        {!submittedByUser ? (
-          <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-        ) : (
-          <p className="text-sm">Your Submission!</p>
-        )}
+        <div className="flex md:basis-1/4 md:justify-end">
+          {!submittedByUser ? (
+            <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+          ) : (
+            <p className="text-sm">Your Submission!</p>
+          )}
+        </div>
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
