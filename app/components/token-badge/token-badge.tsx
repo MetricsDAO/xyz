@@ -6,7 +6,9 @@ import { Badge } from "../badge";
 export function TokenBadge({ token, quantity }: { token: Token; quantity?: string }) {
   return (
     <Badge>
-      {quantity ? <span className="text-xs mr-1"> {fromTokenAmount(quantity, token.decimals)}</span> : null}
+      {quantity ? (
+        <span className="text-xs mt-0.5 mr-1"> {fromTokenAmount(quantity, token?.decimals ?? 18)}</span>
+      ) : null}
       <span className="text-sm">{token.symbol}</span>
     </Badge>
   );
