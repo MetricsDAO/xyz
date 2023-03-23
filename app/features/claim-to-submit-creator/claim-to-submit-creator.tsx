@@ -28,7 +28,7 @@ export function ClaimToSubmitCreator({ confirmationMessage, serviceRequest }: Cl
 
   const onClick = () => {
     transactor.start({
-      config: () => configureFromValues({ contracts, serviceRequest }),
+      config: () => configureFromValues({ contracts, inputs: { serviceRequest } }),
     });
   };
 
@@ -44,15 +44,17 @@ export function ClaimToSubmitCreator({ confirmationMessage, serviceRequest }: Cl
 
 function configureFromValues({
   contracts,
-  serviceRequest,
+  inputs,
 }: {
   contracts: ReturnType<typeof useContracts>;
-  serviceRequest: ServiceRequestWithIndexData;
+  inputs: {
+    serviceRequest: ServiceRequestWithIndexData;
+  };
 }) {
   return configureWrite({
     abi: contracts.LaborMarket.abi,
-    address: serviceRequest.laborMarketAddress as `0x${string}`,
+    address: inputs.serviceRequest.laborMarketAddress,
     functionName: "signal",
-    args: [BigNumber.from(serviceRequest.id)],
+    args: [BigNumber.from(inputs.serviceRequest.id)],
   });
 }

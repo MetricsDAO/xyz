@@ -13,7 +13,7 @@ import type { ReviewFormValues } from "./review-creator-values";
 import { ReviewFormValuesSchema } from "./review-creator-values";
 
 interface ReviewFormProps {
-  laborMarketAddress: string;
+  laborMarketAddress: EvmAddress;
   submissionId: string;
   requestId: string;
   onCancel: () => void;
@@ -38,13 +38,7 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
   const onSubmit = (formValues: ReviewFormValues) => {
     transactor.start({
       config: () =>
-        configureFromValues({
-          contracts,
-          laborMarketAddress: laborMarketAddress as `0x${string}`,
-          submissionId,
-          requestId,
-          formValues,
-        }),
+        configureFromValues({ contracts, inputs: { laborMarketAddress, submissionId, requestId, formValues } }),
     });
   };
 
@@ -77,17 +71,17 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
 
 function configureFromValues({
   contracts,
-  laborMarketAddress,
-  formValues,
-  submissionId,
-  requestId,
+  inputs,
 }: {
   contracts: ReturnType<typeof useContracts>;
-  laborMarketAddress: EvmAddress;
-  submissionId: string;
-  requestId: string;
-  formValues: ReviewFormValues;
+  inputs: {
+    laborMarketAddress: EvmAddress;
+    submissionId: string;
+    requestId: string;
+    formValues: ReviewFormValues;
+  };
 }) {
+  const { laborMarketAddress, submissionId, requestId, formValues } = inputs;
   return configureWrite({
     address: laborMarketAddress,
     abi: contracts.LaborMarket.abi,

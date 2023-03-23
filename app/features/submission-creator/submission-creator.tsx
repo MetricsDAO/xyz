@@ -59,7 +59,7 @@ export default function SubmissionCreator({
   const onSubmit = (values: SubmissionForm) => {
     transactor.start({
       metadata: values,
-      config: ({ cid }) => configureFromValues({ contracts, cid, address: laborMarketAddress, serviceRequestId }),
+      config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, laborMarketAddress, serviceRequestId } }),
     });
   };
 
@@ -100,19 +100,19 @@ export default function SubmissionCreator({
 
 function configureFromValues({
   contracts,
-  cid,
-  address,
-  serviceRequestId,
+  inputs,
 }: {
   contracts: ReturnType<typeof useContracts>;
-  cid: string;
-  address: EvmAddress;
-  serviceRequestId: string;
+  inputs: {
+    cid: string;
+    laborMarketAddress: EvmAddress;
+    serviceRequestId: string;
+  };
 }) {
   return configureWrite({
     abi: contracts.LaborMarket.abi,
-    address: address,
+    address: inputs.laborMarketAddress,
     functionName: "provide",
-    args: [BigNumber.from(serviceRequestId), cid],
+    args: [BigNumber.from(inputs.serviceRequestId), inputs.cid],
   });
 }

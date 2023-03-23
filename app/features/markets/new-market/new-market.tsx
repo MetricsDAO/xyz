@@ -32,8 +32,8 @@ function getEventFromLogs(
 }
 
 function configureFromValues(
-  inputs: { owner: EvmAddress; cid: string; values: MarketNewValues },
-  contracts: ReturnType<typeof useContracts>
+  contracts: ReturnType<typeof useContracts>,
+  inputs: { owner: EvmAddress; cid: string; values: MarketNewValues }
 ) {
   const { owner, cid, values } = inputs;
   return configureWrite({
@@ -44,7 +44,7 @@ function configureFromValues(
       contracts.LaborMarket.address,
       {
         marketUri: cid,
-        owner: owner as `0x${string}`,
+        owner: owner,
         modules: {
           network: contracts.LaborMarketNetwork.address,
           reputation: contracts.ReputationModule.address,
@@ -52,11 +52,11 @@ function configureFromValues(
           enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
         },
         delegateBadge: {
-          token: values.configuration.delegateBadge.token as `0x${string}`,
+          token: values.configuration.delegateBadge.token,
           tokenId: BigNumber.from(values.configuration.delegateBadge.tokenId),
         },
         maintainerBadge: {
-          token: values.configuration.maintainerBadge.token as `0x${string}`,
+          token: values.configuration.maintainerBadge.token,
           tokenId: BigNumber.from(values.configuration.maintainerBadge.tokenId),
         },
         reputationBadge: {
@@ -130,7 +130,7 @@ export function NewMarket({
   const onSubmit = (values: MarketNewValues) => {
     transactor.start({
       metadata: values.appData,
-      config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }, contracts),
+      config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values }),
     });
   };
 

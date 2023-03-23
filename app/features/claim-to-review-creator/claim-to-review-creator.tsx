@@ -37,7 +37,7 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
 
   const onSubmit = (formValues: ClaimToReviewFormValues) => {
     transactor.start({
-      config: () => configureFromValues({ contracts, serviceRequest, formValues }),
+      config: () => configureFromValues({ contracts, inputs: { serviceRequest, formValues } }),
     });
   };
 
@@ -76,17 +76,18 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
 
 function configureFromValues({
   contracts,
-  serviceRequest,
-  formValues,
+  inputs,
 }: {
   contracts: ReturnType<typeof useContracts>;
-  serviceRequest: ServiceRequestWithIndexData;
-  formValues: ClaimToReviewFormValues;
+  inputs: {
+    formValues: ClaimToReviewFormValues;
+    serviceRequest: ServiceRequestWithIndexData;
+  };
 }) {
   return configureWrite({
     abi: contracts.LaborMarket.abi,
-    address: serviceRequest.laborMarketAddress as `0x${string}`,
+    address: inputs.serviceRequest.laborMarketAddress as `0x${string}`,
     functionName: "signalReview",
-    args: [BigNumber.from(serviceRequest.id), BigNumber.from(formValues.quantity)],
+    args: [BigNumber.from(inputs.serviceRequest.id), BigNumber.from(inputs.formValues.quantity)],
   });
 }

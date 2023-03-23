@@ -70,7 +70,7 @@ export function ServiceRequestCreator({
       setApproved(true);
       submitTransactor.start({
         metadata: values.appData,
-        config: ({ cid }) => configureFromValues({ contracts, cid, values, laborMarketAddress }),
+        config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, values, laborMarketAddress } }),
       });
     }
   }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
@@ -136,15 +136,16 @@ export function ServiceRequestCreator({
 
 function configureFromValues({
   contracts,
-  cid,
-  values,
-  laborMarketAddress,
+  inputs,
 }: {
   contracts: ReturnType<typeof useContracts>;
-  cid: string;
-  values: ServiceRequestForm;
-  laborMarketAddress: string;
+  inputs: {
+    cid: string;
+    values: ServiceRequestForm;
+    laborMarketAddress: string;
+  };
 }) {
+  const { values, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.endDate, values.endTime)));
 
