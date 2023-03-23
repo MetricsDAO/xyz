@@ -1,5 +1,4 @@
 import { getAddress } from "ethers/lib/utils.js";
-import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
 import { z } from "zod";
 import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server";
@@ -12,6 +11,9 @@ import { indexSubmission } from "~/domain/submission/functions.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
+import { getContracts } from "~/utils/contracts.server";
+
+const contracts = getContracts();
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),
@@ -25,15 +27,15 @@ const worker = pine.createWorker({
 });
 
 const LaborMarketNetwork = worker.contract("LaborMarketNetwork", {
-  addresses: [LaborMarketNetworkAbi.address],
-  schema: LaborMarketNetworkAbi.abi,
+  addresses: [contracts.LaborMarketNetwork.address],
+  schema: contracts.LaborMarketNetwork.abi,
 });
 
 const LaborMarket = worker.contractFromEvent("LaborMarket", {
   contract: LaborMarketNetwork,
   event: "LaborMarketCreated",
   arg: "marketAddress",
-  schema: LaborMarketAbi.abi,
+  schema: contracts.LaborMarket.abi,
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {

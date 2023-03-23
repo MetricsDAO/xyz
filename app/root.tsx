@@ -29,7 +29,7 @@ export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
   const projects = await listProjects();
   const tokens = await listTokens();
-  const contracts = getContracts(env.ENVIRONMENT === "production" || env.ENVIRONMENT === "staging");
+  const contracts = getContracts();
   return typedjson({
     user,
     projects,
