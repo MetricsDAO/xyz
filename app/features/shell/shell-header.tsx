@@ -13,7 +13,7 @@ import { ProfileMenu } from "~/components/connect-menu/dropdown";
 const primaryLinks = [
   { link: $path("/app/showcase"), label: "Showcase" },
   { link: $path("/app/challenges"), label: "Challenges" },
-  { link: $path("/app/:mType", { mType: "analyze" }), label: "Marketplaces" },
+  { link: $path("/app/analyze"), label: "Marketplaces" },
 ];
 
 const userLinks = [
