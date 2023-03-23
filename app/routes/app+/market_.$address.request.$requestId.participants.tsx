@@ -54,7 +54,10 @@ export default function ServiceIdParticipants() {
             return (
               <Card asChild className="px-6 py-4" key={`${p.createdAtBlockTimestamp}_${p.userAddress}`}>
                 <div className="flex justify-between items-center">
-                  <UserBadge address={p.userAddress as `0x${string}`} />
+                  <div className="flex gap-2 items-center">
+                    <UserBadge address={p.userAddress as `0x${string}`} />
+                    <p className="text-sm">{translateEventType(p.eventType.eventType)}</p>
+                  </div>
                   <p className="text-sm text-gray-500">{fromNow(p.createdAtBlockTimestamp)}</p>
                 </div>
               </Card>
@@ -121,4 +124,24 @@ export default function ServiceIdParticipants() {
       </div>
     </section>
   );
+}
+
+function translateEventType(eventType) {
+  switch (eventType) {
+    case "RequestReviewed": {
+      return "reviewed";
+    }
+    case "RequestSignal": {
+      return "claimed to submit";
+    }
+    case "ReviewSignal": {
+      return "claimed to review";
+    }
+    case "RequestFulfilled": {
+      return "submitted";
+    }
+    default: {
+      return "";
+    }
+  }
 }
