@@ -103,9 +103,8 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
         logger.info(`no handlers for event ${key}`, event);
       } else {
         for (const handler of handlers) {
-          logger.info(`processing event ${key} ${event.block.number}`);
+          logger.info(`processing event ${key}`, event);
           await handler(event);
-          logger.info(`done processing event ${key} ${event.block.number}`);
         }
       }
       await client.saveCursorAt(event, subHandle);
