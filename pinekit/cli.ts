@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { Client } from "pinekit";
 import env from "~/env.server";
-import { getContracts } from "~/utils/contracts.server";
+import { contractsByEnv } from "~/utils/contracts.server";
 
 require("dotenv").config();
 
@@ -17,7 +17,7 @@ program
   .option("-d, --dev", "Use development contracts", false)
   .action(async (options) => {
     const isProd = !options.dev;
-    const contracts = getContracts(isProd);
+    const contracts = contractsByEnv(isProd);
     const res = await pine.createTracer({
       namespace: env.PINE_NAMESPACE,
       version: "1.6.0",

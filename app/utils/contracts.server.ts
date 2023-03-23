@@ -4,9 +4,9 @@ import env from "~/env.server";
 
 export function getContracts() {
   const isProd = env.ENVIRONMENT === "production" || env.ENVIRONMENT === "staging";
-  return contracts(isProd);
+  return contractsByEnv(isProd);
 }
 
-function contracts(isProd?: boolean) {
+export function contractsByEnv(isProd?: boolean) {
   return isProd ? ProdContracts : DevContracts;
 }
