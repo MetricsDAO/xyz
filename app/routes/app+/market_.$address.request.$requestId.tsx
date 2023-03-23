@@ -100,7 +100,7 @@ export default function ServiceRequest() {
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
         crumbs={[
-          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/analyze`, name: "Marketplaces" },
           { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
         ]}
       />

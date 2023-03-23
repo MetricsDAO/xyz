@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Link, useParams, useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
@@ -7,7 +7,6 @@ import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { Button } from "~/components/button";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
@@ -52,8 +51,6 @@ export default function Marketplaces() {
   const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
-  const { mType } = useParams();
-  invariant(mType, "marketplace type must be specified");
 
   const handleChange = () => {
     if (formRef.current) {
@@ -64,19 +61,28 @@ export default function Marketplaces() {
   return (
     <Container className="py-16 px-10">
       <header className="flex flex-col justify-between md:flex-row space-y-7 md:space-y-0 space-x-0 md:space-x-5 mb-20">
-        {mType === "brainstorm" ? <BrainstormDescription /> : <AnalyzeDescription />}
+        <main className="flex-1 space-y-3 max-w-2xl">
+          <h1 className="text-3xl font-semibold">Analytics Marketplaces</h1>
+          <p className="text-lg text-cyan-500">
+            Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+            projects launch, grow and succeed.
+          </p>
+          <p className="text-gray-500 text-sm">
+            Explore Analytics marketplaces to launch or discover challenges. Claim challenges to submit your best work,
+            or peer review others’ work to reward the highest quality outputs.
+          </p>
+        </main>
         <aside>
           <ConnectWalletWrapper>
             <Button size="lg" asChild>
-              <Link to={`/app/${mType}/new`}>Create Marketplace</Link>
+              <Link to={`/app/market/new`}>Create Marketplace</Link>
             </Button>
           </ConnectWalletWrapper>
         </aside>
       </header>
 
       <h2 className="text-lg font-semibold border-b border-gray-200 py-4 mb-6">
-        {mType === "brainstorm" ? "Brainstorm" : "Analytics"} Marketplaces{" "}
-        <span className="text-gray-400">({totalResults})</span>
+        Analytics Marketplaces <span className="text-gray-400 ml-1">({totalResults})</span>
       </h2>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -150,37 +156,5 @@ export default function Marketplaces() {
         </aside>
       </section>
     </Container>
-  );
-}
-
-function AnalyzeDescription() {
-  return (
-    <main className="flex-1 space-y-3 max-w-2xl">
-      <h1 className="text-3xl font-semibold">Analytics Marketplaces</h1>
-      <p className="text-lg text-cyan-500">
-        Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
-        projects launch, grow and succeed.
-      </p>
-      <p className="text-gray-500 text-sm">
-        Explore Analytics marketplaces to launch or discover challenges. Claim challenges to submit your best work, or
-        peer review others’ work to reward the highest quality outputs.
-      </p>
-    </main>
-  );
-}
-
-function BrainstormDescription() {
-  return (
-    <main className="flex-1 space-y-3 max-w-2xl">
-      <h1 className="text-3xl font-semibold">Brainstorm Marketplaces</h1>
-      <p className="text-lg text-cyan-500">
-        Source and prioritize questions, problems, or tooling needs for Web3 analysts to address.
-      </p>
-      <p className="text-gray-500 text-sm">
-        Explore Brainstorm marketplaces to launch or discover challenges. Claim challenges to submit your best ideas, or
-        peer review others’ to surface and reward the most relevant ideas. Outputs of a Brainstorm can prompt Analytics
-        challenges.
-      </p>
-    </main>
   );
 }
