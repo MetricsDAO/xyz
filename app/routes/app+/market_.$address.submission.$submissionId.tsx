@@ -137,7 +137,7 @@ export default function ChallengeSubmission() {
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
-          <DetailItem title="Author">
+          <DetailItem title="Analyst">
             <UserBadge address={submission.configuration.serviceProvider} />
           </DetailItem>
           <DetailItem title="Created">
