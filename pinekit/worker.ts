@@ -67,11 +67,11 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
   ) {
     const key = `${contract.name}.${event}`;
     const handlers = handlerRegistry.get(key) || new Set();
-    handlers.add((event) => {
+    handlers.add(async (event) => {
       if (event.block.number <= FROM_BLOCK) {
         logger.info(`Event happened before FROM_BLOCK ${FROM_BLOCK}. Skipping`);
       } else {
-        fn(event);
+        return fn(event);
       }
     });
     handlerRegistry.set(key, handlers);
@@ -103,8 +103,9 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
         logger.info(`no handlers for event ${key}`, event);
       } else {
         for (const handler of handlers) {
-          logger.info(`processing event ${key}`, event);
+          logger.info(`processing event ${key} ${event.block.number}`);
           await handler(event);
+          logger.info(`done processing event ${key} ${event.block.number}`);
         }
       }
       await client.saveCursorAt(event, subHandle);
