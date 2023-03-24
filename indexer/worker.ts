@@ -11,19 +11,19 @@ import { indexSubmission } from "~/domain/submission/functions.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
-import { PINE_SUBSCRIBER, PINE_VERSION } from "~/utils/constants";
 import { getContracts } from "~/utils/contracts.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 const contracts = getContracts();
-const PINE_NAMESPACE = env.ENVIRONMENT === "production" || env.ENVIRONMENT === "staging" ? "mdao-prod" : "mdao-dev";
+const config = pineConfig();
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),
-  subscriber: PINE_SUBSCRIBER,
+  subscriber: config.subscriber,
   logger: logger,
   tracer: {
-    namespace: PINE_NAMESPACE,
-    version: PINE_VERSION,
+    namespace: config.namespace,
+    version: config.version,
     blockchain: { name: "polygon", network: "mainnet" },
   },
 });

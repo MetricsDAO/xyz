@@ -18,8 +18,8 @@ program
   .argument("<version>", "Version of the tracer")
   .option("-d, --dev", "Use development contracts", false)
   .action(async (namespace, version, options) => {
-    const isProd = !options.dev;
-    const contracts = contractsByEnv(isProd);
+    const isDev = options.dev;
+    const contracts = contractsByEnv(isDev);
     const res = await pine.createTracer({
       namespace,
       version,

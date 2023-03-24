@@ -1,6 +1,3 @@
-export const PINE_VERSION = "1.6.0";
-export const PINE_SUBSCRIBER = "mar23";
-
 export const REPUTATION_TOKEN_ID = 4;
 
 export const REPUTATION_REWARD_POOL = 5000;

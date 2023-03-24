@@ -3,10 +3,10 @@ import * as DevContracts from "labor-markets-abi-dev";
 import env from "~/env.server";
 
 export function getContracts() {
-  const isProd = env.ENVIRONMENT === "production" || env.ENVIRONMENT === "staging";
-  return contractsByEnv(isProd);
+  const isDev = env.ENVIRONMENT === "development";
+  return contractsByEnv(isDev);
 }
 
-export function contractsByEnv(isProd?: boolean) {
-  return isProd ? ProdContracts : DevContracts;
+export function contractsByEnv(isDev?: boolean) {
+  return isDev ? DevContracts : ProdContracts;
 }
