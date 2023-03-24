@@ -8,7 +8,7 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { namedAction } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
-import { ValidatedInput } from "~/components";
+import { Tooltip, ValidatedInput } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Container } from "~/components/container";
@@ -58,8 +58,12 @@ export const loader = async (data: DataFunctionArgs) => {
     serviceProvider: user.address as `0x${string}`,
   });
   const networks = await listNetworks();
+  const userNetworks = wallets.map((w) => w.chain);
+  const newNetworks = networks.filter(
+    (network) => typeof userNetworks.find((un) => network.name === un.name) == "undefined"
+  );
   return typedjson({
-    networks,
+    newNetworks,
     wallets,
     submissionCount,
     user,
@@ -171,7 +175,7 @@ function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
 function AddAddressButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), [setOpen]);
-  const { networks } = useTypedLoaderData<typeof loader>();
+  const { newNetworks } = useTypedLoaderData<typeof loader>();
   const fetcher = useFetcher<ActionResponse>();
   useEffect(() => {
     if (fetcher.data && !isValidationError(fetcher.data)) {
@@ -181,9 +185,11 @@ function AddAddressButton() {
 
   return (
     <>
-      <Button className="mx-auto" onClick={() => setOpen(true)}>
-        Add Address
-      </Button>
+      <Tooltip content={"Wallets exist for all available chains"} hide={newNetworks.length > 0}>
+        <Button className="mx-auto" onClick={() => setOpen(true)} disabled={newNetworks.length == 0}>
+          Add Address
+        </Button>
+      </Tooltip>
       <Modal isOpen={open} onClose={close} title="Add an address" unmount>
         <ValidatedForm
           fetcher={fetcher}
@@ -201,7 +207,7 @@ function AddAddressButton() {
           className="space-y-5 mt-5"
         >
           <div className="pb-44 pt-8">
-            <AddPaymentAddressForm networks={networks} />
+            <AddPaymentAddressForm networks={newNetworks} />
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={close} type="button">
