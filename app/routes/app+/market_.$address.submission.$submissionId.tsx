@@ -173,9 +173,6 @@ export default function ChallengeSubmission() {
             </DetailItem>
           )}
         </Detail>
-        <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
-          {submission.appData?.submissionUrl}
-        </p>
         <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
           <a
             href={submission.appData?.submissionUrl}
