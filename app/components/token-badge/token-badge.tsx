@@ -3,16 +3,15 @@ import { useTokens } from "~/hooks/use-root-data";
 import { fromTokenAmount } from "~/utils/helpers";
 import { Badge } from "../badge";
 
-export function TokenBadge({ token, quantity }: { token: Token; quantity?: string }) {
+export function TokenBadge({ token, quantity }: { token: Token; quantity: string }) {
   return (
     <Badge>
-      {quantity ? <span className="text-xs"> {fromTokenAmount(quantity, token.decimals)}</span> : null}
-      <span className="text-sm">{token.symbol}</span>
+      <span className="text-sm"> {`${fromTokenAmount(quantity, token?.decimals ?? 18)} ${token.symbol}`} </span>
     </Badge>
   );
 }
 
-export function TokenBadgeByAddress({ address, quantity }: { address: string; quantity?: string }) {
+export function TokenBadgeByAddress({ address, quantity }: { address: string; quantity: string }) {
   const tokens = useTokens();
   const token = tokens.find((t) => t.contractAddress === address);
   if (!token) {
