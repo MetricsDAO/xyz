@@ -4,12 +4,13 @@ import type { ServiceRequestWithIndexData } from "~/domain/service-request/schem
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
+import { PINE_SUBSCRIBER } from "~/utils/constants";
 
 const client = new MongoClient(env.MONGODB_URI);
 
 // Since every index is a deterministic history, we can have each subscriber have its own database.
 // This is useful for deploying changes to the index and having it recreate from scratch.
-const db = client.db(env.PINE_SUBSCRIBER);
+const db = client.db(PINE_SUBSCRIBER);
 
 const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestWithIndexData>("serviceRequests");

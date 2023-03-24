@@ -14,13 +14,15 @@ const pine = new Client({ apiKey: env.PINE_API_KEY });
 program
   .command("create-tracer")
   .description("Create a new tracer")
+  .argument("<namespace>", "Namespace of the tracer")
+  .argument("<version>", "Version of the tracer")
   .option("-d, --dev", "Use development contracts", false)
-  .action(async (options) => {
+  .action(async (namespace, version, options) => {
     const isProd = !options.dev;
     const contracts = contractsByEnv(isProd);
     const res = await pine.createTracer({
-      namespace: env.PINE_NAMESPACE,
-      version: "1.6.0",
+      namespace,
+      version,
       blockchain: {
         name: "polygon",
         network: "mainnet",
