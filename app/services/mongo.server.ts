@@ -6,12 +6,11 @@ import env from "~/env.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { pineConfig } from "~/utils/pine-config.server";
 
-const pine = pineConfig();
-
 const client = new MongoClient(env.MONGODB_URI);
 
 // Since every index is a deterministic history, we can have each subscriber have its own database.
 // This is useful for deploying changes to the index and having it recreate from scratch.
+const pine = pineConfig();
 const db = client.db(`${pine.namespace}-${pine.subscriber}`);
 
 const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
