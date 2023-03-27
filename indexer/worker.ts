@@ -1,14 +1,12 @@
-import { getAddress } from "ethers/lib/utils.js";
 import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
-import { z } from "zod";
-import { upsertIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { handleLaborMarketConfiguredEvent } from "~/domain/labor-market/functions.server";
 import {
   handleRequestConfiguredEvent,
   indexClaimToReview,
   indexClaimToSubmit,
 } from "~/domain/service-request/functions.server";
-import { indexSubmission } from "~/domain/submission/functions.server";
+import { handleRequestFulfilledEvent } from "~/domain/submission/functions.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
@@ -37,7 +35,7 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  upsertIndexedLaborMarket(getAddress(event.contract.address), event);
+  return handleLaborMarketConfiguredEvent(event);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
@@ -49,10 +47,7 @@ worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
-  const submissionId = z.string().parse(event.decoded.inputs.submissionId);
-  const laborMarketAddress = getAddress(event.contract.address);
-
-  return indexSubmission(laborMarketAddress, submissionId, event);
+  return handleRequestFulfilledEvent(event);
 });
 
 worker.onEvent(LaborMarket, "RequestSignal", async (event) => {

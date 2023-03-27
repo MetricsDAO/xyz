@@ -1,12 +1,14 @@
 import type { User } from "@prisma/client";
-import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
+import { EvmAddressSchema } from "~/domain/address";
 import type { SubmissionForm } from "~/features/submission-creator/schema";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
+import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
@@ -27,15 +29,12 @@ import { SubmissionContractSchema, SubmissionDocSchema, SubmissionWithServiceReq
  * If it doesn't exist, it probably means that it hasn't been indexed yet so we
  * index it eagerly and return the result.
  */
-export async function getIndexedSubmission(
-  address: EvmAddress,
-  id: string,
-  event?: TracerEvent
-): Promise<SubmissionDoc> {
+export async function getIndexedSubmission(address: EvmAddress, id: string): Promise<SubmissionDoc> {
   const doc = await mongo.submissions.findOne({ id, laborMarketAddress: address });
   if (!doc) {
-    await indexSubmission(address, id, event);
-    return getIndexedSubmission(address, id, event);
+    const newDoc = await upsertSubmission(address, id);
+    invariant(newDoc, "Submission should have been indexed");
+    return newDoc;
   }
   return SubmissionDocSchema.parse(doc);
 }
@@ -70,7 +69,6 @@ type FilterParams = Pick<SubmissionSearch, "laborMarketAddress" | "serviceReques
  */
 const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions.find>[0] => {
   return {
-    valid: true,
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
     ...(params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {}),
@@ -78,43 +76,61 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
   };
 };
 
-/**
- * Finds a Submission by its ID.
- * @param {String} id - The ID of the submission.
- * @returns - The Submission or null if not found.
- */
-export const findSubmission = async (id: string, laborMarketAddress: EvmAddress) => {
-  return mongo.submissions.findOne({ valid: true, laborMarketAddress, id });
-};
+export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
+  const submissionId = z.string().parse(event.decoded.inputs.submissionId);
+  const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
+  const submission = await upsertSubmission(laborMarketAddress, submissionId, event);
+  invariant(submission, "Submission should exist after upserting");
 
-/**
- * Counts the number of Submissions on a particular service request.
- * @param {SubmissionSearch} params - The search parameters.
- * @returns {number} - The number of submissions that match the search.
- */
-export const countSubmissionsOnServiceRequest = async (serviceRequestId: string) => {
-  return mongo.submissions.countDocuments({ serviceRequestId, valid: true });
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "Submission",
+    eventType: {
+      eventType: "RequestFulfilled",
+      config: {
+        laborMarketAddress: submission.laborMarketAddress,
+        requestId: submission.serviceRequestId,
+        submissionId: submission.id,
+        title: submission.appData?.title ?? "",
+      },
+    },
+    iconType: "submission",
+    actionName: "Submission",
+    userAddress: submission.configuration.serviceProvider,
+    createdAtBlockTimestamp: submission.createdAtBlockTimestamp,
+    indexedAt: new Date(),
+  });
+
+  await mongo.serviceRequests.updateOne(
+    { laborMarketAddress: submission.laborMarketAddress, id: submission.serviceRequestId },
+    {
+      $inc: {
+        submissionCount: 1,
+      },
+    }
+  );
 };
 
 /**
  * Create a new SubmissionDoc from a TracerEvent.
  */
-export const indexSubmission = async (address: EvmAddress, id: string, event?: TracerEvent) => {
-  const contractAddress = getAddress(address);
-  const contract = LaborMarket__factory.connect(contractAddress, nodeProvider);
+export const upsertSubmission = async (address: EvmAddress, id: string, event?: TracerEvent) => {
+  const contract = LaborMarket__factory.connect(address, nodeProvider);
 
   const submission = await contract.serviceSubmissions(id, { blockTag: event?.block.number });
   const appData = await fetchIpfsJson(submission.uri)
     .then(SubmissionFormSchema.parse)
     .catch(() => null);
 
-  const isValid = appData !== null;
+  if (!appData) {
+    logger.warn(`Failed to fetch and parse submission app data for ${address}. Id: ${id} Skipping indexing.`);
+    return null;
+  }
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
   const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
     id: id,
-    laborMarketAddress: contractAddress,
+    laborMarketAddress: address,
     serviceRequestId: submission.requestId.toString(),
-    valid: isValid,
     indexedAt: new Date(),
     configuration: {
       serviceProvider: submission.serviceProvider as `0x${string}`,
@@ -125,44 +141,16 @@ export const indexSubmission = async (address: EvmAddress, id: string, event?: T
 
   const createdAtBlockTimestamp = event?.block.timestamp ? new Date(event?.block.timestamp) : new Date();
 
-  //log this event in user activity collection
-  mongo.userActivity.insertOne({
-    groupType: "Submission",
-    eventType: {
-      eventType: "RequestFulfilled",
-      config: {
-        laborMarketAddress: contractAddress,
-        requestId: doc.serviceRequestId,
-        submissionId: id,
-        title: appData?.title ?? "",
-      },
-    },
-    iconType: "submission",
-    actionName: "Submission",
-    userAddress: doc.configuration.serviceProvider,
-    createdAtBlockTimestamp: createdAtBlockTimestamp,
-    indexedAt: new Date(),
-  });
-
-  if (isValid) {
-    await mongo.serviceRequests.updateOne(
-      { laborMarketAddress: doc.laborMarketAddress, id: doc.serviceRequestId },
-      {
-        $inc: {
-          submissionCount: 1,
-        },
-      }
-    );
-  }
-
-  return mongo.submissions.updateOne(
+  const res = await mongo.submissions.findOneAndUpdate(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
     {
       $set: doc,
       $setOnInsert: { createdAtBlockTimestamp: createdAtBlockTimestamp },
     },
-    { upsert: true }
+    { upsert: true, returnDocument: "after" }
   );
+
+  return res.value;
 };
 /**
  * Prepare a new Submission for writing to chain
