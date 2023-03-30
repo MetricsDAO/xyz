@@ -1,13 +1,14 @@
 import { UserCircleIcon } from "@heroicons/react/20/solid";
 import { BigNumber } from "ethers";
-import { ReputationToken } from "labor-markets-abi";
 import { useContractRead, useEnsAvatar, useEnsName } from "wagmi";
+import { useContracts } from "~/hooks/use-root-data";
 import { REPUTATION_TOKEN_ID } from "~/utils/constants";
 import { displayBalance, truncateAddress } from "~/utils/helpers";
 import { Avatar } from "../avatar";
 
 /** Renders a wallet's avatar and address or ENS name, along with their rMETRIC balance, and UserCard on hover. */
 export function UserBadge({ address, variant }: { address: `0x${string}`; variant?: "default" | "separate" }) {
+  const contracts = useContracts();
   const { data: ensName } = useEnsName({
     address: address,
     chainId: 1,
@@ -19,8 +20,8 @@ export function UserBadge({ address, variant }: { address: `0x${string}`; varian
   });
 
   const { data: reputationBalance } = useContractRead({
-    address: ReputationToken.address,
-    abi: ReputationToken.abi,
+    address: contracts.ReputationToken.address,
+    abi: contracts.ReputationToken.abi,
     functionName: "balanceOf",
     args: [address, BigNumber.from(REPUTATION_TOKEN_ID)],
   });

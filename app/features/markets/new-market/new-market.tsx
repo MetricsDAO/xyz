@@ -5,13 +5,6 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { MarketNewValues } from "./schema";
 import { MarketNewValuesSchema } from "./schema";
-import {
-  LaborMarket,
-  LaborMarketNetwork,
-  ReputationModule,
-  ReputationToken,
-  ScalableLikertEnforcement,
-} from "labor-markets-abi";
 import { BigNumber, ethers } from "ethers";
 import { LaborMarketNetwork__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
@@ -21,44 +14,53 @@ import { TxModal } from "~/components/tx-modal/tx-modal";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
 import { REPUTATION_REWARD_POOL, REPUTATION_REVIEW_SIGNAL_STAKE, REPUTATION_TOKEN_ID } from "~/utils/constants";
 import type { Project, Token } from "@prisma/client";
+import { useContracts } from "~/hooks/use-root-data";
 
 /**
  * Filters and parses the logs for a specific event.
  */
-function getEventFromLogs(iface: ethers.utils.Interface, logs: ethers.providers.Log[], eventName: string) {
+function getEventFromLogs(
+  address: string,
+  iface: ethers.utils.Interface,
+  logs: ethers.providers.Log[],
+  eventName: string
+) {
   return logs
-    .filter((log) => log.address === LaborMarketNetwork.address)
+    .filter((log) => log.address === address)
     .map((log) => iface.parseLog(log))
     .find((e) => e.name === eventName);
 }
 
-function configureFromValues(inputs: { owner: EvmAddress; cid: string; values: MarketNewValues }) {
+function configureFromValues(
+  contracts: ReturnType<typeof useContracts>,
+  inputs: { owner: EvmAddress; cid: string; values: MarketNewValues }
+) {
   const { owner, cid, values } = inputs;
   return configureWrite({
-    abi: LaborMarketNetwork.abi,
-    address: LaborMarketNetwork.address,
+    abi: contracts.LaborMarketNetwork.abi,
+    address: contracts.LaborMarketNetwork.address,
     functionName: "createLaborMarket",
     args: [
-      LaborMarket.address,
+      contracts.LaborMarket.address,
       {
         marketUri: cid,
-        owner: owner as `0x${string}`,
+        owner: owner,
         modules: {
-          network: LaborMarketNetwork.address,
-          reputation: ReputationModule.address,
-          enforcement: ScalableLikertEnforcement.address,
+          network: contracts.LaborMarketNetwork.address,
+          reputation: contracts.ReputationModule.address,
+          enforcement: contracts.ScalableLikertEnforcement.address,
           enforcementKey: ethers.utils.formatBytes32String("aggressive") as `0x${string}`,
         },
         delegateBadge: {
-          token: values.configuration.delegateBadge.token as `0x${string}`,
+          token: values.configuration.delegateBadge.token,
           tokenId: BigNumber.from(values.configuration.delegateBadge.tokenId),
         },
         maintainerBadge: {
-          token: values.configuration.maintainerBadge.token as `0x${string}`,
+          token: values.configuration.maintainerBadge.token,
           tokenId: BigNumber.from(values.configuration.maintainerBadge.tokenId),
         },
         reputationBadge: {
-          token: ReputationToken.address,
+          token: contracts.ReputationToken.address,
           tokenId: BigNumber.from(REPUTATION_TOKEN_ID),
         },
         reputationParams: {
@@ -82,6 +84,7 @@ export function NewMarket({
   projects: Project[];
   defaultValues: DefaultValues<MarketNewValues>;
 }) {
+  const contracts = useContracts();
   const navigate = useNavigate();
 
   const {
@@ -117,17 +120,17 @@ export function NewMarket({
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarketNetwork__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "LaborMarketCreated");
+        const event = getEventFromLogs(contracts.LaborMarketNetwork.address, iface, receipt.logs, "LaborMarketCreated");
         if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
       },
-      [navigate]
+      [contracts.LaborMarketNetwork.address, navigate]
     ),
   });
 
   const onSubmit = (values: MarketNewValues) => {
     transactor.start({
       metadata: values.appData,
-      config: ({ account, cid }) => configureFromValues({ owner: account, cid, values }),
+      config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values }),
     });
   };
 
@@ -258,7 +261,7 @@ export function NewMarket({
                   render={({ field }) => (
                     <Select
                       {...field}
-                      options={[{ label: "Constant Likert", value: ScalableLikertEnforcement.address }]}
+                      options={[{ label: "Constant Likert", value: contracts.ScalableLikertEnforcement.address }]}
                     />
                   )}
                 />

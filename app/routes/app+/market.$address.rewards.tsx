@@ -39,7 +39,7 @@ export default function MarketplaceIdRewards() {
             {/* <Card className="p-4 space-y-2">
               <p className="font-weight-500 text-base text-[#252525]">Reward Tokens</p>
               <p className="text-xs text-gray-500">TOKENS YOU CAN EARN IN THIS CHALLENGE MARKETPLACE</p>
-              <p className="flex flex-row space-x-3 mt-1">{/* <TokenBadge slug="Solana" /></p>
+              <p className="flex flex-row space-x-3 mt-1">Solana</p>
             </Card> */}
           </div>
         </div>

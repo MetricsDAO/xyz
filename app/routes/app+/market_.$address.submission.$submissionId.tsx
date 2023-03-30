@@ -82,8 +82,6 @@ export default function ChallengeSubmission() {
     useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
-  const mType = laborMarket.appData?.type;
-  invariant(mType, "Labor Market type is undefined");
   const [searchParams, setSearchParams] = useSearchParams();
   const submittedByUser = user && user.address === submission.configuration.serviceProvider;
 
@@ -116,7 +114,7 @@ export default function ChallengeSubmission() {
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
         crumbs={[
-          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/analyze`, name: "Marketplaces" },
           { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
           {
             link: `/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`,
@@ -124,20 +122,22 @@ export default function ChallengeSubmission() {
           },
         ]}
       />
-      <section className="flex flex-wrap gap-5 justify-between pb-10 items-center">
-        <div className="flex items-center gap-2">
+      <section className="flex flex-col md:flex-row gap-5 justify-between pb-10 items-center">
+        <div className="flex items-center gap-2 md:basis-3/4">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
-        {!submittedByUser ? (
-          <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-        ) : (
-          <p className="text-sm">Your Submission!</p>
-        )}
+        <div className="flex md:basis-1/4 md:justify-end">
+          {!submittedByUser ? (
+            <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
+          ) : (
+            <p className="text-sm">Your Submission!</p>
+          )}
+        </div>
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
-          <DetailItem title="Author">
+          <DetailItem title="Analyst">
             <UserBadge address={submission.configuration.serviceProvider} />
           </DetailItem>
           <DetailItem title="Created">
@@ -173,11 +173,19 @@ export default function ChallengeSubmission() {
             </DetailItem>
           )}
         </Detail>
-        {mType === "brainstorm" ? (
-          <BrainstormDescription submission={submission} />
-        ) : (
-          <AnalyzeDescription submission={submission} />
-        )}
+        <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
+          {submission.appData?.submissionUrl}
+        </p>
+        <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
+          <a
+            href={submission.appData?.submissionUrl}
+            target="_blank"
+            className="text-blue-600 text-sm flex flex-row items-center"
+            rel="noreferrer"
+          >
+            {submission.appData?.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
+          </a>
+        </div>
       </section>
       <h2 className="text-lg font-semibold border-b border-gray-100 py-4 mb-6">Reviews ({reviews.length})</h2>
 
@@ -286,36 +294,6 @@ function ReviewQuestionDrawerButton({
           />
         )}
       </Drawer>
-    </>
-  );
-}
-
-function AnalyzeDescription({ submission }: { submission: SubmissionDoc }) {
-  return (
-    <>
-      <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
-        {submission.appData?.submissionUrl}
-      </p>
-      <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
-        <a
-          href={submission.appData?.submissionUrl}
-          target="_blank"
-          className="text-blue-600 text-sm flex flex-row items-center"
-          rel="noreferrer"
-        >
-          {submission.appData?.title} dashboard <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
-        </a>
-      </div>
-    </>
-  );
-}
-
-function BrainstormDescription({ submission }: { submission: SubmissionDoc }) {
-  return (
-    <>
-      <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
-        {submission.appData?.submissionUrl}
-      </p>
     </>
   );
 }

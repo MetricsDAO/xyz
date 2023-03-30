@@ -1,16 +1,17 @@
 import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { useCallback } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
+import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface ClaimRewardCreatorProps {
-  laborMarketAddress: string;
+  laborMarketAddress: EvmAddress;
   submissionId: string;
-  payoutAddress: string;
+  payoutAddress: EvmAddress;
   confirmationMessage?: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ export function ClaimRewardCreator({
   payoutAddress,
   confirmationMessage,
 }: ClaimRewardCreatorProps) {
+  const contracts = useContracts();
   const navigate = useNavigate();
 
   const transactor = useTransactor({
@@ -34,12 +36,7 @@ export function ClaimRewardCreator({
 
   const onClick = () => {
     transactor.start({
-      config: () =>
-        configureFromValues({
-          laborMarketAddress: laborMarketAddress as `0x${string}`,
-          submissionId,
-          payoutAddress: payoutAddress as `0x${string}`,
-        }),
+      config: () => configureFromValues({ contracts, inputs: { laborMarketAddress, submissionId, payoutAddress } }),
     });
   };
 
@@ -54,18 +51,20 @@ export function ClaimRewardCreator({
 }
 
 function configureFromValues({
-  laborMarketAddress,
-  submissionId,
-  payoutAddress,
+  contracts,
+  inputs,
 }: {
-  laborMarketAddress: `0x${string}`;
-  submissionId: string;
-  payoutAddress: `0x${string}`;
+  contracts: ReturnType<typeof useContracts>;
+  inputs: {
+    laborMarketAddress: EvmAddress;
+    submissionId: string;
+    payoutAddress: EvmAddress;
+  };
 }) {
   return configureWrite({
-    address: laborMarketAddress,
-    abi: LaborMarket.abi,
+    address: inputs.laborMarketAddress,
+    abi: contracts.LaborMarket.abi,
     functionName: "claim",
-    args: [BigNumber.from(submissionId), payoutAddress],
+    args: [BigNumber.from(inputs.submissionId), inputs.payoutAddress],
   });
 }

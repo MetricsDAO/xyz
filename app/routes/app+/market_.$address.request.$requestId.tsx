@@ -100,13 +100,13 @@ export default function ServiceRequest() {
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
         crumbs={[
-          { link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" },
+          { link: `/app/analyze`, name: "Marketplaces" },
           { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
         ]}
       />
-      <header className="flex flex-wrap gap-5 justify-between pb-16">
-        <h1 className="text-3xl font-semibold">{serviceRequest.appData?.title}</h1>
-        <div className="flex flex-wrap gap-5">
+      <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
+        <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
+        <div className="flex flex-wrap gap-5 md:basis-1/3 justify-end">
           {showClaimToReview && (
             <WalletGuardedButtonLink
               buttonText="Claim to Review"

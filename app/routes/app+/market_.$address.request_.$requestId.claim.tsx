@@ -2,7 +2,6 @@ import { Link } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { notFound } from "remix-utils";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -29,17 +28,12 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 
 export default function ClaimToSubmit() {
   const { serviceRequest, laborMarket } = useTypedLoaderData<typeof loader>();
-  const mType = laborMarket.appData?.type;
-  invariant(mType, "marketplace type must be specified");
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.appData?.title}</h1>
-        <h2 className="text-lg text-cyan-500">
-          Claiming is an up front commitment to submit at least one{" "}
-          {mType === "brainstorm" ? "submission" : "dashboard"}
-        </h2>
+        <h2 className="text-lg text-cyan-500">Claiming is an up front commitment to submit at least one dashboard</h2>
         <p className="text-gray-500 text-sm">
           You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked
           rMETRIC will be slashed.

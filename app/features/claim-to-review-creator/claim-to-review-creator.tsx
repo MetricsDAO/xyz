@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { Button } from "../../components/button";
@@ -19,6 +19,7 @@ interface ClaimToReviewFormProps {
 }
 
 export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps) {
+  const contracts = useContracts();
   const methods = useForm<ClaimToReviewFormValues>({
     resolver: zodResolver(ClaimToReviewFormValuesSchema),
   });
@@ -36,7 +37,7 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
 
   const onSubmit = (formValues: ClaimToReviewFormValues) => {
     transactor.start({
-      config: () => configureFromValues({ serviceRequest, formValues }),
+      config: () => configureFromValues({ contracts, inputs: { serviceRequest, formValues } }),
     });
   };
 
@@ -74,16 +75,19 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
 }
 
 function configureFromValues({
-  serviceRequest,
-  formValues,
+  contracts,
+  inputs,
 }: {
-  serviceRequest: ServiceRequestWithIndexData;
-  formValues: ClaimToReviewFormValues;
+  contracts: ReturnType<typeof useContracts>;
+  inputs: {
+    formValues: ClaimToReviewFormValues;
+    serviceRequest: ServiceRequestWithIndexData;
+  };
 }) {
   return configureWrite({
-    abi: LaborMarket.abi,
-    address: serviceRequest.laborMarketAddress as `0x${string}`,
+    abi: contracts.LaborMarket.abi,
+    address: inputs.serviceRequest.laborMarketAddress as `0x${string}`,
     functionName: "signalReview",
-    args: [BigNumber.from(serviceRequest.id), BigNumber.from(formValues.quantity)],
+    args: [BigNumber.from(inputs.serviceRequest.id), BigNumber.from(inputs.formValues.quantity)],
   });
 }

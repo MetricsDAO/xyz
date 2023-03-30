@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BigNumber } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { scoreToLabel } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import { ReviewCreatorFields } from "./review-creator-fields";
@@ -13,13 +13,14 @@ import type { ReviewFormValues } from "./review-creator-values";
 import { ReviewFormValuesSchema } from "./review-creator-values";
 
 interface ReviewFormProps {
-  laborMarketAddress: string;
+  laborMarketAddress: EvmAddress;
   submissionId: string;
   requestId: string;
   onCancel: () => void;
 }
 
 export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onCancel }: ReviewFormProps) {
+  const contracts = useContracts();
   const methods = useForm<ReviewFormValues>({
     resolver: zodResolver(ReviewFormValuesSchema),
     defaultValues: {
@@ -37,12 +38,7 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
   const onSubmit = (formValues: ReviewFormValues) => {
     transactor.start({
       config: () =>
-        configureFromValues({
-          laborMarketAddress: laborMarketAddress as `0x${string}`,
-          submissionId,
-          requestId,
-          formValues,
-        }),
+        configureFromValues({ contracts, inputs: { laborMarketAddress, submissionId, requestId, formValues } }),
     });
   };
 
@@ -74,19 +70,21 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
 }
 
 function configureFromValues({
-  laborMarketAddress,
-  formValues,
-  submissionId,
-  requestId,
+  contracts,
+  inputs,
 }: {
-  laborMarketAddress: EvmAddress;
-  submissionId: string;
-  requestId: string;
-  formValues: ReviewFormValues;
+  contracts: ReturnType<typeof useContracts>;
+  inputs: {
+    laborMarketAddress: EvmAddress;
+    submissionId: string;
+    requestId: string;
+    formValues: ReviewFormValues;
+  };
 }) {
+  const { laborMarketAddress, submissionId, requestId, formValues } = inputs;
   return configureWrite({
     address: laborMarketAddress,
-    abi: LaborMarket.abi,
+    abi: contracts.LaborMarket.abi,
     functionName: "review",
     args: [BigNumber.from(requestId), BigNumber.from(submissionId), BigNumber.from(formValues.score)],
   });
