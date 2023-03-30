@@ -61,24 +61,6 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: E
 };
 
 /**
- * Finds a review by its ID.
- * @param {String} id - The ID of the review.
- * @returns - The Submission or null if not found.
- */
-export const findReview = async (id: string, laborMarketAddress: EvmAddress) => {
-  return mongo.reviews.findOne({ valid: true, laborMarketAddress, id });
-};
-
-/**
- * Counts the number of reviews on a particular submission.
- * @param {submissionId} params - The submission to count reviews for.
- * @returns {number} - The number of reviews that match the search.
- */
-export const countReviewsOnSubmission = async (submissionId: string) => {
-  return mongo.reviews.countDocuments({ submissionId, valid: true });
-};
-
-/**
  * Create a new ReviewDoc from a TracerEvent.
  */
 export const indexReview = async (event: TracerEvent) => {

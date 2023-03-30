@@ -38,7 +38,6 @@ export const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
-  valid: z.boolean(),
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
   configuration: z.object({

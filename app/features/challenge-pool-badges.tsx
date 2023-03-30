@@ -1,6 +1,6 @@
 import type { Token } from "@prisma/client";
 import { Badge, TokenAvatar } from "~/components";
-import type { LaborMarketDoc } from "~/domain";
+import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import { fromTokenAmount } from "~/utils/helpers";
 
 const MAX = 3;
@@ -9,7 +9,7 @@ export function ChallengePoolBadges({
   pools,
   tokens,
 }: {
-  pools: LaborMarketDoc["serviceRequestRewardPools"];
+  pools: LaborMarketWithIndexData["indexData"]["serviceRequestRewardPools"];
   tokens: Token[];
 }) {
   const surplus = pools.length - MAX;
