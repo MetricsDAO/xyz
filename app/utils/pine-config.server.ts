@@ -1,6 +1,6 @@
 import env from "~/env.server";
 
-const SUBSCRIBER = "mar24-deploy";
+const SUBSCRIBER = "mar30-deploy-2";
 
 export function pineConfig() {
   return {
