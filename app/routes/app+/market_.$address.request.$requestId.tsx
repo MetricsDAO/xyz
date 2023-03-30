@@ -106,7 +106,7 @@ export default function ServiceRequest() {
       />
       <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
-        <div className="flex flex-wrap gap-5 md:basis-1/3">
+        <div className="flex flex-wrap gap-5 md:basis-1/3 justify-end">
           {showClaimToReview && (
             <WalletGuardedButtonLink
               buttonText="Claim to Review"

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CopyToClipboard } from "~/components";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
+import type { EvmAddress } from "~/domain/address";
 import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
 import { useTokens } from "~/hooks/use-root-data";
 import { toNetworkName, truncateAddress } from "~/utils/helpers";
@@ -32,7 +33,7 @@ export function ClaimButton({
     <ClaimRewardCreator
       laborMarketAddress={submission.laborMarketAddress}
       submissionId={submission.id}
-      payoutAddress={wallet.address}
+      payoutAddress={wallet.address as EvmAddress}
       confirmationMessage={
         <>
           <div className="space-y-5 mt-5">
