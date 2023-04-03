@@ -172,9 +172,7 @@ export default function ServiceRequest() {
         <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards">Rewards</TabNavLink>
         <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants">
-          Participants <span className="text-gray-400">(todo)</span>
-        </TabNavLink>
+        <TabNavLink to="./participants">Participants</TabNavLink>
       </TabNav>
 
       <Outlet />

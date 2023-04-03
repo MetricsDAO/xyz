@@ -1,6 +1,6 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Badge, Card, Checkbox, Field, Label, UserBadge, ValidatedInput, ValidatedSelect } from "~/components";
+import { Card, Checkbox, Field, Label, UserBadge, ValidatedInput, ValidatedSelect } from "~/components";
 import { findParticipants } from "~/domain/user-activity/function.server";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { fromNow } from "~/utils/date";
@@ -44,10 +44,6 @@ export default function ServiceIdParticipants() {
 
   return (
     <section className="space-y-7">
-      <p className="text-sm text-gray-700">
-        Average user rMETRIC <Badge className="ml-2 px-5 text-gray-900">--</Badge>
-      </p>
-
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="w-full border-spacing-4 border-separate space-y-4">
           {participations.map((p) => {
@@ -126,7 +122,7 @@ export default function ServiceIdParticipants() {
   );
 }
 
-function translateEventType(eventType) {
+function translateEventType(eventType: string) {
   switch (eventType) {
     case "RequestReviewed": {
       return "reviewed";
