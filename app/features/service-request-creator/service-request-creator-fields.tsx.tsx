@@ -68,7 +68,14 @@ export function ServiceRequestCreatorFields({
                 name="appData.language"
                 control={control}
                 render={({ field }) => {
-                  return <Select {...field} placeholder="English" options={[{ label: "English", value: "english" }]} />;
+                  return (
+                    <Select
+                      {...field}
+                      placeholder="English"
+                      value={"english"}
+                      options={[{ label: "English", value: "english" }]}
+                    />
+                  );
                 }}
               />
               <Error error={errors.appData?.language?.message} />
@@ -80,7 +87,11 @@ export function ServiceRequestCreatorFields({
                 control={control}
                 name="appData.projectSlugs"
                 render={({ field }) => (
-                  <Combobox {...field} options={validProjects.map((p) => ({ label: p.name, value: p.slug }))} />
+                  <Combobox
+                    {...field}
+                    placeholder="Blockchain/Project"
+                    options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
+                  />
                 )}
               />
               <Error error={errors.appData?.projectSlugs?.message} />
