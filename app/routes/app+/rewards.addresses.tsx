@@ -57,11 +57,9 @@ export const loader = async (data: DataFunctionArgs) => {
   const submissionCount = await countSubmissions({
     serviceProvider: user.address as `0x${string}`,
   });
+  const userNetworks = wallets.map((w) => w.chain.name);
   const networks = await listNetworks();
-  const userNetworks = wallets.map((w) => w.chain);
-  const newNetworks = networks.filter(
-    (network) => typeof userNetworks.find((un) => network.name === un.name) == "undefined"
-  );
+  const newNetworks = networks.filter((n) => !userNetworks.includes(n.name));
   return typedjson({
     newNetworks,
     wallets,
