@@ -106,11 +106,14 @@ export default function ChallengeSubmission() {
   });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
+  const score = submission.score?.avg;
+
   const isWinner =
     enforcementExpirationPassed &&
     reward !== undefined &&
-    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0));
-  const score = submission.score?.avg;
+    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0)) &&
+    score &&
+    score > 24;
 
   return (
     <Container className="pt-7 pb-16 px-10">
