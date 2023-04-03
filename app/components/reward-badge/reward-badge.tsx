@@ -1,24 +1,26 @@
+import type { Token } from "@prisma/client";
 import clsx from "clsx";
+import { TokenAvatar } from "../avatar";
 import { Tooltip } from "../tooltip";
 
 type Variant = "default" | "winner";
 
-export function RewardBadge({
-  paymentTokenAmount,
-  paymentTooltipAmount,
-  reputationTokenAmount,
-  tokenSymbol,
-  variant = "default",
-}: {
-  paymentTokenAmount: string;
-  paymentTooltipAmount?: string;
-  reputationTokenAmount: string;
-  tokenSymbol: string;
+type Props = {
   variant?: Variant;
-}) {
+  payment: {
+    amount: string;
+    token?: Token;
+    tooltipAmount?: string;
+  };
+  reputation?: {
+    amount: string;
+  };
+};
+
+export function RewardBadge({ payment, reputation, variant = "default" }: Props) {
   return (
     <div
-      className={clsx("flex rounded-full items-center pr-1 h-8 w-fit", {
+      className={clsx("flex rounded-full items-center h-8 w-fit", {
         "bg-gray-200": variant === "default",
         "bg-yellow-600": variant === "winner",
       })}
@@ -32,19 +34,26 @@ export function RewardBadge({
         <p
           className={clsx("text-sm", { "text-black": variant === "default", "text-yellow-700": variant === "winner" })}
         >
-          <Tooltip hide={paymentTooltipAmount === undefined} content={paymentTooltipAmount}>
-            {variant === "winner" ? <b>🏆</b> : <></>} {paymentTokenAmount} {tokenSymbol}
+          <Tooltip hide={payment.tooltipAmount === undefined} content={payment.tooltipAmount}>
+            <span className="inline-flex items-center justify-center h-8 whitespace-nowrap">
+              {variant === "winner" ? <b>🏆</b> : <>{payment.token && <TokenAvatar token={payment.token} />}</>}
+              <span className="mx-1">
+                {payment.amount} {payment.token?.symbol ?? ""}
+              </span>
+            </span>
           </Tooltip>
         </p>
       </div>
-      <p
-        className={clsx("text-sm px-1", {
-          "text-neutral-500": variant === "default",
-          "text-white": variant === "winner",
-        })}
-      >
-        {reputationTokenAmount} rMETRIC
-      </p>
+      {reputation && (
+        <p
+          className={clsx("text-sm px-1", {
+            "text-neutral-500": variant === "default",
+            "text-white": variant === "winner",
+          })}
+        >
+          {reputation.amount} rMETRIC
+        </p>
+      )}
     </div>
   );
 }
