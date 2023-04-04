@@ -1,45 +1,18 @@
-import { useRouteData } from "remix-utils";
-import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { PermissionIcon } from "~/features/permission-icon";
-import { useReputationTokenBalance } from "~/hooks/use-reputation-token-balance";
-import { useTokenBalance } from "~/hooks/use-token-balance";
+import { useMarketAddressData } from "~/hooks/use-market-address-data";
+import { usePrereqs } from "~/hooks/use-prereqs";
 import { useTokenData } from "~/hooks/use-token-data";
-import type { findLaborMarket } from "~/services/labor-market.server";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 
 export default function MarketplaceIdPrerequesites() {
-  const data = useRouteData<{ laborMarket: Awaited<ReturnType<typeof findLaborMarket>> }>(
-    "routes/app+/market.$address"
-  );
-  if (!data) {
-    throw new Error("MarketplaceIdPrerequesites must be rendered under a MarketplaceId route");
-  }
-  const { laborMarket } = data;
-
-  invariant(laborMarket, "No labormarket found");
+  const { laborMarket } = useMarketAddressData();
 
   const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
   const delegateData = useTokenData(laborMarket.configuration.delegateBadge);
 
-  const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token as `0x${string}`,
-    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
-  });
-
-  const delegateBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.delegateBadge.token as `0x${string}`,
-    tokenId: laborMarket.configuration.delegateBadge.tokenId,
-  });
-
-  const reputationBalance = useReputationTokenBalance();
-
-  const canSubmit =
-    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
-    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
-  const canReview = maintainerBadgeTokenBalance?.gt(0);
-  const canLaunchChallenges = delegateBadgeTokenBalance?.gt(0);
+  const { canReview, canLaunchChallenges, canSubmit } = usePrereqs({ laborMarket });
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">

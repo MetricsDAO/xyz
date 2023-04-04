@@ -1,10 +1,14 @@
-import { ScalableLikertEnforcement } from "labor-markets-abi";
+import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import { ScalableLikertEnforcement__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
+import { getContracts } from "~/utils/contracts.server";
 import { mongo } from "./mongo.server";
 import { nodeProvider } from "./node.server";
+
+const contracts = getContracts();
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
@@ -48,7 +52,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
  * @param {String} userAddress - The address of the user
  * @returns - the users submission or null if not found.
  */
-export const findUserReview = async (submissionId: string, laborMarketAddress: string, userAddress: string) => {
+export const findUserReview = async (submissionId: string, laborMarketAddress: EvmAddress, userAddress: string) => {
   return mongo.reviews.findOne({
     laborMarketAddress,
     submissionId,
@@ -57,36 +61,22 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: s
 };
 
 /**
- * Finds a review by its ID.
- * @param {String} id - The ID of the review.
- * @returns - The Submission or null if not found.
- */
-export const findReview = async (id: string, laborMarketAddress: string) => {
-  return mongo.reviews.findOne({ valid: true, laborMarketAddress, id });
-};
-
-/**
- * Counts the number of reviews on a particular submission.
- * @param {submissionId} params - The submission to count reviews for.
- * @returns {number} - The number of reviews that match the search.
- */
-export const countReviewsOnSubmission = async (submissionId: string) => {
-  return mongo.reviews.countDocuments({ submissionId, valid: true });
-};
-
-/**
  * Create a new ReviewDoc from a TracerEvent.
  */
 export const indexReview = async (event: TracerEvent) => {
+  const contractAddress = getAddress(event.contract.address);
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
   // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)
-  const enforceContract = ScalableLikertEnforcement__factory.connect(ScalableLikertEnforcement.address, nodeProvider);
-  const submissionToScore = await enforceContract.submissionToScore(event.contract.address, submissionId, {
+  const enforceContract = ScalableLikertEnforcement__factory.connect(
+    contracts.ScalableLikertEnforcement.address,
+    nodeProvider
+  );
+  const submissionToScore = await enforceContract.submissionToScore(contractAddress, submissionId, {
     blockTag: event.block.number,
   });
 
   const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
-    laborMarketAddress: event.contract.address,
+    laborMarketAddress: contractAddress,
     serviceRequestId: requestId,
     submissionId: submissionId,
     score: reviewScore,
@@ -94,14 +84,38 @@ export const indexReview = async (event: TracerEvent) => {
     indexedAt: new Date(),
   };
 
+  const submission = await mongo.submissions.findOne({
+    laborMarketAddress: doc.laborMarketAddress,
+    id: doc.submissionId,
+  });
+
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "Review",
+    eventType: {
+      eventType: "RequestReviewed",
+      config: {
+        laborMarketAddress: contractAddress,
+        requestId: requestId,
+        submissionId: submissionId,
+        title: submission?.appData?.title ?? "",
+      },
+    },
+    iconType: "submission",
+    actionName: "Submission",
+    userAddress: reviewer,
+    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    indexedAt: new Date(),
+  });
+
   await mongo.submissions.updateOne(
     { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
     {
       $set: {
         score: {
-          reviewCount: submissionToScore.reviewCount.toString(),
-          reviewSum: submissionToScore.reviewSum.toString(),
-          avg: submissionToScore.avg.toString(),
+          reviewCount: submissionToScore.reviewCount.toNumber(),
+          reviewSum: submissionToScore.reviewSum.toNumber(),
+          avg: submissionToScore.avg.toNumber(),
           qualified: submissionToScore.qualified,
         },
       },

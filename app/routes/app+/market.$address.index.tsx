@@ -6,9 +6,7 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import type { DataFunctionArgs, UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Card } from "~/components/card";
 import { ValidatedCombobox } from "~/components/combobox";
@@ -18,23 +16,22 @@ import { ValidatedInput } from "~/components/input/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
-import { ServiceRequestSearchSchema } from "~/domain/service-request";
+import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ProjectBadges } from "~/features/project-badges";
-import { findLaborMarket } from "~/services/labor-market.server";
+import { useMarketAddressData } from "~/hooks/use-market-address-data";
 import { listProjects } from "~/services/projects.server";
-import { countServiceRequests, searchServiceRequests } from "~/services/service-request.server";
+import { countServiceRequests, searchServiceRequests } from "~/domain/service-request/functions.server";
 import { listTokens } from "~/services/tokens.server";
-import { findProjectsBySlug, fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
+import { findProjectsBySlug } from "~/utils/helpers";
+import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
 const paramsSchema = z.object({ address: z.string() });
+
 export const loader = async (data: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(data.params);
-  const laborMarket = await findLaborMarket(address);
-  if (!laborMarket) {
-    throw notFound("Labor market not found");
-  }
+
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);
   const paramsWithLaborMarketId = { ...params, laborMarket: address };
@@ -47,7 +44,6 @@ export const loader = async (data: DataFunctionArgs) => {
     serviceRequests,
     totalResults,
     params,
-    laborMarket,
     projects,
     tokens,
   });
@@ -105,8 +101,8 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         options={[
           { label: "New", value: "createdAtBlockTimestamp" },
           { label: "Title", value: "appData.title" },
-          { label: "Submit Deadline", value: "configuration.submissionExpiration" },
-          { label: "Review Deadline", value: "configuration.enforcementExpiration" },
+          { label: "Submit Deadline", value: "configuration.submissionExp" },
+          { label: "Review Deadline", value: "configuration.enforcementExp" },
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
@@ -155,8 +151,7 @@ type MarketplaceChallengesTableProps = {
 };
 
 function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
-  invariant(laborMarket.appData?.type, "marketplace type must be specified");
+  const { laborMarket } = useMarketAddressData();
 
   return (
     <Table>
@@ -178,15 +173,14 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 </div>
               </Row.Column>
 
-              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQuantity)} ${toTokenAbbreviation(
-                sr.configuration.pToken,
-                tokens
-              )}`}</Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
               </Row.Column>
               <Row.Column>
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
+              </Row.Column>
+              <Row.Column>
+                <Countdown date={sr.configuration?.enforcementExp} />
               </Row.Column>
             </Link>
           </Row>
@@ -197,7 +191,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
 }
 
 function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: MarketplaceChallengesTableProps) {
-  const { laborMarket } = useTypedLoaderData<typeof loader>();
+  const { laborMarket } = useMarketAddressData();
 
   return (
     <div className="space-y-4">
@@ -205,7 +199,7 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
         return (
           <Card asChild key={sr.id}>
             <Link
-              to={`/app/${laborMarket?.appData?.type}/m/${laborMarket.address}/sr/${sr.id}`}
+              to={`/app/market/${laborMarket.address}/request/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenge</div>
@@ -217,17 +211,14 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
               </div>
 
               <div>Reward Pool</div>
-              <div>
-                {fromTokenAmount(sr.configuration.pTokenQuantity)}{" "}
-                {tokens.find((t) => t.contractAddress === sr.configuration.pToken)?.symbol}
-              </div>
+              <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.submissionExpiration} />
+                <Countdown date={sr.configuration?.submissionExp} />
               </div>
               <div>Review Deadline</div>
               <div className="text-gray-500 text-sm">
-                <Countdown date={sr.configuration?.enforcementExpiration} />
+                <Countdown date={sr.configuration?.enforcementExp} />
               </div>
             </Link>
           </Card>

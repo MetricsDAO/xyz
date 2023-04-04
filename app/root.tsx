@@ -3,7 +3,7 @@ import type { LinksFunction, MetaFunction } from "@remix-run/react/dist/routeMod
 import WalletProvider from "~/contexts/wallet-provider";
 import styles from "./styles/app.css";
 import rainbowKitStyles from "@rainbow-me/rainbowkit/styles.css";
-// import mdEditorStyles from "@uiw/react-md-editor/dist/mdeditor.min.css";
+import mdEditorStyles from "@uiw/react-md-editor/dist/mdeditor.min.css";
 import { getUser } from "./services/session.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { Toaster } from "react-hot-toast";
@@ -12,6 +12,9 @@ import env from "./env.server";
 import { Blurs } from "./features/shell";
 import { Error as ErrorBoundary } from "./components/error-boundary";
 import { withSentry } from "@sentry/remix";
+import { listProjects } from "./services/projects.server";
+import { listTokens } from "./services/tokens.server";
+import { getContracts } from "./utils/contracts.server";
 
 // add types for window.ENV
 declare global {
@@ -24,8 +27,14 @@ declare global {
 
 export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
+  const projects = await listProjects();
+  const tokens = await listTokens();
+  const contracts = getContracts();
   return typedjson({
     user,
+    projects,
+    tokens,
+    contracts,
     ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN },
   });
 }
@@ -91,7 +100,7 @@ export const links: LinksFunction = () => {
     },
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: rainbowKitStyles },
-    // { rel: "stylesheet", href: mdEditorStyles },
+    { rel: "stylesheet", href: mdEditorStyles },
   ];
 };
 
@@ -147,7 +156,7 @@ function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <Toaster position="bottom-right" />
+        <Toaster position="top-center" />
       </body>
     </html>
   );

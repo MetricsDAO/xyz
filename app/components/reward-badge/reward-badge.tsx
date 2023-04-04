@@ -1,16 +1,19 @@
 import clsx from "clsx";
+import { Tooltip } from "../tooltip";
 
 type Variant = "default" | "winner";
 
 export function RewardBadge({
-  amount,
-  token,
-  rMETRIC,
+  paymentTokenAmount,
+  paymentTooltipAmount,
+  reputationTokenAmount,
+  tokenSymbol,
   variant = "default",
 }: {
-  amount: string | number;
-  token: string;
-  rMETRIC: number;
+  paymentTokenAmount: string;
+  paymentTooltipAmount?: string;
+  reputationTokenAmount: string;
+  tokenSymbol: string;
   variant?: Variant;
 }) {
   return (
@@ -29,7 +32,9 @@ export function RewardBadge({
         <p
           className={clsx("text-sm", { "text-black": variant === "default", "text-yellow-700": variant === "winner" })}
         >
-          {variant === "winner" ? <b>🏆</b> : <></>} {amount.toLocaleString()} {token}
+          <Tooltip hide={paymentTooltipAmount === undefined} content={paymentTooltipAmount}>
+            {variant === "winner" ? <b>🏆</b> : <></>} {paymentTokenAmount} {tokenSymbol}
+          </Tooltip>
         </p>
       </div>
       <p
@@ -38,7 +43,7 @@ export function RewardBadge({
           "text-white": variant === "winner",
         })}
       >
-        {rMETRIC.toLocaleString()} rMETRIC
+        {reputationTokenAmount} rMETRIC
       </p>
     </div>
   );

@@ -17,6 +17,19 @@ import { useOptionalUser } from "~/hooks/use-user";
 
 export declare type AuthenticationStatus = "loading" | "unauthenticated" | "authenticated";
 
+const { chains, provider } = configureChains([polygon, mainnet], [publicProvider()]);
+
+const { connectors } = getDefaultWallets({
+  appName: "MetricsDAO",
+  chains,
+});
+
+const client = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
+
 const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
   return ensImage ? (
     <img alt="ensImage" src={ensImage} width={size} height={size} style={{ borderRadius: 999 }} />
@@ -24,25 +37,6 @@ const CustomAvatar: AvatarComponent = ({ address, ensImage, size }) => {
     <Jazzicon diameter={100} seed={jsNumberForAddress(address)} />
   );
 };
-
-function useConfigs() {
-  return useMemo(() => {
-    const { chains, provider } = configureChains([polygon, mainnet], [publicProvider()]);
-
-    const { connectors } = getDefaultWallets({
-      appName: "MetricsDAO",
-      chains,
-    });
-
-    const client = createClient({
-      autoConnect: true,
-      connectors,
-      provider,
-    });
-
-    return { client, chains };
-  }, []);
-}
 
 /**
  * Return a wallet adapter for Rainbow Wallet SIWE.
@@ -102,7 +96,6 @@ export default function WalletProvider({
   children: ReactNode;
   authStatus: AuthenticationStatus;
 }) {
-  const { client, chains } = useConfigs();
   const adapter = useAuthenticationAdapter();
   return (
     <WagmiConfig client={client}>

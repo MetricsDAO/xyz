@@ -6,7 +6,7 @@ export function Basic() {
   return (
     <SegmentedRadio
       value={value}
-      setValue={setValue}
+      onChange={setValue}
       name="example"
       options={[
         { label: "10", value: "10" },

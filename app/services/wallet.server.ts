@@ -9,14 +9,6 @@ import { prisma } from "./prisma.server";
 
  */
 export async function addWalletAddress(userId: string, input: WalletAdd) {
-  // const alreadyExists = prisma.wallet.findUnique({
-  //   where: {
-  //     address: input.payment.address,
-  //   },
-  // });
-  // if (await alreadyExists) {
-  //   return new Error("Wallet already exists.");
-  // }
   return prisma.wallet.create({
     data: {
       address: input.payment.address,

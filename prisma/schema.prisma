@@ -27,12 +27,8 @@ model Wallet {
   createdAt   DateTime @default(now())
   networkName String
   chain       Network  @relation(fields: [networkName], references: [name])
-}
 
-model Transaction {
-  hash   String @id @unique
-  from   String
-  status String
+  @@unique([userId, networkName])
 }
 
 // Respresents a project or blockchain that MDAO supports. Appears in labor market creation flow and search
@@ -47,6 +43,7 @@ model Project {
 model Token {
   id              String  @id @default(cuid())
   symbol          String
+  decimals        Int     @default(18)
   name            String
   networkName     String
   contractAddress String

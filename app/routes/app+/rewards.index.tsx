@@ -7,32 +7,31 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
-import invariant from "tiny-invariant";
 import { Field, Label, ValidatedSelect } from "~/components";
 import { Checkbox } from "~/components/checkbox";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { SubmissionWithServiceRequest } from "~/domain/submission";
-import { RewardsSearchSchema } from "~/domain/submission";
+import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
+import { RewardsSearchSchema } from "~/domain/submission/schemas";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
-import { getUser } from "~/services/session.server";
-import { searchUserSubmissions } from "~/services/submissions.server";
+import { requireUser } from "~/services/session.server";
+import { searchUserSubmissions } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
 const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  const user = await getUser(request);
-  invariant(user, "Could not find user, please sign in");
+  const user = await requireUser(request, "/app/login?redirectto=app/rewards");
+
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address });
+  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
   const tokens = await listTokens();
   return typedjson({
     wallets,
@@ -61,7 +60,7 @@ export default function Rewards() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={rewards} wallets={wallets} tokens={tokens} />
+            <RewardsListView rewards={rewards} wallets={wallets} />
             <div className="w-fit m-auto">
               <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
             </div>
@@ -75,15 +74,7 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({
-  rewards,
-  wallets,
-  tokens,
-}: {
-  rewards: SubmissionWithServiceRequest[];
-  wallets: Wallet[];
-  tokens: Token[];
-}) {
+function RewardsListView({ rewards, wallets }: { rewards: SubmissionWithServiceRequest[]; wallets: Wallet[] }) {
   if (rewards.length === 0) {
     return (
       <div className="flex">
@@ -96,11 +87,11 @@ function RewardsListView({
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable rewards={rewards} wallets={wallets} tokens={tokens} />
+        <RewardsTable rewards={rewards} wallets={wallets} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards rewards={rewards} wallets={wallets} tokens={tokens} />
+        <RewardsCards rewards={rewards} wallets={wallets} />
       </div>
     </>
   );

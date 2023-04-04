@@ -1,20 +1,22 @@
 import { BigNumber } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { useAccount, useContractRead } from "wagmi";
+import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "./use-root-data";
 
 export function useReviewSignals({
   laborMarketAddress,
   serviceRequestId,
 }: {
-  laborMarketAddress: `0x${string}`;
+  laborMarketAddress: EvmAddress;
   serviceRequestId: string;
 }) {
+  const contracts = useContracts();
   const { address: userAddress } = useAccount();
 
   const { data } = useContractRead({
     enabled: !!userAddress,
     address: laborMarketAddress,
-    abi: LaborMarket.abi,
+    abi: contracts.LaborMarket.abi,
     functionName: "reviewSignals",
     args: [BigNumber.from(serviceRequestId), userAddress as `0x${string}`],
   });

@@ -1,31 +1,32 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Outlet } from "@remix-run/react";
+import DOMPurify from "dompurify";
 import type { DataFunctionArgs } from "remix-typedjson/dist/remix";
 import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { badRequest, notFound } from "remix-utils";
+import { badRequest, ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
-import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
+import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
+import { EvmAddressSchema } from "~/domain/address";
+import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import { ProjectBadges } from "~/features/project-badges";
-import { findLaborMarket } from "~/services/labor-market.server";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
+import { usePrereqs } from "~/hooks/use-prereqs";
+import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
-const paramsSchema = z.object({ address: z.string() });
-export const loader = async (data: DataFunctionArgs) => {
-  const { address } = paramsSchema.parse(data.params);
-  const laborMarket = await findLaborMarket(address);
-  if (!laborMarket) {
-    throw notFound("Labor market not found");
-  }
+const paramsSchema = z.object({ address: EvmAddressSchema });
 
-  if (!laborMarket.appData) {
-    throw badRequest("Labor market app data is missing");
-  }
+export const loader = async (data: DataFunctionArgs) => {
+  const parsed = paramsSchema.safeParse(data.params);
+  if (!parsed.success) throw notFound("Labor market not found");
+  const laborMarket = await getIndexedLaborMarket(parsed.data.address);
+  if (!laborMarket) throw notFound("Labor market not found");
+  if (!laborMarket.appData) throw badRequest("Labor market app data is missing");
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
   const tokens = await listTokens();
@@ -34,26 +35,33 @@ export const loader = async (data: DataFunctionArgs) => {
 
 export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
+  const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
+
+  const user = useOptionalUser();
+  const userSignedIn = !!user;
+  const { canLaunchChallenges } = usePrereqs({ laborMarket });
 
   return (
     <Container className="pb-16 pt-7 px-10">
-      <Breadcrumbs crumbs={[{ link: `/app/${laborMarket.appData?.type}`, name: "Marketplaces" }]} />
-      <section className="flex flex-wrap gap-5 justify-between pb-5">
-        <h1 className="text-3xl font-semibold">{laborMarket?.appData?.title} </h1>
-        <div className="flex flex-wrap gap-5">
-          <ConnectWalletWrapper>
-            <Button size="lg" asChild>
-              <Link to={`/app/market/${laborMarket.address}/request/new`}>Launch Challenge</Link>
-            </Button>
-          </ConnectWalletWrapper>
+      <Breadcrumbs crumbs={[{ link: `/app/analyze`, name: "Marketplaces" }]} />
+      <section className="flex flex-col md:flex-row gap-5 justify-between pb-5">
+        <h1 className="text-3xl font-semibold md:basis-3/4">{laborMarket?.appData?.title}</h1>
+        <div className="flex flex-wrap gap-5 md:basis-1/4 md:justify-end">
+          <WalletGuardedButtonLink
+            buttonText="Launch Challenge"
+            link={`/app/market/${laborMarket.address}/request/new`}
+            disabled={userSignedIn && !canLaunchChallenges}
+            disabledTooltip="Check for Prerequisites"
+            size="lg"
+          />
         </div>
       </section>
       <section className="flex flex-col space-y-7 pb-12">
         <div className="flex flex-wrap gap-x-8">
           <Detail>
-            {laborMarket?.configuration.owner ? (
+            {laborMarket.configuration.owner ? (
               <DetailItem title="Sponsor">
-                <UserBadge address={laborMarket?.configuration.owner as `0x${string}`} />
+                <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
               </DetailItem>
             ) : (
               <></>
@@ -61,14 +69,14 @@ export default function Marketplace() {
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
           </Detail>
         </div>
-        <p className="max-w-2xl text-gray-500 text-sm">{laborMarket?.appData?.description}</p>
+        <ClientOnly>{() => <ParsedMarkdown text={DOMPurify.sanitize(description)} />}</ClientOnly>
       </section>
 
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <TabNav className="mb-10">
             <TabNavLink to="" end>
-              {`Challenges (${laborMarket?.serviceRequestCount})`}
+              Challenges ({laborMarket.indexData.serviceRequestCount})
             </TabNavLink>
             <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
             <TabNavLink to="./rewards">Rewards</TabNavLink>

@@ -1,32 +1,30 @@
 import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
 import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useCallback, useEffect, useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { namedAction } from "remix-utils";
 import type { ValidationErrorResponseData } from "remix-validated-form";
 import { ValidatedForm, validationError } from "remix-validated-form";
-import { ValidatedInput } from "~/components";
+import { Tooltip, ValidatedInput } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
+import { countSubmissions } from "~/domain/submission/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
 import { listNetworks } from "~/services/network.server";
-import { getUser, requireUser } from "~/services/session.server";
+import { requireUser } from "~/services/session.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
-import { namedAction } from "remix-utils";
-import { useFetcher } from "@remix-run/react";
 import { isValidationError } from "~/utils/utils";
-import { countSubmissions } from "~/services/submissions.server";
-import invariant from "tiny-invariant";
-
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
 
@@ -35,7 +33,7 @@ type WalletWithChain = Wallet & { chain: Network };
 type ActionResponse = { wallet: Wallet } | ValidationErrorResponseData;
 
 export async function action({ request }: ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUser(request, "/app/login?redirectto=app/rewards/addresses");
 
   return namedAction(request, {
     async create() {
@@ -54,15 +52,16 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const loader = async (data: DataFunctionArgs) => {
-  const user = await getUser(data.request);
-  invariant(user, "Could not find user, please sign in");
+  const user = await requireUser(data.request, "/app/login?redirectto=app/rewards/addresses");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({
-    serviceProvider: user.address,
+    serviceProvider: user.address as `0x${string}`,
   });
+  const userNetworks = wallets.map((w) => w.chain.name);
   const networks = await listNetworks();
+  const newNetworks = networks.filter((n) => !userNetworks.includes(n.name));
   return typedjson({
-    networks,
+    newNetworks,
     wallets,
     submissionCount,
     user,
@@ -174,7 +173,7 @@ function AddressCards({ wallets }: { wallets: WalletWithChain[] }) {
 function AddAddressButton() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), [setOpen]);
-  const { networks } = useTypedLoaderData<typeof loader>();
+  const { newNetworks } = useTypedLoaderData<typeof loader>();
   const fetcher = useFetcher<ActionResponse>();
   useEffect(() => {
     if (fetcher.data && !isValidationError(fetcher.data)) {
@@ -184,16 +183,18 @@ function AddAddressButton() {
 
   return (
     <>
-      <Button className="mx-auto" onClick={() => setOpen(true)}>
-        Add Address
-      </Button>
+      <Tooltip content={"Wallets exist for all available chains"} hide={newNetworks.length > 0}>
+        <Button className="mx-auto" onClick={() => setOpen(true)} disabled={newNetworks.length == 0}>
+          Add Address
+        </Button>
+      </Tooltip>
       <Modal isOpen={open} onClose={close} title="Add an address" unmount>
         <ValidatedForm
           fetcher={fetcher}
           defaultValues={{
             payment: {
               networkName: "Polygon",
-              address: "",
+              address: "" as `0x${string}`,
             },
           }}
           method="post"
@@ -204,7 +205,7 @@ function AddAddressButton() {
           className="space-y-5 mt-5"
         >
           <div className="pb-44 pt-8">
-            <AddPaymentAddressForm networks={networks} />
+            <AddPaymentAddressForm networks={newNetworks} />
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={close} type="button">

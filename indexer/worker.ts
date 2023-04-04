@@ -1,41 +1,49 @@
-import { LaborMarket as LaborMarketAbi, LaborMarketNetwork as LaborMarketNetworkAbi } from "labor-markets-abi";
 import * as pine from "pinekit";
+import { handleLaborMarketConfiguredEvent } from "~/domain/labor-market/functions.server";
+import {
+  handleRequestConfiguredEvent,
+  indexClaimToReview,
+  indexClaimToSubmit,
+} from "~/domain/service-request/functions.server";
+import { handleRequestFulfilledEvent } from "~/domain/submission/functions.server";
 import env from "~/env.server";
-import { indexLaborMarket } from "~/services/labor-market.server";
 import { logger } from "~/services/logger.server";
 import { indexReview } from "~/services/review-service.server";
-import { indexClaimToReview, indexClaimToSubmit, indexServiceRequest } from "~/services/service-request.server";
-import { indexSubmission } from "~/services/submissions.server";
+import { getContracts } from "~/utils/contracts.server";
+import { pineConfig } from "~/utils/pine-config.server";
+
+const contracts = getContracts();
+const config = pineConfig();
 
 const worker = pine.createWorker({
   client: new pine.Client({ apiKey: env.PINE_API_KEY }),
-  subscriber: env.PINE_SUBSCRIBER,
+  subscriber: config.subscriber,
   logger: logger,
   tracer: {
-    namespace: env.PINE_NAMESPACE,
-    version: "1.6.0",
+    namespace: config.namespace,
+    version: config.version,
     blockchain: { name: "polygon", network: "mainnet" },
   },
 });
 
 const LaborMarketNetwork = worker.contract("LaborMarketNetwork", {
-  addresses: [LaborMarketNetworkAbi.address],
-  schema: LaborMarketNetworkAbi.abi,
+  addresses: [contracts.LaborMarketNetwork.address],
+  schema: contracts.LaborMarketNetwork.abi,
 });
 
 const LaborMarket = worker.contractFromEvent("LaborMarket", {
   contract: LaborMarketNetwork,
   event: "LaborMarketCreated",
   arg: "marketAddress",
-  schema: LaborMarketAbi.abi,
+  schema: contracts.LaborMarket.abi,
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  return indexLaborMarket(event);
+  return handleLaborMarketConfiguredEvent(event);
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
-  return indexServiceRequest(event);
+  return handleRequestConfiguredEvent(event);
 });
 
 worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
@@ -43,7 +51,7 @@ worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
-  return indexSubmission(event);
+  return handleRequestFulfilledEvent(event);
 });
 
 worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
