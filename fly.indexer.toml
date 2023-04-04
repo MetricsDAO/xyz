@@ -1,4 +1,4 @@
-app = "mdao-indexer-staging-green"
+app = "mdao-indexer-staging-blue"
 
 [experimental]
 cmd = ["yarn", "start:indexer"]
