@@ -3,9 +3,8 @@ import { bundleMDX } from "mdx-bundler";
 
 export async function getContent(filename: string) {
   const x = await fs.readdir(".");
-  const y = await fs.readdir("..");
-  const z = await fs.readdir("../..");
-  console.log("testing", x, y, z);
+  const y = await fs.readdir("build");
+  console.log("testing", x, y);
   return fs.readFile(filename, "utf-8");
 }
 
