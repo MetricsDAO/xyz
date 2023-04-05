@@ -149,18 +149,16 @@ export default function ChallengeSubmission() {
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
-          {canClaimToReview &&
-            !submittedByUser &&
-            !canReviewSubmission(
-              <WalletGuardedButtonLink
-                buttonText="Claim to Review"
-                link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
-                disabled={!!user && !canReview}
-                disabledTooltip="Check for Prerequisites"
-                variant="cancel"
-                size="lg"
-              />
-            )}
+          {canClaimToReview && !submittedByUser && !canReviewSubmission && (
+            <WalletGuardedButtonLink
+              buttonText="Claim to Review"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
+              disabled={!!user && !canReview}
+              disabledTooltip="Check for Prerequisites"
+              variant="cancel"
+              size="lg"
+            />
+          )}
           {canReviewSubmission && !submittedByUser && (
             <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
           )}
