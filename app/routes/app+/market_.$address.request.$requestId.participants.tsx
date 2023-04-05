@@ -1,6 +1,6 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Card, Checkbox, Field, Label, UserBadge, ValidatedInput, ValidatedSelect } from "~/components";
+import { Card, Checkbox, Label, UserBadge } from "~/components";
 import { findParticipants } from "~/domain/user-activity/function.server";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { fromNow } from "~/utils/date";
@@ -8,7 +8,6 @@ import { EvmAddressSchema } from "~/domain/address";
 import { z } from "zod";
 import { ValidatedForm } from "remix-validated-form";
 import { useSubmit } from "@remix-run/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ParticipantSearchSchema } from "~/domain";
 import { useRef } from "react";
@@ -48,7 +47,7 @@ export default function ServiceIdParticipants() {
         <main className="w-full border-spacing-4 border-separate space-y-4">
           {participations.map((p) => {
             return (
-              <Card asChild className="px-6 py-4" key={`${p.createdAtBlockTimestamp}_${p.userAddress}`}>
+              <Card asChild className="px-6 py-4" key={`${p._id}`}>
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2 items-center">
                     <UserBadge address={p.userAddress as `0x${string}`} />
@@ -68,24 +67,6 @@ export default function ServiceIdParticipants() {
             onChange={handleChange}
             className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4"
           >
-            <ValidatedInput
-              placeholder="Search"
-              size="sm"
-              name="q"
-              iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-            />
-            <Field>
-              <Label>Sort:</Label>
-              <ValidatedSelect
-                name="sortBy"
-                size="sm"
-                onChange={handleChange}
-                options={[
-                  { label: "Created At", value: "createdAtBlockTimestamp" },
-                  { label: "User rMetric", value: "tbd" },
-                ]}
-              />
-            </Field>
             <Label>Filter:</Label>
             <Checkbox
               onChange={handleChange}
