@@ -14,6 +14,7 @@ import { Error as ErrorBoundary } from "./components/error-boundary";
 import { withSentry } from "@sentry/remix";
 import { listProjects } from "./services/projects.server";
 import { listTokens } from "./services/tokens.server";
+import { getContracts } from "./utils/contracts.server";
 
 // add types for window.ENV
 declare global {
@@ -28,10 +29,12 @@ export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
   const projects = await listProjects();
   const tokens = await listTokens();
+  const contracts = getContracts();
   return typedjson({
     user,
     projects,
     tokens,
+    contracts,
     ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN },
   });
 }

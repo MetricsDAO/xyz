@@ -22,7 +22,8 @@ import { useMarketAddressData } from "~/hooks/use-market-address-data";
 import { listProjects } from "~/services/projects.server";
 import { countServiceRequests, searchServiceRequests } from "~/domain/service-request/functions.server";
 import { listTokens } from "~/services/tokens.server";
-import { findProjectsBySlug, fromTokenAmount } from "~/utils/helpers";
+import { findProjectsBySlug } from "~/utils/helpers";
+import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -162,7 +163,6 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
         <Header.Column>Review Deadline</Header.Column>
       </Header>
       {serviceRequests.map((sr) => {
-        const token = tokens.find((t) => t.contractAddress === sr.configuration.pToken);
         return (
           <Row asChild columns={6} key={sr.id}>
             <Link to={`/app/market/${laborMarket.address}/request/${sr.id}`} className="text-sm font-medium">
@@ -173,9 +173,9 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
                 </div>
               </Row.Column>
 
-              <Row.Column>{`${fromTokenAmount(sr.configuration.pTokenQ, token?.decimals ?? 18)} ${
-                token?.symbol
-              }`}</Row.Column>
+              <Row.Column>
+                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+              </Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExp} />
               </Row.Column>
@@ -196,7 +196,6 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
   return (
     <div className="space-y-4">
       {serviceRequests.map((sr) => {
-        const token = tokens.find((t) => t.contractAddress === sr.configuration.pToken);
         return (
           <Card asChild key={sr.id}>
             <Link
@@ -212,7 +211,7 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
               </div>
 
               <div>Reward Pool</div>
-              <div>{`${fromTokenAmount(sr.configuration.pTokenQ, token?.decimals ?? 18)} ${token?.symbol}`}</div>
+              <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
                 <Countdown date={sr.configuration?.submissionExp} />

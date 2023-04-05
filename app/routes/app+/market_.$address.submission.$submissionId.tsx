@@ -104,11 +104,14 @@ export default function ChallengeSubmission() {
   });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
+  const score = submission.score?.avg;
+
   const isWinner =
     enforcementExpirationPassed &&
     reward !== undefined &&
-    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0));
-  const score = submission.score?.avg;
+    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0)) &&
+    score &&
+    score > 24;
 
   return (
     <Container className="pt-7 pb-16 px-10">
@@ -137,7 +140,7 @@ export default function ChallengeSubmission() {
       </section>
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
-          <DetailItem title="Author">
+          <DetailItem title="Analyst">
             <UserBadge address={submission.configuration.serviceProvider} />
           </DetailItem>
           <DetailItem title="Created">
@@ -173,9 +176,6 @@ export default function ChallengeSubmission() {
             </DetailItem>
           )}
         </Detail>
-        <p className="text-gray-500 max-w-2xl text-sm break-words overflow-y-auto max-h-96">
-          {submission.appData?.submissionUrl}
-        </p>
         <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
           <a
             href={submission.appData?.submissionUrl}

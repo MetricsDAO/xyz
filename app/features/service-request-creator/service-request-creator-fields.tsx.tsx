@@ -68,7 +68,14 @@ export function ServiceRequestCreatorFields({
                 name="appData.language"
                 control={control}
                 render={({ field }) => {
-                  return <Select {...field} placeholder="English" options={[{ label: "English", value: "english" }]} />;
+                  return (
+                    <Select
+                      {...field}
+                      placeholder="English"
+                      value={"english"}
+                      options={[{ label: "English", value: "english" }]}
+                    />
+                  );
                 }}
               />
               <Error error={errors.appData?.language?.message} />
@@ -80,7 +87,11 @@ export function ServiceRequestCreatorFields({
                 control={control}
                 name="appData.projectSlugs"
                 render={({ field }) => (
-                  <Combobox {...field} options={validProjects.map((p) => ({ label: p.name, value: p.slug }))} />
+                  <Combobox
+                    {...field}
+                    placeholder="Blockchain/Project"
+                    options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
+                  />
                 )}
               />
               <Error error={errors.appData?.projectSlugs?.message} />
@@ -102,7 +113,7 @@ export function ServiceRequestCreatorFields({
         <p className="text-gray-400 italic">
           {selectedSubmitDate &&
             selectedSubmitTime &&
-            `Authors must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit question ideas`}
+            `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit question ideas`}
         </p>
       </section>
 
@@ -119,7 +130,7 @@ export function ServiceRequestCreatorFields({
         <p className="text-gray-400 italic">
           {selectedReviewDate &&
             selectedReviewTime &&
-            `Authors must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score questions`}
+            `Analysts must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score questions`}
         </p>
       </section>
 

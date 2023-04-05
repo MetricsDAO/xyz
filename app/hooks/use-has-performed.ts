@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers";
-import { LaborMarket } from "labor-markets-abi";
 import { useAccount, useContractRead } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "./use-root-data";
 
 // These constants should be the same as the internals on the contract
 const ACTIONS = {
@@ -21,12 +21,13 @@ type Props = {
  * @returns {boolean | undefined} Undefined if not logged in or during loading.
  */
 export function useHasPerformed({ laborMarketAddress, id, action }: Props) {
+  const contracts = useContracts();
   const { address: userAddress } = useAccount();
 
   const { data } = useContractRead({
     enabled: !!userAddress,
     address: laborMarketAddress,
-    abi: LaborMarket.abi,
+    abi: contracts.LaborMarket.abi,
     functionName: "hasPerformed",
     args: [BigNumber.from(id), userAddress as `0x${string}`, ACTIONS[action] as `0x${string}`],
   });

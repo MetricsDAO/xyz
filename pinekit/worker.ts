@@ -67,11 +67,11 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
   ) {
     const key = `${contract.name}.${event}`;
     const handlers = handlerRegistry.get(key) || new Set();
-    handlers.add((event) => {
+    handlers.add(async (event) => {
       if (event.block.number <= FROM_BLOCK) {
         logger.info(`Event happened before FROM_BLOCK ${FROM_BLOCK}. Skipping`);
       } else {
-        fn(event);
+        return fn(event);
       }
     });
     handlerRegistry.set(key, handlers);

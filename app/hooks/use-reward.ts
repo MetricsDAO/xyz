@@ -1,8 +1,8 @@
 import { BigNumber } from "ethers";
-import { ScalableLikertEnforcement } from "labor-markets-abi";
 import { useContractRead } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
 import { displayBalance, fromTokenAmount } from "~/utils/helpers";
+import { useContracts } from "./use-root-data";
 
 type Props = {
   laborMarketAddress: EvmAddress;
@@ -15,9 +15,10 @@ export type Reward = ReturnType<typeof useReward>["data"];
  * Get the user's reward for a submission. The payment token and reputation token.
  */
 export function useReward({ laborMarketAddress, submissionId, tokenDecimals }: Props) {
+  const contracts = useContracts();
   return useContractRead({
-    address: ScalableLikertEnforcement.address,
-    abi: ScalableLikertEnforcement.abi,
+    address: contracts.ScalableLikertEnforcement.address,
+    abi: contracts.ScalableLikertEnforcement.abi,
     functionName: "getRewards",
     args: [laborMarketAddress, BigNumber.from(submissionId)],
     select(data) {

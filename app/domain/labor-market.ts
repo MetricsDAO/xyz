@@ -54,50 +54,6 @@ export const LaborMarketSearchSchema = zfd.formData({
   first: z.coerce.number().min(1).max(100).default(12).describe("The number of results to return."),
 });
 
-const BadgePairSchema = z.object({
-  token: EvmAddressSchema,
-  tokenId: z.string(),
-});
-
-/**
- * The schema for a LaborMarketDocument. This should be identical to how the document is stored in mongo.
- */
-const LaborMarketDocSchema = z.object({
-  address: EvmAddressSchema,
-  valid: z.boolean(),
-  createdAtBlockTimestamp: z.date(),
-  indexedAt: z.date(),
-  configuration: z.object({
-    marketUri: z.string(),
-    owner: EvmAddressSchema,
-    maintainerBadge: BadgePairSchema,
-    delegateBadge: BadgePairSchema,
-    reputationBadge: BadgePairSchema,
-    reputationParams: z.object({
-      rewardPool: z.string(),
-      provideStake: z.string(),
-      reviewStake: z.string(),
-      submitMin: z.string(),
-      submitMax: z.string(),
-    }),
-    modules: z.object({
-      network: EvmAddressSchema,
-      enforcement: EvmAddressSchema,
-      enforcementKey: EvmAddressSchema,
-      reputation: EvmAddressSchema,
-    }),
-  }),
-  serviceRequestCount: z.number(),
-  serviceRequestRewardPools: z.array(
-    z.object({
-      pToken: EvmAddressSchema,
-      pTokenQuantity: z.string(),
-    })
-  ),
-  appData: LaborMarketMetaSchema.nullable(),
-});
-
-export type LaborMarketDoc = z.infer<typeof LaborMarketDocSchema>;
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 export type LaborMarketContract = z.infer<typeof LaborMarketContractSchema>;
 export type LaborMarketMeta = z.infer<typeof LaborMarketMetaSchema>;
