@@ -121,15 +121,12 @@ export default function ChallengeSubmission() {
     serviceRequestId: serviceRequest.id,
   });
 
-  const hasClaimed = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
-    id: serviceRequest.id,
-    action: "HAS_CLAIMED",
-  });
   const { canReview } = usePrereqs({ laborMarket });
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
-  const canReviewSubmission = hasClaimed && !enforcementExpirationPassed;
-  const canClaimToReview = reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed;
+  const canReviewSubmission =
+    reviewSignal?.remainder.gt(0) && !enforcementExpirationPassed && userReview == null && !submittedByUser;
+  const canClaimToReview =
+    reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed && userReview == null && !submittedByUser;
 
   return (
     <Container className="pt-7 pb-16 px-10">
@@ -149,7 +146,7 @@ export default function ChallengeSubmission() {
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
-          {canClaimToReview && !submittedByUser && !canReviewSubmission && (
+          {canClaimToReview && !canReviewSubmission && (
             <WalletGuardedButtonLink
               buttonText="Claim to Review"
               link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
@@ -159,11 +156,9 @@ export default function ChallengeSubmission() {
               size="lg"
             />
           )}
-          {canReviewSubmission && !submittedByUser && (
-            <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-          )}
+          {canReviewSubmission && <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />}
           {submittedByUser && <p className="text-sm">Your Submission!</p>}
-          {!!userReview && <p>{`You gave a score of ${userReview.score}`}</p>}
+          {userReview && <p>{`You gave a score of ${userReview.score}`}</p>}
         </div>
       </section>
       <section className="flex flex-col space-y-6 pb-24">
