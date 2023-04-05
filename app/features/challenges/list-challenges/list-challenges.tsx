@@ -73,7 +73,11 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestWit
             >
               <div>Challenge</div>
               <div className="text-sm font-medium flex gap-2">
-                {!dateHasPassed(sr.configuration.enforcementExp) ? <img src="/img/active-icon.svg" alt="" /> : <></>}
+                {!dateHasPassed(sr.configuration.enforcementExp) ? (
+                  <img src="/img/active-icon.svg" alt="" />
+                ) : (
+                  <div className="w-2"></div>
+                )}
                 <p>{sr.appData?.title}</p>
               </div>
 
