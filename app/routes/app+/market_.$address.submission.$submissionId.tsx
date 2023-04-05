@@ -29,7 +29,7 @@ import { ScoreBadge, scoreToLabel } from "~/components/score";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
-import { ReviewSearchSchema } from "~/domain/review";
+import { ReviewSearchSchema } from "~/domain/review/schemas";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import { getIndexedSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
@@ -37,7 +37,7 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useReward } from "~/hooks/use-reward";
-import { findUserReview, searchReviews } from "~/services/review-service.server";
+import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
@@ -57,7 +57,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const reviewedByUser = user && (await findUserReview(submissionId, address, user.address));
+  const reviewedByUser = user && (await findUserReview(submissionId, address, EvmAddressSchema.parse(user.address)));
 
   const tokens = await listTokens();
 

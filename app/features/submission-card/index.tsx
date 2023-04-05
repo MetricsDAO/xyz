@@ -2,17 +2,10 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link } from "@remix-run/react";
 import { Card, Score, UserBadge } from "~/components";
 import type { SubmissionWithReviewsDoc } from "~/domain/submission/schemas";
-import type { LaborMarket } from "~/domain/labor-market/schemas";
 import { useOptionalUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
 
-export function SubmissionCard({
-  submission,
-  laborMarket,
-}: {
-  laborMarket: LaborMarket;
-  submission: SubmissionWithReviewsDoc;
-}) {
+export function SubmissionCard({ submission }: { submission: SubmissionWithReviewsDoc }) {
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
@@ -44,7 +37,7 @@ export function SubmissionCard({
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submission.createdAtBlockTimestamp)} by </span>
-        <UserBadge address={submission.configuration.serviceProvider as `0x${string}`} />
+        <UserBadge address={submission.configuration.serviceProvider} />
       </div>
     </Card>
   );

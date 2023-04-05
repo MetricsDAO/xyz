@@ -1,10 +1,11 @@
 import { BigNumber } from "ethers";
 import { useContractRead } from "wagmi";
+import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { REPUTATION_TOKEN_ID } from "~/utils/constants";
 import { displayBalance } from "~/utils/helpers";
 
-export function RMetricBadge({ address }: { address: `0x${string}` }) {
+export function RMetricBadge({ address }: { address: EvmAddress }) {
   const contracts = useContracts();
   const { data: reputationBalance } = useContractRead({
     address: contracts.ReputationToken.address,

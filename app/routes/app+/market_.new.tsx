@@ -7,7 +7,7 @@ import { requireUser } from "~/services/session.server";
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
-  await requireUser(request, `/app/login?redirectto=app/analyze/new`);
+  await requireUser(request, `/app/login?redirectto=app/market/new`);
 
   const projects = await listProjects();
   const tokens = await listTokens();

@@ -1,5 +1,4 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { ethers } from "ethers";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { badRequest, notFound } from "remix-utils";
 import { z } from "zod";
@@ -55,7 +54,7 @@ export default function CreateServiceRequest() {
         projects={laborMarketProjects}
         tokens={validTokens}
         defaultValues={defaultValues}
-        laborMarketAddress={ethers.utils.getAddress(laborMarket.address)}
+        laborMarketAddress={laborMarket.address}
       />
     </div>
   );

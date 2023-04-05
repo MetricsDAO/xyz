@@ -8,6 +8,7 @@ import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
@@ -21,7 +22,7 @@ interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
-  laborMarketAddress: string;
+  laborMarketAddress: EvmAddress;
 }
 
 /**
@@ -31,7 +32,7 @@ function getEventFromLogs(
   iface: ethers.utils.Interface,
   logs: ethers.providers.Log[],
   eventName: string,
-  laborMarketAddress: string
+  laborMarketAddress: EvmAddress
 ) {
   const filtered = logs.filter((log) => log.address === laborMarketAddress);
   const mapped = filtered.map((log) => iface.parseLog(log));
@@ -142,7 +143,7 @@ function configureFromValues({
   inputs: {
     cid: string;
     values: ServiceRequestForm;
-    laborMarketAddress: string;
+    laborMarketAddress: EvmAddress;
   };
 }) {
   const { values, cid, laborMarketAddress } = inputs;
@@ -151,10 +152,10 @@ function configureFromValues({
 
   return configureWrite({
     abi: contracts.LaborMarket.abi,
-    address: laborMarketAddress as `0x${string}`,
+    address: laborMarketAddress,
     functionName: "submitRequest",
     args: [
-      values.rewardToken as `0x${string}`,
+      values.rewardToken,
       toTokenAmount(values.rewardPool, values.rewardTokenDecimals),
       BigNumber.from(unixTimestamp(signalDeadline)),
       BigNumber.from(unixTimestamp(new Date(parseDatetime(values.endDate, values.endTime)))),

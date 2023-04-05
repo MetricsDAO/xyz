@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EvmAddressSchema } from "./address";
+import { EvmAddressSchema } from "../address";
 
 export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["createdAtBlockTimestamp", "score"]).default("createdAtBlockTimestamp").describe("Sort by column."),
@@ -25,7 +25,7 @@ export const ReviewFormSchema = ReviewSchema.pick({
 
 export const ReviewEventSchema = z.object({
   submissionId: z.string(),
-  reviewer: z.string(),
+  reviewer: EvmAddressSchema,
   reviewScore: z.string(),
   requestId: z.string(),
 });
@@ -35,7 +35,7 @@ export const ReviewDocSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   score: z.string(),
-  reviewer: z.string(),
+  reviewer: EvmAddressSchema,
   createdAtBlockTimestamp: z.date(),
   indexedAt: z.date(),
 });
