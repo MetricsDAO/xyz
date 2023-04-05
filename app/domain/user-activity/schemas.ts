@@ -94,3 +94,11 @@ export const ActivitySearchSchema = ActivityFilterSchema.extend({
   first: z.coerce.number().min(1).max(100).default(12),
 });
 export type ActivitySearch = z.infer<typeof ActivitySearchSchema>;
+
+export const ParticipantSearchSchema = z.object({
+  q: z.string().optional(),
+  sortBy: z.enum(["createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  eventType: z.array(ActivityTypeSchema).optional(),
+});
+export type ParticipantSearch = z.infer<typeof ParticipantSearchSchema>;
