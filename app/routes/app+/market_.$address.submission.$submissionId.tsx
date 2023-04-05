@@ -36,7 +36,6 @@ import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
-import { useHasPerformed } from "~/hooks/use-has-performed";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
@@ -117,7 +116,7 @@ export default function ChallengeSubmission() {
     score > 24;
 
   const reviewSignal = useReviewSignals({
-    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress,
     serviceRequestId: serviceRequest.id,
   });
 
