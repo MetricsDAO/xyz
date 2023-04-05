@@ -1,7 +1,10 @@
 import fs from "fs/promises";
 import { bundleMDX } from "mdx-bundler";
 
-export function getContent(filename: string) {
+export async function getContent(filename: string) {
+  const x = await fs.readdir(".");
+  const y = await fs.readdir("./content");
+  console.log("testing", x, y);
   return fs.readFile(filename, "utf-8");
 }
 
