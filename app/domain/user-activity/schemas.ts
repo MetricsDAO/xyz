@@ -97,7 +97,7 @@ export type ActivitySearch = z.infer<typeof ActivitySearchSchema>;
 
 export const ParticipantSearchSchema = z.object({
   q: z.string().optional(),
-  sortBy: z.enum(["createdAtBlockTimestamp", "tbd"]).default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   eventType: z.array(ActivityTypeSchema).optional(),
 });
