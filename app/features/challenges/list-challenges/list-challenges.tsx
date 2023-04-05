@@ -3,6 +3,7 @@ import { Card, Countdown, Header, Row, Table } from "~/components";
 import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { ProjectBadgesBySlugs } from "~/features/project-badges";
+import { dateHasPassed } from "~/utils/date";
 
 export function ListChallenges(props: { serviceRequests: ServiceRequestWithIndexData[] }) {
   return (
@@ -32,7 +33,12 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestWi
         return (
           <Row asChild columns={6} key={sr.laborMarketAddress + sr.id}>
             <Link to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`} className="text-sm font-medium">
-              <Row.Column span={2}>{sr.appData?.title}</Row.Column>
+              <Row.Column span={2}>
+                <div className="flex gap-2">
+                  {!dateHasPassed(sr.configuration.enforcementExp) ? <img src="/img/active-icon.svg" alt="" /> : <></>}
+                  <p>{sr.appData?.title}</p>
+                </div>
+              </Row.Column>
               <Row.Column>
                 <div className="flex">
                   <ProjectBadgesBySlugs slugs={sr.appData!.projectSlugs} />
@@ -66,7 +72,10 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestWit
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenge</div>
-              <div className="text-sm font-medium">{sr.appData?.title}</div>
+              <div className="text-sm font-medium flex gap-2">
+                {!dateHasPassed(sr.configuration.enforcementExp) ? <img src="/img/active-icon.svg" alt="" /> : <></>}
+                <p>{sr.appData?.title}</p>
+              </div>
 
               <div>Chain/Project</div>
               <div className="flex">
