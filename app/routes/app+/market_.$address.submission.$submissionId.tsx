@@ -150,6 +150,7 @@ export default function ChallengeSubmission() {
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
           {canClaimToReview &&
+            !submittedByUser &&
             !canReviewSubmission(
               <WalletGuardedButtonLink
                 buttonText="Claim to Review"
@@ -160,11 +161,10 @@ export default function ChallengeSubmission() {
                 size="lg"
               />
             )}
-          {!submittedByUser && canReviewSubmission ? (
+          {canReviewSubmission && !submittedByUser && (
             <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-          ) : (
-            <p className="text-sm">Your Submission!</p>
           )}
+          {submittedByUser && <p className="text-sm">Your Submission!</p>}
           {!!userReview && <p>{`You gave a score of ${userReview.score}`}</p>}
         </div>
       </section>
