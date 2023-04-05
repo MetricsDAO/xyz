@@ -128,7 +128,7 @@ export default function ChallengeSubmission() {
   });
   const { canReview } = usePrereqs({ laborMarket });
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
-  const canReviewSubmission = hasClaimed && !enforcementExpirationPassed && canReview;
+  const canReviewSubmission = hasClaimed && !enforcementExpirationPassed;
   const canClaimToReview = reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed;
 
   return (
@@ -180,7 +180,7 @@ export default function ChallengeSubmission() {
             </DetailItem>
           )}
           <DetailItem title="Reviews">
-            {!userReview ? (
+            {userReview != null ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="font-medium">{`You${reviews.length === 1 ? "" : ` + ${reviews.length - 1} reviews`}`}</p>
