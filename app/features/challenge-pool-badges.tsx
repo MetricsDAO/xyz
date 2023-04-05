@@ -1,5 +1,6 @@
 import type { Token } from "@prisma/client";
-import { Badge, TokenAvatar } from "~/components";
+import { Badge } from "~/components";
+import { RewardBadge } from "~/components/reward-badge";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import { fromTokenAmount } from "~/utils/helpers";
 
@@ -19,12 +20,10 @@ export function ChallengePoolBadges({
         const token = tokens.find((t) => t.contractAddress === p.pToken);
         if (token) {
           return (
-            <Badge key={token?.id}>
-              <TokenAvatar token={token} />
-              <span className="mx-1">
-                {fromTokenAmount(p.pTokenQuantity, token.decimals)} {token.symbol}
-              </span>
-            </Badge>
+            <RewardBadge
+              key={token?.id}
+              payment={{ amount: fromTokenAmount(p.pTokenQuantity, token.decimals), token }}
+            />
           );
         }
         return null;
@@ -36,12 +35,10 @@ export function ChallengePoolBadges({
               const token = tokens.find((t) => t.contractAddress === p.pToken);
               if (token) {
                 return (
-                  <Badge key={token?.id}>
-                    <TokenAvatar token={token} />
-                    <span className="mx-1">
-                      {fromTokenAmount(p.pTokenQuantity, token.decimals)} {token.symbol}
-                    </span>
-                  </Badge>
+                  <RewardBadge
+                    key={token?.id}
+                    payment={{ amount: fromTokenAmount(p.pTokenQuantity, token.decimals), token }}
+                  />
                 );
               }
               return null;

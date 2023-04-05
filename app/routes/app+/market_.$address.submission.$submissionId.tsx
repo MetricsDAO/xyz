@@ -165,13 +165,14 @@ export default function ChallengeSubmission() {
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
-                paymentTokenAmount={reward.displayPaymentTokenAmount}
-                paymentTooltipAmount={`${fromTokenAmount(
-                  reward.paymentTokenAmount.toString(),
-                  token?.decimals ?? 18
-                )} ${token?.symbol ?? ""}`}
-                reputationTokenAmount={reward.displayReputationTokenAmount}
-                tokenSymbol={token?.symbol ?? ""}
+                payment={{
+                  amount: reward.displayPaymentTokenAmount,
+                  token,
+                  tooltipAmount: `${fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18)} ${
+                    token?.symbol ?? ""
+                  }`,
+                }}
+                reputation={{ amount: reward.displayReputationTokenAmount }}
               />
             </DetailItem>
           )}
