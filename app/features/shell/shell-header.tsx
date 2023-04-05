@@ -9,6 +9,7 @@ import { $path } from "remix-routes";
 import { useOptionalUser } from "~/hooks/use-user";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ProfileMenu } from "~/components/connect-menu/dropdown";
+import { useNetwork } from "wagmi";
 
 const primaryLinks = [
   { link: $path("/app/showcase"), label: "Showcase" },
@@ -27,6 +28,8 @@ const userLinks = [
 
 export function AppHeader() {
   const user = useOptionalUser();
+  const network = useNetwork();
+
   const items = primaryLinks.map((link) => (
     <NavLink
       key={link.link}
@@ -92,7 +95,7 @@ export function AppHeader() {
       <div className="flex items-center space-x-4">
         {user ? <div className="hidden md:block">{secondaryItems}</div> : null}
         <DropdownMenu.Root>
-          {user ? (
+          {user && network.chain?.name === "Polygon" ? (
             <DropdownMenu.Trigger>
               <CustomConnectButton />
             </DropdownMenu.Trigger>
