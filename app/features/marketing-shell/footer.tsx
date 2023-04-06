@@ -5,7 +5,7 @@ import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 
 const links = [
-  { link: "https://metricsdao.xyz/whitepaper", label: "Protocol" },
+  { link: "/whitepaper", label: "Protocol" },
   { link: "https://docs.metricsdao.xyz/", label: "Docs" },
   { link: "https://discourse.metricsdao.xyz/", label: "Governance" },
   { link: "https://blog.metricsdao.xyz/", label: "Blog" },
