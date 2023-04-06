@@ -49,8 +49,8 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
                 options={[
                   { label: "New", value: "createdAtBlockTimestamp" },
                   { label: "Title", value: "appData.title" },
-                  { label: "Submit Deadline", value: "configuration.submissionExpiration" },
-                  { label: "Review Deadline", value: "configuration.enforcementExpiration" },
+                  { label: "Submit Deadline", value: "configuration.submissionExp" },
+                  { label: "Review Deadline", value: "configuration.enforcementExp" },
                 ]}
               />
             )}
