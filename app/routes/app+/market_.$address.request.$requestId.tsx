@@ -22,7 +22,7 @@ import { useHasPerformed } from "~/hooks/use-has-performed";
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
-import { countReviews } from "~/services/review-service.server";
+import { countReviews } from "~/domain/review/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
@@ -69,19 +69,19 @@ export default function ServiceRequest() {
   const description = serviceRequest.appData?.description ? serviceRequest.appData.description : "";
 
   const hasClaimedToSubmit = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress,
     id: serviceRequest.id,
     action: "HAS_SIGNALED",
   });
 
   const hasSubmitted = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress,
     id: serviceRequest.id,
     action: "HAS_SUBMITTED",
   });
 
   const reviewSignal = useReviewSignals({
-    laborMarketAddress: serviceRequest.laborMarketAddress as `0x${string}`,
+    laborMarketAddress: serviceRequest.laborMarketAddress,
     serviceRequestId: serviceRequest.id,
   });
 
@@ -140,7 +140,7 @@ export default function ServiceRequest() {
       <section className="flex flex-col space-y-7 pb-12">
         <Detail className="mb-6 flex flex-wrap gap-y-2">
           <DetailItem title="Sponsor">
-            <UserBadge address={laborMarket.configuration.owner as `0x${string}`} />
+            <UserBadge address={laborMarket.configuration.owner} />
           </DetailItem>
           <div className="flex space-x-4">
             {serviceRequestProjects && (

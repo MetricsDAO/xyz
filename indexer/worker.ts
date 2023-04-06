@@ -8,7 +8,7 @@ import {
 import { handleRequestFulfilledEvent } from "~/domain/submission/functions.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
-import { indexReview } from "~/services/review-service.server";
+import { indexReview } from "~/domain/review/functions.server";
 import { getContracts } from "~/utils/contracts.server";
 import { pineConfig } from "~/utils/pine-config.server";
 

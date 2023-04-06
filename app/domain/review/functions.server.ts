@@ -2,11 +2,11 @@ import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import { ScalableLikertEnforcement__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
-import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review";
-import { ReviewEventSchema, ReviewSchema } from "~/domain/review";
+import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review/schemas";
+import { ReviewEventSchema, ReviewSchema } from "~/domain/review/schemas";
 import { getContracts } from "~/utils/contracts.server";
-import { mongo } from "./mongo.server";
-import { nodeProvider } from "./node.server";
+import { mongo } from "../../services/mongo.server";
+import { nodeProvider } from "../../services/node.server";
 
 const contracts = getContracts();
 
@@ -52,7 +52,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
  * @param {String} userAddress - The address of the user
  * @returns - the users submission or null if not found.
  */
-export const findUserReview = async (submissionId: string, laborMarketAddress: EvmAddress, userAddress: string) => {
+export const findUserReview = async (submissionId: string, laborMarketAddress: EvmAddress, userAddress: EvmAddress) => {
   return mongo.reviews.findOne({
     laborMarketAddress,
     submissionId,

@@ -86,7 +86,7 @@ function configureFromValues({
 }) {
   return configureWrite({
     abi: contracts.LaborMarket.abi,
-    address: inputs.serviceRequest.laborMarketAddress as `0x${string}`,
+    address: inputs.serviceRequest.laborMarketAddress,
     functionName: "signalReview",
     args: [BigNumber.from(inputs.serviceRequest.id), BigNumber.from(inputs.formValues.quantity)],
   });

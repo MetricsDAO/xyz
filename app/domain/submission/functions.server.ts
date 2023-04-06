@@ -133,7 +133,7 @@ export const upsertSubmission = async (address: EvmAddress, id: string, event?: 
     serviceRequestId: submission.requestId.toString(),
     indexedAt: new Date(),
     configuration: {
-      serviceProvider: submission.serviceProvider as `0x${string}`,
+      serviceProvider: EvmAddressSchema.parse(submission.serviceProvider),
       uri: submission.uri,
     },
     appData,

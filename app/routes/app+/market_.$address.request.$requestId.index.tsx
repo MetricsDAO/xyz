@@ -14,7 +14,6 @@ import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
 import { EvmAddressSchema } from "~/domain/address";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
 import { searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
@@ -26,13 +25,12 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const laborMarket = await getIndexedLaborMarket(address);
   const submissions = await searchSubmissionsWithReviews({
     ...search,
-    laborMarketAddress: laborMarket?.address,
+    laborMarketAddress: address,
     serviceRequestId: requestId,
   });
-  return typedjson({ laborMarket, submissions });
+  return typedjson({ submissions });
 };
 
 export type ChallengeSubmissonProps = {
@@ -40,7 +38,7 @@ export type ChallengeSubmissonProps = {
 };
 
 export default function ChallengeIdSubmissions() {
-  const { submissions, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { submissions } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -54,7 +52,7 @@ export default function ChallengeIdSubmissions() {
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
         {submissions?.map((s) => (
-          <SubmissionCard key={s.id} laborMarket={laborMarket} submission={s} />
+          <SubmissionCard key={s.id} submission={s} />
         ))}
       </main>
 

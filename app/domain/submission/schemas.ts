@@ -2,7 +2,7 @@ import { z } from "zod";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { EvmAddressSchema } from "../address";
 import { LaborMarketWithIndexDataSchema } from "../labor-market/schemas";
-import { ReviewDocSchema } from "../review";
+import { ReviewDocSchema } from "../review/schemas";
 import { ServiceRequestWithIndexDataSchema } from "../service-request/schemas";
 
 export const SubmissionSearchSchema = z.object({
