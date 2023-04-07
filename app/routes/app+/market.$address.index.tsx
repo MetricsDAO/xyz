@@ -99,7 +99,7 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         onChange={handleChange}
         size="sm"
         options={[
-          { label: "New", value: "createdAtBlockTimestamp" },
+          { label: "New", value: "blockTimestamp" },
           { label: "Title", value: "appData.title" },
           { label: "Submit Deadline", value: "configuration.submissionExp" },
           { label: "Review Deadline", value: "configuration.enforcementExp" },

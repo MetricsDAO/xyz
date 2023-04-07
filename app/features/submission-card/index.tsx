@@ -4,6 +4,7 @@ import { Card, Score, UserBadge } from "~/components";
 import type { SubmissionWithReviewsDoc } from "~/domain/submission/schemas";
 import { useOptionalUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
+import { submissionCreatedDate } from "~/utils/helpers";
 
 export function SubmissionCard({ submission }: { submission: SubmissionWithReviewsDoc }) {
   const user = useOptionalUser();
@@ -36,7 +37,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
         </div>
       </Link>
       <div className="flex flex-wrap items-center text-xs">
-        <span className="mr-1">{fromNow(submission.createdAtBlockTimestamp)} by </span>
+        <span className="mr-1">{fromNow(submissionCreatedDate(submission))} by </span>
         <UserBadge address={submission.configuration.serviceProvider} />
       </div>
     </Card>

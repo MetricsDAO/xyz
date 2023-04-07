@@ -5,6 +5,7 @@ import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
 import { useReward } from "~/hooks/use-reward";
 import { useTokens } from "~/hooks/use-root-data";
 import { fromNow } from "~/utils/date";
+import { submissionCreatedDate } from "~/utils/helpers";
 import { Reward, Status } from "./column-data";
 
 export function RewardsTable({ rewards, wallets }: { rewards: SubmissionWithServiceRequest[]; wallets: Wallet[] }) {
@@ -45,7 +46,7 @@ function RewardsTableRow({ reward, wallets }: { reward: SubmissionWithServiceReq
         <Reward reward={contractReward} token={token} />
       </Row.Column>
       <Row.Column span={2} className="text-black">
-        {fromNow(reward.createdAtBlockTimestamp)}{" "}
+        {fromNow(submissionCreatedDate(reward))}{" "}
       </Row.Column>
       <Row.Column span={2}>
         <Status reward={contractReward} submission={reward} wallets={wallets} />

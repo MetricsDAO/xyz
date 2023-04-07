@@ -30,7 +30,7 @@ function ActivityTableRow({ activity }: { activity: ActivityDoc }) {
       </Row.Column>
       <Row.Column span={4}>{activity.eventType.config.title}</Row.Column>
       <Row.Column span={4} className="text-black" color="dark.3">
-        <Countdown date={activity.createdAtBlockTimestamp} />
+        <Countdown date={activity.blockTimestamp} />
       </Row.Column>
     </Row>
   );
