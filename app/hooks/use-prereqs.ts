@@ -5,7 +5,6 @@ import { useAccount } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import { useReputationTokenBalance } from "./use-reputation-token-balance";
-import { useContracts } from "./use-root-data";
 import { useTokenBalance } from "./use-token-balance";
 
 // Determines which actions a user can perform by looking at token balances.
@@ -48,14 +47,13 @@ type Prereq = {
  */
 export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarketWithIndexData[] }) {
   const { address } = useAccount();
-  const contracts = useContracts();
   const reputationTokenBalance = useReputationTokenBalance();
   return useQuery({
     enabled: !!address && !!reputationTokenBalance,
     queryKey: ["usePrereqsMulticall", laborMarkets],
     queryFn: async () =>
       // because of "enabled" address and reputationTokenBalance should be defined here. Use "!" to tell typescript that.
-      fetchAllBadgesAndTransform(contracts, laborMarkets, address!, reputationTokenBalance!),
+      prereqs(laborMarkets, address!, reputationTokenBalance!),
   });
 }
 
@@ -65,19 +63,18 @@ export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarke
  * @param laborMarkets
  * @param userAddress
  * @param userReputationTokenBalance
- * @returns Promise<Record<`0x${string}`, Prereq>>
+ * @returns Promise<Record<EvmAddress, Prereq>>
  */
-async function fetchAllBadgesAndTransform(
-  contracts: ReturnType<typeof useContracts>,
+async function prereqs(
   laborMarkets: LaborMarketWithIndexData[],
   userAddress: EvmAddress,
   userReputationTokenBalance: BigNumber
-): Promise<Record<`0x${string}`, Prereq>> {
+): Promise<Record<EvmAddress, Prereq>> {
   const maintainerBadges = (await multicall({
     contracts: laborMarkets.map((m) => {
       return {
         address: m.configuration.maintainerBadge.token,
-        abi: contracts.ReputationToken.abi,
+        abi: TOKEN_BALANCEOF_ABI,
         functionName: "balanceOf",
         args: [userAddress, BigNumber.from(m.configuration.maintainerBadge.tokenId)],
       };
@@ -88,7 +85,7 @@ async function fetchAllBadgesAndTransform(
     contracts: laborMarkets.map((m) => {
       return {
         address: m.configuration.delegateBadge.token,
-        abi: contracts.ReputationToken.abi,
+        abi: TOKEN_BALANCEOF_ABI,
         functionName: "balanceOf",
         args: [userAddress, BigNumber.from(m.configuration.delegateBadge.tokenId)],
       };
@@ -109,3 +106,30 @@ async function fetchAllBadgesAndTransform(
     return accumulator;
   }, {} as Record<EvmAddress, Prereq>);
 }
+
+const TOKEN_BALANCEOF_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
