@@ -9,8 +9,9 @@ import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
 
 export function MarketplacesListView({ marketplaces, ...props }: MarketplaceTableProps) {
+  // This breaks server-side pagination so that we can filter by badges which we look up on the client-side.
+  // One day we might use a data provider to a look up a user's badges and filter on the server-side.
   const q = usePrereqsMulticall({ laborMarkets: marketplaces });
-
   const [searchParams] = useSearchParams();
   const permissions = searchParams.getAll("permission");
 

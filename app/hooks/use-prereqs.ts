@@ -41,6 +41,11 @@ type Prereq = {
   canSubmit: boolean;
 };
 
+/**
+ * Uses multicall to lookup all the prereqs for list of labormarkets.
+ * @param laborMarkets
+ * @returnsa React query where the data type is a map of labormarket address to prereqs.
+ */
 export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarketWithIndexData[] }) {
   const { address } = useAccount();
   const contracts = useContracts();
