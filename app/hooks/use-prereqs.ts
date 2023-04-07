@@ -42,7 +42,7 @@ type Prereq = {
 };
 
 /**
- * Uses multicall to lookup all the prereqs for list of labormarkets.
+ * lookup all the prereqs for list of labormarkets.
  * @param laborMarkets
  * @returnsa React query where the data type is a map of labormarket address to prereqs.
  */
@@ -53,42 +53,59 @@ export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarke
   return useQuery({
     enabled: !!address && !!reputationTokenBalance,
     queryKey: ["usePrereqsMulticall", laborMarkets],
-    queryFn: async () => {
-      const maintainerBadges = (await multicall({
-        contracts: laborMarkets.map((m) => {
-          return {
-            address: m.configuration.maintainerBadge.token,
-            abi: contracts.ReputationToken.abi,
-            functionName: "balanceOf",
-            args: [address, BigNumber.from(m.configuration.maintainerBadge.tokenId)],
-          };
-        }),
-      })) as BigNumber[];
-
-      const delegateBadges = (await multicall({
-        contracts: laborMarkets.map((m) => {
-          return {
-            address: m.configuration.delegateBadge.token,
-            abi: contracts.ReputationToken.abi,
-            functionName: "balanceOf",
-            args: [address, BigNumber.from(m.configuration.delegateBadge.tokenId)],
-          };
-        }),
-      })) as BigNumber[];
-
-      return laborMarkets.reduce((accumulator, currentValue, index) => {
-        const maintainerBadgeBalance = maintainerBadges[index];
-        const delegateBadgeBalance = delegateBadges[index];
-        accumulator[currentValue.address] = {
-          canReview: maintainerBadgeBalance?.gt(0) ?? false,
-          canLaunchChallenges: delegateBadgeBalance?.gt(0) ?? false,
-          canSubmit:
-            (reputationTokenBalance?.gte(currentValue.configuration.reputationParams.submitMin) &&
-              reputationTokenBalance?.lte(currentValue.configuration.reputationParams.submitMax)) ??
-            false,
-        };
-        return accumulator;
-      }, {} as Record<EvmAddress, Prereq>);
-    },
+    queryFn: async () =>
+      // because of "enabled" address and reputationTokenBalance should be defined here. Use "!" to tell typescript that.
+      fetchAllBadgesAndTransform(contracts, laborMarkets, address!, reputationTokenBalance!),
   });
+}
+
+/**
+ * Use multicall to fetch all the badges for a user and transform them into a Record lookup where the key is labormarket address and the value is the prereqs.
+ * @param contracts
+ * @param laborMarkets
+ * @param userAddress
+ * @param userReputationTokenBalance
+ * @returns Promise<Record<`0x${string}`, Prereq>>
+ */
+async function fetchAllBadgesAndTransform(
+  contracts: ReturnType<typeof useContracts>,
+  laborMarkets: LaborMarketWithIndexData[],
+  userAddress: EvmAddress,
+  userReputationTokenBalance: BigNumber
+): Promise<Record<`0x${string}`, Prereq>> {
+  const maintainerBadges = (await multicall({
+    contracts: laborMarkets.map((m) => {
+      return {
+        address: m.configuration.maintainerBadge.token,
+        abi: contracts.ReputationToken.abi,
+        functionName: "balanceOf",
+        args: [userAddress, BigNumber.from(m.configuration.maintainerBadge.tokenId)],
+      };
+    }),
+  })) as BigNumber[];
+
+  const delegateBadges = (await multicall({
+    contracts: laborMarkets.map((m) => {
+      return {
+        address: m.configuration.delegateBadge.token,
+        abi: contracts.ReputationToken.abi,
+        functionName: "balanceOf",
+        args: [userAddress, BigNumber.from(m.configuration.delegateBadge.tokenId)],
+      };
+    }),
+  })) as BigNumber[];
+
+  return laborMarkets.reduce((accumulator, currentValue, index) => {
+    const maintainerBadgeBalance = maintainerBadges[index];
+    const delegateBadgeBalance = delegateBadges[index];
+    accumulator[currentValue.address] = {
+      canReview: maintainerBadgeBalance?.gt(0) ?? false,
+      canLaunchChallenges: delegateBadgeBalance?.gt(0) ?? false,
+      canSubmit:
+        (userReputationTokenBalance.gte(currentValue.configuration.reputationParams.submitMin) &&
+          userReputationTokenBalance.lte(currentValue.configuration.reputationParams.submitMax)) ??
+        false,
+    };
+    return accumulator;
+  }, {} as Record<EvmAddress, Prereq>);
 }
