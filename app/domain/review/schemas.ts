@@ -5,7 +5,7 @@ export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["createdAtBlockTimestamp", "score"]).default("createdAtBlockTimestamp").describe("Sort by column."),
   order: z.enum(["asc", "desc"]).default("desc"),
   score: z.array(z.string()).optional().describe("Filter by Likert score."),
-  first: z.number().default(100),
+  first: z.number().default(1000),
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),
   submissionId: z.string().optional(),
