@@ -12,7 +12,7 @@ export const SubmissionSearchSchema = z.object({
     .default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   score: z.array(z.enum(["spam", "bad", "average", "good", "great"])).optional(),
-  first: z.number().default(10),
+  first: z.number().default(15),
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),
   laborMarketAddress: EvmAddressSchema.optional(),
