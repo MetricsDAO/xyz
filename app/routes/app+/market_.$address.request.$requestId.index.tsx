@@ -16,7 +16,8 @@ import { ValidatedSelect } from "~/components/select";
 import { EvmAddressSchema } from "~/domain/address";
 import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
-import { searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
+import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
+import { Pagination } from "~/components/pagination";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -24,13 +25,11 @@ const paramSchema = z.object({ address: EvmAddressSchema, requestId: z.string() 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
-  const search = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
-  const submissions = await searchSubmissionsWithReviews({
-    ...search,
-    laborMarketAddress: address,
-    serviceRequestId: requestId,
-  });
-  return typedjson({ submissions });
+  const searchParams = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
+  const filterAndSearchParams = { ...searchParams, laborMarketAddress: address, serviceRequestId: requestId };
+  const submissions = await searchSubmissionsWithReviews(filterAndSearchParams);
+  const totalSubmissions = await countSubmissions(filterAndSearchParams);
+  return typedjson({ submissions, searchParams, totalSubmissions });
 };
 
 export type ChallengeSubmissonProps = {
@@ -38,13 +37,13 @@ export type ChallengeSubmissonProps = {
 };
 
 export default function ChallengeIdSubmissions() {
-  const { submissions } = useTypedLoaderData<typeof loader>();
+  const { submissions, searchParams, totalSubmissions } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleChange = () => {
     if (formRef.current) {
-      submit(formRef.current, { replace: true });
+      submit(formRef.current, { replace: true, preventScrollReset: true });
     }
   };
 
@@ -54,6 +53,9 @@ export default function ChallengeIdSubmissions() {
         {submissions?.map((s) => (
           <SubmissionCard key={s.id} submission={s} />
         ))}
+        <div className="w-fit m-auto">
+          <Pagination page={searchParams.page} totalPages={Math.ceil(totalSubmissions / searchParams.first)} />
+        </div>
       </main>
 
       <aside className="md:w-1/4 text-sm">
@@ -62,6 +64,7 @@ export default function ChallengeIdSubmissions() {
           method="get"
           validator={validator}
           onChange={handleChange}
+          preventScrollReset={true}
           className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4"
         >
           <ValidatedInput
@@ -77,21 +80,18 @@ export default function ChallengeIdSubmissions() {
               size="sm"
               onChange={handleChange}
               options={[
-                { label: "Title", value: "title" },
-                { label: "Description", value: "description" },
-                { label: "Author", value: "creatorId" },
-                { label: "Created At", value: "createdAt" },
-                { label: "# Reviews", value: "reviews" },
+                { label: "Title", value: "appData.title" },
+                { label: "Created At", value: "createdAtBlockTimestamp" },
               ]}
             />
           </Field>
           <Label>Filter:</Label>
           <p>Overall Score</p>
-          <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="Great" label="Great" />
-          <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="Good" label="Good" />
-          <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="Average" label="Average" />
-          <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="Bad" label="Bad" />
-          <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="Spam" label="Spam" />
+          <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="great" label="Great" />
+          <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
+          <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
+          <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
+          <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
         </ValidatedForm>
       </aside>
     </section>
