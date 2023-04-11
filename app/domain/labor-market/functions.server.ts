@@ -137,6 +137,10 @@ async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppD
   return LaborMarketAppDataSchema.parse(data);
 }
 
-export async function findLaborMarkets() {
-  return mongo.laborMarkets.find().toArray();
+export async function findLaborMarkets({ addresses }: { addresses?: EvmAddress[] }) {
+  return mongo.laborMarkets
+    .find({
+      ...(addresses ? { address: { $in: addresses } } : {}),
+    })
+    .toArray();
 }
