@@ -49,7 +49,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const projects = await listProjects();
   return typedjson({
     searchParams,
-    marketplaces,
     marketplacesWithActiveChallengeData,
     totalResults,
     tokens,
