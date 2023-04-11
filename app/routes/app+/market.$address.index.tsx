@@ -115,7 +115,7 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         <ValidatedCombobox
           onChange={handleChange}
           placeholder="Select option"
-          name="reward"
+          name="token"
           size="sm"
           options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
         />

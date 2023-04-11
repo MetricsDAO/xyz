@@ -172,7 +172,7 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
     ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
     ...(filter.laborMarket ? { laborMarketAddress: filter.laborMarket as `0x${string}` } : {}),
-    ...(filter.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: filter.token } } } } : {}),
+    ...(filter.token ? { "configuration.pToken": { $in: filter.token } } : {}),
   };
 }
 

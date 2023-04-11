@@ -60,7 +60,10 @@ export const countSubmissions = async (params: FilterParams) => {
   return mongo.submissions.countDocuments(searchParams(params));
 };
 
-type FilterParams = Pick<SubmissionSearch, "laborMarketAddress" | "serviceRequestId" | "serviceProvider">;
+type FilterParams = Pick<
+  SubmissionSearch,
+  "score" | "q" | "laborMarketAddress" | "serviceRequestId" | "serviceProvider"
+>;
 
 /**
  * Convenience function to share the search parameters between search and count.
@@ -72,7 +75,18 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
     ...(params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {}),
-    // ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.q ? { $text: { $search: params.q, $language: "english" } } : {}),
+    ...(params.score
+      ? {
+          $or: [
+            params.score.includes("spam") ? { "score.avg": { $gte: 0, $lt: 25 } } : null,
+            params.score.includes("bad") ? { "score.avg": { $gte: 25, $lt: 50 } } : null,
+            params.score.includes("average") ? { "score.avg": { $gte: 50, $lt: 75 } } : null,
+            params.score.includes("good") ? { "score.avg": { $gte: 75, $lt: 100 } } : null,
+            params.score.includes("great") ? { "score.avg": { $gte: 100 } } : null,
+          ].filter(Boolean),
+        }
+      : {}),
   };
 };
 
@@ -183,14 +197,7 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
   return mongo.submissions
     .aggregate<SubmissionWithReviewsDoc>([
       {
-        $match: {
-          $and: [
-            params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {},
-            params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {},
-            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
-            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
-          ],
-        },
+        $match: searchParams(params),
       },
       {
         $lookup: {
