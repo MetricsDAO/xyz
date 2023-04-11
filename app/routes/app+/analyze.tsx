@@ -127,9 +127,15 @@ export default function Marketplaces() {
             </Field>
 
             <h3 className="font-semibold">Filter:</h3>
-            <Checkbox onChange={handleChange} id="launch_checkbox" name="permission" value="launch" label="Launch" />
-            <Checkbox onChange={handleChange} id="submit_checkbox" name="permission" value="submit" label="Submit" />
-            <Checkbox onChange={handleChange} id="review_checkbox" name="permission" value="review" label="Review" />
+            <ConnectWalletWrapper>
+              <Checkbox onChange={handleChange} id="launch_checkbox" name="permission" value="launch" label="Launch" />
+            </ConnectWalletWrapper>
+            <ConnectWalletWrapper>
+              <Checkbox onChange={handleChange} id="submit_checkbox" name="permission" value="submit" label="Submit" />
+            </ConnectWalletWrapper>
+            <ConnectWalletWrapper>
+              <Checkbox onChange={handleChange} id="review_checkbox" name="permission" value="review" label="Review" />
+            </ConnectWalletWrapper>
 
             <Field>
               <Label>Reward Token</Label>

@@ -43,7 +43,7 @@ type Prereq = {
 /**
  * lookup all the prereqs for list of labormarkets.
  * @param laborMarkets
- * @returnsa React query where the data type is a map of labormarket address to prereqs.
+ * @returns a React query where the data type is a map of labormarket address to prereqs.
  */
 export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarketWithIndexData[] }) {
   const { address } = useAccount();
