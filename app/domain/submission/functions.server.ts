@@ -79,11 +79,11 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.score
       ? {
           $or: [
-            params.score.includes("spam") ? { "score.avg": { $gte: 0, $lt: 25 } } : null,
-            params.score.includes("bad") ? { "score.avg": { $gte: 25, $lt: 50 } } : null,
-            params.score.includes("average") ? { "score.avg": { $gte: 50, $lt: 75 } } : null,
-            params.score.includes("good") ? { "score.avg": { $gte: 75, $lt: 100 } } : null,
-            params.score.includes("stellar") ? { "score.avg": { $gte: 100 } } : null,
+            params.score.includes("spam") ? { "score.avg": { $gte: 0, $lte: 24 } } : null,
+            params.score.includes("bad") ? { "score.avg": { $gte: 25, $lte: 44 } } : null,
+            params.score.includes("average") ? { "score.avg": { $gte: 45, $lte: 69 } } : null,
+            params.score.includes("good") ? { "score.avg": { $gte: 70, $lte: 89 } } : null,
+            params.score.includes("stellar") ? { "score.avg": { $gte: 90 } } : null,
           ].filter(Boolean),
         }
       : {}),
@@ -303,7 +303,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $match: {
           $and: [
-            { "score.avg": { $gte: 75 } },
+            { "score.avg": { $gte: 70 } },
             //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
@@ -357,8 +357,10 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             { "sr.configuration.enforcementExp": { $lt: utcDate() } },
             { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
-            params.score ? { "score.avg": { $gte: params.score } } : {},
-            params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
+            params.score && params.score == "stellar" ? { "score.avg": { $gte: 90 } } : {},
+            params.score && params.score == "good"
+              ? { $and: [{ "score.avg": { $gte: 70 } }, { "score.avg": { $lte: 89 } }] }
+              : {},
             { createdAtBlockTimestamp: { $gte: timeframe } },
             params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
           ],

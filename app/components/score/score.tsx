@@ -33,11 +33,11 @@ export function scoreToLabel(score: number | string) {
   if (typeof score === "string") {
     numberScore = Number(score);
   }
-  return numberScore >= 100
+  return numberScore >= 90
     ? "Stellar"
-    : numberScore >= 75
+    : numberScore >= 70
     ? "Good"
-    : numberScore >= 50
+    : numberScore >= 45
     ? "Average"
     : numberScore >= 25
     ? "Bad"

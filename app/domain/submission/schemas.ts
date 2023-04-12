@@ -87,7 +87,7 @@ export const ShowcaseSearchSchema = z.object({
   count: z.number().default(0),
   marketplace: z.array(EvmAddressSchema).optional(),
   project: z.array(z.string()).optional(),
-  score: z.number().optional(),
+  score: z.enum(["good", "stellar"]).optional(),
   timeframe: z.enum(["day", "month", "week"]).default("month"),
 });
 
