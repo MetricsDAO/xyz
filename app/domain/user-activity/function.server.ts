@@ -53,3 +53,20 @@ export function findParticipants({
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .toArray();
 }
+
+export function countUniqueParticipants({
+  requestId,
+  laborMarketAddress,
+}: {
+  requestId: string;
+  laborMarketAddress: `0x${string}`;
+}) {
+  return mongo.userActivity.countDocuments({
+    $and: [
+      { groupType: { $in: ["Submission", "Review"] } },
+      { "eventType.config.requestId": requestId },
+      { "eventType.config.laborMarketAddress": laborMarketAddress },
+    ],
+    $group: { _id: "userAddress" },
+  });
+}
