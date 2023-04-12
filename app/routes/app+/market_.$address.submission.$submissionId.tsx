@@ -42,7 +42,9 @@ import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { fromTokenAmount } from "~/utils/helpers";
+import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
+import { useReviewSignals } from "~/hooks/use-review-signals";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -57,7 +59,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const reviewedByUser = user && (await findUserReview(submissionId, address, EvmAddressSchema.parse(user.address)));
+  const userReview = user ? await findUserReview(submissionId, address, user.address) : null;
 
   const tokens = await listTokens();
 
@@ -72,13 +74,13 @@ export const loader = async (data: DataFunctionArgs) => {
   invariant(serviceRequest, "Service request not found");
 
   return typedjson(
-    { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens },
+    { submission, reviews, params, laborMarket, user, userReview, serviceRequest, tokens },
     { status: 200 }
   );
 };
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens } =
+  const { submission, reviews, params, laborMarket, user, userReview, serviceRequest, tokens } =
     useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -113,6 +115,18 @@ export default function ChallengeSubmission() {
     score &&
     score > 24;
 
+  const reviewSignal = useReviewSignals({
+    laborMarketAddress: serviceRequest.laborMarketAddress,
+    serviceRequestId: serviceRequest.id,
+  });
+
+  const { canReview } = usePrereqs({ laborMarket });
+  const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
+  const canReviewSubmission =
+    reviewSignal?.remainder.gt(0) && !enforcementExpirationPassed && userReview == null && !submittedByUser;
+  const canClaimToReview =
+    reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed && userReview == null && !submittedByUser;
+
   return (
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
@@ -131,11 +145,19 @@ export default function ChallengeSubmission() {
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
-          {!submittedByUser ? (
-            <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-          ) : (
-            <p className="text-sm">Your Submission!</p>
+          {canClaimToReview && !canReviewSubmission && (
+            <WalletGuardedButtonLink
+              buttonText="Claim to Review"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
+              disabled={!!user && !canReview}
+              disabledTooltip="Check for Prerequisites"
+              variant="cancel"
+              size="lg"
+            />
           )}
+          {canReviewSubmission && <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />}
+          {submittedByUser && <p className="text-sm">Your Submission!</p>}
+          {userReview && <p>{`You gave a score of ${userReview.score}`}</p>}
         </div>
       </section>
       <section className="flex flex-col space-y-6 pb-24">
@@ -152,7 +174,7 @@ export default function ChallengeSubmission() {
             </DetailItem>
           )}
           <DetailItem title="Reviews">
-            {reviewedByUser ? (
+            {userReview != null ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="font-medium">{`You${reviews.length === 1 ? "" : ` + ${reviews.length - 1} reviews`}`}</p>
@@ -167,10 +189,8 @@ export default function ChallengeSubmission() {
                 variant="winner"
                 payment={{
                   amount: reward.displayPaymentTokenAmount,
-                  token,
-                  tooltipAmount: `${fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18)} ${
-                    token?.symbol ?? ""
-                  }`,
+                  token: token,
+                  tooltipAmount: fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18),
                 }}
                 reputation={{ amount: reward.displayReputationTokenAmount }}
               />
