@@ -249,7 +249,7 @@ export default function ChallengeSubmission() {
                   />
                 </div>
               </div>
-              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="4" label="Great" />
+              <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="4" label="Stellar" />
               <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="3" label="Good" />
               <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="2" label="Average" />
               <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="1" label="Bad" />

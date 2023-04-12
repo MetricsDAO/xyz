@@ -11,7 +11,7 @@ export const SubmissionSearchSchema = z.object({
     .enum(["appData.title", "appData.description", "createdAtBlockTimestamp"])
     .default("createdAtBlockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
-  score: z.array(z.enum(["spam", "bad", "average", "good", "great"])).optional(),
+  score: z.array(z.enum(["spam", "bad", "average", "good", "stellar"])).optional(),
   first: z.number().default(15),
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),

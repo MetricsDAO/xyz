@@ -29,7 +29,7 @@ export function ReviewCreatorFields() {
             "bg-lime-100": selectedScore === 4,
           })}
         >
-          Great
+          Stellar
         </Button>
         <Button
           variant="gray"

@@ -34,7 +34,7 @@ export function scoreToLabel(score: number | string) {
     numberScore = Number(score);
   }
   return numberScore >= 100
-    ? "Great"
+    ? "Stellar"
     : numberScore >= 75
     ? "Good"
     : numberScore >= 50

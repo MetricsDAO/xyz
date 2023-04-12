@@ -83,7 +83,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
             params.score.includes("bad") ? { "score.avg": { $gte: 25, $lt: 50 } } : null,
             params.score.includes("average") ? { "score.avg": { $gte: 50, $lt: 75 } } : null,
             params.score.includes("good") ? { "score.avg": { $gte: 75, $lt: 100 } } : null,
-            params.score.includes("great") ? { "score.avg": { $gte: 100 } } : null,
+            params.score.includes("stellar") ? { "score.avg": { $gte: 100 } } : null,
           ].filter(Boolean),
         }
       : {}),
