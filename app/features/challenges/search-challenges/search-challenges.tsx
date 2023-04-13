@@ -62,7 +62,7 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
         <ConnectWalletWrapper>
           <div>
             <input type="checkbox" {...register("permissions")} id="submit_checkbox" value="submit" />
-            <label htmlFor="submit_checkbox" className="ml-1">
+            <label htmlFor="submit_checkbox" className="ml-1 text-gray-600">
               Submit
             </label>
           </div>
@@ -70,7 +70,7 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
         <ConnectWalletWrapper>
           <div>
             <input type="checkbox" {...register("permissions")} id="review_checkbox" value="review" />
-            <label htmlFor="review_checkbox" className="ml-1">
+            <label htmlFor="review_checkbox" className="ml-1 text-gray-600">
               Review
             </label>
           </div>
