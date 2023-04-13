@@ -58,7 +58,7 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
           />
         </Field>
 
-        <h3 className="font-semibold">Filter:</h3>
+        <h3 className="font-semibold">My Permissions:</h3>
         <ConnectWalletWrapper>
           <div>
             <input type="checkbox" {...register("permissions")} id="submit_checkbox" value="submit" />

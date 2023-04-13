@@ -126,7 +126,7 @@ export default function Marketplaces() {
               />
             </Field>
 
-            <h3 className="font-semibold">Filter:</h3>
+            <h3 className="font-semibold">My Permissions:</h3>
             <ConnectWalletWrapper>
               <Checkbox onChange={handleChange} id="launch_checkbox" name="permission" value="launch" label="Launch" />
             </ConnectWalletWrapper>
