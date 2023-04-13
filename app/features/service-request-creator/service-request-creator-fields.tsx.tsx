@@ -33,150 +33,198 @@ export function ServiceRequestCreatorFields({
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
   const claimToReviewDeadline = new Date(claimDate(currentDate, parseDatetime(selectedReviewDate, selectedReviewTime)));
 
+  const header = true;
+  const create = true;
+  const analyst = true;
+  const reviewer = true;
+
   return (
     <>
-      <section className="space-y-3">
-        <h2 className="font-bold">Challenge Title*</h2>
-        <Field>
-          <Input {...register("appData.title")} type="text" placeholder="Challenge Title" className="w-full" />
-          <Error error={errors.appData?.title?.message} />
-        </Field>
-      </section>
-      <section className="space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-center">
-          <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?*</h2>
-          <InformationTooltip />
-        </div>
-        <ClientOnly>
-          {() => (
-            <div className="container overflow-auto">
-              <MarkdownEditor
-                value={watch("appData.description")}
-                onChange={(v) => {
-                  setValue("appData.description", v ?? "");
-                }}
-              />
+      {create && (
+        <>
+          {header && (
+            <div className="space-y-3">
+              <h1 className="font-semibold text-3xl">Launch an Analytics Challenge</h1>
+              <p className="text-lg text-cyan-500">
+                Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+                projects launch, grow and succeed.
+              </p>
+              <p className="text-sm text-gray-500">
+                Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These
+                parameters will be applied to all challenges in this marketplace
+              </p>
             </div>
           )}
-        </ClientOnly>
-      </section>
-      <section className="space-y-3">
-        <div className="flex flex-col md:flex-row gap-2 items-start">
-          <div className="flex-grow">
+          <section className="space-y-3">
+            <h2 className="font-bold">Challenge Title*</h2>
             <Field>
-              <Controller
-                name="appData.language"
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      {...field}
-                      placeholder="English"
-                      value={"english"}
-                      options={[{ label: "English", value: "english" }]}
-                    />
-                  );
-                }}
-              />
-              <Error error={errors.appData?.language?.message} />
+              <Input {...register("appData.title")} type="text" placeholder="Challenge Title" className="w-full" />
+              <Error error={errors.appData?.title?.message} />
             </Field>
-          </div>
-          <div className="flex-grow">
-            <Field>
-              <Controller
-                control={control}
-                name="appData.projectSlugs"
-                render={({ field }) => (
-                  <Combobox
-                    {...field}
-                    placeholder="Blockchain/Project"
-                    options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
+          </section>
+          <section className="space-y-3">
+            <div className="flex flex-col lg:flex-row lg:items-center">
+              <h2 className="font-bold">
+                What question, problem, or tooling need do you want Web3 analysts to address?*
+              </h2>
+              <InformationTooltip />
+            </div>
+            <ClientOnly>
+              {() => (
+                <div className="container overflow-auto">
+                  <MarkdownEditor
+                    value={watch("appData.description")}
+                    onChange={(v) => {
+                      setValue("appData.description", v ?? "");
+                    }}
                   />
-                )}
-              />
-              <Error error={errors.appData?.projectSlugs?.message} />
-            </Field>
-          </div>
-        </div>
-      </section>
+                </div>
+              )}
+            </ClientOnly>
+          </section>
+          <section className="space-y-3">
+            <div className="flex flex-col md:flex-row gap-2 items-start">
+              <div className="flex-grow">
+                <Field>
+                  <Controller
+                    name="appData.language"
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <Select
+                          {...field}
+                          placeholder="English"
+                          value={"english"}
+                          options={[{ label: "English", value: "english" }]}
+                        />
+                      );
+                    }}
+                  />
+                  <Error error={errors.appData?.language?.message} />
+                </Field>
+              </div>
+              <div className="flex-grow">
+                <Field>
+                  <Controller
+                    control={control}
+                    name="appData.projectSlugs"
+                    render={({ field }) => (
+                      <Combobox
+                        {...field}
+                        placeholder="Blockchain/Project"
+                        options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
+                      />
+                    )}
+                  />
+                  <Error error={errors.appData?.projectSlugs?.message} />
+                </Field>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
 
-      <section className="space-y-3">
-        <h2 className="font-bold">When must submissions be entered by?*</h2>
-        <Field>
-          <Input {...register("endDate")} type="date" />
-          <Error error={errors.endDate?.message} />
-        </Field>
-        <Field>
-          <Input {...register("endTime")} type="time" />
-          <Error error={errors.endTime?.message} />
-        </Field>
-        <p className="text-gray-400 italic">
-          {selectedSubmitDate &&
-            selectedSubmitTime &&
-            `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit question ideas`}
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
-        <Field>
-          <Input {...register("reviewEndDate")} type="date" />
-          <Error error={errors.reviewEndDate?.message} />
-        </Field>
-        <Field>
-          <Input {...register("reviewEndTime")} type="time" />
-          <Error error={errors.reviewEndTime?.message} />
-        </Field>
-        <p className="text-gray-400 italic">
-          {selectedReviewDate &&
-            selectedReviewTime &&
-            `Analysts must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score questions`}
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="font-bold">Rewards*</h2>
-        <div className="flex flex-col md:flex-row gap-2 items-start">
-          <div className="flex-grow w-full">
+      {analyst && (
+        <>
+          {header && (
+            <div className="space-y-3">
+              <h1 className="font-semibold text-3xl">Analysts</h1>
+              <p className="text-lg text-cyan-500">
+                Analysts are rewarded based on the Marketplace reward curve once the review deadline is reached.
+              </p>
+            </div>
+          )}
+          <section className="space-y-3">
+            <h2 className="font-bold">When must submissions be entered by?*</h2>
             <Field>
-              <Controller
-                name="rewardToken"
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <Select
-                      {...field}
-                      onChange={(v) => {
-                        const token = validTokens.find((t) => t.contractAddress === v);
-                        invariant(token, "Token not found");
-                        setValue("rewardTokenDecimals", token.decimals);
-                        field.onChange(v);
-                      }}
-                      options={validTokens.map((t) => {
-                        return { label: t.symbol, value: t.contractAddress };
-                      })}
-                    />
-                  );
-                }}
-              />
-              <Error error={errors.rewardToken?.message} />
+              <Input {...register("endDate")} type="date" />
+              <Error error={errors.endDate?.message} />
             </Field>
-          </div>
-          <div className="flex-grow w-full">
             <Field>
-              <Input
-                {...register("rewardPool")}
-                name="rewardPool"
-                placeholder="Token amount distributed across winners"
-              />
-              <Error error={errors.rewardPool?.message} />
+              <Input {...register("endTime")} type="time" />
+              <Error error={errors.endTime?.message} />
             </Field>
-          </div>
-        </div>
-        <p className="text-gray-400 italic">
-          Rewards are distributed based on overall submission scores. Higher scores are rewarded more.
-        </p>
-      </section>
+            <p className="text-gray-400 italic">
+              {selectedSubmitDate &&
+                selectedSubmitTime &&
+                `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit question ideas`}
+            </p>
+          </section>
+          <section className="space-y-3">
+            <h2 className="font-bold">Rewards*</h2>
+            <div className="flex flex-col md:flex-row gap-2 items-start">
+              <div className="flex-grow w-full">
+                <Field>
+                  <Controller
+                    name="rewardToken"
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <Select
+                          {...field}
+                          onChange={(v) => {
+                            const token = validTokens.find((t) => t.contractAddress === v);
+                            invariant(token, "Token not found");
+                            setValue("rewardTokenDecimals", token.decimals);
+                            field.onChange(v);
+                          }}
+                          options={validTokens.map((t) => {
+                            return { label: t.symbol, value: t.contractAddress };
+                          })}
+                        />
+                      );
+                    }}
+                  />
+                  <Error error={errors.rewardToken?.message} />
+                </Field>
+              </div>
+              <div className="flex-grow w-full">
+                <Field>
+                  <Input
+                    {...register("rewardPool")}
+                    name="rewardPool"
+                    placeholder="Token amount distributed across winners"
+                  />
+                  <Error error={errors.rewardPool?.message} />
+                </Field>
+              </div>
+            </div>
+            <p className="text-gray-400 italic">
+              Rewards are distributed based on overall submission scores. Higher scores are rewarded more.
+            </p>
+          </section>
+        </>
+      )}
+
+      {reviewer && (
+        <>
+          {header && (
+            <div className="space-y-3">
+              <h1 className="font-semibold text-3xl">Reviewers</h1>
+              <p className="text-lg text-cyan-500">
+                Reviewers are rewarded based on their shared of overall submissions scored once the review deadline is
+                reached.
+              </p>
+            </div>
+          )}
+          <section className="space-y-3">
+            <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
+            <Field>
+              <Input {...register("reviewEndDate")} type="date" />
+              <Error error={errors.reviewEndDate?.message} />
+            </Field>
+            <Field>
+              <Input {...register("reviewEndTime")} type="time" />
+              <Error error={errors.reviewEndTime?.message} />
+            </Field>
+            <p className="text-gray-400 italic">
+              {selectedReviewDate &&
+                selectedReviewTime &&
+                `Analysts must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score questions`}
+            </p>
+          </section>
+        </>
+      )}
     </>
   );
 }

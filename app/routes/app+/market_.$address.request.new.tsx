@@ -9,6 +9,8 @@ import { ServiceRequestCreator } from "~/features/service-request-creator/servic
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { requireUser } from "~/services/session.server";
+import { Button } from "~/components/button";
+import { Progress } from "~/components/progress";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -39,23 +41,29 @@ export default function CreateServiceRequest() {
 
   return (
     <div className="max-w-2xl mx-auto my-10 space-y-10">
-      <div className="space-y-3">
-        <h1 className="font-semibold text-3xl">Launch an Analytics Challenge</h1>
-        <p className="text-lg text-cyan-500">
-          Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
-          projects launch, grow and succeed.
-        </p>
-        <p className="text-sm text-gray-500">
-          You fund and launch an Analytics challenge. Analysts submit work. Peer reviewers score and surface the best
-          outputs. Winners earn tokens from your reward pool!
-        </p>
+      <div>
+        <ServiceRequestCreator
+          projects={laborMarketProjects}
+          tokens={validTokens}
+          defaultValues={defaultValues}
+          laborMarketAddress={laborMarket.address}
+        />
+        <div>
+          <p>Create</p>
+          <p>Analysts</p>
+          <p>Reviewers</p>
+          <p>Overview</p>
+        </div>
       </div>
-      <ServiceRequestCreator
-        projects={laborMarketProjects}
-        tokens={validTokens}
-        defaultValues={defaultValues}
-        laborMarketAddress={laborMarket.address}
-      />
+      <div>
+        <Progress progress={35} />
+        <div className="flex">
+          <p>Prev</p>
+          <p>Next</p>
+          <Button>Cancel</Button>
+          <Button>Launch Challenge</Button>
+        </div>
+      </div>
     </div>
   );
 }
