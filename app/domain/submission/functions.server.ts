@@ -97,7 +97,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
   invariant(submission, "Submission should exist after upserting");
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
       eventType: "RequestFulfilled",

@@ -47,7 +47,7 @@ export async function handleRequestConfiguredEvent(event: TracerEvent) {
   }
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "ServiceRequest",
     eventType: {
       eventType: "RequestConfigured",
@@ -166,7 +166,7 @@ export function countActiveServiceRequests(address: EvmAddress) {
  * Counts the reward pool totals of ServiceRequests that are active for a given laborMarket.
  */
 export async function getActiveRewardPools(address: EvmAddress) {
-  const activeServiceRequests = mongo.serviceRequests.find({
+  const activeServiceRequests = await mongo.serviceRequests.find({
     laborMarketAddress: address,
     "configuration.enforcementExp": { $gt: new Date() },
   });
@@ -224,7 +224,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   });
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Review",
     eventType: {
       eventType: "ReviewSignal",
@@ -257,7 +257,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
   });
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
       eventType: "RequestSignal",

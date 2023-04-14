@@ -90,7 +90,7 @@ export const indexReview = async (event: TracerEvent) => {
   });
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Review",
     eventType: {
       eventType: "RequestReviewed",
