@@ -35,7 +35,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const search = getParamsOrFail(url.searchParams, ShowcaseSearchSchema);
   const submissions = await searchSubmissionsShowcase({ ...search });
   const projects = await listProjects();
-  const laborMarkets = await findLaborMarkets();
+  const laborMarkets = await findLaborMarkets({});
   return typedjson({
     submissions,
     search,

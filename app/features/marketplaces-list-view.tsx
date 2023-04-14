@@ -1,26 +1,54 @@
-import { Link } from "@remix-run/react";
+import { Link, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
+import { usePrereqsMulticall } from "~/hooks/use-prereqs";
 import type { MarketplaceTableProps } from "~/routes/app+/analyze";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
 
-export function MarketplacesListView(props: MarketplaceTableProps) {
-  if (props.marketplaces.length === 0) {
+export function MarketplacesListView({ marketplaces, ...props }: MarketplaceTableProps) {
+  // This breaks server-side pagination so that we can filter by badges which we look up on the client-side.
+  // One day we might use a data provider to a look up a user's badges and filter on the server-side.
+  const q = usePrereqsMulticall({ laborMarkets: marketplaces });
+  const [searchParams] = useSearchParams();
+  const permissions = searchParams.getAll("permission");
+
+  if (permissions.length > 0 && q.isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (marketplaces.length === 0) {
     return <p>No results. Try changing search and filter options.</p>;
+  }
+
+  let filteredMarketplaces = marketplaces;
+  if (q.data) {
+    filteredMarketplaces = marketplaces.filter((m) => {
+      if (permissions.includes("launch")) {
+        return q.data[m.address]?.canLaunchChallenges;
+      }
+      if (permissions.includes("review")) {
+        return q.data[m.address]?.canReview;
+      }
+      if (permissions.includes("submit")) {
+        return q.data[m.address]?.canSubmit;
+      }
+
+      return true;
+    });
   }
 
   return (
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <MarketplacesTable {...props} />
+        <MarketplacesTable {...props} marketplaces={filteredMarketplaces} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <MarketplacesCard {...props} />
+        <MarketplacesCard {...props} marketplaces={filteredMarketplaces} />
       </div>
     </>
   );
