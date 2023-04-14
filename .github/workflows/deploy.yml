@@ -1,4 +1,4 @@
- cname: 🚀 Deploy
+name: 🚀 Deploy
 on:
   push:
     branches:
