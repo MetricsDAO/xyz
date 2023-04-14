@@ -26,6 +26,7 @@ import {
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
+import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
@@ -59,7 +60,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const userReview = user ? await findUserReview(submissionId, address, user.address) : null;
+  const userReview = user ? await findUserReview(submissionId, address, user.address as EvmAddress) : null;
 
   const tokens = await listTokens();
 
