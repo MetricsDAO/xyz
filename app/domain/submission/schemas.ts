@@ -7,10 +7,12 @@ import { ServiceRequestWithIndexDataSchema } from "../service-request/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z.enum(["title", "description", "createdAt", "reviews", "creatorId"]).default("createdAt"),
-  order: z.enum(["asc", "desc"]).default("asc"),
-  score: z.number().optional(),
-  first: z.number().default(10),
+  sortBy: z
+    .enum(["appData.title", "appData.description", "createdAtBlockTimestamp"])
+    .default("createdAtBlockTimestamp"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  score: z.array(z.enum(["spam", "bad", "average", "good", "great"])).optional(),
+  first: z.number().default(15),
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),
   laborMarketAddress: EvmAddressSchema.optional(),
@@ -73,7 +75,7 @@ export const RewardsSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
   sortBy: z.enum(["sr[0].appData.title", "blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
-  first: z.number().default(10),
+  first: z.number().default(100),
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   isPastEnforcementExpiration: z.boolean().default(true),

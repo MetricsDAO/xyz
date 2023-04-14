@@ -80,8 +80,9 @@ export const ServiceRequestSearchSchema = ServiceRequestFilterSchema.extend({
     .enum(["blockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
     .default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
+  permissions: z.array(z.enum(["submit", "review"])).optional(),
   page: z.coerce.number().min(1).default(1),
-  first: z.coerce.number().min(1).max(100).default(12),
+  first: z.coerce.number().min(1).max(100).default(100),
 });
 
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;

@@ -5,6 +5,7 @@ import { createUserSession, getNonce } from "~/services/session.server";
 import { createUser, findUserByAddress } from "~/services/user.server";
 import chainalysisAbi from "~/abi/chainalysis.json";
 import { ethers } from "ethers";
+import { nodeProvider } from "~/services/node.server";
 
 export const action: ActionFunction = async (data: DataFunctionArgs) => {
   const { message, signature } = await data.request.json();
@@ -38,9 +39,8 @@ export const action: ActionFunction = async (data: DataFunctionArgs) => {
  * @returns {Promise<boolean>} - True if the address is sanctioned, false otherwise.
  */
 async function isAddressSanctioned(address: string): Promise<boolean> {
-  const provider = ethers.providers.getDefaultProvider();
   const contract_address = "0x40c57923924b5c5c5455c48d93317139addac8fb";
-  const contract = new ethers.Contract(contract_address, chainalysisAbi.abi, provider);
+  const contract = new ethers.Contract(contract_address, chainalysisAbi.abi, nodeProvider);
   const isSanctioned = await contract.isSanctioned(address);
   return isSanctioned;
 }

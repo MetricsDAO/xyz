@@ -22,6 +22,7 @@ const userActivity = db.collection<ActivityDoc>("userActivity");
 laborMarkets.createIndex({ "appData.title": "text" });
 serviceRequests.createIndex({ "appData.title": "text" });
 userActivity.createIndex({ laborMarketTitle: "text" });
+submissions.createIndex({ "appData.title": "text" });
 
 export const mongo = {
   db,
