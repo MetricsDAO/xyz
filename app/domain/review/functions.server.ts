@@ -5,7 +5,7 @@ import type { EvmAddress } from "~/domain/address";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review/schemas";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review/schemas";
 import { getContracts } from "~/utils/contracts.server";
-import { mongo } from "../../services/mongo.server";
+import { mongoPromise } from "../../services/mongo.server";
 import { nodeProvider } from "../../services/node.server";
 
 const contracts = getContracts();
@@ -14,6 +14,7 @@ const contracts = getContracts();
  * Returns an array of ReviewDoc for a given Submission.
  */
 export const searchReviews = async (params: ReviewSearch) => {
+  const mongo = await mongoPromise;
   return mongo.reviews
     .find(searchParams(params))
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
@@ -28,6 +29,7 @@ export const searchReviews = async (params: ReviewSearch) => {
  * @returns {number} - The number of reviews that match the search.
  */
 export const countReviews = async (params: FilterParams) => {
+  const mongo = await mongoPromise;
   return mongo.reviews.countDocuments(searchParams(params));
 };
 
@@ -37,7 +39,7 @@ type FilterParams = Pick<ReviewSearch, "laborMarketAddress" | "serviceRequestId"
  * @param {FilterParams} params - The search parameters.
  * @returns criteria to find review in MongoDb
  */
-const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.find>[0] => {
+const searchParams = (params: FilterParams): Parameters<Awaited<typeof mongoPromise>["reviews"]["find"]>[0] => {
   return {
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
@@ -53,6 +55,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
  * @returns - the users submission or null if not found.
  */
 export const findUserReview = async (submissionId: string, laborMarketAddress: EvmAddress, userAddress: EvmAddress) => {
+  const mongo = await mongoPromise;
   return mongo.reviews.findOne({
     laborMarketAddress,
     submissionId,
@@ -64,6 +67,7 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: E
  * Create a new ReviewDoc from a TracerEvent.
  */
 export const indexReview = async (event: TracerEvent) => {
+  const mongo = await mongoPromise;
   const contractAddress = getAddress(event.contract.address);
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
   // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)

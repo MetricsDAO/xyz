@@ -16,7 +16,7 @@ import type {
 import { ServiceRequestAppDataSchema, ServiceRequestConfigSchema } from "~/domain/service-request/schemas";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
-import { mongo } from "~/services/mongo.server";
+import { mongoPromise } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
 import { EvmAddressSchema } from "../address";
@@ -28,6 +28,7 @@ import type { RewardPool } from "../labor-market/schemas";
  * index it eagerly and return the result.
  */
 export async function getIndexedServiceRequest(address: EvmAddress, id: string): Promise<ServiceRequestWithIndexData> {
+  const mongo = await mongoPromise;
   const doc = await mongo.serviceRequests.findOne({ id, laborMarketAddress: address });
   if (!doc) {
     const newDoc = await upsertIndexedServiceRequest(address, id);
@@ -38,6 +39,7 @@ export async function getIndexedServiceRequest(address: EvmAddress, id: string):
 }
 
 export async function handleRequestConfiguredEvent(event: TracerEvent) {
+  const mongo = await mongoPromise;
   const requestId = z.string().parse(event.decoded.inputs.requestId);
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
   const serviceRequest = await upsertIndexedServiceRequest(laborMarketAddress, requestId, event);
@@ -93,6 +95,7 @@ export async function upsertIndexedServiceRequest(
   id: string,
   event?: TracerEvent
 ): Promise<ServiceRequestWithIndexData | null> {
+  const mongo = await mongoPromise;
   const configuration = await getServiceRequestConfig(laborMarketAddress, id);
   let appData;
   try {
@@ -147,14 +150,16 @@ async function getIndexedServiceRequestAppData(marketUri: string): Promise<Servi
 /**
  * Counts the number of ServiceRequests that match a given ServiceRequestFilter.
  */
-export function countServiceRequests(filter: ServiceRequestFilter) {
+export async function countServiceRequests(filter: ServiceRequestFilter) {
+  const mongo = await mongoPromise;
   return mongo.serviceRequests.countDocuments(filterToMongo(filter));
 }
 
 /**
  * Counts the number of ServiceRequests that are active for a given laborMarket.
  */
-export function countActiveServiceRequests(address: EvmAddress) {
+export async function countActiveServiceRequests(address: EvmAddress) {
+  const mongo = await mongoPromise;
   const currDate = new Date();
   return mongo.serviceRequests.countDocuments({
     laborMarketAddress: address,
@@ -166,6 +171,7 @@ export function countActiveServiceRequests(address: EvmAddress) {
  * Counts the reward pool totals of ServiceRequests that are active for a given laborMarket.
  */
 export async function getActiveRewardPools(address: EvmAddress) {
+  const mongo = await mongoPromise;
   const activeServiceRequests = mongo.serviceRequests.find({
     laborMarketAddress: address,
     "configuration.enforcementExp": { $gt: new Date() },
@@ -183,7 +189,8 @@ export async function getActiveRewardPools(address: EvmAddress) {
 /**
  * Returns an array of LaborMarketsWithIndexData for a given LaborMarketSearch.
  */
-export function searchServiceRequests(search: ServiceRequestSearch) {
+export async function searchServiceRequests(search: ServiceRequestSearch) {
+  const mongo = await mongoPromise;
   return mongo.serviceRequests
     .find(filterToMongo(search))
     .sort({ [search.sortBy]: search.order === "asc" ? 1 : -1 })
@@ -196,7 +203,9 @@ export function searchServiceRequests(search: ServiceRequestSearch) {
  * Convenience function to share the search parameters between search and count.
  * @returns criteria to find labor market in MongoDb
  */
-function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.serviceRequests.find>[0] {
+function filterToMongo(
+  filter: ServiceRequestFilter
+): Parameters<Awaited<typeof mongoPromise>["serviceRequests"]["find"]>[0] {
   return {
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
     ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
@@ -211,10 +220,12 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
  * @returns - The ServiceRequest or null if not found.
  */
 export const findServiceRequest = async (id: string, laborMarketAddress: string) => {
+  const mongo = await mongoPromise;
   return mongo.serviceRequests.findOne({ id, laborMarketAddress: laborMarketAddress as EvmAddress });
 };
 
 export const indexClaimToReview = async (event: TracerEvent) => {
+  const mongo = await mongoPromise;
   const inputs = ClaimToReviewEventSchema.parse(event.decoded.inputs);
   const laborMarketAddress = getAddress(event.contract.address);
 
@@ -248,6 +259,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
 };
 
 export const indexClaimToSubmit = async (event: TracerEvent) => {
+  const mongo = await mongoPromise;
   const inputs = ClaimToSubmitEventSchema.parse(event.decoded.inputs);
   const laborMarketAddress = getAddress(event.contract.address);
 

@@ -1,17 +1,19 @@
-import { mongo } from "~/services/mongo.server";
+import { mongoPromise } from "~/services/mongo.server";
 import type { ActivityFilter, ActivitySearch, ParticipantSearch } from "./schemas";
 
 /**
  * Counts the number of LaborMarkets that match a given LaborMarketSearch.
  */
-export function countUserActivity(filter: ActivityFilter) {
+export async function countUserActivity(filter: ActivityFilter) {
+  const mongo = await mongoPromise;
   return mongo.userActivity.countDocuments(filterToMongo(filter));
 }
 
 /**
  * Returns an array of LaborMarketsWithIndexData for a given LaborMarketSearch.
  */
-export function searchUserActivity(userAddress: string, search: ActivitySearch) {
+export async function searchUserActivity(userAddress: string, search: ActivitySearch) {
+  const mongo = await mongoPromise;
   return mongo.userActivity
     .find({ userAddress, ...filterToMongo(search) })
     .sort({ [search.sortBy]: search.order === "asc" ? 1 : -1 })
@@ -24,7 +26,7 @@ export function searchUserActivity(userAddress: string, search: ActivitySearch) 
  * Convenience function to share the search parameters between search and count.
  * @returns criteria to find labor market in MongoDb
  */
-function filterToMongo(filter: ActivityFilter): Parameters<typeof mongo.userActivity.find>[0] {
+function filterToMongo(filter: ActivityFilter): Parameters<Awaited<typeof mongoPromise>["userActivity"]["find"]>[0] {
   return {
     groupType: filter.groupType,
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
@@ -32,7 +34,7 @@ function filterToMongo(filter: ActivityFilter): Parameters<typeof mongo.userActi
   };
 }
 
-export function findParticipants({
+export async function findParticipants({
   requestId,
   laborMarketAddress,
   params,
@@ -41,6 +43,7 @@ export function findParticipants({
   laborMarketAddress: `0x${string}`;
   params: ParticipantSearch;
 }) {
+  const mongo = await mongoPromise;
   return mongo.userActivity
     .find({
       $and: [

@@ -9,7 +9,7 @@ import type { SubmissionForm } from "~/features/submission-creator/schema";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
-import { mongo } from "~/services/mongo.server";
+import { mongoPromise } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
 import type {
@@ -30,6 +30,7 @@ import { SubmissionContractSchema, SubmissionDocSchema, SubmissionWithServiceReq
  * index it eagerly and return the result.
  */
 export async function getIndexedSubmission(address: EvmAddress, id: string): Promise<SubmissionDoc> {
+  const mongo = await mongoPromise;
   const doc = await mongo.submissions.findOne({ id, laborMarketAddress: address });
   if (!doc) {
     const newDoc = await upsertSubmission(address, id);
@@ -43,6 +44,7 @@ export async function getIndexedSubmission(address: EvmAddress, id: string): Pro
  * Returns an array of SubmissionDoc for a given Service Request.
  */
 export const searchSubmissions = async (params: SubmissionSearch) => {
+  const mongo = await mongoPromise;
   return mongo.submissions
     .find(searchParams(params))
     .sort({ [params.sortBy]: params.order })
@@ -57,6 +59,7 @@ export const searchSubmissions = async (params: SubmissionSearch) => {
  * @returns {number} - The number of submissions that match the search.
  */
 export const countSubmissions = async (params: FilterParams) => {
+  const mongo = await mongoPromise;
   return mongo.submissions.countDocuments(searchParams(params));
 };
 
@@ -70,7 +73,7 @@ type FilterParams = Pick<
  * @param {SubmissionSearch} params - The search parameters.
  * @returns criteria to find labor market in MongoDb
  */
-const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions.find>[0] => {
+const searchParams = (params: FilterParams): Parameters<Awaited<typeof mongoPromise>["submissions"]["find"]>[0] => {
   return {
     ...(params.laborMarketAddress ? { laborMarketAddress: params.laborMarketAddress } : {}),
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
@@ -91,6 +94,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
 };
 
 export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
+  const mongo = await mongoPromise;
   const submissionId = z.string().parse(event.decoded.inputs.submissionId);
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
   const submission = await upsertSubmission(laborMarketAddress, submissionId, event);
@@ -129,6 +133,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
  * Create a new SubmissionDoc from a TracerEvent.
  */
 export const upsertSubmission = async (address: EvmAddress, id: string, event?: TracerEvent) => {
+  const mongo = await mongoPromise;
   const contract = LaborMarket__factory.connect(address, nodeProvider);
 
   const submission = await contract.serviceSubmissions(id, { blockTag: event?.block.number });
@@ -194,6 +199,7 @@ export const prepareSubmission = async (
  * Returns an array of Submissions with their Reviews for a given Service Request.
  */
 export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {
+  const mongo = await mongoPromise;
   return mongo.submissions
     .aggregate<SubmissionWithReviewsDoc>([
       {
@@ -235,6 +241,7 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
  */
 
 export const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
+  const mongo = await mongoPromise;
   const submissionsDocs = await mongo.submissions
     .aggregate([
       {
@@ -297,6 +304,7 @@ export const searchUserSubmissions = async (params: RewardsSearch): Promise<Subm
  * Returns an array of Submissions with their Service Request and LaborMarket sorted by score
  */
 export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
+  const mongo = await mongoPromise;
   const timeframe = oneUnitAgo(params.timeframe);
   return mongo.submissions
     .aggregate<CombinedDoc>([

@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
-import { mongo } from "~/services/mongo.server";
+import { mongoPromise } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
 import { EvmAddressSchema } from "../address";
@@ -24,6 +24,7 @@ import { LaborMarketAppDataSchema, LaborMarketConfigSchema, LaborMarketWithIndex
  * index it eagerly and return the result.
  */
 export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborMarketWithIndexData> {
+  const mongo = await mongoPromise;
   const doc = await mongo.laborMarkets.findOne({ address });
   if (!doc) {
     const newDoc = await upsertIndexedLaborMarket(address);
@@ -34,6 +35,7 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 }
 
 export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
+  const mongo = await mongoPromise;
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
   const lm = await upsertIndexedLaborMarket(laborMarketAddress, event);
   if (!lm) {
@@ -60,6 +62,7 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
 export async function upsertIndexedLaborMarket(address: EvmAddress, event?: TracerEvent) {
+  const mongo = await mongoPromise;
   const checksumAddress = getAddress(address);
   const configuration = await getLaborMarketConfig(checksumAddress, event?.block.number);
   let appData;
@@ -97,14 +100,16 @@ export async function createLaborMarketAppData(appData: LaborMarketAppData, user
 /**
  * Counts the number of LaborMarkets that match a given LaborMarketSearch.
  */
-export function countLaborMarkets(filter: LaborMarketFilter) {
+export async function countLaborMarkets(filter: LaborMarketFilter) {
+  const mongo = await mongoPromise;
   return mongo.laborMarkets.countDocuments(filterToMongo(filter));
 }
 
 /**
  * Returns an array of LaborMarketsWithIndexData for a given LaborMarketSearch.
  */
-export function searchLaborMarkets(search: LaborMarketSearch) {
+export async function searchLaborMarkets(search: LaborMarketSearch) {
+  const mongo = await mongoPromise;
   return mongo.laborMarkets
     .find(filterToMongo(search))
     .sort({ [search.sortBy]: search.order === "asc" ? 1 : -1 })
@@ -117,7 +122,7 @@ export function searchLaborMarkets(search: LaborMarketSearch) {
  * Convenience function to share the search parameters between search and count.
  * @returns criteria to find labor market in MongoDb
  */
-function filterToMongo(filter: LaborMarketFilter): Parameters<typeof mongo.laborMarkets.find>[0] {
+function filterToMongo(filter: LaborMarketFilter): Parameters<Awaited<typeof mongoPromise>["laborMarkets"]["find"]>[0] {
   return {
     "appData.type": filter.type,
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
@@ -138,5 +143,6 @@ async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppD
 }
 
 export async function findLaborMarkets() {
+  const mongo = await mongoPromise;
   return mongo.laborMarkets.find().toArray();
 }
