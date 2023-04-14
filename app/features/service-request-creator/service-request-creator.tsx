@@ -127,9 +127,6 @@ export function ServiceRequestCreator({
 
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
         <ServiceRequestCreatorFields validTokens={tokens} validProjects={projects} />
-        <Button size="lg" type="submit">
-          Next
-        </Button>
       </form>
     </FormProvider>
   );

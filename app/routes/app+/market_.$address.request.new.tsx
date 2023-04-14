@@ -40,30 +40,38 @@ export default function CreateServiceRequest() {
     .filter((t): t is typeof tokens[number] => !!t);
 
   return (
-    <div className="max-w-2xl mx-auto my-10 space-y-10">
-      <div>
-        <ServiceRequestCreator
-          projects={laborMarketProjects}
-          tokens={validTokens}
-          defaultValues={defaultValues}
-          laborMarketAddress={laborMarket.address}
-        />
+    <>
+      <div className="max-w-2xl mx-auto my-10 space-y-10">
         <div>
-          <p>Create</p>
-          <p>Analysts</p>
-          <p>Reviewers</p>
-          <p>Overview</p>
+          <ServiceRequestCreator
+            projects={laborMarketProjects}
+            tokens={validTokens}
+            defaultValues={defaultValues}
+            laborMarketAddress={laborMarket.address}
+          />
+          <div>
+            <p>Create</p>
+            <p>Analysts</p>
+            <p>Reviewers</p>
+            <p>Overview</p>
+          </div>
         </div>
       </div>
-      <div>
+      <div className="w-full">
         <Progress progress={35} />
-        <div className="flex">
-          <p>Prev</p>
-          <p>Next</p>
-          <Button>Cancel</Button>
-          <Button>Launch Challenge</Button>
+        <div className="flex items-center justify-evenly">
+          <div className="flex items-center">
+            <p className="mr-6">Prev</p>
+            <p>Next</p>
+          </div>
+          <div className="flex items-center">
+            <Button className="my-5 mr-4" variant="cancel">
+              Cancel
+            </Button>
+            <Button>Launch Challenge</Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

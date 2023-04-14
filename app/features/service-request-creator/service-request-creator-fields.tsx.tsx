@@ -43,8 +43,8 @@ export function ServiceRequestCreatorFields({
       {create && (
         <>
           {header && (
-            <div className="space-y-3">
-              <h1 className="font-semibold text-3xl">Launch an Analytics Challenge</h1>
+            <div className="space-y-2">
+              <h1 className="font-semibold text-3xl mb-2">Launch an Analytics Challenge</h1>
               <p className="text-lg text-cyan-500">
                 Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
                 projects launch, grow and succeed.
@@ -83,7 +83,7 @@ export function ServiceRequestCreatorFields({
             </ClientOnly>
           </section>
           <section className="space-y-3">
-            <div className="flex flex-col md:flex-row gap-2 items-start">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
               <div className="flex-grow">
                 <Field>
                   <Controller
@@ -127,7 +127,7 @@ export function ServiceRequestCreatorFields({
       {analyst && (
         <>
           {header && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <h1 className="font-semibold text-3xl">Analysts</h1>
               <p className="text-lg text-cyan-500">
                 Analysts are rewarded based on the Marketplace reward curve once the review deadline is reached.
@@ -135,15 +135,21 @@ export function ServiceRequestCreatorFields({
             </div>
           )}
           <section className="space-y-3">
-            <h2 className="font-bold">When must submissions be entered by?*</h2>
-            <Field>
-              <Input {...register("endDate")} type="date" />
-              <Error error={errors.endDate?.message} />
-            </Field>
-            <Field>
-              <Input {...register("endTime")} type="time" />
-              <Error error={errors.endTime?.message} />
-            </Field>
+            <h2 className="font-bold">Submission Deadline*</h2>
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-grow w-full">
+                <Field>
+                  <Input {...register("endDate")} type="date" />
+                  <Error error={errors.endDate?.message} />
+                </Field>
+              </div>
+              <div className="flex-grow w-full">
+                <Field>
+                  <Input {...register("endTime")} type="time" />
+                  <Error error={errors.endTime?.message} />
+                </Field>
+              </div>
+            </div>
             <p className="text-gray-400 italic">
               {selectedSubmitDate &&
                 selectedSubmitTime &&
@@ -151,10 +157,11 @@ export function ServiceRequestCreatorFields({
             </p>
           </section>
           <section className="space-y-3">
-            <h2 className="font-bold">Rewards*</h2>
-            <div className="flex flex-col md:flex-row gap-2 items-start">
+            <h2 className="font-bold">Analyst Rewards</h2>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
               <div className="flex-grow w-full">
                 <Field>
+                  <h3 className="text-sm">Reward Token*</h3>
                   <Controller
                     name="rewardToken"
                     control={control}
@@ -162,6 +169,7 @@ export function ServiceRequestCreatorFields({
                       return (
                         <Select
                           {...field}
+                          placeholder="Token"
                           onChange={(v) => {
                             const token = validTokens.find((t) => t.contractAddress === v);
                             invariant(token, "Token not found");
@@ -180,11 +188,8 @@ export function ServiceRequestCreatorFields({
               </div>
               <div className="flex-grow w-full">
                 <Field>
-                  <Input
-                    {...register("rewardPool")}
-                    name="rewardPool"
-                    placeholder="Token amount distributed across winners"
-                  />
+                  <h3 className="text-sm">Reward Pool*</h3>
+                  <Input {...register("rewardPool")} name="rewardPool" placeholder="Pool amount" />
                   <Error error={errors.rewardPool?.message} />
                 </Field>
               </div>
@@ -192,6 +197,31 @@ export function ServiceRequestCreatorFields({
             <p className="text-gray-400 italic">
               Rewards are distributed based on overall submission scores. Higher scores are rewarded more.
             </p>
+            <h3 className="text-sm">Claim to Submit Limit*</h3>
+            <div className="flex gap-4 items-center">
+              <Field>
+                <Controller
+                  control={control}
+                  name="todo"
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      placeholder="Limit"
+                      options={[
+                        { label: "Limited", value: "limited" },
+                        { label: "Unlimited", value: "unlimited" },
+                      ]}
+                    />
+                  )}
+                />
+                <Error error={errors.appData?.projectSlugs?.message} />
+              </Field>
+              <Field>
+                <Input {...register("endTime")} type="text" />
+                <Error error={errors.endTime?.message} />
+              </Field>
+              <p className="text-neutral-600 text-sm">Analysts can claim to submit for this challenge.</p>
+            </div>
           </section>
         </>
       )}
@@ -199,7 +229,7 @@ export function ServiceRequestCreatorFields({
       {reviewer && (
         <>
           {header && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <h1 className="font-semibold text-3xl">Reviewers</h1>
               <p className="text-lg text-cyan-500">
                 Reviewers are rewarded based on their shared of overall submissions scored once the review deadline is
@@ -208,20 +238,90 @@ export function ServiceRequestCreatorFields({
             </div>
           )}
           <section className="space-y-3">
-            <h2 className="font-bold">When must peer review be complete and winners selected by?*</h2>
-            <Field>
-              <Input {...register("reviewEndDate")} type="date" />
-              <Error error={errors.reviewEndDate?.message} />
-            </Field>
-            <Field>
-              <Input {...register("reviewEndTime")} type="time" />
-              <Error error={errors.reviewEndTime?.message} />
-            </Field>
+            <h2 className="font-bold">Review Deadline*</h2>
+            <div className="flex gap-4 md:flex-row flex-col">
+              <div className="flex-grow w-full">
+                <Field>
+                  <Input {...register("reviewEndDate")} type="date" />
+                  <Error error={errors.reviewEndDate?.message} />
+                </Field>
+              </div>
+              <div className="flex-grow w-full">
+                <Field>
+                  <Input {...register("reviewEndTime")} type="time" />
+                  <Error error={errors.reviewEndTime?.message} />
+                </Field>
+              </div>
+            </div>
             <p className="text-gray-400 italic">
               {selectedReviewDate &&
                 selectedReviewTime &&
-                `Analysts must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score questions`}
+                `Reviewers must claim this challenge by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score submissions`}
             </p>
+          </section>
+          <section className="space-y-3">
+            <h2 className="font-bold">Reviewer Rewards</h2>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="flex-grow w-full">
+                <Field>
+                  <h3 className="text-sm">Reward Token*</h3>
+                  <Controller
+                    name="rewardToken"
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <Select
+                          {...field}
+                          placeholder="Token"
+                          onChange={(v) => {
+                            const token = validTokens.find((t) => t.contractAddress === v);
+                            invariant(token, "Token not found");
+                            setValue("rewardTokenDecimals", token.decimals);
+                            field.onChange(v);
+                          }}
+                          options={validTokens.map((t) => {
+                            return { label: t.symbol, value: t.contractAddress };
+                          })}
+                        />
+                      );
+                    }}
+                  />
+                  <Error error={errors.rewardToken?.message} />
+                </Field>
+              </div>
+              <div className="flex-grow w-full">
+                <Field>
+                  <h3 className="text-sm">Reward Pool*</h3>
+                  <Input {...register("rewardPool")} name="rewardPool" placeholder="Pool amount" />
+                  <Error error={errors.rewardPool?.message} />
+                </Field>
+              </div>
+            </div>
+            <h3 className="text-sm">Total Review Limit*</h3>
+            <div className="flex gap-4 items-center">
+              <Field>
+                <Controller
+                  control={control}
+                  name="todo"
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      placeholder="Limit"
+                      options={[
+                        { label: "Limited", value: "limited" },
+                        { label: "Unlimited", value: "unlimited" },
+                      ]}
+                    />
+                  )}
+                />
+                <Error error={errors.appData?.projectSlugs?.message} />
+              </Field>
+              <Field>
+                <Input {...register("endTime")} type="text" />
+                <Error error={errors.endTime?.message} />
+              </Field>
+              <p className="text-neutral-600 text-sm">{"ensures a minimum reward of {amount} {token} per review"}</p>
+            </div>
           </section>
         </>
       )}
