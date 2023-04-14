@@ -145,10 +145,39 @@ async function getIndexedServiceRequestAppData(marketUri: string): Promise<Servi
 }
 
 /**
- * Counts the number of LaborMarkets that match a given LaborMarketSearch.
+ * Counts the number of ServiceRequests that match a given ServiceRequestFilter.
  */
 export function countServiceRequests(filter: ServiceRequestFilter) {
   return mongo.serviceRequests.countDocuments(filterToMongo(filter));
+}
+
+/**
+ * Counts the number of ServiceRequests that are active for a given laborMarket.
+ */
+export function countActiveServiceRequests(address: EvmAddress) {
+  const currDate = new Date();
+  return mongo.serviceRequests.countDocuments({
+    laborMarketAddress: address,
+    "configuration.enforcementExp": { $gt: currDate },
+  });
+}
+
+/**
+ * Counts the reward pool totals of ServiceRequests that are active for a given laborMarket.
+ */
+export async function getActiveRewardPools(address: EvmAddress) {
+  const activeServiceRequests = mongo.serviceRequests.find({
+    laborMarketAddress: address,
+    "configuration.enforcementExp": { $gt: new Date() },
+  });
+
+  let rewardPools: RewardPool[] = [];
+
+  await activeServiceRequests.forEach((sr) => {
+    rewardPools = calculateRewardPools(rewardPools, sr.configuration.pToken, sr.configuration.pTokenQ);
+  });
+
+  return rewardPools;
 }
 
 /**
@@ -172,7 +201,7 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
     ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
     ...(filter.laborMarket ? { laborMarketAddress: filter.laborMarket as `0x${string}` } : {}),
-    ...(filter.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: filter.token } } } } : {}),
+    ...(filter.token ? { "configuration.pToken": { $in: filter.token } } : {}),
   };
 }
 

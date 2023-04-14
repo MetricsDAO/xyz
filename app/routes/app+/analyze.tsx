@@ -17,6 +17,7 @@ import { Pagination } from "~/components/pagination/pagination";
 import { ValidatedSelect } from "~/components/select";
 import { countLaborMarkets, searchLaborMarkets } from "~/domain/labor-market/functions.server";
 import { LaborMarketSearchSchema } from "~/domain/labor-market/schemas";
+import { countActiveServiceRequests, getActiveRewardPools } from "~/domain/service-request/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { MarketplacesListView } from "~/features/marketplaces-list-view";
 import { listProjects } from "~/services/projects.server";
@@ -25,7 +26,7 @@ import { listTokens } from "~/services/tokens.server";
 const validator = withZod(LaborMarketSearchSchema);
 
 export type MarketplaceTableProps = {
-  marketplaces: UseDataFunctionReturn<typeof loader>["marketplaces"];
+  marketplaces: UseDataFunctionReturn<typeof loader>["marketplacesWithActiveChallengeData"];
   projects: UseDataFunctionReturn<typeof loader>["projects"];
   tokens: UseDataFunctionReturn<typeof loader>["tokens"];
 };
@@ -37,11 +38,19 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 
   const marketplaces = await searchLaborMarkets(searchParams);
   const totalResults = await countLaborMarkets(searchParams);
+
+  const marketplacesWithActiveChallengeData = await Promise.all(
+    marketplaces.map(async (m) => {
+      const count = await countActiveServiceRequests(m.address);
+      const activeRewardPools = await getActiveRewardPools(m.address);
+      return { ...m, activeChallengeCount: count, activeRewardPools };
+    })
+  );
   const tokens = await listTokens();
   const projects = await listProjects();
   return typedjson({
     searchParams,
-    marketplaces,
+    marketplacesWithActiveChallengeData,
     totalResults,
     tokens,
     projects,
@@ -49,7 +58,8 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 };
 
 export default function Marketplaces() {
-  const { marketplaces, totalResults, searchParams, projects, tokens } = useTypedLoaderData<typeof loader>();
+  const { marketplacesWithActiveChallengeData, totalResults, searchParams, projects, tokens } =
+    useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -89,7 +99,11 @@ export default function Marketplaces() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <MarketplacesListView marketplaces={marketplaces} projects={projects} tokens={tokens} />
+            <MarketplacesListView
+              marketplaces={marketplacesWithActiveChallengeData}
+              projects={projects}
+              tokens={tokens}
+            />
             <div className="w-fit m-auto">
               <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
             </div>

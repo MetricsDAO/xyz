@@ -74,10 +74,10 @@ function MarketplacesTable({ marketplaces, projects, tokens }: MarketplaceTableP
               </Row.Column>
 
               <Row.Column span={2}>
-                <ChallengePoolBadges pools={m.indexData.serviceRequestRewardPools} tokens={tokens} />
+                <ChallengePoolBadges pools={m.activeRewardPools} tokens={tokens} />
               </Row.Column>
 
-              <Row.Column>{m.indexData.serviceRequestCount.toLocaleString()}</Row.Column>
+              <Row.Column>{m.activeChallengeCount}</Row.Column>
             </Link>
           </Row>
         );
@@ -104,14 +104,14 @@ function MarketplacesCard({ marketplaces, projects, tokens }: MarketplaceTablePr
                 </div>
 
                 <div>Challenge Pool Totals</div>
-                {m.indexData.serviceRequestRewardPools.length === 0 ? (
+                {m.activeRewardPools.length === 0 ? (
                   <p>--</p>
                 ) : (
-                  <ChallengePoolBadges pools={m.indexData.serviceRequestRewardPools} tokens={tokens} />
+                  <ChallengePoolBadges pools={m.activeRewardPools} tokens={tokens} />
                 )}
 
                 <div>Active Challenges</div>
-                <div>{m.indexData.serviceRequestCount.toLocaleString()}</div>
+                <div>{m.activeChallengeCount}</div>
               </Link>
             </Card>
           );
