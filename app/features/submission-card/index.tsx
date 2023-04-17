@@ -21,7 +21,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
           {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />
         </main>
         <div className="flex flex-col items-center gap-2 md:mr-7 md:ml-24">
-          {score && <Score score={score} />}
+          {score !== undefined && <Score score={score} />}
           <div className="flex text-xs text-gray-500 items-center">
             {reviewedByUser ? (
               <>
