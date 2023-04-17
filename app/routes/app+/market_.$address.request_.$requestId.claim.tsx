@@ -10,6 +10,7 @@ import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
+import { serviceRequestCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
@@ -53,14 +54,14 @@ export default function ClaimToSubmit() {
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
             <CountdownCard
-              start={serviceRequest.createdAtBlockTimestamp}
+              start={serviceRequestCreatedDate(serviceRequest)}
               end={serviceRequest.configuration?.signalExp}
             />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
             <CountdownCard
-              start={serviceRequest.createdAtBlockTimestamp}
+              start={serviceRequestCreatedDate(serviceRequest)}
               end={serviceRequest.configuration?.submissionExp}
             />
           </div>

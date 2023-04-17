@@ -30,22 +30,22 @@ import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { ReviewSearchSchema } from "~/domain/review/schemas";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import { getIndexedSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
+import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
-import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
-import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
-import { useReviewSignals } from "~/hooks/use-review-signals";
+import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -167,7 +167,7 @@ export default function ChallengeSubmission() {
             <UserBadge address={submission.configuration.serviceProvider} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
+            <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
           </DetailItem>
           {score && (
             <DetailItem title="Overall Score">
@@ -230,7 +230,7 @@ export default function ChallengeSubmission() {
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>
-                      <p className="text-sm">{fromNow(r.createdAtBlockTimestamp)}</p>
+                      <p className="text-sm">{fromNow(r.blockTimestamp)}</p>
                     </div>
                   </Card>
                 );
@@ -254,7 +254,7 @@ export default function ChallengeSubmission() {
                     size="sm"
                     onChange={handleChange}
                     options={[
-                      { label: "Created At", value: "createdAtBlockTimestamp" },
+                      { label: "Created At", value: "blockTimestamp" },
                       { label: "Score", value: "score" },
                     ]}
                   />

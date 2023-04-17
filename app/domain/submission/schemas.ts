@@ -40,7 +40,7 @@ export const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
-  createdAtBlockTimestamp: z.date(),
+  blockTimestamp: z.date().optional(),
   indexedAt: z.date(),
   configuration: z.object({
     serviceProvider: EvmAddressSchema,
@@ -73,7 +73,7 @@ const CombinedSchema = SubmissionDocSchema.extend({
 
 export const RewardsSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z.enum(["sr[0].appData.title", "createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["sr[0].appData.title", "blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   first: z.number().default(100),
   page: z.number().default(1),

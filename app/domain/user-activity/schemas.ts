@@ -65,7 +65,7 @@ export const ActivityDocSchema = z.object({
   iconType: ActivityIconTypeSchema,
   actionName: z.string(),
   userAddress: z.string(),
-  createdAtBlockTimestamp: z.date(),
+  blockTimestamp: z.date(),
   indexedAt: z.date(),
 });
 
@@ -88,7 +88,7 @@ export type ActivityFilter = z.infer<typeof ActivityFilterSchema>;
  * For searching labor markets. Extends the filter with pagination and sorting args.
  */
 export const ActivitySearchSchema = ActivityFilterSchema.extend({
-  sortBy: z.enum(["createdAtBlockTimestamp", "indexedAt"]).default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["blockTimestamp", "indexedAt"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   page: z.coerce.number().min(1).default(1),
   first: z.coerce.number().min(1).max(100).default(12),
@@ -97,7 +97,7 @@ export type ActivitySearch = z.infer<typeof ActivitySearchSchema>;
 
 export const ParticipantSearchSchema = z.object({
   q: z.string().optional(),
-  sortBy: z.enum(["createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   eventType: z.array(ActivityTypeSchema).optional(),
 });

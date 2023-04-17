@@ -22,7 +22,7 @@ function ActivityCard({ activity }: { activity: ActivityDoc }) {
       <div>Title</div>
       <div>{activity.eventType.config.title}</div>
       <div>Timestamp</div>
-      <Countdown date={activity.createdAtBlockTimestamp} />
+      <Countdown date={activity.blockTimestamp} />
     </Card>
   );
 }

@@ -128,7 +128,7 @@ function SearchAndFilter({ tokens }: { tokens: Token[] }) {
           onChange={handleChange}
           options={[
             { label: "Challenge Title", value: "sr[0].appData.title" },
-            { label: "Submitted", value: "createdAtBlockTimestamp" },
+            { label: "Submitted", value: "blockTimestamp" },
           ]}
         />
       </Field>
