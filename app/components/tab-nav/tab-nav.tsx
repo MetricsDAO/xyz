@@ -17,7 +17,7 @@ export function TabNavLink({ children, ...props }: NavLinkProps) {
         })
       }
       {...props}
-      preventScrollReset={true}
+      id="tabNav"
     >
       {children}
     </NavLink>
