@@ -165,13 +165,13 @@ export default function ServiceRequest() {
       </section>
 
       <TabNav className="mb-10">
-        <TabNavLink to="#tabNav" end>
+        <TabNavLink to="" end>
           Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
         </TabNavLink>
-        <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
-        <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>
-        <TabNavLink to="./timeline#tabNav">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants#tabNav">Participants</TabNavLink>
+        <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
+        <TabNavLink to="./rewards">Rewards</TabNavLink>
+        <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
+        <TabNavLink to="./participants">Participants</TabNavLink>
       </TabNav>
 
       <Outlet />
