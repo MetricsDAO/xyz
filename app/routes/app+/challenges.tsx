@@ -41,14 +41,10 @@ export default function Challenges() {
   let filteredServiceRequests = serviceRequests;
   if (q.data) {
     filteredServiceRequests = serviceRequests.filter((s) => {
-      if (searchParams.permissions?.includes("review")) {
-        return q.data[s.laborMarketAddress]?.canReview;
-      }
-      if (searchParams.permissions?.includes("submit")) {
-        return q.data[s.laborMarketAddress]?.canSubmit;
-      }
-
-      return true;
+      return (
+        (!searchParams.permissions?.includes("review") || q.data[s.laborMarketAddress]?.canReview) &&
+        (!searchParams.permissions?.includes("submit") || q.data[s.laborMarketAddress]?.canSubmit)
+      );
     });
   }
 

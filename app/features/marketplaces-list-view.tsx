@@ -26,17 +26,11 @@ export function MarketplacesListView({ marketplaces, ...props }: MarketplaceTabl
   let filteredMarketplaces = marketplaces;
   if (q.data) {
     filteredMarketplaces = marketplaces.filter((m) => {
-      if (permissions.includes("launch")) {
-        return q.data[m.address]?.canLaunchChallenges;
-      }
-      if (permissions.includes("review")) {
-        return q.data[m.address]?.canReview;
-      }
-      if (permissions.includes("submit")) {
-        return q.data[m.address]?.canSubmit;
-      }
-
-      return true;
+      return (
+        (!permissions.includes("launch") || q.data[m.address]?.canLaunchChallenges) &&
+        (!permissions.includes("review") || q.data[m.address]?.canReview) &&
+        (!permissions.includes("submit") || q.data[m.address]?.canSubmit)
+      );
     });
   }
 
