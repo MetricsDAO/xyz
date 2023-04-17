@@ -53,7 +53,7 @@ export const ServiceRequestSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   appData: ServiceRequestAppDataSchema,
   configuration: ServiceRequestConfigSchema,
-  blockTimestamp: z.date().optional(),
+  blockTimestamp: z.date().nullable().optional(),
 });
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 

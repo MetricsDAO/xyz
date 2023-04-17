@@ -86,7 +86,7 @@ export const LaborMarketSchema = z.object({
   address: EvmAddressSchema,
   configuration: LaborMarketConfigSchema,
   appData: LaborMarketAppDataSchema,
-  blockTimestamp: z.date().optional(),
+  blockTimestamp: z.date().nullable().optional(),
 });
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 
