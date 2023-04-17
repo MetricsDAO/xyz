@@ -7,9 +7,7 @@ import { ServiceRequestWithIndexDataSchema } from "../service-request/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z
-    .enum(["appData.title", "appData.description", "createdAtBlockTimestamp"])
-    .default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["appData.title", "appData.description", "blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   score: z.array(z.enum(["spam", "bad", "average", "good", "great"])).optional(),
   first: z.number().default(15),

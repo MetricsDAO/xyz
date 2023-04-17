@@ -169,7 +169,7 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
           </DetailItem>
-          {score && (
+          {score !== undefined && (
             <DetailItem title="Overall Score">
               <ScoreBadge score={score} />
             </DetailItem>
