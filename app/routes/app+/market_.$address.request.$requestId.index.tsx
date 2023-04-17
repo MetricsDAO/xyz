@@ -81,7 +81,7 @@ export default function ChallengeIdSubmissions() {
               onChange={handleChange}
               options={[
                 { label: "Title", value: "appData.title" },
-                { label: "Created At", value: "createdAtBlockTimestamp" },
+                { label: "Created At", value: "blockTimestamp" },
               ]}
             />
           </Field>

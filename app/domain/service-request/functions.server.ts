@@ -46,6 +46,7 @@ export async function handleRequestConfiguredEvent(event: TracerEvent) {
     return;
   }
 
+  invariant(serviceRequest.blockTimestamp, "Service request should have a block timestamp");
   //log this event in user activity collection
   mongo.userActivity.insertOne({
     groupType: "ServiceRequest",
@@ -60,7 +61,7 @@ export async function handleRequestConfiguredEvent(event: TracerEvent) {
     iconType: "service-request",
     actionName: "Launch Challenge",
     userAddress: serviceRequest.configuration.serviceRequester,
-    createdAtBlockTimestamp: serviceRequest.createdAtBlockTimestamp,
+    blockTimestamp: serviceRequest.blockTimestamp,
     indexedAt: serviceRequest.indexedAt,
   });
 
@@ -104,9 +105,14 @@ export async function upsertIndexedServiceRequest(
     );
     return null;
   }
-  const serviceRequest = { id, laborMarketAddress, configuration, appData };
+  const serviceRequest = {
+    id,
+    laborMarketAddress,
+    configuration,
+    appData,
+    blockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : undefined,
+  };
   const indexData: ServiceRequestIndexData = {
-    createdAtBlockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : new Date(),
     indexedAt: new Date(),
     claimsToReview: [],
     claimsToSubmit: [],
@@ -237,7 +243,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
     iconType: "review",
     actionName: "Claim to Review",
     userAddress: inputs.signaler,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    blockTimestamp: new Date(event.block.timestamp),
     indexedAt: new Date(),
   });
 
@@ -270,7 +276,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
     iconType: "submission",
     actionName: "Claim to Submit",
     userAddress: inputs.signaler,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    blockTimestamp: new Date(event.block.timestamp),
     indexedAt: new Date(),
   });
 

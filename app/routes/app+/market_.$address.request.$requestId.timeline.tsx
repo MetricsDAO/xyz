@@ -3,6 +3,7 @@ import { CountdownCard } from "~/components/countdown-card";
 import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline } from "~/utils/helpers";
+import { serviceRequestCreatedDate } from "~/utils/helpers";
 
 export default function ServiceIdTimeline() {
   const data = useRouteData<{ serviceRequest: Awaited<ReturnType<typeof findServiceRequest>> }>(
@@ -38,7 +39,7 @@ export default function ServiceIdTimeline() {
           <h3 className="font-semibold text-lg">Upcoming</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
             {upcoming.map((u) => (
-              <CountdownCard start={serviceRequest.createdAtBlockTimestamp} end={u.time} key={u.label}>
+              <CountdownCard start={serviceRequestCreatedDate(serviceRequest)} end={u.time} key={u.label}>
                 {u.label}
               </CountdownCard>
             ))}
@@ -52,7 +53,7 @@ export default function ServiceIdTimeline() {
           <h3 className="font-semibold text-lg">Passed</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
             {passed.map((p) => (
-              <CountdownCard start={serviceRequest.createdAtBlockTimestamp} end={p.time} key={p.label}>
+              <CountdownCard start={serviceRequestCreatedDate(serviceRequest)} end={p.time} key={p.label}>
                 {p.label}
               </CountdownCard>
             ))}
