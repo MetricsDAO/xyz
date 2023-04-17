@@ -54,19 +54,16 @@ export function findParticipants({
     .toArray();
 }
 
-export function countUniqueParticipants({
+export function uniqueParticipants({
   requestId,
   laborMarketAddress,
 }: {
   requestId: string;
   laborMarketAddress: `0x${string}`;
 }) {
-  return mongo.userActivity.countDocuments({
-    $and: [
-      { groupType: { $in: ["Submission", "Review"] } },
-      { "eventType.config.requestId": requestId },
-      { "eventType.config.laborMarketAddress": laborMarketAddress },
-    ],
-    $group: { _id: "userAddress" },
+  return mongo.userActivity.distinct("userAddress", {
+    groupType: { $in: ["Submission", "Review"] },
+    "eventType.config.requestId": requestId,
+    "eventType.config.laborMarketAddress": laborMarketAddress,
   });
 }

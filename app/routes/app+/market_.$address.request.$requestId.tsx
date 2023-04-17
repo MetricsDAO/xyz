@@ -30,7 +30,7 @@ import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { EvmAddressSchema } from "~/domain/address";
-import { countUniqueParticipants } from "~/domain/user-activity/function.server";
+import { uniqueParticipants } from "~/domain/user-activity/function.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -56,7 +56,11 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     serviceRequestId: requestId,
   });
 
-  const numParticipants = await countUniqueParticipants(serviceRequest.id, laborMarket.address);
+  const participants = await uniqueParticipants({
+    requestId: serviceRequest.id,
+    laborMarketAddress: laborMarket.address,
+  });
+  const numParticipants = participants.length;
   return typedjson(
     { serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens, numParticipants },
     { status: 200 }
