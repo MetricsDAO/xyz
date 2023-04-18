@@ -30,6 +30,7 @@ import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { EvmAddressSchema } from "~/domain/address";
+import { uniqueParticipants } from "~/domain/user-activity/function.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -54,11 +55,20 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     laborMarketAddress: address,
     serviceRequestId: requestId,
   });
-  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
+
+  const participants = await uniqueParticipants({
+    requestId: serviceRequest.id,
+    laborMarketAddress: laborMarket.address,
+  });
+  const numParticipants = participants.length;
+  return typedjson(
+    { serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens, numParticipants },
+    { status: 200 }
+  );
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens, numParticipants } =
     useTypedLoaderData<typeof loader>();
 
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
@@ -158,6 +168,9 @@ export default function ServiceRequest() {
           </DetailItem>
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
+          </DetailItem>
+          <DetailItem title="Participants">
+            <Badge className="px-4 min-w-full">{numParticipants}</Badge>
           </DetailItem>
         </Detail>
 

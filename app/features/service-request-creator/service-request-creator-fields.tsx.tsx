@@ -113,7 +113,7 @@ export function ServiceRequestCreatorFields({
         <p className="text-gray-400 italic">
           {selectedSubmitDate &&
             selectedSubmitTime &&
-            `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit question ideas`}
+            `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit`}
         </p>
       </section>
 
@@ -130,7 +130,7 @@ export function ServiceRequestCreatorFields({
         <p className="text-gray-400 italic">
           {selectedReviewDate &&
             selectedReviewTime &&
-            `Analysts must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score questions`}
+            `Analysts must claim this topic by ${claimToReviewDeadline.toLocaleDateString()} at ${claimToReviewDeadline.toLocaleTimeString()} to score submissions`}
         </p>
       </section>
 
