@@ -29,7 +29,7 @@ export async function fetchSignedClaims(rewards: Reward[]) {
   const res = await fetch(`${TREASURY_URL}/ioutoken/sign-claim/`, {
     method: "POST",
     body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json", authorization: "d41d8cd98f00b204e9800998ecf8427e" },
+    headers: { "Content-Type": "application/json", authorization: "" },
   }).then((res) => res.json());
 
   return signClaimResponseSchema.parse(res);
