@@ -1,27 +1,22 @@
-import type { Token } from "@prisma/client";
 import { RewardBadge } from "~/components/reward-badge";
 import type { Reward } from "~/domain/reward/functions.server";
 import { useHasPerformed } from "~/hooks/use-has-performed";
-import type { Reward as RewardHook } from "~/hooks/use-reward";
 import { ClaimButton } from "./claim-button";
 import { RedeemButton } from "./redeem-button";
 
-export function RewardDisplay({ reward, token }: { reward: RewardHook; token?: Token }) {
+export function RewardDisplay({ reward }: { reward: Reward }) {
   return (
-    <>
-      {reward?.hasReward ? (
-        <RewardBadge
-          payment={{ amount: reward.displayPaymentTokenAmount, token }}
-          reputation={{ amount: reward.displayReputationTokenAmount }}
-        />
-      ) : (
-        <span>--</span>
-      )}
-    </>
+    <RewardBadge
+      payment={{
+        amount: reward.amounts.displayPaymentTokenAmount,
+        token: reward.token,
+      }}
+      reputation={{ amount: reward.amounts.displayReputationTokenAmount }}
+    />
   );
 }
 
-export function Status(props: { contractReward: RewardHook; reward: Reward }) {
+export function Status(props: { reward: Reward }) {
   // TODO
   const isIOUToken = props.reward.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D";
   if (isIOUToken) {
@@ -30,41 +25,39 @@ export function Status(props: { contractReward: RewardHook; reward: Reward }) {
   return <ERC20ClaimButton {...props} />;
 }
 
-function ERC20ClaimButton({ contractReward, reward }: { contractReward: RewardHook; reward: Reward }) {
+function ERC20ClaimButton({ reward }: { reward: Reward }) {
   const hasClaimed = useHasPerformed({
     laborMarketAddress: reward.submission.laborMarketAddress,
     id: reward.submission.id,
     action: "HAS_CLAIMED",
   });
 
-  return (
-    <>
-      {!contractReward ? (
-        <>--</>
-      ) : hasClaimed === false && contractReward.hasReward ? (
-        <ClaimButton reward={reward} rewardDisplayAmount={contractReward.displayPaymentTokenAmount} />
-      ) : hasClaimed === true ? (
-        <span>Claimed</span>
-      ) : (
-        <span>No reward</span>
-      )}
-    </>
-  );
-}
-
-function IOUTokenClaimButton({ contractReward, reward }: { contractReward: RewardHook; reward: Reward }) {
-  if (!contractReward) {
-    // Loading
-    return <>--</>;
-  }
-
-  if (!contractReward.hasReward) {
+  if (!reward.hasReward) {
     return <span>No reward</span>;
   }
 
   return (
     <>
-      <ClaimButton reward={reward} rewardDisplayAmount={contractReward.displayPaymentTokenAmount} />
+      {hasClaimed === undefined ? (
+        // Loading
+        <>--</>
+      ) : hasClaimed === true ? (
+        <span>Claimed</span>
+      ) : (
+        <ClaimButton reward={reward} />
+      )}
+    </>
+  );
+}
+
+function IOUTokenClaimButton({ reward }: { reward: Reward }) {
+  if (!reward.hasReward) {
+    return <span>No reward</span>;
+  }
+
+  return (
+    <>
+      <ClaimButton reward={reward} />
       <RedeemButton reward={reward} />
     </>
   );

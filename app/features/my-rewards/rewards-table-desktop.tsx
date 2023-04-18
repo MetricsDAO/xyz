@@ -1,7 +1,6 @@
 import { Link } from "@remix-run/react";
 import { Header, Row, Table } from "~/components/table";
 import type { Reward } from "~/domain/reward/functions.server";
-import { useReward } from "~/hooks/use-reward";
 import { fromNow } from "~/utils/date";
 import { submissionCreatedDate } from "~/utils/helpers";
 import { RewardDisplay, Status } from "./column-data";
@@ -25,11 +24,6 @@ export function RewardsTable({ rewards }: { rewards: Reward[] }) {
 
 function RewardsTableRow({ reward }: { reward: Reward }) {
   const { laborMarketAddress, id } = reward.submission;
-  const { data: contractReward } = useReward({
-    laborMarketAddress: laborMarketAddress,
-    submissionId: id,
-    tokenDecimals: reward.token?.decimals ?? 18,
-  });
 
   return (
     <Row columns={12}>
@@ -39,13 +33,13 @@ function RewardsTableRow({ reward }: { reward: Reward }) {
         </Link>
       </Row.Column>
       <Row.Column span={4}>
-        <RewardDisplay reward={contractReward} token={reward.token} />
+        <RewardDisplay reward={reward} />
       </Row.Column>
       <Row.Column span={2} className="text-black">
         {fromNow(submissionCreatedDate(reward.submission))}{" "}
       </Row.Column>
       <Row.Column span={2}>
-        <Status contractReward={contractReward} reward={reward} />
+        <Status reward={reward} />
       </Row.Column>
     </Row>
   );

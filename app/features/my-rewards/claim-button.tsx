@@ -9,7 +9,7 @@ import type { Reward } from "~/domain/reward/functions.server";
 import { truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
-export function ClaimButton({ reward, rewardDisplayAmount }: { reward: Reward; rewardDisplayAmount: string }) {
+export function ClaimButton({ reward }: { reward: Reward }) {
   if (!reward.wallet) {
     return <NoWalletAddressFoundModalButton networkName={reward.token?.networkName} />;
   }
@@ -25,7 +25,7 @@ export function ClaimButton({ reward, rewardDisplayAmount }: { reward: Reward; r
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">{`${rewardDisplayAmount} ${
+                <p className="text-yellow-700 text-2xl ml-2">{`${reward.amounts.displayPaymentTokenAmount} ${
                   reward.token?.symbol ?? ""
                 }`}</p>
               </div>

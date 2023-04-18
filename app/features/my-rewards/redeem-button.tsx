@@ -25,7 +25,7 @@ export function RedeemButton({ reward }: { reward: Reward }) {
       iouTokenAddress={reward.token.contractAddress as EvmAddress}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
-      amount={"1000000000"}
+      amount={reward.amounts.paymentTokenAmount}
       signature={reward.signature as `0x${string}`}
       confirmationMessage={<></>} //TODO
     />
