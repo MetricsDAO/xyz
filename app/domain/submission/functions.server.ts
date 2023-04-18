@@ -14,15 +14,13 @@ import { nodeProvider } from "~/services/node.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
 import type {
   CombinedDoc,
-  RewardsSearch,
   ShowcaseSearch,
   SubmissionContract,
   SubmissionDoc,
   SubmissionSearch,
   SubmissionWithReviewsDoc,
-  SubmissionWithServiceRequest,
 } from "./schemas";
-import { SubmissionContractSchema, SubmissionDocSchema, SubmissionWithServiceRequestSchema } from "./schemas";
+import { SubmissionContractSchema, SubmissionDocSchema } from "./schemas";
 
 /**
  * Returns a SubmissionDoc from mongodb, if it exists.
@@ -227,69 +225,6 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
     .skip(params.first * (params.page - 1))
     .limit(params.first)
     .toArray();
-};
-
-/**
- * Returns an array of Submissions with their Service Request and LaborMarket
- */
-
-export const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
-  const submissionsDocs = await mongo.submissions
-    .aggregate([
-      {
-        $match: {
-          $and: [
-            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
-            // params.q ? { $text: { $search: params.q, $language: "english" } } : {},
-          ],
-        },
-      },
-      {
-        $lookup: {
-          from: "serviceRequests",
-          let: {
-            sr_id: "$serviceRequestId",
-            m_addr: "$laborMarketAddress",
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$id", "$$sr_id"] },
-                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
-                    params.token
-                      ? {
-                          serviceRequestRewardPools: { $elemMatch: { "$configuration.pToken": { $in: params.token } } },
-                        }
-                      : {},
-                  ],
-                },
-              },
-            },
-          ],
-          as: "sr",
-        },
-      },
-      {
-        $unwind: "$sr",
-      },
-      ...(params.isPastEnforcementExpiration
-        ? [
-            {
-              $match: {
-                $and: [{ "sr.configuration.enforcementExp": { $lt: utcDate() } }],
-              },
-            },
-          ]
-        : []),
-    ])
-    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
-    .skip(params.first * (params.page - 1))
-    .limit(params.first)
-    .toArray();
-
-  return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
 };
 
 /**

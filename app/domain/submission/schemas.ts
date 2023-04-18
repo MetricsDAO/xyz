@@ -64,20 +64,9 @@ export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestWithIndexDataSchema,
 });
 
-const CombinedSchema = SubmissionDocSchema.extend({
+export const CombinedSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestWithIndexDataSchema,
   lm: LaborMarketWithIndexDataSchema,
-});
-
-export const RewardsSearchSchema = z.object({
-  q: z.string().optional().describe("Search query."),
-  sortBy: z.enum(["sr[0].appData.title", "blockTimestamp"]).default("blockTimestamp"),
-  order: z.enum(["asc", "desc"]).default("desc"),
-  first: z.number().default(100),
-  page: z.number().default(1),
-  token: z.array(z.string()).optional(),
-  isPastEnforcementExpiration: z.boolean().default(true),
-  serviceProvider: EvmAddressSchema.optional(),
 });
 
 export const ShowcaseSearchSchema = z.object({
@@ -99,6 +88,5 @@ export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
 export type CombinedDoc = z.infer<typeof CombinedSchema>;
-export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;
 export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;
