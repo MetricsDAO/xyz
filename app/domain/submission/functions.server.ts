@@ -12,6 +12,7 @@ import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
+import { scoreRange } from "~/utils/helpers";
 import type {
   CombinedDoc,
   RewardsSearch,
@@ -79,11 +80,11 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.score
       ? {
           $or: [
-            params.score.includes("spam") ? { "score.avg": { $gte: 0, $lte: 24 } } : null,
-            params.score.includes("bad") ? { "score.avg": { $gte: 25, $lte: 44 } } : null,
-            params.score.includes("average") ? { "score.avg": { $gte: 45, $lte: 69 } } : null,
-            params.score.includes("good") ? { "score.avg": { $gte: 70, $lte: 89 } } : null,
-            params.score.includes("stellar") ? { "score.avg": { $gte: 90 } } : null,
+            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : null,
+            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : null,
+            params.score.includes("average") ? { "score.avg": scoreRange("average") } : null,
+            params.score.includes("good") ? { "score.avg": scoreRange("good") } : null,
+            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : null,
           ].filter(Boolean),
         }
       : {}),
@@ -357,10 +358,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             { "sr.configuration.enforcementExp": { $lt: utcDate() } },
             { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
-            params.score && params.score == "stellar" ? { "score.avg": { $gte: 90 } } : {},
-            params.score && params.score == "good"
-              ? { $and: [{ "score.avg": { $gte: 70 } }, { "score.avg": { $lte: 89 } }] }
-              : {},
+            params.score ? { "score.avg": scoreRange(params.score) } : {},
             { createdAtBlockTimestamp: { $gte: timeframe } },
             params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
           ],

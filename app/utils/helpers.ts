@@ -86,3 +86,18 @@ export function displayBalance(balance: BigNumber): string {
 export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }
+
+export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam") {
+  switch (score) {
+    case "stellar":
+      return { $gte: 90 };
+    case "good":
+      return { $gte: 70, $lt: 90 };
+    case "average":
+      return { $gte: 45, $lt: 70 };
+    case "bad":
+      return { $gte: 25, $lt: 45 };
+    case "spam":
+      return { $lt: 25 };
+  }
+}
