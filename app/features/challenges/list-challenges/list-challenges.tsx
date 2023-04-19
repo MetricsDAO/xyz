@@ -32,7 +32,11 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestWi
       {serviceRequests.map((sr) => {
         return (
           <Row asChild columns={6} key={sr.laborMarketAddress + sr.id}>
-            <Link to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`} className="text-sm font-medium">
+            <Link
+              to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
+              className="text-sm font-medium"
+              state={{ crumbs: "challenges" }}
+            >
               <Row.Column span={2}>
                 <div className="flex gap-2">
                   {!dateHasPassed(sr.configuration.enforcementExp) ? <img src="/img/active-icon.svg" alt="" /> : <></>}
@@ -70,6 +74,7 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestWit
             <Link
               to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
+              state={{ crumbs: "challenges" }}
             >
               <div>Challenge</div>
               <div className="text-sm font-medium flex gap-2">

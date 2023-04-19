@@ -66,7 +66,12 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
             </Button>
           </ConnectWalletWrapper>
           <Button size="lg" variant="cancel" asChild>
-            <Link to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}}`}>Cancel</Link>
+            <Link
+              to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}}`}
+              state={{ crumbs: "market" }}
+            >
+              Cancel
+            </Link>
           </Button>
         </div>
       </form>

@@ -88,7 +88,12 @@ export default function ClaimToSubmit() {
           }
         />
         <Button size="lg" variant="cancel" asChild>
-          <Link to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}`}>Cancel</Link>
+          <Link
+            to={`/app/market/${serviceRequest.laborMarketAddress}/request/${serviceRequest.id}`}
+            state={{ crumbs: "market" }}
+          >
+            Cancel
+          </Link>
         </Button>
       </div>
       <div className="invisible"></div>
