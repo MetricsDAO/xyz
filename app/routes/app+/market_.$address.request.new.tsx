@@ -11,6 +11,9 @@ import { listTokens } from "~/services/tokens.server";
 import { requireUser } from "~/services/session.server";
 import { Button } from "~/components/button";
 import { Progress } from "~/components/progress";
+import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { Link } from "@remix-run/react";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -34,10 +37,36 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 
 export default function CreateServiceRequest() {
   const { defaultValues, tokens, laborMarketProjects, laborMarket } = useTypedLoaderData<typeof loader>();
+  const [page, setPage] = useState<number>(1);
+  const [header, setHeader] = useState<boolean>(true);
+
+  function updatePage(newPage: number) {
+    setPage(newPage);
+    if (newPage === 4) {
+      setHeader(false);
+    } else {
+      setHeader(true);
+    }
+  }
 
   const validTokens = laborMarket.appData.tokenAllowlist
     .map((symbol) => tokens.find((t) => t.symbol === symbol))
     .filter((t): t is typeof tokens[number] => !!t);
+
+  const steps = [
+    {
+      label: "Create",
+    },
+    {
+      label: "Analysts",
+    },
+    {
+      label: "Reviewers",
+    },
+    {
+      label: "Overview",
+    },
+  ];
 
   return (
     <>
@@ -48,27 +77,41 @@ export default function CreateServiceRequest() {
             tokens={validTokens}
             defaultValues={defaultValues}
             laborMarketAddress={laborMarket.address}
+            page={page}
+            header={header}
           />
-          <div>
-            <p>Create</p>
-            <p>Analysts</p>
-            <p>Reviewers</p>
-            <p>Overview</p>
-          </div>
+          <aside className="hidden md:block w-1/6">
+            {/*
+            <Stepper alternativeLabel activeStep={1}>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+              */}
+          </aside>
         </div>
       </div>
       <div className="w-full">
-        <Progress progress={35} />
+        <Progress progress={page * 25} />
         <div className="flex items-center justify-evenly">
           <div className="flex items-center">
-            <p className="mr-6">Prev</p>
-            <p>Next</p>
+            <div className="flex gap-3 items-center cursor-pointer" onClick={() => updatePage(page - 1)}>
+              <ArrowLeftCircleIcon className="h-8 w-8 text-black" />
+              <p className="mr-6">Prev</p>
+            </div>
+
+            <div className="flex gap-3 items-center cursor-pointer" onClick={() => updatePage(page + 1)}>
+              <p>Next</p>
+              <ArrowRightCircleIcon className="h-8 w-8 text-black" />
+            </div>
           </div>
           <div className="flex items-center">
             <Button className="my-5 mr-4" variant="cancel">
-              Cancel
+              <Link to={`/app/market/${laborMarket.address}`}>Cancel</Link>
             </Button>
-            <Button>Launch Challenge</Button>
+            {page === 4 && <Button>Launch Challenge</Button>}
           </div>
         </div>
       </div>

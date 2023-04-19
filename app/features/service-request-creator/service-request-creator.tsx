@@ -13,7 +13,6 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import { Button } from "../../components/button";
 import type { ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
 import { ServiceRequestCreatorFields } from "./service-request-creator-fields.tsx";
@@ -23,6 +22,8 @@ interface ServiceRequestFormProps {
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
   laborMarketAddress: EvmAddress;
+  page: number;
+  header: boolean;
 }
 
 /**
@@ -44,6 +45,8 @@ export function ServiceRequestCreator({
   tokens,
   defaultValues,
   laborMarketAddress,
+  page,
+  header,
 }: ServiceRequestFormProps) {
   const contracts = useContracts();
   const [values, setValues] = useState<ServiceRequestForm>();
@@ -126,7 +129,7 @@ export function ServiceRequestCreator({
       )}
 
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <ServiceRequestCreatorFields validTokens={tokens} validProjects={projects} />
+        <ServiceRequestCreatorFields validTokens={tokens} validProjects={projects} page={page} header={header} />
       </form>
     </FormProvider>
   );

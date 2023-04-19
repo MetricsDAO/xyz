@@ -11,9 +11,13 @@ import invariant from "tiny-invariant";
 export function ServiceRequestCreatorFields({
   validTokens,
   validProjects,
+  page,
+  header,
 }: {
   validTokens: Token[];
   validProjects: Project[];
+  page: number;
+  header: boolean;
 }) {
   const {
     register,
@@ -33,14 +37,9 @@ export function ServiceRequestCreatorFields({
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
   const claimToReviewDeadline = new Date(claimDate(currentDate, parseDatetime(selectedReviewDate, selectedReviewTime)));
 
-  const header = true;
-  const create = true;
-  const analyst = true;
-  const reviewer = true;
-
   return (
     <>
-      {create && (
+      {(page === 1 || page === 4) && (
         <>
           {header && (
             <div className="space-y-2">
@@ -124,7 +123,7 @@ export function ServiceRequestCreatorFields({
         </>
       )}
 
-      {analyst && (
+      {(page === 2 || page === 4) && (
         <>
           {header && (
             <div className="space-y-4">
@@ -226,7 +225,7 @@ export function ServiceRequestCreatorFields({
         </>
       )}
 
-      {reviewer && (
+      {(page === 3 || page == 4) && (
         <>
           {header && (
             <div className="space-y-4">
