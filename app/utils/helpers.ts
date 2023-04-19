@@ -88,7 +88,6 @@ export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }
 
-
 export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam") {
   switch (score) {
     case "stellar":
