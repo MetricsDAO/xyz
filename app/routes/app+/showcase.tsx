@@ -13,7 +13,7 @@ import { Header, Row, Table } from "~/components/table";
 import { fromNow } from "~/utils/date";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Card } from "~/components/card";
-import { findProjectsBySlug, truncateAddress } from "~/utils/helpers";
+import { findProjectsBySlug, submissionCreatedDate, truncateAddress } from "~/utils/helpers";
 import { Container } from "~/components";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getParamsOrFail } from "remix-params-helper";
@@ -35,7 +35,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const search = getParamsOrFail(url.searchParams, ShowcaseSearchSchema);
   const submissions = await searchSubmissionsShowcase({ ...search });
   const projects = await listProjects();
-  const laborMarkets = await findLaborMarkets();
+  const laborMarkets = await findLaborMarkets({});
   return typedjson({
     submissions,
     search,
@@ -218,7 +218,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
               <Row.Column span={2}>
                 <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
               </Row.Column>
-              <Row.Column span={2}>{fromNow(s.createdAtBlockTimestamp)}</Row.Column>
+              <Row.Column span={2}>{fromNow(submissionCreatedDate(s))}</Row.Column>
             </Link>
           </Row>
         );
@@ -262,7 +262,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
               <p>Chain/Project</p>
               <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
               <p>Submitted</p>
-              {fromNow(s.createdAtBlockTimestamp)}
+              {fromNow(submissionCreatedDate(s))}
             </Link>
           </Card>
         );

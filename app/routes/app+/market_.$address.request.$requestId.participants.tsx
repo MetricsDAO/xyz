@@ -53,7 +53,7 @@ export default function ServiceIdParticipants() {
                     <UserBadge address={p.userAddress as `0x${string}`} />
                     <p className="text-sm">{translateEventType(p.eventType.eventType)}</p>
                   </div>
-                  <p className="text-sm text-gray-500">{fromNow(p.createdAtBlockTimestamp)}</p>
+                  <p className="text-sm text-gray-500">{fromNow(p.blockTimestamp)}</p>
                 </div>
               </Card>
             );

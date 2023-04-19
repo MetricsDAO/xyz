@@ -98,6 +98,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
   invariant(submission, "Submission should exist after upserting");
 
   //log this event in user activity collection
+  invariant(submission.blockTimestamp, "Submission should have a block timestamp");
   mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
@@ -112,7 +113,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
     iconType: "submission",
     actionName: "Submission",
     userAddress: submission.configuration.serviceProvider,
-    createdAtBlockTimestamp: submission.createdAtBlockTimestamp,
+    blockTimestamp: submission.blockTimestamp,
     indexedAt: new Date(),
   });
 
@@ -142,7 +143,7 @@ export const upsertSubmission = async (address: EvmAddress, id: string, event?: 
     return null;
   }
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
+  const doc: SubmissionDoc = {
     id: id,
     laborMarketAddress: address,
     serviceRequestId: submission.requestId.toString(),
@@ -152,15 +153,13 @@ export const upsertSubmission = async (address: EvmAddress, id: string, event?: 
       uri: submission.uri,
     },
     appData,
+    blockTimestamp: event?.block.timestamp ? new Date(event?.block.timestamp) : undefined,
   };
-
-  const createdAtBlockTimestamp = event?.block.timestamp ? new Date(event?.block.timestamp) : new Date();
 
   const res = await mongo.submissions.findOneAndUpdate(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
     {
       $set: doc,
-      $setOnInsert: { createdAtBlockTimestamp: createdAtBlockTimestamp },
     },
     { upsert: true, returnDocument: "after" }
   );
@@ -359,13 +358,13 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
             params.score ? { "score.avg": scoreRange(params.score) } : {},
-            { createdAtBlockTimestamp: { $gte: timeframe } },
+            { blockTimestamp: { $gte: timeframe } },
             params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
           ],
         },
       },
     ])
-    .sort({ createdAtBlockTimestamp: -1 })
+    .sort({ blockTimestamp: -1 })
     .limit(5 + params.count)
     .toArray();
 };

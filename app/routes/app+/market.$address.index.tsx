@@ -24,6 +24,7 @@ import { countServiceRequests, searchServiceRequests } from "~/domain/service-re
 import { listTokens } from "~/services/tokens.server";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
+import { dateHasPassed } from "~/utils/date";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -99,7 +100,7 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         onChange={handleChange}
         size="sm"
         options={[
-          { label: "New", value: "createdAtBlockTimestamp" },
+          { label: "New", value: "blockTimestamp" },
           { label: "Title", value: "appData.title" },
           { label: "Submit Deadline", value: "configuration.submissionExp" },
           { label: "Review Deadline", value: "configuration.enforcementExp" },
@@ -166,7 +167,16 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
         return (
           <Row asChild columns={6} key={sr.id}>
             <Link to={`/app/market/${laborMarket.address}/request/${sr.id}`} className="text-sm font-medium">
-              <Row.Column span={2}>{sr.appData?.title}</Row.Column>
+              <Row.Column span={2}>
+                <div className="flex gap-2">
+                  {!dateHasPassed(sr.configuration.enforcementExp) ? (
+                    <img src="/img/active-icon.svg" alt="" />
+                  ) : (
+                    <div className="w-2"></div>
+                  )}
+                  <p>{sr.appData?.title}</p>
+                </div>
+              </Row.Column>
               <Row.Column>
                 <div className="flex">
                   <ProjectBadges projects={findProjectsBySlug(projects, sr.appData?.projectSlugs ?? [])} />
@@ -203,7 +213,10 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
               className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
             >
               <div>Challenge</div>
-              <div className="text-sm font-medium">{sr.appData?.title}</div>
+              <div className="text-sm font-medium flex gap-2">
+                {!dateHasPassed(sr.configuration.enforcementExp) ? <img src="/img/active-icon.svg" alt="" /> : <></>}
+                <p>{sr.appData?.title}</p>
+              </div>
 
               <div>Chain/Project</div>
               <div className="flex">
