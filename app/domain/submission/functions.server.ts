@@ -12,6 +12,7 @@ import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
+import { scoreRange } from "~/utils/helpers";
 import type {
   CombinedDoc,
   RewardsSearch,
@@ -79,11 +80,11 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.score
       ? {
           $or: [
-            params.score.includes("spam") ? { "score.avg": { $gte: 0, $lt: 25 } } : null,
-            params.score.includes("bad") ? { "score.avg": { $gte: 25, $lt: 50 } } : null,
-            params.score.includes("average") ? { "score.avg": { $gte: 50, $lt: 75 } } : null,
-            params.score.includes("good") ? { "score.avg": { $gte: 75, $lt: 100 } } : null,
-            params.score.includes("great") ? { "score.avg": { $gte: 100 } } : null,
+            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : null,
+            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : null,
+            params.score.includes("average") ? { "score.avg": scoreRange("average") } : null,
+            params.score.includes("good") ? { "score.avg": scoreRange("good") } : null,
+            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : null,
           ].filter(Boolean),
         }
       : {}),
@@ -302,7 +303,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $match: {
           $and: [
-            { "score.avg": { $gte: 75 } },
+            { "score.avg": { $gte: 70 } },
             //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
@@ -356,8 +357,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             { "sr.configuration.enforcementExp": { $lt: utcDate() } },
             { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
-            params.score ? { "score.avg": { $gte: params.score } } : {},
-            params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
+            params.score ? { "score.avg": scoreRange(params.score) } : {},
             { blockTimestamp: { $gte: timeframe } },
             params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
           ],

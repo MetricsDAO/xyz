@@ -87,7 +87,7 @@ export default function ChallengeIdSubmissions() {
           </Field>
           <Label>Filter:</Label>
           <p>Overall Score</p>
-          <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="great" label="Great" />
+          <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="stellar" label="Stellar" />
           <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
           <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
           <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />

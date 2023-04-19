@@ -126,8 +126,8 @@ function SearchAndFilter({
           onChange={handleChange}
           placeholder="Select option"
           options={[
-            { label: "Great", value: "100" },
-            { label: "Good", value: "75" },
+            { label: "Stellar", value: "stellar" },
+            { label: "Good", value: "good" },
           ]}
         />
       </Field>
