@@ -124,3 +124,14 @@ export const LaborMarketFormSchema = z.object({
   appData: LaborMarketAppDataSchema,
 });
 export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
+
+export const step1Schema = z.object({
+  title: z.string().min(1),
+  type: LaborMarketTypeSchema.default("analyze"),
+  description: z.string().min(1),
+  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  enforcement: EvmAddressSchema,
+});
+
+export type step1Data = z.infer<typeof step1Schema>;
