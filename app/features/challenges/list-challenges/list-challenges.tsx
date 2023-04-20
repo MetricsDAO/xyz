@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react";
+import clsx from "clsx";
 import { Card, Countdown, Header, Row, Table } from "~/components";
 import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
@@ -34,12 +35,17 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestWi
           <Row asChild columns={6} key={sr.laborMarketAddress + sr.id}>
             <Link
               to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
-              className="text-sm font-medium"
               state={{ crumbs: "challenges" }}
+              className={clsx("text-sm font-medium", { "opacity-60": dateHasPassed(sr.configuration.enforcementExp) })}
+
             >
               <Row.Column span={2}>
                 <div className="flex gap-2">
-                  {!dateHasPassed(sr.configuration.enforcementExp) ? <img src="/img/active-icon.svg" alt="" /> : <></>}
+                  {!dateHasPassed(sr.configuration.enforcementExp) ? (
+                    <img src="/img/active-icon.svg" alt="" />
+                  ) : (
+                    <div className="w-2" />
+                  )}
                   <p>{sr.appData?.title}</p>
                 </div>
               </Row.Column>
@@ -73,8 +79,11 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestWit
           <Card asChild key={sr.laborMarketAddress + sr.id}>
             <Link
               to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
-              className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
               state={{ crumbs: "challenges" }}
+              className={clsx("grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
+                "opacity-60": dateHasPassed(sr.configuration.enforcementExp),
+              })}
+
             >
               <div>Challenge</div>
               <div className="text-sm font-medium flex gap-2">
