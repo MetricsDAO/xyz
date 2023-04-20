@@ -1,17 +1,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
 import { useNavigate, useOutletContext } from "@remix-run/react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
 import { Button } from "~/components/button";
 import type { step1Data } from "~/domain/labor-market/schemas";
 import { step1Schema } from "~/domain/labor-market/schemas";
 import { useContracts } from "~/hooks/use-root-data";
-import type { step1DataType } from "~/routes/app+/market_.new2";
 
-export function Step1({ tokens, projects }: { tokens: Token[]; projects: Project[] }) {
+export function Step1({
+  tokens,
+  projects,
+  onDataUpdate,
+  onPageChange,
+}: {
+  tokens: Token[];
+  projects: Project[];
+  onDataUpdate: (values: step1Data) => void;
+  onPageChange: (page: number) => void;
+}) {
   const contracts = useContracts();
-  const navigate = useNavigate();
+
+  // const [step1Data, setStep1Data] = useState<step1Data | null>(null);
 
   const {
     register,
@@ -25,7 +36,8 @@ export function Step1({ tokens, projects }: { tokens: Token[]; projects: Project
 
   const onSubmit = (values: step1Data) => {
     console.log("values", values);
-    navigate("step2");
+    onPageChange(2);
+    onDataUpdate(values);
   };
 
   // Filtering out MBETA for now. Might not be necessary later on.
