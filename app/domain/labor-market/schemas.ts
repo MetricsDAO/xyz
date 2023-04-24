@@ -135,3 +135,25 @@ export const step1Schema = z.object({
 });
 
 export type step1Data = z.infer<typeof step1Schema>;
+
+export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
+export const PermissionType = z.enum(["Badge"]);
+
+export const BadgeSchema = z.preprocess(
+  arrayToObject,
+  z.object({
+    type: PermissionType.default("Badge"),
+    contractAddress: EvmAddressSchema,
+    tokenId: z.coerce.string(),
+    minBadgeBalance: z.number().min(1).default(1),
+    maxBadgeBalance: z.number().optional(),
+  })
+);
+
+export const step2Schema = z.object({
+  gatingType: BadgeGatingType.default("Anyone"),
+  numberBadgesRequired: z.number().min(1).default(1),
+  sponsorBadges: zfd.repeatable(z.array(BadgeSchema)),
+});
+
+export type step2Data = z.infer<typeof step2Schema>;

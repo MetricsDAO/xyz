@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
-import { useNavigate, useOutletContext } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
 import { Button } from "~/components/button";
@@ -10,34 +9,44 @@ import { step1Schema } from "~/domain/labor-market/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 
 export function Step1({
+  currentData,
   tokens,
   projects,
   onDataUpdate,
-  onPageChange,
+  onNextPage,
 }: {
+  currentData: step1Data | null;
   tokens: Token[];
   projects: Project[];
-  onDataUpdate: (values: step1Data) => void;
-  onPageChange: (page: number) => void;
+  onDataUpdate: (data: step1Data) => void;
+  onNextPage: (page: number) => void;
 }) {
   const contracts = useContracts();
-
-  // const [step1Data, setStep1Data] = useState<step1Data | null>(null);
 
   const {
     register,
     control,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<step1Data>({
     resolver: zodResolver(step1Schema),
   });
 
+  useEffect(() => {
+    if (currentData) {
+      setValue("title", currentData.title);
+      setValue("description", currentData.description);
+      setValue("projectSlugs", currentData.projectSlugs);
+      setValue("tokenAllowlist", currentData.tokenAllowlist);
+      setValue("enforcement", currentData.enforcement);
+    }
+  }, [currentData, setValue]);
+
   const onSubmit = (values: step1Data) => {
-    console.log("values", values);
-    onPageChange(2);
     onDataUpdate(values);
+    onNextPage(2);
   };
 
   // Filtering out MBETA for now. Might not be necessary later on.
@@ -58,7 +67,11 @@ export function Step1({
           </p>
         </section>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
-          <input type="hidden" {...register("type", { value: "analyze" })} />
+          <input
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            type="hidden"
+            {...register("type", { value: "analyze" })}
+          />
 
           <Field>
             <Label size="lg">Challenge Marketplace Title*</Label>
