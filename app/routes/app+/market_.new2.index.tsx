@@ -1,16 +1,21 @@
-import { NavLink, useOutletContext } from "@remix-run/react";
-import { Button } from "~/components";
-import type { OutletContext } from "./market_.new2.step2";
+import { useOutletContext } from "@remix-run/react";
+import type { step1Data } from "~/domain/labor-market/schemas";
+import { Step1 } from "~/features/markets/new-market/step1";
+import { useProjects, useTokens } from "~/hooks/use-root-data";
+import type { OutletContext } from "./market_.new2";
 
-export default function Step1() {
-  const [counter, setCounter] = useOutletContext<OutletContext>();
+export default function Step1Page() {
+  const [formData, setFormData] = useOutletContext<OutletContext>();
+  const tokens = useTokens();
+  const projects = useProjects();
   return (
-    <div>
-      <p className="font-bold">Step 1</p>
-      <Button onClick={() => setCounter((counter ?? 0) + 1)}>Increment</Button>
-      <NavLink to="/app/market/new2/step2">
-        <Button>Step 2</Button>
-      </NavLink>
-    </div>
+    <Step1
+      currentData={formData.page1Data}
+      tokens={tokens}
+      projects={projects}
+      onDataUpdate={(data: step1Data) => {
+        setFormData((prevData) => ({ ...prevData, page1Data: data }));
+      }}
+    />
   );
 }

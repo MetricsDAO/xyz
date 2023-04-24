@@ -1,18 +1,12 @@
-import { NavLink, useOutletContext } from "@remix-run/react";
-import type { useState } from "react";
-import { Button } from "~/components";
+import { useOutletContext } from "@remix-run/react";
+import type { OutletContext } from "./market_.new2";
 
-export type OutletContext = [number, (value: number) => void];
-
-export default function Step2() {
-  const [counter, setCounter] = useOutletContext<OutletContext>();
+export default function Step2Page() {
+  const [formData, setFormData] = useOutletContext<OutletContext>();
+  console.log("formdata", formData);
   return (
     <div>
       <p className="font-bold">Step 2</p>
-      <Button onClick={() => setCounter((counter ?? 0) + 1)}>Increment</Button>
-      <NavLink to="/app/market/new2">
-        <Button>Step 1</Button>
-      </NavLink>
     </div>
   );
 }
