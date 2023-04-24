@@ -1,3 +1,4 @@
+import { NavLink, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -54,24 +55,33 @@ export default function NewMarketRoute({ onDataUpdate }: Props) {
     // Add any custom logic needed before going back here
   };
 
-  switch (page) {
-    case 1:
-      return (
-        <Step1
-          currentData={formData.page1Data}
-          tokens={tokens}
-          projects={projects}
-          onDataUpdate={(data: step1Data) => updateData("page1Data", data)}
-          onNextPage={handlePageNext}
-        />
-      );
-    case 2:
-      return (
-        <Step2
-          onDataUpdate={(data: step2Data) => updateData("page2Data", data)}
-          onNextPage={handlePageNext}
-          onGoBack={handleGoBack}
-        />
-      );
-  }
+  const [counter, setCounter] = useState<number>(0);
+
+  return (
+    <div>
+      <p>The count is {counter}</p>
+      <Outlet context={[counter, setCounter]} />
+    </div>
+  );
+
+  // switch (page) {
+  //   case 1:
+  //     return (
+  //       <Step1
+  //         currentData={formData.page1Data}
+  //         tokens={tokens}
+  //         projects={projects}
+  //         onDataUpdate={(data: step1Data) => updateData("page1Data", data)}
+  //         onNextPage={handlePageNext}
+  //       />
+  //     );
+  //   case 2:
+  //     return (
+  //       <Step2
+  //         onDataUpdate={(data: step2Data) => updateData("page2Data", data)}
+  //         onNextPage={handlePageNext}
+  //         onGoBack={handleGoBack}
+  //       />
+  //     );
+  // }
 }
