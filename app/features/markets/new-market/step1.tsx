@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
+import { useNavigate } from "@remix-run/react";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
@@ -13,13 +14,11 @@ export function Step1({
   tokens,
   projects,
   onDataUpdate,
-  onNextPage,
 }: {
   currentData: step1Data | null;
   tokens: Token[];
   projects: Project[];
   onDataUpdate: (data: step1Data) => void;
-  onNextPage: (page: number) => void;
 }) {
   const contracts = useContracts();
 
@@ -44,9 +43,11 @@ export function Step1({
     }
   }, [currentData, setValue]);
 
+  const navigate = useNavigate();
+
   const onSubmit = (values: step1Data) => {
     onDataUpdate(values);
-    onNextPage(2);
+    navigate(`/app/market/new2/step2`);
   };
 
   // Filtering out MBETA for now. Might not be necessary later on.
