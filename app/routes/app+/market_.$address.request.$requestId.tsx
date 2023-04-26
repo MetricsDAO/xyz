@@ -187,10 +187,18 @@ export default function ServiceRequest() {
         <TabNavLink to="" end state={state}>
           Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
         </TabNavLink>
-        <TabNavLink to="./prereqs" state={state}>Prerequisites</TabNavLink>
-        <TabNavLink to="./rewards" state={state}>Rewards</TabNavLink>
-        <TabNavLink to="./timeline" state={state}>Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants" state={state}>Participants</TabNavLink>
+        <TabNavLink to="./prereqs" state={state}>
+          Prerequisites
+        </TabNavLink>
+        <TabNavLink to="./rewards" state={state}>
+          Rewards
+        </TabNavLink>
+        <TabNavLink to="./timeline" state={state}>
+          Timeline &amp; Deadlines
+        </TabNavLink>
+        <TabNavLink to="./participants" state={state}>
+          Participants
+        </TabNavLink>
       </TabNav>
 
       <Outlet />
