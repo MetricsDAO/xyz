@@ -153,7 +153,7 @@ export const BadgeSchema = z.preprocess(
 export const step2Schema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
   numberBadgesRequired: z.number().min(1).default(1),
-  sponsorBadges: zfd.repeatable(z.array(BadgeSchema)),
+  badges: zfd.repeatable(z.array(BadgeSchema)),
 });
 
 export type step2Data = z.infer<typeof step2Schema>;
