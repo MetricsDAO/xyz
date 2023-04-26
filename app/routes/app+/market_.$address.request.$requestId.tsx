@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
@@ -71,17 +71,6 @@ export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens, numParticipants } =
     useTypedLoaderData<typeof loader>();
 
-  let { state } = useLocation();
-  let crumbs = [];
-  if (state.crumbs && state.crumbs === "challenges") {
-    crumbs = [{ link: `/app/challenges`, name: "Challenges" }];
-  } else {
-    crumbs = [
-      { link: `/app/analyze`, name: "Marketplaces" },
-      { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
-    ];
-  }
-
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
@@ -119,7 +108,12 @@ export default function ServiceRequest() {
 
   return (
     <Container className="pt-7 pb-16 px-10">
-      <Breadcrumbs crumbs={crumbs} />
+      <Breadcrumbs
+        crumbs={[
+          { link: `/app/analyze`, name: "Marketplaces" },
+          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+        ]}
+      />
       <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5 md:basis-1/3 justify-end">

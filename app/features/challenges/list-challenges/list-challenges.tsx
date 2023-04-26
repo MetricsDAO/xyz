@@ -35,7 +35,6 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestWi
           <Row asChild columns={6} key={sr.laborMarketAddress + sr.id}>
             <Link
               to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
-              state={{ crumbs: "challenges" }}
               className={clsx("text-sm font-medium", { "opacity-60": dateHasPassed(sr.configuration.enforcementExp) })}
             >
               <Row.Column span={2}>
@@ -78,7 +77,6 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestWit
           <Card asChild key={sr.laborMarketAddress + sr.id}>
             <Link
               to={`/app/market/${sr.laborMarketAddress}/request/${sr.id}`}
-              state={{ crumbs: "challenges" }}
               className={clsx("grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
                 "opacity-60": dateHasPassed(sr.configuration.enforcementExp),
               })}
