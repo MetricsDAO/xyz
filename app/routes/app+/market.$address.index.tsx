@@ -169,6 +169,7 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
           <Row asChild columns={6} key={sr.id}>
             <Link
               to={`/app/market/${laborMarket.address}/request/${sr.id}`}
+              state={{ crumbs: "market" }}
               className={clsx("text-sm font-medium", {
                 "opacity-60": dateHasPassed(sr.configuration.enforcementExp),
               })}
@@ -216,6 +217,7 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
           <Card asChild key={sr.id}>
             <Link
               to={`/app/market/${laborMarket.address}/request/${sr.id}`}
+              state={{ crumbs: "market" }}
               className={clsx("grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
                 "opacity-60": dateHasPassed(sr.configuration.enforcementExp),
               })}
