@@ -6,7 +6,7 @@ import { Container, Error, Field, Input, Label, Select } from "~/components";
 import type { step2Data } from "~/domain/labor-market/schemas";
 import { step2Schema } from "~/domain/labor-market/schemas";
 
-export function Step2({
+export function Step3({
   currentData,
   onDataUpdate,
 }: {
@@ -37,13 +37,13 @@ export function Step2({
   const onSubmit = (values: step2Data) => {
     console.log(values);
     onDataUpdate(values);
-    navigate(`/app/market/new2/step3`);
+    navigate(`/app/market/new2/step4`);
   };
 
   const onGoBack = () => {
     console.log(formData);
     onDataUpdate(formData);
-    navigate(`/app/market/new2`);
+    navigate(`/app/market/new2/step2`);
   };
 
   return (
@@ -52,10 +52,10 @@ export function Step2({
         <Container className="py-16">
           <div className="max-w-2xl mx-auto">
             <section className="space-y-1">
-              <h1 className="text-3xl font-semibold antialiased">Sponsor Permissions</h1>
+              <h1 className="text-3xl font-semibold antialiased">Analyst Permissions</h1>
               <p className="text-cyan-500 text-lg">
-                Define who has permission to launch challenges in this Marketplace. Sponsors launch time-bound
-                challenges and fund tokens to reward Analysts.
+                Define who has permission to enter submissions on challenges in this Marketplace. Analysts submit
+                quality work to earn tokens from the reward pool.
               </p>
             </section>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
@@ -200,12 +200,12 @@ function FormSteps() {
             <span className="text-[#666666] font-bold text-sm">1</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-            <span className="text-white font-bold text-sm">2</span>
+          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
+            <span className="text-[#666666] font-bold text-sm">2</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">3</span>
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
+            <span className="text-white font-bold text-sm">3</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
           <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
