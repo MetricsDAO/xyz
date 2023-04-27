@@ -41,10 +41,8 @@ function ERC20ClaimButton({ reward }: { reward: Reward }) {
       {hasClaimed === undefined ? (
         // Loading
         <>--</>
-      ) : hasClaimed === true ? (
-        <span>Claimed</span>
       ) : (
-        <ClaimButton reward={reward} />
+        <ClaimButton reward={reward} hasClaimed={hasClaimed} />
       )}
     </>
   );
@@ -56,10 +54,9 @@ function IOUTokenClaimAndRedeem({ reward }: { reward: Reward }) {
   }
 
   return (
-    <>
-      <p>Redeemed?: {JSON.stringify(reward.treasury?.hasRedeemed)}</p>
+    <div className="flex flex-wrap gap-2">
       <ERC20ClaimButton reward={reward} />
       <RedeemButton reward={reward} />
-    </>
+    </div>
   );
 }

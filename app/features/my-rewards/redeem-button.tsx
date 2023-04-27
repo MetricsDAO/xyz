@@ -22,6 +22,7 @@ export function RedeemButton({ reward }: { reward: Reward }) {
 
   return (
     <RedeemRewardCreator
+      disableButton={reward.treasury.hasRedeemed ?? false}
       iouTokenAddress={reward.app.token.contractAddress as EvmAddress}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
