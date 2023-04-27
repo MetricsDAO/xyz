@@ -8,6 +8,7 @@ import { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import ConnectWalletWrapper from "./connect-wallet-wrapper";
+import { TxModal } from "~/components/tx-modal/tx-modal";
 
 export default function DeleteServiceRequestModal({ serviceRequest }: { serviceRequest: ServiceRequestWithIndexData }) {
   const [open, setOpen] = useState<boolean>(false);
@@ -62,6 +63,13 @@ function ServiceRequestDelete({ serviceRequest }: { serviceRequest: ServiceReque
           Delete
         </Button>
       </ConnectWalletWrapper>
+      <TxModal
+        transactor={transactor}
+        title="Delete Challenge"
+        confirmationMessage={
+          <p className="mt-2">Please confirm that you would like to delete {serviceRequest.appData.title}</p>
+        }
+      />
     </>
   );
 }
