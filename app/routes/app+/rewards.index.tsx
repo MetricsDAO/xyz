@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import type { Token } from "@prisma/client";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -20,8 +19,8 @@ import { IOUTokenCreator } from "~/features/iou-token-creator";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
+import { useTokens } from "~/hooks/use-root-data";
 import { requireUser } from "~/services/session.server";
-import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
 const validator = withZod(RewardsSearchSchema);
@@ -33,20 +32,18 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
 
   const wallets = await findAllWalletsForUser(user.id);
-  const tokens = await listTokens();
-  const rewards = await getRewards(user, search, tokens, wallets);
+  const rewards = await getRewards(user, search);
 
   return typedjson({
-    wallets,
+    walletsCount: wallets.length,
     rewards,
     user,
-    tokens,
     search,
   });
 };
 
 export default function Rewards() {
-  const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
+  const { walletsCount, rewards, search } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -60,7 +57,7 @@ export default function Rewards() {
         </div>
       </section>
       <IOUTokenCreator />
-      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={rewards.length} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
@@ -71,7 +68,7 @@ export default function Rewards() {
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter tokens={tokens} />
+          <SearchAndFilter />
         </aside>
       </section>
     </Container>
@@ -101,7 +98,8 @@ function RewardsListView({ rewards }: { rewards: Reward[] }) {
   );
 }
 
-function SearchAndFilter({ tokens }: { tokens: Token[] }) {
+function SearchAndFilter() {
+  const tokens = useTokens();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 

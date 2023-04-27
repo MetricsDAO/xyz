@@ -3,75 +3,90 @@ import { multicall } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { z } from "zod";
 import { mongo } from "~/services/mongo.server";
-import { fetchSignedClaims } from "~/services/treasury.server";
+import { listTokens } from "~/services/tokens.server";
+import { fetchSignatures, fetchClaims } from "~/services/treasury.server";
+import { findAllWalletsForUser } from "~/services/wallet.server";
 import { getContracts } from "~/utils/contracts.server";
 import { utcDate } from "~/utils/date";
 import { displayBalance, fromTokenAmount } from "~/utils/helpers";
-import type { SubmissionWithServiceRequest } from "../submission/schemas";
+import type { SubmissionDoc, SubmissionWithServiceRequest } from "../submission/schemas";
 import { SubmissionWithServiceRequestSchema } from "../submission/schemas";
 import type { RewardsSearch } from "./schema";
 
-export type Reward = {
-  submission: SubmissionWithServiceRequest;
+type AppMeta = {
   token?: Token;
   wallet?: Wallet;
-  signature?: string; // the signature from Treasury API if an IOU token
-  hasReward: boolean;
-  amounts: {
-    paymentTokenAmount: string;
-    displayPaymentTokenAmount: string;
-    reputationTokenAmount: string;
-    displayReputationTokenAmount: string;
-  };
 };
 
-export const getRewards = async (
-  user: User,
-  search: RewardsSearch,
-  tokens: Token[],
-  wallets: Wallet[]
-): Promise<Reward[]> => {
-  const submissions = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
+type ChainMeta = {
+  hasReward: boolean;
+  paymentTokenAmount: string;
+  displayPaymentTokenAmount: string;
+  reputationTokenAmount: string;
+  displayReputationTokenAmount: string;
+};
 
-  const rpcRewards = await getRewardsMulticall(submissions);
+type TreasuryMeta = {
+  signature?: string; // the signature from Treasury API if an IOU token
+  hasRedeemed?: boolean; // if an IOU token, whether the user has redeemed it
+};
 
-  const rewards = rpcRewards.map((r) => {
-    const { submission, hasReward, paymentTokenAmount, reputationTokenAmount } = r;
-    const token = tokens.find((t) => t.contractAddress === submission.sr.configuration.pToken);
+export type RewardWithAppMeta = Pick<Reward, "submission" | "app">;
+export type RewardWithChainMeta = Pick<Reward, "submission" | "app" | "chain">;
+export type Reward = {
+  submission: SubmissionWithServiceRequest;
+  app: AppMeta;
+  chain: ChainMeta;
+  treasury?: TreasuryMeta;
+};
+
+const appMetadata = async (user: User, submissions: SubmissionWithServiceRequest[]): Promise<RewardWithAppMeta[]> => {
+  const wallets = await findAllWalletsForUser(user.id);
+  const tokens = await listTokens();
+  return submissions.map((s) => {
+    const token = tokens.find((t) => t.contractAddress === s.sr.configuration.pToken);
     const wallet = wallets.find((w) => w.networkName === token?.networkName);
     return {
-      submission,
-      token,
-      wallet,
-      hasReward,
-      amounts: {
-        paymentTokenAmount: paymentTokenAmount.toString(),
-        displayPaymentTokenAmount: fromTokenAmount(paymentTokenAmount.toString(), token?.decimals ?? 18, 2),
-        reputationTokenAmount: reputationTokenAmount.toString(),
-        displayReputationTokenAmount: displayBalance(reputationTokenAmount),
+      submission: s,
+      app: {
+        token,
+        wallet,
       },
     };
   });
+};
 
-  // TODO: filter IOU tokens
-  const iouRewards = rewards.filter((r) => r.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D");
+const treasuryMetadata = async (rewards: RewardWithChainMeta[]): Promise<Reward[]> => {
+  // TODO: iou filter
+  const iouRewards = rewards.filter(
+    (r) => r.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D"
+  );
   if (iouRewards.length > 0) {
-    const signedClaims = await fetchSignedClaims(iouRewards);
-    if (signedClaims.length > 0) {
-      const rewardsWithSignature = rewards.map((s) => {
-        const signedClaim = signedClaims.find(
+    const temp: Reward[] = [];
+    const signatures = await fetchSignatures(iouRewards);
+    for (const reward of rewards) {
+      // TODO: iou filter
+      if (reward.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D") {
+        const signature = signatures.find(
           (c) =>
-            c.signedBody.marketplaceAddress === s.submission.laborMarketAddress &&
-            c.signedBody.submissionID === Number(s.submission.id)
+            c.signedBody.marketplaceAddress === reward.submission.laborMarketAddress &&
+            c.signedBody.submissionID === Number(reward.submission.id)
         );
-        return {
-          ...s,
-          signature: signedClaim?.signature,
-        };
-      });
-      return rewardsWithSignature;
+        const redeemed = await hasRedeemed(reward.submission);
+        temp.push({
+          ...reward,
+          treasury: {
+            signature: signature?.signature,
+            hasRedeemed: redeemed,
+          },
+        });
+      } else {
+        temp.push(reward);
+      }
     }
+    return temp;
   }
+
   return rewards;
 };
 
@@ -134,24 +149,51 @@ const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionW
   return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
 };
 
-export const getRewardsMulticall = async (submissions: SubmissionWithServiceRequest[]) => {
+const contractMetadata = async (rewards: RewardWithAppMeta[]): Promise<RewardWithChainMeta[]> => {
   const contracts = getContracts();
+  // mutlical that returns all the rewards in format [BigNumber, BigNumber][]
+  // where first element is the payment token amount and the second is the reputation token amount
   const m = (await multicall({
-    contracts: submissions.map((s) => {
+    contracts: rewards.map((r) => {
       return {
         address: contracts.ScalableLikertEnforcement.address,
         abi: contracts.ScalableLikertEnforcement.abi,
         functionName: "getRewards",
-        args: [s.laborMarketAddress, BigNumber.from(s.id)],
+        args: [r.submission.laborMarketAddress, BigNumber.from(r.submission.id)],
       };
     }),
   })) as [BigNumber, BigNumber][];
   return m.map((data, index) => {
+    const paymentTokenAmount = data[0].toString();
+    const reputationTokenAmount = data[1];
+    const reward = rewards[index]!;
+    // TODO: remove these display amounts
     return {
-      paymentTokenAmount: data[0],
-      reputationTokenAmount: data[1],
-      hasReward: data[0].gt(0) || data[1].gt(0),
-      submission: submissions[index]!,
+      ...reward,
+      chain: {
+        hasReward: data[0].gt(0) || data[1].gt(0),
+        paymentTokenAmount,
+        displayPaymentTokenAmount: fromTokenAmount(paymentTokenAmount, reward.app.token?.decimals ?? 18, 2),
+        reputationTokenAmount: reputationTokenAmount.toString(),
+        displayReputationTokenAmount: displayBalance(reputationTokenAmount),
+      },
     };
   });
+};
+
+const hasRedeemed = async (submission: SubmissionDoc) => {
+  const res = await fetchClaims(submission);
+  if (res.claims.ok) {
+    const redeemClaim = res.claims.val.find((c) => c.redeemTx !== null);
+    return !!redeemClaim;
+  }
+  return undefined;
+};
+
+export const getRewards = async (user: User, search: RewardsSearch): Promise<Reward[]> => {
+  const submissions = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
+
+  const withAppMeta = await appMetadata(user, submissions);
+  const withChainMeta = await contractMetadata(withAppMeta);
+  return await treasuryMetadata(withChainMeta);
 };

@@ -7,26 +7,26 @@ import type { Reward } from "~/domain/reward/functions.server";
 import { RedeemRewardCreator } from "../redeem-reward-creator/redeem-reward-creator";
 
 export function RedeemButton({ reward }: { reward: Reward }) {
-  if (!reward.wallet) {
-    return <NoWalletAddressFoundModalButton networkName={reward.token?.networkName} />;
+  if (!reward.app.wallet) {
+    return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
   }
 
   // TODO this error handling?
-  if (!reward.signature) {
+  if (!reward.treasury?.signature) {
     return <p>Missing signature</p>;
   }
 
-  if (!reward.token) {
+  if (!reward.app.token) {
     return <p>Missing token</p>;
   }
 
   return (
     <RedeemRewardCreator
-      iouTokenAddress={reward.token.contractAddress as EvmAddress}
+      iouTokenAddress={reward.app.token.contractAddress as EvmAddress}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
-      amount={reward.amounts.paymentTokenAmount}
-      signature={reward.signature as `0x${string}`}
+      amount={reward.chain.paymentTokenAmount}
+      signature={reward.treasury.signature as `0x${string}`}
       confirmationMessage={<></>} //TODO
     />
   );

@@ -1,24 +1,19 @@
-import type { Reward } from "~/domain/reward/functions.server";
-import { signClaimResponseSchema } from "~/domain/treasury";
+import type { RewardWithChainMeta } from "~/domain/reward/functions.server";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
+import { fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
+import env from "~/env.server";
 
-const TREASURY_URL = "https://treasury-listeners-pine.clusters-stg.flipside.kitchen";
-
-/**
- * Fetches a JSON object from IPFS.
- * @param cid - The CID of the JSON object to fetch.
- * @throws {Error} - If the request fails or JSON isn't valid.
- */
-export async function fetchSignedClaims(rewards: Reward[]) {
+export async function fetchSignatures(rewards: RewardWithChainMeta[]) {
   const body = rewards
-    .filter((r) => r.wallet !== undefined)
+    .filter((r) => r.app.wallet !== undefined)
     .map((r) => {
       return {
         submissionID: Number(r.submission.id),
-        claimerAddress: r.wallet?.address,
+        claimerAddress: r.app.wallet?.address,
         marketplaceAddress: r.submission.laborMarketAddress,
         iouAddress: r.submission.sr.configuration.pToken,
         type: "submission",
-        amount: r.submission.sr.configuration.pTokenQ,
+        amount: r.chain.paymentTokenAmount,
       };
     });
 
@@ -26,11 +21,20 @@ export async function fetchSignedClaims(rewards: Reward[]) {
 
   //TODO: schema
 
-  const res = await fetch(`${TREASURY_URL}/ioutoken/sign-claim/`, {
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/sign-claim/`, {
     method: "POST",
     body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json", authorization: "" },
+    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
   }).then((res) => res.json());
 
-  return signClaimResponseSchema.parse(res);
+  return fetchSignaturesResponseSchema.parse(res);
+}
+
+export async function fetchClaims(submission: SubmissionDoc) {
+  const { laborMarketAddress, id: submissionId } = submission;
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${laborMarketAddress}/${submissionId}/submission`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
+  }).then((res) => res.json());
+  return fetchClaimsResponseSchema.parse(res);
 }

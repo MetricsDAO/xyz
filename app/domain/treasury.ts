@@ -1,15 +1,35 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 
-const signedBodySchema = z.object({
+const fetchSignaturesBodySchema = z.object({
   submissionID: z.number(),
   claimerAddress: EvmAddressSchema,
   marketplaceAddress: EvmAddressSchema,
 });
 
-export const signClaimResponseSchema = z.array(
+export const fetchSignaturesResponseSchema = z.array(
   z.object({
-    signedBody: signedBodySchema,
+    signedBody: fetchSignaturesBodySchema,
     signature: z.string(),
   })
 );
+
+export const fetchClaimsResponseSchema = z.object({
+  claims: z.object({
+    ok: z.boolean(),
+    err: z.boolean(),
+    val: z.array(
+      z.object({
+        id: z.string(),
+        iouAddress: EvmAddressSchema,
+        claimerAddress: EvmAddressSchema,
+        marketplaceAddress: EvmAddressSchema,
+        submissionID: z.number(),
+        type: z.string(),
+        amount: z.string(),
+        redeemTx: z.string().nullable(),
+        createdAt: z.string().transform((value) => new Date(value)),
+      })
+    ),
+  }),
+});

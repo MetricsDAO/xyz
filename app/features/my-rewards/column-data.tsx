@@ -8,19 +8,19 @@ export function RewardDisplay({ reward }: { reward: Reward }) {
   return (
     <RewardBadge
       payment={{
-        amount: reward.amounts.displayPaymentTokenAmount,
-        token: reward.token,
+        amount: reward.chain.displayPaymentTokenAmount,
+        token: reward.app.token,
       }}
-      reputation={{ amount: reward.amounts.displayReputationTokenAmount }}
+      reputation={{ amount: reward.chain.displayReputationTokenAmount }}
     />
   );
 }
 
 export function Status(props: { reward: Reward }) {
   // TODO
-  const isIOUToken = props.reward.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D";
+  const isIOUToken = props.reward.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D";
   if (isIOUToken) {
-    return <IOUTokenClaimButton {...props} />;
+    return <IOUTokenClaimAndRedeem {...props} />;
   }
   return <ERC20ClaimButton {...props} />;
 }
@@ -32,7 +32,7 @@ function ERC20ClaimButton({ reward }: { reward: Reward }) {
     action: "HAS_CLAIMED",
   });
 
-  if (!reward.hasReward) {
+  if (!reward.chain.hasReward) {
     return <span>No reward</span>;
   }
 
@@ -50,14 +50,15 @@ function ERC20ClaimButton({ reward }: { reward: Reward }) {
   );
 }
 
-function IOUTokenClaimButton({ reward }: { reward: Reward }) {
-  if (!reward.hasReward) {
+function IOUTokenClaimAndRedeem({ reward }: { reward: Reward }) {
+  if (!reward.chain.hasReward) {
     return <span>No reward</span>;
   }
 
   return (
     <>
-      <ClaimButton reward={reward} />
+      <p>Redeemed?: {JSON.stringify(reward.treasury?.hasRedeemed)}</p>
+      <ERC20ClaimButton reward={reward} />
       <RedeemButton reward={reward} />
     </>
   );
