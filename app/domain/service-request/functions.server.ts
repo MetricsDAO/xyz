@@ -86,6 +86,62 @@ export async function handleRequestConfiguredEvent(event: TracerEvent) {
   );
 }
 
+export async function handleRequestWithdrawnEvent(event: TracerEvent) {
+  const requestId = z.string().parse(event.decoded.inputs.requestId);
+  const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
+  const serviceRequest = await findServiceRequest(laborMarketAddress, requestId);
+  if (!serviceRequest) {
+    logger.warn("Service request was not found", { requestId, laborMarketAddress });
+    return;
+  }
+
+  invariant(serviceRequest.blockTimestamp, "Service request should have a block timestamp");
+  //log this event in user activity collection
+  mongo.userActivity.insertOne({
+    groupType: "ServiceRequest",
+    eventType: {
+      eventType: "RequestWithdrawn",
+      config: {
+        laborMarketAddress: serviceRequest.laborMarketAddress,
+        requestId: serviceRequest.id,
+        title: serviceRequest.appData.title,
+      },
+    },
+    iconType: "service-request",
+    actionName: "Delete Challenge",
+    userAddress: serviceRequest.configuration.serviceRequester,
+    blockTimestamp: serviceRequest.blockTimestamp,
+    indexedAt: serviceRequest.indexedAt,
+  });
+
+  // Update labor market
+  const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
+  const rewardPools = removeRewardPool(
+    lm?.indexData.serviceRequestRewardPools ?? [],
+    serviceRequest.configuration.pToken,
+    serviceRequest.configuration.pTokenQ
+  );
+
+  await mongo.laborMarkets.updateOne(
+    { address: serviceRequest.laborMarketAddress },
+    {
+      $dec: {
+        "indexData.serviceRequestCount": 1,
+      },
+      $set: {
+        "indexData.serviceRequestRewardPools": rewardPools,
+      },
+    }
+  );
+
+  mongo.serviceRequests.deleteOne({
+    laborMarketAddress: serviceRequest.laborMarketAddress,
+    id: serviceRequest.id,
+    blockTimestamp: serviceRequest.blockTimestamp,
+    indexedAt: serviceRequest.indexedAt,
+  });
+}
+
 /**
  * Creates a ServiceRequesttWithIndexData in mongodb from chain and ipfs data.
  */
@@ -300,6 +356,18 @@ const calculateRewardPools = (
       pToken: pToken,
       pTokenQuantity: pTokenQuantity,
     });
+  }
+  return newPools;
+};
+
+const removeRewardPool = (existingPools: RewardPool[], pToken: EvmAddress, pTokenQuantity: string): RewardPool[] => {
+  const newPools = [...existingPools];
+  const pool = newPools.find((pool) => pool.pToken === pToken);
+  if (pool) {
+    pool.pTokenQuantity = BigNumber.from(pool.pTokenQuantity).sub(pTokenQuantity).toString();
+    if (BigNumber.from(pool.pTokenQuantity).eq(0)) {
+      return newPools.filter((p) => p.pToken === pToken);
+    }
   }
   return newPools;
 };
