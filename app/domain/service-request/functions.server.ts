@@ -89,7 +89,7 @@ export async function handleRequestConfiguredEvent(event: TracerEvent) {
 export async function handleRequestWithdrawnEvent(event: TracerEvent) {
   const requestId = z.string().parse(event.decoded.inputs.requestId);
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
-  const serviceRequest = await findServiceRequest(laborMarketAddress, requestId);
+  const serviceRequest = await findServiceRequest(requestId, laborMarketAddress);
   if (!serviceRequest) {
     logger.warn("Service request was not found", { requestId, laborMarketAddress });
     return;
@@ -113,6 +113,7 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
     blockTimestamp: serviceRequest.blockTimestamp,
     indexedAt: serviceRequest.indexedAt,
   });
+  logger.info("Added to activity");
 
   // Update labor market
   const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
@@ -133,13 +134,15 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
       },
     }
   );
+  logger.info("Updated lm");
 
-  mongo.serviceRequests.deleteOne({
+  await mongo.serviceRequests.deleteOne({
     laborMarketAddress: serviceRequest.laborMarketAddress,
     id: serviceRequest.id,
     blockTimestamp: serviceRequest.blockTimestamp,
     indexedAt: serviceRequest.indexedAt,
   });
+  logger.info("Removed");
 }
 
 /**
