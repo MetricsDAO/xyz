@@ -6,7 +6,7 @@ import { Container, Error, Field, Input, Label, Select } from "~/components";
 import type { step2Data } from "~/domain/labor-market/schemas";
 import { step2Schema } from "~/domain/labor-market/schemas";
 
-export function Step3({
+export function Step4({
   currentData,
   onDataUpdate,
 }: {
@@ -37,13 +37,13 @@ export function Step3({
   const onSubmit = (values: step2Data) => {
     console.log(values);
     onDataUpdate(values);
-    navigate(`/app/market/new2/step4`);
+    navigate(`/app/market/new2/review`);
   };
 
   const onGoBack = () => {
     console.log(formData);
     onDataUpdate(formData);
-    navigate(`/app/market/new2/step2`);
+    navigate(`/app/market/new2/step3`);
   };
 
   return (
@@ -173,7 +173,7 @@ export function Step3({
                   style={{ height: 1, backgroundColor: "#EDEDED" }}
                   className="mx-auto w-full"
                 >
-                  <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "60%" }} />
+                  <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "80%" }} />
                 </Progress.Root>
                 <div className="max-w-4xl text-lg mx-auto py-4 gap-6 flex justify-start">
                   <button onClick={onGoBack} type="button">
@@ -204,12 +204,12 @@ function FormSteps() {
             <span className="text-[#666666] font-bold text-sm">2</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-            <span className="text-white font-bold text-sm">3</span>
+          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
+            <span className="text-[#666666] font-bold text-sm">3</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">4</span>
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
+            <span className="text-white font-bold text-sm">4</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
           <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">

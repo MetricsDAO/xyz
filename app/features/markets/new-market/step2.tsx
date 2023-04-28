@@ -3,6 +3,7 @@ import * as Progress from "@radix-ui/react-progress";
 import { useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Container, Error, Field, Input, Label, Select } from "~/components";
+import type { EvmAddress } from "~/domain/address";
 import type { step2Data } from "~/domain/labor-market/schemas";
 import { step2Schema } from "~/domain/labor-market/schemas";
 
@@ -46,6 +47,16 @@ export function Step2({
     navigate(`/app/market/new2`);
   };
 
+  const handleAddBadge = () => {
+    append({
+      type: "Badge",
+      contractAddress: "" as EvmAddress,
+      tokenId: "",
+      minBadgeBalance: 1,
+      maxBadgeBalance: undefined,
+    });
+  };
+
   return (
     <div className="relative min-h-screen">
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-9 max-w-4xl mx-auto">
@@ -78,7 +89,13 @@ export function Step2({
                   <Error error={errors.gatingType?.message} />
                 </Field>
                 <Field>
-                  <Input type="number" {...register("numberBadgesRequired")} />
+                  <Controller
+                    name="numberBadgesRequired"
+                    control={control}
+                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                    )}
+                  />
                   <Error error={errors.numberBadgesRequired?.message} />
                 </Field>
                 <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
@@ -98,7 +115,7 @@ export function Step2({
                     <Field>
                       <Label size="sm">Contract Address</Label>
                       <Controller
-                        name={`sponsorBadges[${index}].contractAddress` as keyof step2Data}
+                        name={`badges[${index}].contractAddress` as keyof step2Data}
                         control={control}
                         // defaultValue="0x0000000000000000000000000000000000000000"
                         render={({ field: { onChange, onBlur, value, ref } }) => (
@@ -109,33 +126,33 @@ export function Step2({
                     <Field>
                       <Label size="sm">token ID</Label>
                       <Controller
-                        name={`sponsorBadges[${index}].tokenId` as keyof step2Data}
+                        name={`badges[${index}].tokenId` as keyof step2Data}
                         control={control}
                         // defaultValue={field.tokenId}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min="1" />
+                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
                     </Field>
                     <Field>
                       <Label size="sm">Min</Label>
                       <Controller
-                        name={`sponsorBadges[${index}].minBadgeBalance` as keyof step2Data}
+                        name={`badges[${index}].minBadgeBalance` as keyof step2Data}
                         control={control}
                         defaultValue={field.minBadgeBalance}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min="1" />
+                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
                     </Field>
                     <Field>
                       <Label size="sm">Max</Label>
                       <Controller
-                        name={`sponsorBadges[${index}].maxBadgeBalance` as keyof step2Data}
+                        name={`badges[${index}].maxBadgeBalance` as keyof step2Data}
                         control={control}
                         defaultValue={field.maxBadgeBalance}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min="1" />
+                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
                     </Field>
@@ -148,19 +165,7 @@ export function Step2({
 
               {formData.gatingType !== "Anyone" && (
                 <section>
-                  <button
-                    className="text-blue-500"
-                    type="button"
-                    onClick={() =>
-                      append({
-                        type: "Badge",
-                        contractAddress: "0x000",
-                        tokenId: "",
-                        minBadgeBalance: 1,
-                        maxBadgeBalance: undefined,
-                      })
-                    }
-                  >
+                  <button className="text-blue-500" type="button" onClick={handleAddBadge}>
                     + Add Type
                   </button>
                 </section>
