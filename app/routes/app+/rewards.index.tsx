@@ -15,7 +15,6 @@ import { Pagination } from "~/components/pagination/pagination";
 import type { Reward } from "~/domain/reward/functions.server";
 import { getRewards } from "~/domain/reward/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward/schema";
-import { IOUTokenCreator } from "~/features/iou-token-creator";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
@@ -56,7 +55,6 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <IOUTokenCreator />
       <RewardsTab rewardsNum={rewards.length} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
