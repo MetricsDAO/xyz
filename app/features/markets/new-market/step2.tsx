@@ -15,7 +15,6 @@ export function Step2({
   onDataUpdate: (values: step2Data) => void;
 }) {
   const {
-    register,
     control,
     watch,
     handleSubmit,
@@ -121,11 +120,11 @@ export function Step2({
                     <Field>
                       <Label size="sm">Contract Address</Label>
                       <Controller
-                        name={`badges[${index}].contractAddress` as keyof step2Data}
+                        name={`badges[${index}].contractAddress` as `badges.${number}.contractAddress`}
                         control={control}
                         // defaultValue="0x0000000000000000000000000000000000000000"
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="text" />
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                         )}
                       />
                       <Error error={errors.badges?.[index]?.contractAddress?.message} />
@@ -133,11 +132,11 @@ export function Step2({
                     <Field>
                       <Label size="sm">token ID</Label>
                       <Controller
-                        name={`badges[${index}].tokenId` as keyof step2Data}
+                        name={`badges[${index}].tokenId` as `badges.${number}.tokenId`}
                         control={control}
                         // defaultValue={field.tokenId}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
                       <Error error={errors.badges?.[index]?.tokenId?.message} />
@@ -145,11 +144,11 @@ export function Step2({
                     <Field>
                       <Label size="sm">Min</Label>
                       <Controller
-                        name={`badges[${index}].minBadgeBalance` as keyof step2Data}
+                        name={`badges[${index}].minBadgeBalance` as `badges.${number}.minBadgeBalance`}
                         control={control}
                         defaultValue={field.minBadgeBalance}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
                       <Error error={errors.badges?.[index]?.minBadgeBalance?.message} />
@@ -157,11 +156,11 @@ export function Step2({
                     <Field>
                       <Label size="sm">Max</Label>
                       <Controller
-                        name={`badges[${index}].maxBadgeBalance` as keyof step2Data}
+                        name={`badges[${index}].maxBadgeBalance` as `badges.${number}.maxBadgeBalance`}
                         control={control}
                         defaultValue={field.maxBadgeBalance}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
                       <Error error={errors.badges?.[index]?.maxBadgeBalance?.message} />
