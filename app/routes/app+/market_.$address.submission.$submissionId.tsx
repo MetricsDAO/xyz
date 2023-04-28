@@ -109,12 +109,7 @@ export default function ChallengeSubmission() {
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const score = submission.score?.avg;
 
-  const isWinner =
-    enforcementExpirationPassed &&
-    reward !== undefined &&
-    (reward.paymentTokenAmount.gt(0) || reward.reputationTokenAmount.gt(0)) &&
-    score &&
-    score > 24;
+  const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 
   const reviewSignal = useReviewSignals({
     laborMarketAddress: serviceRequest.laborMarketAddress,
@@ -189,11 +184,11 @@ export default function ChallengeSubmission() {
               <RewardBadge
                 variant="winner"
                 payment={{
-                  amount: reward.displayPaymentTokenAmount,
+                  amount: fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18, 2), // rounded
                   token: token,
                   tooltipAmount: fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18),
                 }}
-                reputation={{ amount: reward.displayReputationTokenAmount }}
+                reputation={{ amount: reward.reputationTokenAmount.toString() }}
               />
             </DetailItem>
           )}

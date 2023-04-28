@@ -25,8 +25,6 @@ export function useReward({ laborMarketAddress, submissionId, tokenDecimals }: P
       return {
         paymentTokenAmount: data[0],
         reputationTokenAmount: data[1],
-        displayPaymentTokenAmount: fromTokenAmount(data[0].toString(), tokenDecimals, 2),
-        displayReputationTokenAmount: displayBalance(data[1]),
         hasReward: data[0].gt(0) || data[1].gt(0),
       };
     },

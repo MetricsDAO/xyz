@@ -21,9 +21,7 @@ type AppMeta = {
 type ChainMeta = {
   hasReward: boolean;
   paymentTokenAmount: string;
-  displayPaymentTokenAmount: string;
   reputationTokenAmount: string;
-  displayReputationTokenAmount: string;
 };
 
 type TreasuryMeta = {
@@ -162,18 +160,13 @@ const contractMetadata = async (rewards: RewardWithAppMeta[]): Promise<RewardWit
     }),
   })) as [BigNumber, BigNumber][];
   return m.map((data, index) => {
-    const paymentTokenAmount = data[0].toString();
-    const reputationTokenAmount = data[1];
     const reward = rewards[index]!;
-    // TODO: remove these display amounts
     return {
       ...reward,
       chain: {
         hasReward: data[0].gt(0) || data[1].gt(0),
-        paymentTokenAmount,
-        displayPaymentTokenAmount: fromTokenAmount(paymentTokenAmount, reward.app.token?.decimals ?? 18, 2),
-        reputationTokenAmount: reputationTokenAmount.toString(),
-        displayReputationTokenAmount: displayBalance(reputationTokenAmount),
+        paymentTokenAmount: data[0].toString(),
+        reputationTokenAmount: data[1].toString(),
       },
     };
   });

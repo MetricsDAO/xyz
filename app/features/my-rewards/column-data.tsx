@@ -1,6 +1,7 @@
 import { RewardBadge } from "~/components/reward-badge";
 import type { Reward } from "~/domain/reward/functions.server";
 import { useHasPerformed } from "~/hooks/use-has-performed";
+import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
 import { RedeemButton } from "./redeem-button";
 
@@ -8,10 +9,10 @@ export function RewardDisplay({ reward }: { reward: Reward }) {
   return (
     <RewardBadge
       payment={{
-        amount: reward.chain.displayPaymentTokenAmount,
+        amount: fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2),
         token: reward.app.token,
       }}
-      reputation={{ amount: reward.chain.displayReputationTokenAmount }}
+      reputation={{ amount: reward.chain.reputationTokenAmount }}
     />
   );
 }

@@ -6,7 +6,7 @@ import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import type { EvmAddress } from "~/domain/address";
 import type { Reward } from "~/domain/reward/functions.server";
-import { truncateAddress } from "~/utils/helpers";
+import { fromTokenAmount, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
 export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
@@ -14,6 +14,7 @@ export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: bo
     return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
   }
 
+  const displayPaymentAmount = fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2);
   return (
     <ClaimRewardCreator
       disabled={disabled}
@@ -26,7 +27,7 @@ export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: bo
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">{`${reward.chain.displayPaymentTokenAmount} ${
+                <p className="text-yellow-700 text-2xl ml-2">{`${displayPaymentAmount} ${
                   reward.app.token?.symbol ?? ""
                 }`}</p>
               </div>
