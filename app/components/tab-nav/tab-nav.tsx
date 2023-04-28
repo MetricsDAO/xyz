@@ -17,6 +17,7 @@ export function TabNavLink({ children, ...props }: NavLinkProps) {
         })
       }
       {...props}
+      id={"tabNav"}
     >
       {children}
     </NavLink>
