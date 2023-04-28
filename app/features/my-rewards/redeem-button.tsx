@@ -6,7 +6,7 @@ import type { EvmAddress } from "~/domain/address";
 import type { Reward } from "~/domain/reward/functions.server";
 import { RedeemRewardCreator } from "../redeem-reward-creator/redeem-reward-creator";
 
-export function RedeemButton({ reward }: { reward: Reward }) {
+export function RedeemButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
   if (!reward.app.wallet) {
     return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
   }
@@ -22,7 +22,7 @@ export function RedeemButton({ reward }: { reward: Reward }) {
 
   return (
     <RedeemRewardCreator
-      disableButton={reward.treasury.hasRedeemed ?? false}
+      disabled={disabled}
       iouTokenAddress={reward.app.token.contractAddress as EvmAddress}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}

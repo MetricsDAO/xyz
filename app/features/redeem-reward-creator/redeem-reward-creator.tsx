@@ -8,7 +8,7 @@ import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface RedeemRewardCreatorProps {
-  disableButton: boolean;
+  disabled: boolean;
   iouTokenAddress: EvmAddress;
   laborMarketAddress: EvmAddress;
   submissionId: string;
@@ -18,7 +18,7 @@ interface RedeemRewardCreatorProps {
 }
 
 export function RedeemRewardCreator({
-  disableButton,
+  disabled,
   iouTokenAddress,
   laborMarketAddress,
   submissionId,
@@ -51,7 +51,7 @@ export function RedeemRewardCreator({
     <>
       <TxModal transactor={transactor} title="Redeem your native tokens!" confirmationMessage={confirmationMessage} />
       <ConnectWalletWrapper onClick={onClick}>
-        <Button disabled={disableButton}>Redeem</Button>
+        <Button disabled={disabled}>Redeem</Button>
       </ConnectWalletWrapper>
     </>
   );

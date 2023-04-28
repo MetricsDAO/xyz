@@ -16,47 +16,29 @@ export function RewardDisplay({ reward }: { reward: Reward }) {
   );
 }
 
-export function Status(props: { reward: Reward }) {
-  // TODO
-  const isIOUToken = props.reward.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D";
-  if (isIOUToken) {
-    return <IOUTokenClaimAndRedeem {...props} />;
-  }
-  return <ERC20ClaimButton {...props} />;
-}
-
-function ERC20ClaimButton({ reward }: { reward: Reward }) {
+export function Status({ reward }: { reward: Reward }) {
   const hasClaimed = useHasPerformed({
     laborMarketAddress: reward.submission.laborMarketAddress,
     id: reward.submission.id,
     action: "HAS_CLAIMED",
   });
-
   if (!reward.chain.hasReward) {
     return <span>No reward</span>;
   }
 
-  return (
-    <>
-      {hasClaimed === undefined ? (
-        // Loading
-        <>--</>
-      ) : (
-        <ClaimButton reward={reward} hasClaimed={hasClaimed} />
-      )}
-    </>
-  );
-}
-
-function IOUTokenClaimAndRedeem({ reward }: { reward: Reward }) {
-  if (!reward.chain.hasReward) {
-    return <span>No reward</span>;
+  if (hasClaimed === undefined) {
+    // Loading
+    return <>--</>;
   }
-
-  return (
-    <div className="flex flex-wrap gap-2">
-      <ERC20ClaimButton reward={reward} />
-      <RedeemButton reward={reward} />
-    </div>
-  );
+  // TODO
+  const isIOUToken = reward.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D";
+  if (isIOUToken) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <ClaimButton reward={reward} disabled={hasClaimed} />
+        <RedeemButton reward={reward} disabled={!hasClaimed || reward.treasury?.hasRedeemed === true} />
+      </div>
+    );
+  }
+  return <ClaimButton reward={reward} disabled={hasClaimed} />;
 }

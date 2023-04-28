@@ -9,17 +9,14 @@ import type { Reward } from "~/domain/reward/functions.server";
 import { truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
-export function ClaimButton({ reward, hasClaimed }: { reward: Reward; hasClaimed: boolean }) {
-  if (hasClaimed) {
-    return <Button disabled={true}>Claim</Button>;
-  }
-
+export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
   if (!reward.app.wallet) {
     return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
   }
 
   return (
     <ClaimRewardCreator
+      disabled={disabled}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
       payoutAddress={reward.app.wallet.address as EvmAddress}
