@@ -58,22 +58,20 @@ const appMetadata = async (user: User, submissions: SubmissionWithServiceRequest
 
 const treasuryMetadata = async (rewards: RewardWithChainMeta[]): Promise<Reward[]> => {
   // TODO: iou filter
-  const iouRewards = rewards.filter(
-    (r) => r.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D"
-  );
+  const iouRewards = rewards.filter((r) => r.app.token?.iou === true);
   if (iouRewards.length > 0) {
-    const temp: Reward[] = [];
+    const t: Reward[] = [];
     const signatures = await fetchSignatures(iouRewards);
     for (const reward of rewards) {
       // TODO: iou filter
-      if (reward.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D") {
+      if (reward.app.token?.iou) {
         const signature = signatures.find(
           (c) =>
             c.signedBody.marketplaceAddress === reward.submission.laborMarketAddress &&
             c.signedBody.submissionID === Number(reward.submission.id)
         );
         const redeemed = await hasRedeemed(reward.submission);
-        temp.push({
+        t.push({
           ...reward,
           treasury: {
             signature: signature?.signature,
@@ -81,10 +79,10 @@ const treasuryMetadata = async (rewards: RewardWithChainMeta[]): Promise<Reward[
           },
         });
       } else {
-        temp.push(reward);
+        t.push(reward);
       }
     }
-    return temp;
+    return t;
   }
 
   return rewards;

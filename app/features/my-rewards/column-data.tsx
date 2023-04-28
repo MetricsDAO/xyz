@@ -30,9 +30,7 @@ export function Status({ reward }: { reward: Reward }) {
     // Loading
     return <>--</>;
   }
-  // TODO
-  const isIOUToken = reward.app.token?.contractAddress === "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D";
-  if (isIOUToken) {
+  if (reward.app.token?.iou) {
     return (
       <div className="flex flex-wrap gap-2">
         <ClaimButton reward={reward} disabled={hasClaimed} />

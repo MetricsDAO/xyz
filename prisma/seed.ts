@@ -92,6 +92,7 @@ async function main() {
         name: "Goerli ETH IOU",
         decimals: 18,
         networkName: "Ethereum",
+        iou: true,
         contractAddress: "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D",
         symbol: "ETH_TEST3",
       },
