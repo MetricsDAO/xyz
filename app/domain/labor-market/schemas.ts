@@ -145,15 +145,24 @@ export const BadgeSchema = z.preprocess(
     type: PermissionType.default("Badge"),
     contractAddress: EvmAddressSchema,
     tokenId: z.coerce.string(),
-    minBadgeBalance: z.number().min(1).default(1),
-    maxBadgeBalance: z.number().optional(),
+    minBadgeBalance: z.coerce.number().min(1).default(1),
+    maxBadgeBalance: z.coerce.number().optional(),
   })
 );
 
 export const step2Schema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
-  numberBadgesRequired: z.number().min(1).default(1),
-  badges: zfd.repeatable(z.array(BadgeSchema)),
+  numberBadgesRequired: z.coerce.number().min(1).optional(),
+  badges: z.array(BadgeSchema),
 });
 
 export type step2Data = z.infer<typeof step2Schema>;
+
+export const finalMarketSchema = z.object({
+  page1Data: step1Schema,
+  page2Data: step2Schema,
+  page3Data: step2Schema,
+  page4Data: step2Schema,
+});
+
+export type finalMarketData = z.infer<typeof finalMarketSchema>;

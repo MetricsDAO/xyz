@@ -16,5 +16,6 @@
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": "file:///Users/bryan/Code/xyz/.github/workflows/deploy.yml"
   },
-  "githubPullRequests.ignoredPullRequestBranches": ["dev"]
+  "githubPullRequests.ignoredPullRequestBranches": ["dev"],
+  "git-blame.gitWebUrl": ""
 }

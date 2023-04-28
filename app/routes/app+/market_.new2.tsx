@@ -15,6 +15,7 @@ interface formState {
   page1Data: step1Data | null;
   page2Data: step2Data | null;
   page3Data: step2Data | null;
+  page4Data: step2Data | null;
   // Add more pages as needed
 }
 
@@ -22,6 +23,7 @@ const initialFormState: formState = {
   page1Data: null,
   page2Data: null,
   page3Data: null,
+  page4Data: null,
   // Add more pages as needed
 };
 
