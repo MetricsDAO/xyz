@@ -110,10 +110,9 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
     iconType: "service-request",
     actionName: "Delete Challenge",
     userAddress: serviceRequest.configuration.serviceRequester,
-    blockTimestamp: serviceRequest.blockTimestamp,
-    indexedAt: serviceRequest.indexedAt,
+    blockTimestamp: new Date(),
+    indexedAt: new Date(),
   });
-  logger.info("Added to activity");
 
   // Update labor market
   const lm = await mongo.laborMarkets.findOne({ address: serviceRequest.laborMarketAddress });
@@ -126,15 +125,14 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
   await mongo.laborMarkets.updateOne(
     { address: serviceRequest.laborMarketAddress },
     {
-      $dec: {
-        "indexData.serviceRequestCount": 1,
+      $inc: {
+        "indexData.serviceRequestCount": -1,
       },
       $set: {
         "indexData.serviceRequestRewardPools": rewardPools,
       },
     }
   );
-  logger.info("Updated lm");
 
   await mongo.serviceRequests.deleteOne({
     laborMarketAddress: serviceRequest.laborMarketAddress,
@@ -142,7 +140,6 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
     blockTimestamp: serviceRequest.blockTimestamp,
     indexedAt: serviceRequest.indexedAt,
   });
-  logger.info("Removed");
 }
 
 /**
