@@ -68,7 +68,6 @@ function configureFromValues({
     signature: `0x${string}`;
   };
 }) {
-  console.log("inputs", inputs);
   const { iouTokenAddress, laborMarketAddress, submissionId, amount, signature } = inputs;
   return configureWrite({
     address: iouTokenAddress,

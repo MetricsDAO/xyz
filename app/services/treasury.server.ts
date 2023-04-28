@@ -17,8 +17,6 @@ export async function fetchSignatures(rewards: RewardWithChainMeta[]) {
       };
     });
 
-  console.log("body", body);
-
   //TODO: schema
 
   const res = await fetch(`${env.TREASURY_URL}/ioutoken/sign-claim/`, {

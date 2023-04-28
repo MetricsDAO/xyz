@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import { useState } from "react";
+import { useBalance } from "wagmi";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import type { EvmAddress } from "~/domain/address";
@@ -7,6 +8,12 @@ import type { Reward } from "~/domain/reward/functions.server";
 import { RedeemRewardCreator } from "../redeem-reward-creator/redeem-reward-creator";
 
 export function RedeemButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
+  const { data: balance } = useBalance({
+    address: reward.app.token?.contractAddress as EvmAddress,
+  });
+
+  const hasIouTokenInWallet = balance?.value.gt(0) ?? false;
+
   if (!reward.app.wallet) {
     return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
   }
@@ -22,7 +29,7 @@ export function RedeemButton({ reward, disabled }: { reward: Reward; disabled: b
 
   return (
     <RedeemRewardCreator
-      disabled={disabled}
+      disabled={disabled || !hasIouTokenInWallet}
       iouTokenAddress={reward.app.token.contractAddress as EvmAddress}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
