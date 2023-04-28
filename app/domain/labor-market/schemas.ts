@@ -152,7 +152,7 @@ export const BadgeSchema = z.preprocess(
 
 export const step2Schema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
-  numberBadgesRequired: z.coerce.number().min(1).optional(),
+  numberBadgesRequired: z.coerce.number().optional(),
   badges: z.array(BadgeSchema),
 });
 

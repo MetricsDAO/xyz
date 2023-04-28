@@ -88,17 +88,23 @@ export function Step2({
                   />
                   <Error error={errors.gatingType?.message} />
                 </Field>
-                <Field>
-                  <Controller
-                    name="numberBadgesRequired"
-                    control={control}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
-                    )}
-                  />
-                  <Error error={errors.numberBadgesRequired?.message} />
-                </Field>
-                <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                {formData.gatingType === ("Any" || "All") && (
+                  <Field>
+                    <Controller
+                      name="numberBadgesRequired"
+                      control={control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      )}
+                    />
+                    <Error error={errors.numberBadgesRequired?.message} />
+                  </Field>
+                )}
+                {formData.gatingType === ("Any" || "All") ? (
+                  <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                ) : (
+                  <span className="text-xs text-black-[#4D4D4D]"> Can launch challenges in this marketplace. </span>
+                )}
               </section>
               {/* Render sponsorBadges array */}
               {fields.map((field, index) => (
@@ -122,6 +128,7 @@ export function Step2({
                           <Input onChange={onChange} onBlur={onBlur} ref={ref} type="text" />
                         )}
                       />
+                      <Error error={errors.badges?.[index]?.contractAddress?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">token ID</Label>
@@ -133,6 +140,7 @@ export function Step2({
                           <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
+                      <Error error={errors.badges?.[index]?.tokenId?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Min</Label>
@@ -144,6 +152,7 @@ export function Step2({
                           <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
+                      <Error error={errors.badges?.[index]?.minBadgeBalance?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Max</Label>
@@ -155,6 +164,7 @@ export function Step2({
                           <Input onChange={onChange} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
+                      <Error error={errors.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
                     <button type="button" onClick={() => remove(index)}>
                       Remove

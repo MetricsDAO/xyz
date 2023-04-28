@@ -32,17 +32,10 @@ export function FinalStep({
   } = useForm<finalMarketData>({
     defaultValues: {
       page1Data: {
-        type: "analyze",
-        title: "",
-        description: "",
-        projectSlugs: [],
-        tokenAllowlist: [],
-        enforcement: "" as EvmAddress,
+        ...page1Data,
       },
       page2Data: {
-        numberBadgesRequired: 1,
-        gatingType: "Any",
-        badges: [],
+        ...page2Data,
       },
       page3Data: {
         ...page3Data,
@@ -89,6 +82,26 @@ export function FinalStep({
 
   const handleAddSponsorBadge = () => {
     appendSponsorBadge({
+      type: "Badge",
+      contractAddress: "" as EvmAddress,
+      tokenId: "",
+      minBadgeBalance: 1,
+      maxBadgeBalance: undefined,
+    });
+  };
+
+  const handleAddAnalystBadge = () => {
+    appendAnalystBadge({
+      type: "Badge",
+      contractAddress: "" as EvmAddress,
+      tokenId: "",
+      minBadgeBalance: 1,
+      maxBadgeBalance: undefined,
+    });
+  };
+
+  const handleAddReviewerBadge = () => {
+    appendReviewerBadge({
       type: "Badge",
       contractAddress: "" as EvmAddress,
       tokenId: "",
@@ -204,7 +217,7 @@ export function FinalStep({
                     name="page2Data.numberBadgesRequired"
                     control={control}
                     render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" />
                     )}
                   />
                   <Error error={errors.page2Data?.numberBadgesRequired?.message} />
@@ -216,14 +229,6 @@ export function FinalStep({
               {sponsorBadgeFields.map((field, index) => (
                 <div key={field.id}>
                   <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
-                    {/* <Field>
-                  <Label size="sm">Type</Label>
-                  <Controller
-                    name={`sponsorBadges[${index}].type` as keyof step2Data}
-                    control={control}
-                    render={({ field }) => <Select {...field} options={[{ label: "Badge", value: "Badge" }]} />}
-                  />
-                </Field> */}
                     <Field>
                       <Label size="sm">Contract Address</Label>
                       <Controller
@@ -236,6 +241,7 @@ export function FinalStep({
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                         )}
                       />
+                      <Error error={errors.page2Data?.badges?.[index]?.contractAddress?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">token ID</Label>
@@ -247,6 +253,7 @@ export function FinalStep({
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
+                      <Error error={errors.page2Data?.badges?.[index]?.tokenId?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Min</Label>
@@ -260,6 +267,7 @@ export function FinalStep({
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
+                      <Error error={errors.page2Data?.badges?.[index]?.minBadgeBalance?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Max</Label>
@@ -273,6 +281,7 @@ export function FinalStep({
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
+                      <Error error={errors.page2Data?.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
                     <button type="button" onClick={() => removeSponsorBadge(index)}>
                       Remove
@@ -284,6 +293,218 @@ export function FinalStep({
               {page2Data?.gatingType !== "Anyone" && (
                 <section>
                   <button className="text-blue-500" type="button" onClick={handleAddSponsorBadge}>
+                    + Add Type
+                  </button>
+                </section>
+              )}
+
+              <h4 className="font-semibold mb-4">Analyst Permissions</h4>
+
+              <section className="grid grid-cols-1 align-center md:grid-cols-3 gap-6 ">
+                <Field>
+                  <Controller
+                    control={control}
+                    name="page3Data.gatingType"
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={[
+                          { label: "Anyone", value: "Anyone" },
+                          { label: "Any", value: "Any" },
+                          { label: "All", value: "All" },
+                        ]}
+                      />
+                    )}
+                  />
+                  <Error error={errors.page3Data?.gatingType?.message} />
+                </Field>
+                <Field>
+                  <Controller
+                    name="page2Data.numberBadgesRequired"
+                    control={control}
+                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                    )}
+                  />
+                  <Error error={errors.page3Data?.numberBadgesRequired?.message} />
+                </Field>
+                <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+              </section>
+              {/* Render sponsorBadges array */}
+
+              {analystBadgeFields.map((field, index) => (
+                <div key={field.id}>
+                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
+                    <Field>
+                      <Label size="sm">Contract Address</Label>
+                      <Controller
+                        name={
+                          `page3Data.badges[${index}].contractAddress` as `page3Data.badges.${number}.contractAddress`
+                        }
+                        control={control}
+                        // defaultValue="0x0000000000000000000000000000000000000000"
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
+                        )}
+                      />
+                      <Error error={errors.page2Data?.badges?.[index]?.contractAddress?.message} />
+                    </Field>
+                    <Field>
+                      <Label size="sm">token ID</Label>
+                      <Controller
+                        name={`page3Data.badges[${index}].tokenId` as `page3Data.badges.${number}.tokenId`}
+                        control={control}
+                        defaultValue={field.tokenId}
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        )}
+                      />
+                      <Error error={errors.page3Data?.badges?.[index]?.tokenId?.message} />
+                    </Field>
+                    <Field>
+                      <Label size="sm">Min</Label>
+                      <Controller
+                        name={
+                          `page3Data.badges[${index}].minBadgeBalance` as `page3Data.badges.${number}.minBadgeBalance`
+                        }
+                        control={control}
+                        defaultValue={field.minBadgeBalance}
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        )}
+                      />
+                      <Error error={errors.page3Data?.badges?.[index]?.minBadgeBalance?.message} />
+                    </Field>
+                    <Field>
+                      <Label size="sm">Max</Label>
+                      <Controller
+                        name={
+                          `page3Data.badges[${index}].maxBadgeBalance` as `page3Data.badges.${number}.maxBadgeBalance`
+                        }
+                        control={control}
+                        defaultValue={field.maxBadgeBalance}
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        )}
+                      />
+                      <Error error={errors.page3Data?.badges?.[index]?.maxBadgeBalance?.message} />
+                    </Field>
+                    <button type="button" onClick={() => removeAnalystBadge(index)}>
+                      Remove
+                    </button>
+                  </section>
+                </div>
+              ))}
+
+              {page3Data?.gatingType !== "Anyone" && (
+                <section>
+                  <button className="text-blue-500" type="button" onClick={handleAddAnalystBadge}>
+                    + Add Type
+                  </button>
+                </section>
+              )}
+
+              <h4 className="font-semibold mb-4">Reviewer Permissions</h4>
+
+              <section className="grid grid-cols-1 align-center md:grid-cols-3 gap-6 ">
+                <Field>
+                  <Controller
+                    control={control}
+                    name="page4Data.gatingType"
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={[
+                          { label: "Anyone", value: "Anyone" },
+                          { label: "Any", value: "Any" },
+                          { label: "All", value: "All" },
+                        ]}
+                      />
+                    )}
+                  />
+                  <Error error={errors.page4Data?.gatingType?.message} />
+                </Field>
+                <Field>
+                  <Controller
+                    name="page4Data.numberBadgesRequired"
+                    control={control}
+                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                    )}
+                  />
+                  <Error error={errors.page4Data?.numberBadgesRequired?.message} />
+                </Field>
+                <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+              </section>
+              {/* Render sponsorBadges array */}
+
+              {reviewerBadgeFields.map((field, index) => (
+                <div key={field.id}>
+                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
+                    <Field>
+                      <Label size="sm">Contract Address</Label>
+                      <Controller
+                        name={
+                          `page4Data.badges[${index}].contractAddress` as `page4Data.badges.${number}.contractAddress`
+                        }
+                        control={control}
+                        // defaultValue="0x0000000000000000000000000000000000000000"
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
+                        )}
+                      />
+                      <Error error={errors.page4Data?.badges?.[index]?.contractAddress?.message} />
+                    </Field>
+                    <Field>
+                      <Label size="sm">token ID</Label>
+                      <Controller
+                        name={`page4Data.badges[${index}].tokenId` as `page4Data.badges.${number}.tokenId`}
+                        control={control}
+                        defaultValue={field.tokenId}
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        )}
+                      />
+                      <Error error={errors.page4Data?.badges?.[index]?.tokenId?.message} />
+                    </Field>
+                    <Field>
+                      <Label size="sm">Min</Label>
+                      <Controller
+                        name={
+                          `page4Data.badges[${index}].minBadgeBalance` as `page4Data.badges.${number}.minBadgeBalance`
+                        }
+                        control={control}
+                        defaultValue={field.minBadgeBalance}
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        )}
+                      />
+                      <Error error={errors.page4Data?.badges?.[index]?.minBadgeBalance?.message} />
+                    </Field>
+                    <Field>
+                      <Label size="sm">Max</Label>
+                      <Controller
+                        name={
+                          `page4Data.badges[${index}].maxBadgeBalance` as `page4Data.badges.${number}.maxBadgeBalance`
+                        }
+                        control={control}
+                        defaultValue={field.maxBadgeBalance}
+                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        )}
+                      />
+                      <Error error={errors.page4Data?.badges?.[index]?.maxBadgeBalance?.message} />
+                    </Field>
+                    <button type="button" onClick={() => removeReviewerBadge(index)}>
+                      Remove
+                    </button>
+                  </section>
+                </div>
+              ))}
+
+              {page4Data?.gatingType !== "Anyone" && (
+                <section>
+                  <button className="text-blue-500" type="button" onClick={handleAddReviewerBadge}>
                     + Add Type
                   </button>
                 </section>
