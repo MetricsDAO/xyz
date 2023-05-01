@@ -1,6 +1,5 @@
-import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
-import { useCallback } from "react";
+import { useState } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
@@ -26,16 +25,12 @@ export function RedeemRewardCreator({
   confirmationMessage,
   signature,
 }: RedeemRewardCreatorProps) {
-  const navigate = useNavigate();
+  const [redeemSuccess, setRedeemSuccess] = useState(false);
 
   const transactor = useTransactor({
-    onSuccess: useCallback(
-      (receipt) => {
-        // reload page
-        navigate(0);
-      },
-      [navigate]
-    ),
+    onSuccess: () => {
+      setRedeemSuccess(true);
+    },
   });
 
   const onClick = () => {
@@ -49,9 +44,11 @@ export function RedeemRewardCreator({
 
   return (
     <>
-      <TxModal transactor={transactor} title="Redeem your native tokens!" confirmationMessage={confirmationMessage} />
+      {transactor.state !== "success" && (
+        <TxModal transactor={transactor} title="Redeem your native tokens!" confirmationMessage={confirmationMessage} />
+      )}
       <ConnectWalletWrapper onClick={onClick}>
-        <Button disabled={disabled}>Redeem</Button>
+        <Button disabled={disabled || redeemSuccess}>Redeem</Button>
       </ConnectWalletWrapper>
     </>
   );

@@ -8,7 +8,6 @@ import { fetchSignatures, fetchClaims } from "~/services/treasury.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import { getContracts } from "~/utils/contracts.server";
 import { utcDate } from "~/utils/date";
-import { displayBalance, fromTokenAmount } from "~/utils/helpers";
 import type { SubmissionDoc, SubmissionWithServiceRequest } from "../submission/schemas";
 import { SubmissionWithServiceRequestSchema } from "../submission/schemas";
 import type { RewardsSearch } from "./schema";
