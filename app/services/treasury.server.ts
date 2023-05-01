@@ -1,6 +1,5 @@
 import type { RewardWithChainMeta } from "~/domain/reward/functions.server";
-import type { SubmissionDoc } from "~/domain/submission/schemas";
-import { fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
+import { fetchClaimsResponseSchema, fetchSignaturesBodySchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
 export async function fetchSignatures(rewards: RewardWithChainMeta[]) {
@@ -17,22 +16,26 @@ export async function fetchSignatures(rewards: RewardWithChainMeta[]) {
       };
     });
 
-  //TODO: schema
+  const parsedBody = fetchSignaturesBodySchema.parse(body);
 
   const res = await fetch(`${env.TREASURY_URL}/ioutoken/sign-claim/`, {
     method: "POST",
-    body: JSON.stringify(body),
+    body: JSON.stringify(parsedBody),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
   }).then((res) => res.json());
 
   return fetchSignaturesResponseSchema.parse(res);
 }
 
-export async function fetchClaims(submission: SubmissionDoc) {
-  const { laborMarketAddress, id: submissionId } = submission;
-  const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${laborMarketAddress}/${submissionId}/submission`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
-  }).then((res) => res.json());
-  return fetchClaimsResponseSchema.parse(res);
+export async function fetchClaims(rewards: RewardWithChainMeta[]) {
+  return await Promise.all(
+    rewards.map(async (r) => {
+      const { laborMarketAddress, id: submissionId } = r.submission;
+      const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${laborMarketAddress}/${submissionId}/submission`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
+      }).then((res) => res.json());
+      return fetchClaimsResponseSchema.parse(res);
+    })
+  );
 }

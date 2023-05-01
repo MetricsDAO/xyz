@@ -1,18 +1,28 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
 
-const fetchSignaturesBodySchema = z.object({
-  submissionID: z.number(),
-  claimerAddress: EvmAddressSchema,
-  marketplaceAddress: EvmAddressSchema,
-});
+export const fetchSignaturesBodySchema = z.array(
+  z.object({
+    submissionID: z.number(),
+    claimerAddress: EvmAddressSchema,
+    marketplaceAddress: EvmAddressSchema,
+    iouAddress: EvmAddressSchema,
+    type: z.literal("submission"),
+    amount: z.string(),
+  })
+);
 
 export const fetchSignaturesResponseSchema = z.array(
   z.object({
-    signedBody: fetchSignaturesBodySchema,
+    signedBody: z.object({
+      submissionID: z.number(),
+      claimerAddress: EvmAddressSchema,
+      marketplaceAddress: EvmAddressSchema,
+    }),
     signature: z.string(),
   })
 );
+export type FetchSignaturesResponse = z.infer<typeof fetchSignaturesResponseSchema>;
 
 export const fetchClaimsResponseSchema = z.object({
   claims: z.object({
@@ -33,3 +43,4 @@ export const fetchClaimsResponseSchema = z.object({
     ),
   }),
 });
+export type FetchClaimsResponse = z.infer<typeof fetchClaimsResponseSchema>;

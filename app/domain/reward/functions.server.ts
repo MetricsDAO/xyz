@@ -8,8 +8,9 @@ import { fetchSignatures, fetchClaims } from "~/services/treasury.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import { getContracts } from "~/utils/contracts.server";
 import { utcDate } from "~/utils/date";
-import type { SubmissionDoc, SubmissionWithServiceRequest } from "../submission/schemas";
+import type { SubmissionWithServiceRequest } from "../submission/schemas";
 import { SubmissionWithServiceRequestSchema } from "../submission/schemas";
+import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
 import type { RewardsSearch } from "./schema";
 
 type AppMeta = {
@@ -54,20 +55,16 @@ const appMetadata = async (user: User, submissions: SubmissionWithServiceRequest
 };
 
 const treasuryMetadata = async (rewards: RewardWithChainMeta[]): Promise<Reward[]> => {
-  // TODO: iou filter
   const iouRewards = rewards.filter((r) => r.app.token?.iou === true);
   if (iouRewards.length > 0) {
     const t: Reward[] = [];
     const signatures = await fetchSignatures(iouRewards);
+    const claims = await fetchClaims(iouRewards);
+
     for (const reward of rewards) {
-      // TODO: iou filter
       if (reward.app.token?.iou) {
-        const signature = signatures.find(
-          (c) =>
-            c.signedBody.marketplaceAddress === reward.submission.laborMarketAddress &&
-            c.signedBody.submissionID === Number(reward.submission.id)
-        );
-        const redeemed = await hasRedeemed(reward.submission);
+        const signature = getSignature(signatures, reward);
+        const redeemed = hasRedeemed(claims, reward);
         t.push({
           ...reward,
           treasury: {
@@ -85,15 +82,33 @@ const treasuryMetadata = async (rewards: RewardWithChainMeta[]): Promise<Reward[
   return rewards;
 };
 
+const getSignature = (signatures: FetchSignaturesResponse, reward: RewardWithChainMeta) => {
+  return signatures.find(
+    (c) =>
+      c.signedBody.marketplaceAddress === reward.submission.laborMarketAddress &&
+      c.signedBody.submissionID === Number(reward.submission.id)
+  );
+};
+
+const hasRedeemed = (claims: FetchClaimsResponse[], reward: RewardWithChainMeta) => {
+  const redemptedClaim = claims.find((c) => {
+    return c.claims.val.find(
+      (v) =>
+        v.marketplaceAddress === reward.submission.laborMarketAddress &&
+        v.submissionID === Number(reward.submission.id) &&
+        v.redeemTx !== null
+    );
+  });
+
+  return !!redemptedClaim;
+};
+
 const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
   const submissionsDocs = await mongo.submissions
     .aggregate([
       {
         $match: {
-          $and: [
-            params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
-            // params.q ? { $text: { $search: params.q, $language: "english" } } : {},
-          ],
+          $and: [params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {}],
         },
       },
       {
@@ -146,7 +161,7 @@ const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionW
 
 const contractMetadata = async (rewards: RewardWithAppMeta[]): Promise<RewardWithChainMeta[]> => {
   const contracts = getContracts();
-  // mutlical that returns all the rewards in format [BigNumber, BigNumber][]
+  // multicall that returns all the rewards in format [BigNumber, BigNumber][]
   // where first element is the payment token amount and the second is the reputation token amount
   const m = (await multicall({
     contracts: rewards.map((r) => {
@@ -169,15 +184,6 @@ const contractMetadata = async (rewards: RewardWithAppMeta[]): Promise<RewardWit
       },
     };
   });
-};
-
-const hasRedeemed = async (submission: SubmissionDoc) => {
-  const res = await fetchClaims(submission);
-  if (res.claims.ok) {
-    const redeemClaim = res.claims.val.find((c) => c.redeemTx !== null);
-    return !!redeemClaim;
-  }
-  return undefined;
 };
 
 export const getRewards = async (user: User, search: RewardsSearch): Promise<Reward[]> => {
