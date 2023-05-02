@@ -12,7 +12,6 @@ import ConnectWalletWrapper from "./connect-wallet-wrapper";
 export default function DeleteServiceRequestModal({ serviceRequest }: { serviceRequest: ServiceRequestWithIndexData }) {
   const contracts = useContracts();
   const navigate = useNavigate();
-  const [open, setOpen] = useState<boolean>(false);
 
   const transactor = useTransactor({
     onSuccess: useCallback(
@@ -24,7 +23,6 @@ export default function DeleteServiceRequestModal({ serviceRequest }: { serviceR
   });
 
   const onClick = () => {
-    setOpen(true);
     transactor.start({
       config: () => configureFromValues({ contracts, inputs: { serviceRequest } }),
     });
