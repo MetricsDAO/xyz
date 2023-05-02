@@ -110,8 +110,8 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
     iconType: "service-request",
     actionName: "Delete Challenge",
     userAddress: serviceRequest.configuration.serviceRequester,
-    blockTimestamp: new Date(),
-    indexedAt: new Date(),
+    blockTimestamp: new Date(event.block.timestamp),
+    indexedAt: new Date(event.block.timestamp),
   });
 
   // Update labor market
@@ -150,7 +150,7 @@ export async function upsertIndexedServiceRequest(
   id: string,
   event?: TracerEvent
 ): Promise<ServiceRequestWithIndexData | null> {
-  const configuration = await getServiceRequestConfig(laborMarketAddress, id);
+  const configuration = await getServiceRequestConfig(laborMarketAddress, id, event);
   let appData;
   try {
     appData = await getIndexedServiceRequestAppData(configuration.uri);
@@ -195,8 +195,12 @@ export async function createServiceRequestAppData(appData: ServiceRequestAppData
   return cid;
 }
 
-async function getServiceRequestConfig(address: string, id: string) {
+async function getServiceRequestConfig(address: string, id: string, event?: TracerEvent) {
   const contract = LaborMarket__factory.connect(address, nodeProvider);
+  if (event) {
+    const data = await contract.serviceRequests(id, { blockTag: event?.block.number });
+    return ServiceRequestConfigSchema.parse(data);
+  }
   const data = await contract.serviceRequests(id);
   return ServiceRequestConfigSchema.parse(data);
 }
