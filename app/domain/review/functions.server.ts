@@ -66,6 +66,9 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: E
 export const indexReview = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
   const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
+
+  const blockTimestamp = new Date(event.block.timestamp);
+
   // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)
   const enforceContract = ScalableLikertEnforcement__factory.connect(
     contracts.ScalableLikertEnforcement.address,
@@ -75,7 +78,7 @@ export const indexReview = async (event: TracerEvent) => {
     blockTag: event.block.number,
   });
 
-  const doc: Omit<ReviewDoc, "createdAtBlockTimestamp"> = {
+  const doc: Omit<ReviewDoc, "blockTimestamp"> = {
     laborMarketAddress: contractAddress,
     serviceRequestId: requestId,
     submissionId: submissionId,
@@ -104,7 +107,7 @@ export const indexReview = async (event: TracerEvent) => {
     iconType: "submission",
     actionName: "Submission",
     userAddress: reviewer,
-    createdAtBlockTimestamp: new Date(event.block.timestamp),
+    blockTimestamp: blockTimestamp,
     indexedAt: new Date(),
   });
 
@@ -124,7 +127,7 @@ export const indexReview = async (event: TracerEvent) => {
 
   return mongo.reviews.updateOne(
     { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId, reviewer: doc.reviewer },
-    { $set: doc, $setOnInsert: { createdAtBlockTimestamp: new Date(event.block.timestamp) } },
+    { $set: doc, $setOnInsert: { blockTimestamp } },
     { upsert: true }
   );
 };

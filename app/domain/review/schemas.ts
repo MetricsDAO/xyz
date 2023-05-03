@@ -2,7 +2,7 @@ import { z } from "zod";
 import { EvmAddressSchema } from "../address";
 
 export const ReviewSearchSchema = z.object({
-  sortBy: z.enum(["createdAtBlockTimestamp", "score"]).default("createdAtBlockTimestamp").describe("Sort by column."),
+  sortBy: z.enum(["blockTimestamp", "score"]).default("blockTimestamp").describe("Sort by column."),
   order: z.enum(["asc", "desc"]).default("desc"),
   score: z.array(z.string()).optional().describe("Filter by Likert score."),
   first: z.number().default(1000),
@@ -36,7 +36,7 @@ export const ReviewDocSchema = z.object({
   serviceRequestId: z.string(),
   score: z.string(),
   reviewer: EvmAddressSchema,
-  createdAtBlockTimestamp: z.date(),
+  blockTimestamp: z.date(),
   indexedAt: z.date(),
 });
 

@@ -24,6 +24,8 @@ import { countServiceRequests, searchServiceRequests } from "~/domain/service-re
 import { listTokens } from "~/services/tokens.server";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
+import { dateHasPassed } from "~/utils/date";
+import clsx from "clsx";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -99,7 +101,7 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         onChange={handleChange}
         size="sm"
         options={[
-          { label: "New", value: "createdAtBlockTimestamp" },
+          { label: "New", value: "blockTimestamp" },
           { label: "Title", value: "appData.title" },
           { label: "Submit Deadline", value: "configuration.submissionExp" },
           { label: "Review Deadline", value: "configuration.enforcementExp" },
@@ -165,8 +167,22 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
       {serviceRequests.map((sr) => {
         return (
           <Row asChild columns={6} key={sr.id}>
-            <Link to={`/app/market/${laborMarket.address}/request/${sr.id}`} className="text-sm font-medium">
-              <Row.Column span={2}>{sr.appData?.title}</Row.Column>
+            <Link
+              to={`/app/market/${laborMarket.address}/request/${sr.id}`}
+              className={clsx("text-sm font-medium", {
+                "opacity-60": dateHasPassed(sr.configuration.enforcementExp),
+              })}
+            >
+              <Row.Column span={2}>
+                <div className="flex gap-2">
+                  {!dateHasPassed(sr.configuration.enforcementExp) ? (
+                    <img src="/img/active-icon.svg" alt="" />
+                  ) : (
+                    <div className="w-2" />
+                  )}
+                  <p>{sr.appData?.title}</p>
+                </div>
+              </Row.Column>
               <Row.Column>
                 <div className="flex">
                   <ProjectBadges projects={findProjectsBySlug(projects, sr.appData?.projectSlugs ?? [])} />
@@ -200,10 +216,19 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
           <Card asChild key={sr.id}>
             <Link
               to={`/app/market/${laborMarket.address}/request/${sr.id}`}
-              className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5"
+              className={clsx("grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
+                "opacity-60": dateHasPassed(sr.configuration.enforcementExp),
+              })}
             >
               <div>Challenge</div>
-              <div className="text-sm font-medium">{sr.appData?.title}</div>
+              <div className="text-sm font-medium flex gap-2">
+                {!dateHasPassed(sr.configuration.enforcementExp) ? (
+                  <img src="/img/active-icon.svg" alt="" />
+                ) : (
+                  <div className="w-2" />
+                )}
+                <p>{sr.appData?.title}</p>
+              </div>
 
               <div>Chain/Project</div>
               <div className="flex">

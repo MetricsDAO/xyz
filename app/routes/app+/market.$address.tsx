@@ -75,11 +75,11 @@ export default function Marketplace() {
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <main className="flex-1">
           <TabNav className="mb-10">
-            <TabNavLink to="" end>
+            <TabNavLink to="./#tabNav" end>
               Challenges ({laborMarket.indexData.serviceRequestCount})
             </TabNavLink>
-            <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
-            <TabNavLink to="./rewards">Rewards</TabNavLink>
+            <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
+            <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>
           </TabNav>
           <Outlet />
         </main>

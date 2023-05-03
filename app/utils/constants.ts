@@ -5,7 +5,7 @@ export const REPUTATION_REWARD_POOL = 5000;
 export const REPUTATION_REVIEW_SIGNAL_STAKE = 5;
 
 export const SCORE_COLOR = {
-  Great: "bg-lime-100",
+  Stellar: "bg-lime-100",
   Good: "bg-blue-200",
   Average: "bg-neutral-200",
   Bad: "bg-orange-200",
@@ -13,7 +13,7 @@ export const SCORE_COLOR = {
 };
 
 export const SCORE_COLOR_SECONDARY = {
-  Great: "bg-lime-500",
+  Stellar: "bg-lime-500",
   Good: "bg-blue-400",
   Average: "bg-zinc-500",
   Bad: "bg-amber-500",

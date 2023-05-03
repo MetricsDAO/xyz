@@ -152,7 +152,7 @@ export function ServiceRequestCreatorFields({
             <p className="text-gray-400 italic">
               {selectedSubmitDate &&
                 selectedSubmitTime &&
-                `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit question ideas`}
+                `Analysts must claim this topic by ${signalDeadline.toLocaleDateString()} at ${signalDeadline.toLocaleTimeString()} to submit`}
             </p>
           </section>
           <section className="space-y-3">

@@ -40,7 +40,7 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
     logger.warn("Labor market was not indexed", { laborMarketAddress });
     return;
   }
-
+  invariant(lm.blockTimestamp, "Labor market should have a block timestamp");
   //log this event in user activity collection
   mongo.userActivity.insertOne({
     groupType: "LaborMarket",
@@ -51,7 +51,7 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
     iconType: "labor-market",
     actionName: "Create Marketplace",
     userAddress: lm.configuration.owner,
-    createdAtBlockTimestamp: lm.indexData.createdAtBlockTimestamp,
+    blockTimestamp: lm.blockTimestamp,
     indexedAt: lm.indexData.indexedAt,
   });
 }
@@ -69,12 +69,16 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, event?: Trac
     logger.warn(`Failed to fetch and parse labor market app data for ${checksumAddress}. Skipping indexing.`, e);
     return;
   }
-  const laborMarket = { checksumAddress, configuration, appData };
+  const laborMarket = {
+    checksumAddress,
+    configuration,
+    appData,
+    blockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : undefined,
+  };
   const indexData: LaborMarketIndexData = {
     indexedAt: new Date(),
     serviceRequestCount: 0,
     serviceRequestRewardPools: [],
-    createdAtBlockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : new Date(),
   };
 
   const res = await mongo.laborMarkets.findOneAndUpdate(
@@ -137,6 +141,10 @@ async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppD
   return LaborMarketAppDataSchema.parse(data);
 }
 
-export async function findLaborMarkets() {
-  return mongo.laborMarkets.find().toArray();
+export async function findLaborMarkets({ addresses }: { addresses?: EvmAddress[] }) {
+  return mongo.laborMarkets
+    .find({
+      ...(addresses ? { address: { $in: addresses } } : {}),
+    })
+    .toArray();
 }

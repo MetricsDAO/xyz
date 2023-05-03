@@ -26,23 +26,26 @@ import {
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
+import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { ReviewSearchSchema } from "~/domain/review/schemas";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import { getIndexedSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
+import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
+import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
-import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { fromTokenAmount } from "~/utils/helpers";
+import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -57,7 +60,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const reviewedByUser = user && (await findUserReview(submissionId, address, EvmAddressSchema.parse(user.address)));
+  const userReview = user ? await findUserReview(submissionId, address, user.address as EvmAddress) : null;
 
   const tokens = await listTokens();
 
@@ -72,13 +75,13 @@ export const loader = async (data: DataFunctionArgs) => {
   invariant(serviceRequest, "Service request not found");
 
   return typedjson(
-    { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens },
+    { submission, reviews, params, laborMarket, user, userReview, serviceRequest, tokens },
     { status: 200 }
   );
 };
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, user, reviewedByUser, serviceRequest, tokens } =
+  const { submission, reviews, params, laborMarket, user, userReview, serviceRequest, tokens } =
     useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -113,6 +116,18 @@ export default function ChallengeSubmission() {
     score &&
     score > 24;
 
+  const reviewSignal = useReviewSignals({
+    laborMarketAddress: serviceRequest.laborMarketAddress,
+    serviceRequestId: serviceRequest.id,
+  });
+
+  const { canReview } = usePrereqs({ laborMarket });
+  const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
+  const canReviewSubmission =
+    reviewSignal?.remainder.gt(0) && !enforcementExpirationPassed && userReview == null && !submittedByUser;
+  const canClaimToReview =
+    reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed && userReview == null && !submittedByUser;
+
   return (
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
@@ -131,11 +146,19 @@ export default function ChallengeSubmission() {
           {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
-          {!submittedByUser ? (
-            <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />
-          ) : (
-            <p className="text-sm">Your Submission!</p>
+          {canClaimToReview && !canReviewSubmission && (
+            <WalletGuardedButtonLink
+              buttonText="Claim to Review"
+              link={`/app/market/${laborMarket.address}/request/${serviceRequest.id}/review`}
+              disabled={!!user && !canReview}
+              disabledTooltip="Check for Prerequisites"
+              variant="cancel"
+              size="lg"
+            />
           )}
+          {canReviewSubmission && <ReviewQuestionDrawerButton submission={submission} laborMarket={laborMarket} />}
+          {submittedByUser && <p className="text-sm">Your Submission!</p>}
+          {userReview && <p>{`You gave a score of ${userReview.score}`}</p>}
         </div>
       </section>
       <section className="flex flex-col space-y-6 pb-24">
@@ -144,15 +167,15 @@ export default function ChallengeSubmission() {
             <UserBadge address={submission.configuration.serviceProvider} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submission.createdAtBlockTimestamp)}</Badge>
+            <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
           </DetailItem>
-          {score && (
+          {score !== undefined && (
             <DetailItem title="Overall Score">
               <ScoreBadge score={score} />
             </DetailItem>
           )}
           <DetailItem title="Reviews">
-            {reviewedByUser ? (
+            {userReview != null ? (
               <div className="inline-flex items-center text-sm border border-blue-600 rounded-full px-3 h-8 w-fit whitespace-nowrap">
                 <img src="/img/review-avatar.png" alt="" className="h-4 w-4 mr-1" />
                 <p className="font-medium">{`You${reviews.length === 1 ? "" : ` + ${reviews.length - 1} reviews`}`}</p>
@@ -167,10 +190,8 @@ export default function ChallengeSubmission() {
                 variant="winner"
                 payment={{
                   amount: reward.displayPaymentTokenAmount,
-                  token,
-                  tooltipAmount: `${fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18)} ${
-                    token?.symbol ?? ""
-                  }`,
+                  token: token,
+                  tooltipAmount: fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18),
                 }}
                 reputation={{ amount: reward.displayReputationTokenAmount }}
               />
@@ -209,7 +230,7 @@ export default function ChallengeSubmission() {
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>
-                      <p className="text-sm">{fromNow(r.createdAtBlockTimestamp)}</p>
+                      <p className="text-sm">{fromNow(r.blockTimestamp)}</p>
                     </div>
                   </Card>
                 );
@@ -233,7 +254,7 @@ export default function ChallengeSubmission() {
                     size="sm"
                     onChange={handleChange}
                     options={[
-                      { label: "Created At", value: "createdAtBlockTimestamp" },
+                      { label: "Created At", value: "blockTimestamp" },
                       { label: "Score", value: "score" },
                     ]}
                   />
@@ -249,7 +270,7 @@ export default function ChallengeSubmission() {
                   />
                 </div>
               </div>
-              <Checkbox onChange={handleChange} id="great_checkbox" name="score" value="4" label="Great" />
+              <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="4" label="Stellar" />
               <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="3" label="Good" />
               <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="2" label="Average" />
               <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="1" label="Bad" />

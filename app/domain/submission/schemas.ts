@@ -7,11 +7,9 @@ import { ServiceRequestWithIndexDataSchema } from "../service-request/schemas";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z
-    .enum(["appData.title", "appData.description", "createdAtBlockTimestamp"])
-    .default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["appData.title", "appData.description", "blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
-  score: z.array(z.enum(["spam", "bad", "average", "good", "great"])).optional(),
+  score: z.array(z.enum(["spam", "bad", "average", "good", "stellar"])).optional(),
   first: z.number().default(15),
   page: z.number().default(1),
   serviceRequestId: z.string().optional(),
@@ -40,7 +38,7 @@ export const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
-  createdAtBlockTimestamp: z.date(),
+  blockTimestamp: z.date().nullable().optional(),
   indexedAt: z.date(),
   configuration: z.object({
     serviceProvider: EvmAddressSchema,
@@ -73,7 +71,7 @@ const CombinedSchema = SubmissionDocSchema.extend({
 
 export const RewardsSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  sortBy: z.enum(["sr[0].appData.title", "createdAtBlockTimestamp"]).default("createdAtBlockTimestamp"),
+  sortBy: z.enum(["sr[0].appData.title", "blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   first: z.number().default(100),
   page: z.number().default(1),
@@ -87,7 +85,7 @@ export const ShowcaseSearchSchema = z.object({
   count: z.number().default(0),
   marketplace: z.array(EvmAddressSchema).optional(),
   project: z.array(z.string()).optional(),
-  score: z.number().optional(),
+  score: z.enum(["good", "stellar"]).optional(),
   timeframe: z.enum(["day", "month", "week"]).default("month"),
 });
 

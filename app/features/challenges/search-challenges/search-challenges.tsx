@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Field, Input, Label, Select } from "~/components";
 import type { ServiceRequestSearch } from "~/domain/service-request/schemas";
+import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 
 type SearchChallengesProps = {
@@ -47,7 +48,7 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
                 placeholder="Select option"
                 size="sm"
                 options={[
-                  { label: "New", value: "createdAtBlockTimestamp" },
+                  { label: "New", value: "blockTimestamp" },
                   { label: "Title", value: "appData.title" },
                   { label: "Submit Deadline", value: "configuration.submissionExp" },
                   { label: "Review Deadline", value: "configuration.enforcementExp" },
@@ -56,6 +57,24 @@ export const SearchChallenges = React.forwardRef<HTMLFormElement, SearchChalleng
             )}
           />
         </Field>
+
+        <h3 className="font-semibold">My Permissions:</h3>
+        <ConnectWalletWrapper>
+          <div>
+            <input type="checkbox" {...register("permissions")} id="submit_checkbox" value="submit" />
+            <label htmlFor="submit_checkbox" className="ml-1 text-gray-600">
+              Submit
+            </label>
+          </div>
+        </ConnectWalletWrapper>
+        <ConnectWalletWrapper>
+          <div>
+            <input type="checkbox" {...register("permissions")} id="review_checkbox" value="review" />
+            <label htmlFor="review_checkbox" className="ml-1 text-gray-600">
+              Review
+            </label>
+          </div>
+        </ConnectWalletWrapper>
 
         <Field>
           <Label>Reward Token</Label>

@@ -30,6 +30,7 @@ import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { EvmAddressSchema } from "~/domain/address";
+import { uniqueParticipants } from "~/domain/user-activity/function.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -54,11 +55,20 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     laborMarketAddress: address,
     serviceRequestId: requestId,
   });
-  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens }, { status: 200 });
+
+  const participants = await uniqueParticipants({
+    requestId: serviceRequest.id,
+    laborMarketAddress: laborMarket.address,
+  });
+  const numParticipants = participants.length;
+  return typedjson(
+    { serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens, numParticipants },
+    { status: 200 }
+  );
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens } =
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens, numParticipants } =
     useTypedLoaderData<typeof loader>();
 
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
@@ -159,19 +169,22 @@ export default function ServiceRequest() {
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
           </DetailItem>
+          <DetailItem title="Participants">
+            <Badge className="px-4 min-w-full">{numParticipants}</Badge>
+          </DetailItem>
         </Detail>
 
         <ClientOnly>{() => <ParsedMarkdown text={DOMPurify.sanitize(description)} />}</ClientOnly>
       </section>
 
       <TabNav className="mb-10">
-        <TabNavLink to="" end>
+        <TabNavLink to="./#tabNav" end>
           Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
         </TabNavLink>
-        <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
-        <TabNavLink to="./rewards">Rewards</TabNavLink>
-        <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants">Participants</TabNavLink>
+        <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
+        <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>
+        <TabNavLink to="./timeline#tabNav">Timeline &amp; Deadlines</TabNavLink>
+        <TabNavLink to="./participants#tabNav">Participants</TabNavLink>
       </TabNav>
 
       <Outlet />

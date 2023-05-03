@@ -36,7 +36,6 @@ export type ServiceRequestConfig = z.infer<typeof ServiceRequestConfigSchema>;
  * Contains all aggregated and index-specific data for a LaborMarket.
  */
 export const ServiceRequestIndexDataSchema = z.object({
-  createdAtBlockTimestamp: z.date(),
   indexedAt: z.date().default(() => new Date()),
   claimsToReview: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
   claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
@@ -54,6 +53,7 @@ export const ServiceRequestSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   appData: ServiceRequestAppDataSchema,
   configuration: ServiceRequestConfigSchema,
+  blockTimestamp: z.date().nullable().optional(),
 });
 export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
 
@@ -77,11 +77,12 @@ export type ServiceRequestFilter = z.infer<typeof ServiceRequestFilterSchema>;
 
 export const ServiceRequestSearchSchema = ServiceRequestFilterSchema.extend({
   sortBy: z
-    .enum(["createdAtBlockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
-    .default("createdAtBlockTimestamp"),
+    .enum(["blockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
+    .default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
+  permissions: z.array(z.enum(["submit", "review"])).optional(),
   page: z.coerce.number().min(1).default(1),
-  first: z.coerce.number().min(1).max(100).default(12),
+  first: z.coerce.number().min(1).max(100).default(100),
 });
 
 export type ServiceRequestSearch = z.infer<typeof ServiceRequestSearchSchema>;

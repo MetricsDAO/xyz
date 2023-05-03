@@ -12,6 +12,7 @@ import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
+import { scoreRange } from "~/utils/helpers";
 import type {
   CombinedDoc,
   RewardsSearch,
@@ -23,6 +24,7 @@ import type {
   SubmissionWithServiceRequest,
 } from "./schemas";
 import { SubmissionContractSchema, SubmissionDocSchema, SubmissionWithServiceRequestSchema } from "./schemas";
+import type { Filter, WithId } from "mongodb";
 
 /**
  * Returns a SubmissionDoc from mongodb, if it exists.
@@ -79,12 +81,12 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.score
       ? {
           $or: [
-            params.score.includes("spam") ? { "score.avg": { $gte: 0, $lt: 25 } } : null,
-            params.score.includes("bad") ? { "score.avg": { $gte: 25, $lt: 50 } } : null,
-            params.score.includes("average") ? { "score.avg": { $gte: 50, $lt: 75 } } : null,
-            params.score.includes("good") ? { "score.avg": { $gte: 75, $lt: 100 } } : null,
-            params.score.includes("great") ? { "score.avg": { $gte: 100 } } : null,
-          ].filter(Boolean),
+            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : undefined,
+            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : undefined,
+            params.score.includes("average") ? { "score.avg": scoreRange("average") } : undefined,
+            params.score.includes("good") ? { "score.avg": scoreRange("good") } : undefined,
+            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : undefined,
+          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>["$or"], // type assertion,
         }
       : {}),
   };
@@ -97,6 +99,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
   invariant(submission, "Submission should exist after upserting");
 
   //log this event in user activity collection
+  invariant(submission.blockTimestamp, "Submission should have a block timestamp");
   mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
@@ -111,7 +114,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
     iconType: "submission",
     actionName: "Submission",
     userAddress: submission.configuration.serviceProvider,
-    createdAtBlockTimestamp: submission.createdAtBlockTimestamp,
+    blockTimestamp: submission.blockTimestamp,
     indexedAt: new Date(),
   });
 
@@ -141,7 +144,7 @@ export const upsertSubmission = async (address: EvmAddress, id: string, event?: 
     return null;
   }
   // Build the document, omitting the serviceRequestCount field which is set in the upsert below.
-  const doc: Omit<SubmissionDoc, "createdAtBlockTimestamp"> = {
+  const doc: SubmissionDoc = {
     id: id,
     laborMarketAddress: address,
     serviceRequestId: submission.requestId.toString(),
@@ -151,15 +154,13 @@ export const upsertSubmission = async (address: EvmAddress, id: string, event?: 
       uri: submission.uri,
     },
     appData,
+    blockTimestamp: event?.block.timestamp ? new Date(event?.block.timestamp) : undefined,
   };
-
-  const createdAtBlockTimestamp = event?.block.timestamp ? new Date(event?.block.timestamp) : new Date();
 
   const res = await mongo.submissions.findOneAndUpdate(
     { id: doc.id, laborMarketAddress: doc.laborMarketAddress },
     {
       $set: doc,
-      $setOnInsert: { createdAtBlockTimestamp: createdAtBlockTimestamp },
     },
     { upsert: true, returnDocument: "after" }
   );
@@ -303,7 +304,7 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
       {
         $match: {
           $and: [
-            { "score.avg": { $gte: 75 } },
+            { "score.avg": { $gte: 70 } },
             //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
           ],
         },
@@ -357,15 +358,14 @@ export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
             { "sr.configuration.enforcementExp": { $lt: utcDate() } },
             { "lm.appData.type": "analyze" },
             params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
-            params.score ? { "score.avg": { $gte: params.score } } : {},
-            params.score ? { "score.avg": { $lt: params.score + 25 } } : {},
-            { createdAtBlockTimestamp: { $gte: timeframe } },
+            params.score ? { "score.avg": scoreRange(params.score) } : {},
+            { blockTimestamp: { $gte: timeframe } },
             params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
           ],
         },
       },
     ])
-    .sort({ createdAtBlockTimestamp: -1 })
+    .sort({ blockTimestamp: -1 })
     .limit(5 + params.count)
     .toArray();
 };

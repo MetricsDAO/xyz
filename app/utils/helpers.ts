@@ -2,6 +2,7 @@ import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
 import type { LaborMarket } from "~/domain/labor-market/schemas";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -65,7 +66,7 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
 };
 
 export function claimToReviewDeadline(serviceRequest: ServiceRequestWithIndexData) {
-  return claimDate(serviceRequest.createdAtBlockTimestamp, serviceRequest.configuration.enforcementExp);
+  return claimDate(serviceRequestCreatedDate(serviceRequest), serviceRequest.configuration.enforcementExp);
 }
 
 /**
@@ -85,4 +86,29 @@ export function displayBalance(balance: BigNumber): string {
 
 export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
+}
+
+export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam") {
+  switch (score) {
+    case "stellar":
+      return { $gte: 90 };
+    case "good":
+      return { $gte: 70, $lt: 90 };
+    case "average":
+      return { $gte: 45, $lt: 70 };
+    case "bad":
+      return { $gte: 25, $lt: 45 };
+    case "spam":
+      return { $lt: 25 };
+  }
+}
+
+export function submissionCreatedDate(s: SubmissionDoc): Date {
+  // Use indexedAt as fallback until the submission is indexed
+  return s.blockTimestamp ?? s.indexedAt;
+}
+
+export function serviceRequestCreatedDate(s: ServiceRequestWithIndexData): Date {
+  // Use indexedAt as fallback until the service request is indexed
+  return s.blockTimestamp ?? s.indexedAt;
 }
