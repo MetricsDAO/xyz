@@ -86,7 +86,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
             params.score.includes("average") ? { "score.avg": scoreRange("average") } : undefined,
             params.score.includes("good") ? { "score.avg": scoreRange("good") } : undefined,
             params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : undefined,
-          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>["$or"], // type assertion,
+          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>, // type assertion,
         }
       : {}),
   };
@@ -100,7 +100,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
 
   //log this event in user activity collection
   invariant(submission.blockTimestamp, "Submission should have a block timestamp");
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
       eventType: "RequestFulfilled",

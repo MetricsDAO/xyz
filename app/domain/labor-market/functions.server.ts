@@ -42,7 +42,7 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
   }
   invariant(lm.blockTimestamp, "Labor market should have a block timestamp");
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "LaborMarket",
     eventType: {
       eventType: "LaborMarketConfigured",
