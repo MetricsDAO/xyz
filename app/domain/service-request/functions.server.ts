@@ -111,7 +111,7 @@ export async function handleRequestWithdrawnEvent(event: TracerEvent) {
     actionName: "Delete Challenge",
     userAddress: serviceRequest.configuration.serviceRequester,
     blockTimestamp: new Date(event.block.timestamp),
-    indexedAt: new Date(event.block.timestamp),
+    indexedAt: new Date(),
   });
 
   // Update labor market
