@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { useSubmit } from "@remix-run/react";
+import { useLocation, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef } from "react";
@@ -47,11 +47,13 @@ export default function ChallengeIdSubmissions() {
     }
   };
 
+  let { state } = useLocation();
+
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="min-w-[300px] w-full space-y-4">
         {submissions?.map((s) => (
-          <SubmissionCard key={s.id} submission={s} />
+          <SubmissionCard key={s.id} submission={s} state={state} />
         ))}
         <div className="w-fit m-auto">
           <Pagination page={searchParams.page} totalPages={Math.ceil(totalSubmissions / searchParams.first)} />

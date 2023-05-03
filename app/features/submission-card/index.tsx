@@ -6,7 +6,7 @@ import { useOptionalUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
 import { submissionCreatedDate } from "~/utils/helpers";
 
-export function SubmissionCard({ submission }: { submission: SubmissionWithReviewsDoc }) {
+export function SubmissionCard({ submission, state }: { submission: SubmissionWithReviewsDoc; state: any }) {
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
@@ -15,6 +15,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
     <Card className="text-sm p-6 space-y-4">
       <Link
         to={`/app/market/${submission.laborMarketAddress}/submission/${submission.id}`}
+        state={state}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         <main className="text-blue-600 text-sm flex flex-row items-center flex-1">

@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { useSearchParams, useSubmit } from "@remix-run/react";
+import { useLocation, useSearchParams, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import clsx from "clsx";
 import { useRef, useState } from "react";
@@ -128,18 +128,24 @@ export default function ChallengeSubmission() {
   const canClaimToReview =
     reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed && userReview == null && !submittedByUser;
 
+  let { state } = useLocation();
+  let crumbs = [];
+  if (state?.crumbs === "challenges") {
+    crumbs = [{ link: `/app/challenges`, name: "Challenges" }];
+  } else {
+    crumbs = [
+      { link: `/app/analyze`, name: "Marketplaces" },
+      { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
+    ];
+  }
+  crumbs.push({
+    link: `app/market/${laborMarket.address}/request/${serviceRequest.id}`,
+    name: serviceRequest.appData.title,
+  });
+
   return (
     <Container className="pt-7 pb-16 px-10">
-      <Breadcrumbs
-        crumbs={[
-          { link: `/app/analyze`, name: "Marketplaces" },
-          { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
-          {
-            link: `/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`,
-            name: serviceRequest.appData?.title ?? "",
-          },
-        ]}
-      />
+      <Breadcrumbs crumbs={crumbs} />
       <section className="flex flex-col md:flex-row gap-5 justify-between pb-10 items-center">
         <div className="flex items-center gap-2 md:basis-3/4">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
