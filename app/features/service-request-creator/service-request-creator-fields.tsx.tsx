@@ -201,17 +201,19 @@ export function ServiceRequestCreatorFields({
               <Field>
                 <Controller
                   control={control}
-                  name="todo"
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      placeholder="Limit"
-                      options={[
-                        { label: "Limited", value: "limited" },
-                        { label: "Unlimited", value: "unlimited" },
-                      ]}
-                    />
-                  )}
+                  name="submitLimit"
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        {...field}
+                        placeholder="Limit"
+                        options={[
+                          { label: "Limited", value: "limited" },
+                          { label: "Unlimited", value: "unlimited" },
+                        ]}
+                      />
+                    );
+                  }}
                 />
                 <Error error={errors.appData?.projectSlugs?.message} />
               </Field>
@@ -301,7 +303,7 @@ export function ServiceRequestCreatorFields({
               <Field>
                 <Controller
                   control={control}
-                  name="todo"
+                  name="reviewLimit"
                   render={({ field }) => (
                     <Select
                       {...field}

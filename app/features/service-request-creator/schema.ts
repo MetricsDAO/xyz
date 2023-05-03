@@ -37,6 +37,10 @@ export const ServiceRequestFormSchema = z
     rewardToken: EvmAddressSchema,
     rewardTokenDecimals: z.coerce.number().int().positive(),
     rewardPool: z.string(),
+    submitLimit: z.string(),
+    reviewLimit: z.string(),
+    submitLimitAmount: z.number().positive().int().optional(),
+    reviewLimitAmount: z.number().positive().int().optional(),
   })
   .refine((data) => validDeadlines(data.reviewEndDate, data.reviewEndTime, data.endDate, data.endTime), {
     message: "Review deadline cannot be before submission deadline.",
@@ -69,5 +73,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
     rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
     rewardTokenDecimals: 18,
     rewardPool: "0.000001",
+    reviewLimit: "unlimited",
+    submitLimit: "unlimited",
   };
 }
