@@ -81,12 +81,12 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.score
       ? {
           $or: [
-            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : undefined,
-            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : undefined,
-            params.score.includes("average") ? { "score.avg": scoreRange("average") } : undefined,
-            params.score.includes("good") ? { "score.avg": scoreRange("good") } : undefined,
-            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : undefined,
-          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>, // type assertion,
+            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : null,
+            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : null,
+            params.score.includes("average") ? { "score.avg": scoreRange("average") } : null,
+            params.score.includes("good") ? { "score.avg": scoreRange("good") } : null,
+            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : null,
+          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>[], // type assertion,
         }
       : {}),
   };
