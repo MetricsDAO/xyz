@@ -73,7 +73,7 @@ export default function ServiceRequest() {
 
   let { state } = useLocation();
   let crumbs = [];
-  if (state && state.crumbs && state.crumbs === "challenges") {
+  if (state?.crumbs === "challenges") {
     crumbs = [{ link: `/app/challenges`, name: "Challenges" }];
   } else {
     crumbs = [
