@@ -1,17 +1,17 @@
 import { Button } from "../button";
 
-export function Error({ error }: { error: Error }) {
+export function Error() {
   return (
     <html lang="en">
       <body>
-        <div className="w-full flex items-center justify-center text-gray-800">
-          <div className="max-w-lg space-y-2">
-            <h1 className="text-2xl">Ooops!</h1>
-            <p className="text-neutral-400 text-base">something went wrong</p>
-            <img src="/img/error.png" alt="" />
-            <p>It seems you've ventured too deep</p>
-          </div>
-          <Button className="bg-[#5865F2]">Let us know on Discord</Button>
+        <div className="w-full flex flex-col items-center justify-center text-gray-800 gap-5">
+          <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#A0DDA9] to-[#01C2FF]">
+            Ooops!
+          </h1>
+          <p className="text-neutral-400 text-2xl font-bold">something went wrong</p>
+          <img src="/img/error.png" alt="" className="my-3" />
+          <p className="text-neutral-400 font-medium">It seems you've ventured too deep</p>
+          <Button variant="gradient">Go Back</Button>
         </div>
       </body>
     </html>
