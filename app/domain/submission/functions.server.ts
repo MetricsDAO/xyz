@@ -81,12 +81,12 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
     ...(params.score
       ? {
           $or: [
-            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : undefined,
-            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : undefined,
-            params.score.includes("average") ? { "score.avg": scoreRange("average") } : undefined,
-            params.score.includes("good") ? { "score.avg": scoreRange("good") } : undefined,
-            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : undefined,
-          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>["$or"], // type assertion,
+            params.score.includes("spam") ? { "score.avg": scoreRange("spam") } : null,
+            params.score.includes("bad") ? { "score.avg": scoreRange("bad") } : null,
+            params.score.includes("average") ? { "score.avg": scoreRange("average") } : null,
+            params.score.includes("good") ? { "score.avg": scoreRange("good") } : null,
+            params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : null,
+          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>[], // type assertion,
         }
       : {}),
   };
@@ -100,7 +100,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
 
   //log this event in user activity collection
   invariant(submission.blockTimestamp, "Submission should have a block timestamp");
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
       eventType: "RequestFulfilled",
