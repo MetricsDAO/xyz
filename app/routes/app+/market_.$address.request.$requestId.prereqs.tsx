@@ -9,8 +9,6 @@ import { usePrereqs } from "~/hooks/use-prereqs";
 import { useTokenData } from "~/hooks/use-token-data";
 import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
-import { connectToDatabase } from "~/services/mongo.server";
-import { pineConfig } from "~/utils/pine-config.server";
 
 export default function ServiceIdPrereqs() {
   const data = useRouteData<{
@@ -24,9 +22,6 @@ export default function ServiceIdPrereqs() {
   const { laborMarket } = data;
 
   invariant(laborMarket, "No labormarket found");
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
 
   const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
 
