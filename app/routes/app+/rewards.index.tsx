@@ -22,11 +22,16 @@ import { requireUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
+import { connectToDatabase } from "~/services/mongo.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/rewards");
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
 
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);

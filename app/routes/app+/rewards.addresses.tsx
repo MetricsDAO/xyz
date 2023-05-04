@@ -19,11 +19,13 @@ import { countSubmissions } from "~/domain/submission/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
+import { connectToDatabase } from "~/services/mongo.server";
 import { listNetworks } from "~/services/network.server";
 import { requireUser } from "~/services/session.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
 import { fromNow } from "~/utils/date";
 import { truncateAddress } from "~/utils/helpers";
+import { pineConfig } from "~/utils/pine-config.server";
 import { isValidationError } from "~/utils/utils";
 export const addWalletValidator = withZod(WalletAddSchema);
 export const deleteWalletValidator = withZod(WalletDeleteSchema);
@@ -52,6 +54,9 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const loader = async (data: DataFunctionArgs) => {
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
   const user = await requireUser(data.request, "/app/login?redirectto=app/rewards/addresses");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissions({

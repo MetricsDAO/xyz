@@ -26,6 +26,8 @@ import { findProjectsBySlug } from "~/utils/helpers";
 import { TokenBadgeByAddress } from "~/components/token-badge/token-badge";
 import { dateHasPassed } from "~/utils/date";
 import clsx from "clsx";
+import { connectToDatabase } from "~/services/mongo.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 const validator = withZod(ServiceRequestSearchSchema);
 
@@ -33,6 +35,10 @@ const paramsSchema = z.object({ address: z.string() });
 
 export const loader = async (data: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(data.params);
+
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
 
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ServiceRequestSearchSchema);

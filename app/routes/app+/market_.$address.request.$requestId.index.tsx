@@ -18,11 +18,16 @@ import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
 import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 import { Pagination } from "~/components/pagination";
+import { connectToDatabase } from "~/services/mongo.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 const validator = withZod(SubmissionSearchSchema);
 
 const paramSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
   const { address, requestId } = getParamsOrFail(params, paramSchema);
   const url = new URL(request.url);
   const searchParams = getParamsOrFail(url.searchParams, SubmissionSearchSchema);

@@ -5,10 +5,15 @@ import { typedjson } from "remix-typedjson";
 import { z } from "zod";
 import { Container } from "~/components/container";
 import CustomConnectButton from "~/features/connect-button";
+import { connectToDatabase } from "~/services/mongo.server";
 import { getUser } from "~/services/session.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 const paramSchema = z.object({ redirectto: z.string() });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
   const url = new URL(request.url);
 
   const { redirectto } = getParamsOrFail(url.searchParams, paramSchema);

@@ -12,8 +12,14 @@ import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ListChallenges } from "~/features/challenges/list-challenges/list-challenges";
 import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
 import { usePrereqsMulticall } from "~/hooks/use-prereqs";
+import { connectToDatabase } from "~/services/mongo.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 export async function loader({ request }: DataFunctionArgs) {
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+
   const searchParams = getSearchParamsOrFail(request, ServiceRequestSearchSchema);
   const serviceRequests = await searchServiceRequests(searchParams);
   const uniqueLaborMarketAddresses = Object.keys(

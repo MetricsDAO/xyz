@@ -27,10 +27,15 @@ import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import { connectToDatabase } from "~/services/mongo.server";
+import { pineConfig } from "~/utils/pine-config.server";
 
 const validator = withZod(ShowcaseSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
+  const client = await connectToDatabase();
+  const pine = pineConfig();
+  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, ShowcaseSearchSchema);
   const submissions = await searchSubmissionsShowcase({ ...search });
