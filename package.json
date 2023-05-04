@@ -40,7 +40,7 @@
     "@heroicons/react": "^2.0.13",
     "@hookform/resolvers": "^2.9.11",
     "@pinata/sdk": "^2.1.0",
-    "@prisma/client": "4.5.0",
+    "@prisma/client": "^4.13.0",
     "@radix-ui/react-avatar": "^1.0.1",
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-dropdown-menu": "^2.0.1",
