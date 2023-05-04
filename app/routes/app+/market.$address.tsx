@@ -19,14 +19,11 @@ import { useOptionalUser } from "~/hooks/use-user";
 import { connectToDatabase } from "~/services/mongo.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { pineConfig } from "~/utils/pine-config.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
 export const loader = async (data: DataFunctionArgs) => {
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
   const parsed = paramsSchema.safeParse(data.params);
   if (!parsed.success) throw notFound("Labor market not found");
   const laborMarket = await getIndexedLaborMarket(parsed.data.address);

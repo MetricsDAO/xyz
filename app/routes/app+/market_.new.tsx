@@ -5,15 +5,12 @@ import { listTokens } from "~/services/tokens.server";
 import { fakeLaborMarketFormValues, NewMarket } from "~/features/markets/new-market";
 import { requireUser } from "~/services/session.server";
 import { connectToDatabase } from "~/services/mongo.server";
-import { pineConfig } from "~/utils/pine-config.server";
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
   await requireUser(request, `/app/login?redirectto=app/market/new`);
 
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
 
   const projects = await listProjects();
   const tokens = await listTokens();

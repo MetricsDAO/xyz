@@ -13,12 +13,9 @@ import { ListChallenges } from "~/features/challenges/list-challenges/list-chall
 import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
 import { usePrereqsMulticall } from "~/hooks/use-prereqs";
 import { connectToDatabase } from "~/services/mongo.server";
-import { pineConfig } from "~/utils/pine-config.server";
 
 export async function loader({ request }: DataFunctionArgs) {
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
 
   const searchParams = getSearchParamsOrFail(request, ServiceRequestSearchSchema);
   const serviceRequests = await searchServiceRequests(searchParams);

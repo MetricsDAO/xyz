@@ -12,13 +12,11 @@ import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
 import { connectToDatabase } from "~/services/mongo.server";
 import { serviceRequestCreatedDate } from "~/utils/helpers";
-import { pineConfig } from "~/utils/pine-config.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
+
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
   const laborMarket = await getIndexedLaborMarket(address);

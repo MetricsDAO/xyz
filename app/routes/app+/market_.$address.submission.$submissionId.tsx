@@ -47,7 +47,6 @@ import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
-import { pineConfig } from "~/utils/pine-config.server";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -59,9 +58,7 @@ const validator = withZod(ReviewSearchSchema);
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   const { address, submissionId } = paramsSchema.parse(data.params);
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });

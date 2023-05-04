@@ -18,14 +18,11 @@ import type { ActivityDocWithMongoId } from "~/features/my-activity/activity-tab
 import { ActivityTable } from "~/features/my-activity/activity-table-desktop";
 import { connectToDatabase } from "~/services/mongo.server";
 import { requireUser } from "~/services/session.server";
-import { pineConfig } from "~/utils/pine-config.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/profile");
 
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
 
   const url = new URL(request.url);
   const activityTypes = Object.values(ActivityTypeSchema);

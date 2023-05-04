@@ -6,13 +6,11 @@ import { Container } from "~/components/container";
 import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToReviewCreator } from "~/features/claim-to-review-creator/claim-to-review-creator";
 import { connectToDatabase } from "~/services/mongo.server";
-import { pineConfig } from "~/utils/pine-config.server";
 
 const paramsSchema = z.object({ address: z.string(), requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const client = await connectToDatabase();
-  const pine = pineConfig();
-  const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+  await connectToDatabase();
+
   const { address, requestId } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
   if (!serviceRequest) {

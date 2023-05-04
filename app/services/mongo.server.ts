@@ -21,6 +21,7 @@ export async function connectToDatabase() {
     return cachedClient;
   }
 
+  console.log("Creating new database connection.", client);
   cachedClient = await client.connect();
   return cachedClient;
 }
