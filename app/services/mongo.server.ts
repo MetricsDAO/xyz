@@ -6,18 +6,6 @@ import env from "~/env.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { pineConfig } from "~/utils/pine-config.server";
 
-// const client = new MongoClient(env.MONGODB_URI, {
-//   connectTimeoutMS: 60000, // set timeout to 60 seconds
-//   maxPoolSize: 200, // set the maximum number of connections in the pool
-//   socketTimeoutMS: 60000, // close sockets after 60 seconds of inactivity
-// });
-
-// try {
-//   client.connect();
-// } catch (e) {
-//   console.error(e);
-// }
-
 type CachedMongoClient = MongoClient | null;
 
 let cachedClient: CachedMongoClient = null;
@@ -29,6 +17,7 @@ const client = new MongoClient(env.MONGODB_URI, {
 
 export async function connectToDatabase() {
   if (cachedClient) {
+    console.log("Using cached database connection.", cachedClient);
     return cachedClient;
   }
 
