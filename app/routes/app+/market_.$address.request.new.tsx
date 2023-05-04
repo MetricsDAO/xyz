@@ -9,12 +9,15 @@ import { ServiceRequestCreator } from "~/features/service-request-creator/servic
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { requireUser } from "~/services/session.server";
+import { connectToDatabase } from "~/services/mongo.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
   await requireUser(request, `/app/login?redirectto=app/market/${address}/request/new`);
+  await connectToDatabase();
+
   const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");

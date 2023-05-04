@@ -27,10 +27,13 @@ import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import { connectToDatabase } from "~/services/mongo.server";
 
 const validator = withZod(ShowcaseSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
+  await connectToDatabase();
+
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, ShowcaseSearchSchema);
   const submissions = await searchSubmissionsShowcase({ ...search });

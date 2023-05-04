@@ -12,6 +12,7 @@ import { withZod } from "@remix-validated-form/with-zod";
 import { ParticipantSearchSchema } from "~/domain";
 import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
+import { connectToDatabase } from "~/services/mongo.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 const validator = withZod(ParticipantSearchSchema);
@@ -20,6 +21,8 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
   invariant(address, "serviceRequestId is required");
   invariant(requestId, "laborMarketAddress is required");
+  await connectToDatabase();
+
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, ParticipantSearchSchema);
   const participations = await findParticipants({
