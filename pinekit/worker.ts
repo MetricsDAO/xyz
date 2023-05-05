@@ -80,7 +80,7 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
   /**
    * Starts the worker. This will block until the process is terminated.
    */
-  async function run() {
+  async function run(exitOnCaughtUp = false) {
     const tracerHandle = client.tracer(tracer);
 
     // Find or create the tracer.
@@ -96,7 +96,7 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
 
     // Loop through events and process them with the registered handlers, if any.
     logger.info(`subscribing to events...`, subHandle);
-    for await (const event of client.streamEvents(subHandle, { limit: 10 })) {
+    for await (const event of client.streamEvents(subHandle, { limit: 10, exitOnCaughtUp })) {
       const key = `${event.contract.name}.${event.decoded.name}`;
       const handlers = handlerRegistry.get(key);
       if (!handlers) {
