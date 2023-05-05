@@ -77,7 +77,7 @@ jobs:
           context: .
           push: true
           file: Dockerfile.indexer
-          tags: registry.fly.io/${{ steps.indexer_name.outputs.value }}:test-${{ github.sha }}
+          tags: registry.fly.io/${{ steps.indexer_name.outputs.value }}-dev:test-${{ github.sha }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
