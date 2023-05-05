@@ -85,7 +85,6 @@ jobs:
 
   deploy:
     name: 🚀 Deploy Indexer
-    if: ${{ (github.ref == 'refs/heads/sruiz/atlas-only') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
