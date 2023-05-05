@@ -1,6 +1,6 @@
 import env from "~/env.server";
 
-const SUBSCRIBER = "20230505";
+const SUBSCRIBER = "20230505-1";
 
 export function pineConfig() {
   return {
