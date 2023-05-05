@@ -5,3 +5,7 @@ cmd = ["yarn", "start:indexer"]
 
 [deploy]
   release_command = "yarn reindex"
+
+[build]
+  builder = "paketobuildpacks/builder:base"
+  buildpacks = ["gcr.io/paketo-buildpacks/nodejs"]
