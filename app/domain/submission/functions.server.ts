@@ -24,6 +24,7 @@ import type {
   SubmissionWithServiceRequest,
 } from "./schemas";
 import { SubmissionContractSchema, SubmissionDocSchema, SubmissionWithServiceRequestSchema } from "./schemas";
+import type { Filter, WithId } from "mongodb";
 
 /**
  * Returns a SubmissionDoc from mongodb, if it exists.
@@ -85,7 +86,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
             params.score.includes("average") ? { "score.avg": scoreRange("average") } : null,
             params.score.includes("good") ? { "score.avg": scoreRange("good") } : null,
             params.score.includes("stellar") ? { "score.avg": scoreRange("stellar") } : null,
-          ].filter(Boolean),
+          ].filter(Boolean) as Filter<WithId<SubmissionDoc>>[], // type assertion,
         }
       : {}),
   };
@@ -99,7 +100,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
 
   //log this event in user activity collection
   invariant(submission.blockTimestamp, "Submission should have a block timestamp");
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
       eventType: "RequestFulfilled",
