@@ -67,4 +67,4 @@ worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
   return handleRequestWithdrawnEvent(event);
 });
 
-worker.run();
+export { worker };

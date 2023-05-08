@@ -22,4 +22,4 @@ RUN npx prisma generate
 ADD . .
 RUN yarn build
 
-CMD ["yarn", "start"]
+CMD ["yarn", "start:app"]

@@ -36,6 +36,7 @@ import DeleteServiceRequestModal from "~/features/delete-service-request";
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
+
   const serviceRequest = await getIndexedServiceRequest(address, requestId);
   if (!serviceRequest) {
     throw notFound({ requestId });
@@ -186,13 +187,13 @@ export default function ServiceRequest() {
       </section>
 
       <TabNav className="mb-10">
-        <TabNavLink to="" end>
+        <TabNavLink to="./#tabNav" end>
           Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
         </TabNavLink>
-        <TabNavLink to="./prereqs">Prerequisites</TabNavLink>
-        <TabNavLink to="./rewards">Rewards</TabNavLink>
-        <TabNavLink to="./timeline">Timeline &amp; Deadlines</TabNavLink>
-        <TabNavLink to="./participants">Participants</TabNavLink>
+        <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
+        <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>
+        <TabNavLink to="./timeline#tabNav">Timeline &amp; Deadlines</TabNavLink>
+        <TabNavLink to="./participants#tabNav">Participants</TabNavLink>
       </TabNav>
 
       <Outlet />

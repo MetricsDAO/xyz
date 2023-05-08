@@ -1,4 +1,7 @@
-app = "mdao-indexer-green"
+app = "mdao-indexer"
 
 [experimental]
 cmd = ["yarn", "start:indexer"]
+
+[deploy]
+  release_command = "yarn reindex"
