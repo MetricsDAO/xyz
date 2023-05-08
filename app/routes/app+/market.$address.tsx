@@ -16,12 +16,14 @@ import { ProjectBadges } from "~/features/project-badges";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useOptionalUser } from "~/hooks/use-user";
+import { connectToDatabase } from "~/services/mongo.server";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
 export const loader = async (data: DataFunctionArgs) => {
+  await connectToDatabase();
   const parsed = paramsSchema.safeParse(data.params);
   if (!parsed.success) throw notFound("Labor market not found");
   const laborMarket = await getIndexedLaborMarket(parsed.data.address);

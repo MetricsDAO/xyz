@@ -22,11 +22,13 @@ import { requireUser } from "~/services/session.server";
 import { searchUserSubmissions } from "~/domain/submission/functions.server";
 import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
+import { connectToDatabase } from "~/services/mongo.server";
 
 const validator = withZod(RewardsSearchSchema);
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/rewards");
+  await connectToDatabase();
 
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
