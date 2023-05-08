@@ -16,13 +16,10 @@ import { searchUserActivity } from "~/domain/user-activity/function.server";
 import { ActivityCards } from "~/features/my-activity/activity-card-mobile";
 import type { ActivityDocWithMongoId } from "~/features/my-activity/activity-table-desktop";
 import { ActivityTable } from "~/features/my-activity/activity-table-desktop";
-import { connectToDatabase } from "~/services/mongo.server";
 import { requireUser } from "~/services/session.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/profile");
-
-  await connectToDatabase();
 
   const url = new URL(request.url);
   const activityTypes = Object.values(ActivityTypeSchema);

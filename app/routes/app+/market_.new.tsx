@@ -4,13 +4,10 @@ import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
 import { fakeLaborMarketFormValues, NewMarket } from "~/features/markets/new-market";
 import { requireUser } from "~/services/session.server";
-import { connectToDatabase } from "~/services/mongo.server";
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const url = new URL(request.url);
   await requireUser(request, `/app/login?redirectto=app/market/new`);
-
-  await connectToDatabase();
 
   const projects = await listProjects();
   const tokens = await listTokens();
