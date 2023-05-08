@@ -6,7 +6,16 @@ import env from "~/env.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { pineConfig } from "~/utils/pine-config.server";
 
-const client = new MongoClient(env.MONGODB_URI);
+const client = new MongoClient(env.MONGODB_URI, {
+  connectTimeoutMS: 60000, // set timeout to 60 seconds
+  maxPoolSize: 200, // set the maximum number of connections in the pool
+});
+
+try {
+  client.connect();
+} catch (e) {
+  console.error(e);
+}
 
 // Since every index is a deterministic history, we can have each subscriber have its own database.
 // This is useful for deploying changes to the index and having it recreate from scratch.

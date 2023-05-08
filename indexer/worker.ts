@@ -62,4 +62,4 @@ worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
   return indexReview(event);
 });
 
-worker.run();
+export { worker };

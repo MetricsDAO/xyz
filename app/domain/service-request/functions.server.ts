@@ -48,7 +48,7 @@ export async function handleRequestConfiguredEvent(event: TracerEvent) {
 
   invariant(serviceRequest.blockTimestamp, "Service request should have a block timestamp");
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "ServiceRequest",
     eventType: {
       eventType: "RequestConfigured",
@@ -230,7 +230,7 @@ export const indexClaimToReview = async (event: TracerEvent) => {
   });
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Review",
     eventType: {
       eventType: "ReviewSignal",
@@ -263,7 +263,7 @@ export const indexClaimToSubmit = async (event: TracerEvent) => {
   });
 
   //log this event in user activity collection
-  mongo.userActivity.insertOne({
+  await mongo.userActivity.insertOne({
     groupType: "Submission",
     eventType: {
       eventType: "RequestSignal",

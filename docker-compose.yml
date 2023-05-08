@@ -1,23 +1,6 @@
 version: "3.8"
 
-volumes:
-  pg_data:
-    driver: local
-
 services:
-  postgres:
-    image: postgres:latest
-    container_name: db
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: pass
-      POSTGRES_USER: user
-      POSTGRES_DB: mdao
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    ports:
-      - "5435:5432"
-
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -30,6 +13,5 @@ services:
   #   ports:
   #     - "8000:3000"
   #   environment:
-  #     - DATABASE_URL=postgres://user:pass@db:5432/mdao
   #     - SESSION_SECRET=secret
   #     - ENVIRONMENT=production
