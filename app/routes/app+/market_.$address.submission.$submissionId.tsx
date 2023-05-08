@@ -41,7 +41,6 @@ import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
-import { connectToDatabase } from "~/services/mongo.server";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
@@ -58,7 +57,6 @@ const validator = withZod(ReviewSearchSchema);
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
   const { address, submissionId } = paramsSchema.parse(data.params);
-  await connectToDatabase();
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });

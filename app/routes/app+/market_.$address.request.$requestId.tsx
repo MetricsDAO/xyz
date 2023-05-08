@@ -31,12 +31,10 @@ import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { EvmAddressSchema } from "~/domain/address";
 import { uniqueParticipants } from "~/domain/user-activity/function.server";
-import { connectToDatabase } from "~/services/mongo.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
-  await connectToDatabase();
 
   const serviceRequest = await getIndexedServiceRequest(address, requestId);
   if (!serviceRequest) {

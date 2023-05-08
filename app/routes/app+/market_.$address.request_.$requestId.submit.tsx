@@ -6,13 +6,10 @@ import { Container } from "~/components";
 import { EvmAddressSchema } from "~/domain/address";
 import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
 import SubmissionCreator from "~/features/submission-creator/submission-creator";
-import { connectToDatabase } from "~/services/mongo.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 
 export const loader = async ({ request, params }: DataFunctionArgs) => {
-  await connectToDatabase();
-
   const { address, requestId } = paramsSchema.parse(params);
 
   const laborMarket = await getIndexedLaborMarket(address);
