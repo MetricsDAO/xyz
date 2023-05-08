@@ -1,8 +1,8 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
-import { useCallback, useState } from "react";
-import { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import { useCallback } from "react";
+import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import ConnectWalletWrapper from "./connect-wallet-wrapper";
@@ -17,7 +17,7 @@ export default function DeleteServiceRequestModal({ serviceRequest }: { serviceR
       (receipt) => {
         navigate(`/app/market/${serviceRequest.laborMarketAddress}`);
       },
-      [navigate, serviceRequest.laborMarketAddress, serviceRequest.id]
+      [navigate, serviceRequest.laborMarketAddress]
     ),
   });
 
