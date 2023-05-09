@@ -82,3 +82,126 @@ jobs:
 
       - name: ⚡ Run vitest
         run: yarn test --coverage
+
+  build:
+    name: 🐳 Build
+    # only build dev+main branch on pushes
+    if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: v0.9.1
+
+      # Setup cache
+      - name: ⚡️ Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: 🔑 Fly Registry Auth
+        uses: docker/login-action@v2
+        with:
+          registry: registry.fly.io
+          username: x
+          password: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🐳 Docker build app
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          file: Dockerfile.app
+          tags: registry.fly.io/mdao-www:${{ github.ref_name }}-${{ github.sha }}
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+
+      - name: 🐳 Docker build indexer
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          file: Dockerfile.indexer
+          tags: registry.fly.io/mdao-indexer:${{ github.ref_name }}-${{ github.sha }}
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+
+      # This ugly bit is necessary if you don't want your cache to grow forever
+      # till it hits GitHub's limit of 5GB.
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: 🚚 Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  deployToDev:
+    name: 🚀 Deploy - Development
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, build]
+    # only deploy dev branch on pushes
+    if: ${{ github.ref == 'refs/heads/dev' && github.event_name == 'push' }}
+
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🚀 Deploy Indexer
+        uses: superfly/flyctl-actions@1.3
+        with:
+          args: "deploy --config fly.indexer.toml  --app mdao-indexer-dev --image registry.fly.io/mdao-indexer:${{ github.ref_name }}-${{ github.sha }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🚀 Deploy App
+        uses: superfly/flyctl-actions@1.3
+        with:
+          args: "deploy --config fly.toml --app mdao-www-dev --image registry.fly.io/mdao-www:${{ github.ref_name }}-${{ github.sha }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  deployToProd:
+    name: 🚀 Deploy - Production
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, build]
+    # only deploy main branch on pushes
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+
+    steps:
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🚀 Deploy Indexer
+        uses: superfly/flyctl-actions@1.3
+        with:
+          args: "deploy --config fly.indexer.toml  --app mdao-indexer --image registry.fly.io/mdao-indexer:${{ github.ref_name }}-${{ github.sha }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🚀 Deploy App
+        uses: superfly/flyctl-actions@1.3
+        with:
+          args: "deploy --config fly.toml --app mdao-www --image registry.fly.io/mdao-www:${{ github.ref_name }}-${{ github.sha }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

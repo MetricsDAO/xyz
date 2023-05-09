@@ -112,6 +112,10 @@ export class Client {
 
       // if its still empty, wait a bit and try again
       if (events.length === 0) {
+        if (params.exitOnCaughtUp) {
+          console.log("Indexing caught up. Exiting.");
+          process.exit(0);
+        }
         await new Promise((resolve) => setTimeout(resolve, 1000 * 5));
         continue;
       }

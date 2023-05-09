@@ -1,35 +1,20 @@
 version: "3.8"
 
-volumes:
-  pg_data:
-    driver: local
-
 services:
-  postgres:
-    image: postgres:latest
-    container_name: db
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: pass
-      POSTGRES_USER: user
-      POSTGRES_DB: mdao
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    ports:
-      - "5435:5432"
-
   mongo:
-    image: mongo:latest
+    image: prismagraphql/mongo-single-replica:5.0.3
     container_name: mongo
     restart: always
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=monty
+      - MONGO_INITDB_ROOT_PASSWORD=pass
 
   # app:
   #   build: .
   #   ports:
   #     - "8000:3000"
   #   environment:
-  #     - DATABASE_URL=postgres://user:pass@db:5432/mdao
   #     - SESSION_SECRET=secret
   #     - ENVIRONMENT=production
