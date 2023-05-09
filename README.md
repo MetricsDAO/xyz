@@ -8,6 +8,8 @@ yarn install
 yarn build
 # start up services (e.g. database)
 yarn docker
+# seed the database
+yarn tsx prisma/seed.ts
 ```
 
 Otherwise
