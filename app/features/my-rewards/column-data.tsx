@@ -1,50 +1,62 @@
-import type { Token, Wallet } from "@prisma/client";
+import { useNetwork } from "wagmi";
 import { RewardBadge } from "~/components/reward-badge";
-import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
+import type { EvmAddress } from "~/domain/address";
+import type { Reward } from "~/domain/reward/functions.server";
 import { useHasPerformed } from "~/hooks/use-has-performed";
-import type { Reward as RewardHook } from "~/hooks/use-reward";
+import { useOptionalUser } from "~/hooks/use-user";
+import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
+import { RedeemButton } from "./redeem-button";
 
-export function Reward({ reward, token }: { reward: RewardHook; token?: Token }) {
+export function RewardDisplay({ reward }: { reward: Reward }) {
   return (
-    <>
-      {reward?.hasReward ? (
-        <RewardBadge
-          payment={{ amount: reward.displayPaymentTokenAmount, token }}
-          reputation={{ amount: reward.displayReputationTokenAmount }}
-        />
-      ) : (
-        <span>--</span>
-      )}
-    </>
+    <RewardBadge
+      payment={{
+        amount: fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2),
+        token: reward.app.token,
+      }}
+      reputation={{ amount: reward.chain.reputationTokenAmount }}
+    />
   );
 }
 
-export function Status({
-  reward,
-  submission,
-  wallets,
-}: {
-  reward: RewardHook;
-  submission: SubmissionWithServiceRequest;
-  wallets: Wallet[];
-}) {
+export function Status({ reward }: { reward: Reward }) {
+  const user = useOptionalUser();
+  const network = useNetwork();
   const hasClaimed = useHasPerformed({
-    laborMarketAddress: submission.laborMarketAddress,
-    id: submission.id,
+    laborMarketAddress: reward.submission.laborMarketAddress,
+    id: reward.submission.id,
     action: "HAS_CLAIMED",
   });
+  if (!reward.chain.hasReward) {
+    return <span>No reward</span>;
+  }
+
+  if (hasClaimed === undefined) {
+    // Loading
+    return <>--</>;
+  }
+  if (reward.app.token?.iou) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        {/* Claim to the signed in wallet instead of user specified wallet */}
+        <ClaimButton
+          reward={reward}
+          disabled={hasClaimed}
+          payoutAddress={user?.address as EvmAddress}
+          network={network.chain?.name}
+        />
+        <RedeemButton reward={reward} disabled={!hasClaimed || reward.treasury?.hasRedeemed === true} />
+      </div>
+    );
+  }
+  console.log("reward", reward);
   return (
-    <>
-      {!reward ? (
-        <>--</>
-      ) : hasClaimed === false && reward.hasReward ? (
-        <ClaimButton rewardAmount={reward.displayPaymentTokenAmount} submission={submission} wallets={wallets} />
-      ) : hasClaimed === true ? (
-        <span>Claimed</span>
-      ) : (
-        <span>No reward</span>
-      )}
-    </>
+    <ClaimButton
+      reward={reward}
+      disabled={hasClaimed}
+      payoutAddress={reward.app.wallet?.address as EvmAddress}
+      network={reward.app.token?.networkName}
+    />
   );
 }

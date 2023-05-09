@@ -86,6 +86,14 @@ async function main() {
         contractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
         symbol: "USDC",
       },
+      {
+        name: "Goerli ETH IOU",
+        decimals: 18,
+        networkName: "Ethereum",
+        iou: true,
+        contractAddress: "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D",
+        symbol: "ETH_TEST3",
+      },
     ],
   });
 }

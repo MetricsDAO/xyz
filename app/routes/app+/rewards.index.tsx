@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "@prisma/client";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -13,14 +12,14 @@ import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
-import { RewardsSearchSchema } from "~/domain/submission/schemas";
+import type { Reward } from "~/domain/reward/functions.server";
+import { getRewards } from "~/domain/reward/functions.server";
+import { RewardsSearchSchema } from "~/domain/reward/schema";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
+import { useTokens } from "~/hooks/use-root-data";
 import { requireUser } from "~/services/session.server";
-import { searchUserSubmissions } from "~/domain/submission/functions.server";
-import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
 const validator = withZod(RewardsSearchSchema);
@@ -30,20 +29,20 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
+
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
-  const tokens = await listTokens();
+  const rewards = await getRewards(user, search);
+
   return typedjson({
-    wallets,
+    walletsCount: wallets.length,
     rewards,
     user,
-    tokens,
     search,
   });
 };
 
 export default function Rewards() {
-  const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
+  const { walletsCount, rewards, search } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -56,25 +55,25 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={rewards.length} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={rewards} wallets={wallets} />
+            <RewardsListView rewards={rewards} />
             <div className="w-fit m-auto">
               <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
             </div>
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter tokens={tokens} />
+          <SearchAndFilter />
         </aside>
       </section>
     </Container>
   );
 }
 
-function RewardsListView({ rewards, wallets }: { rewards: SubmissionWithServiceRequest[]; wallets: Wallet[] }) {
+function RewardsListView({ rewards }: { rewards: Reward[] }) {
   if (rewards.length === 0) {
     return (
       <div className="flex">
@@ -87,17 +86,18 @@ function RewardsListView({ rewards, wallets }: { rewards: SubmissionWithServiceR
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable rewards={rewards} wallets={wallets} />
+        <RewardsTable rewards={rewards} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards rewards={rewards} wallets={wallets} />
+        <RewardsCards rewards={rewards} />
       </div>
     </>
   );
 }
 
-function SearchAndFilter({ tokens }: { tokens: Token[] }) {
+function SearchAndFilter() {
+  const tokens = useTokens();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
