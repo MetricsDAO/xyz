@@ -31,6 +31,7 @@ import * as DOMPurify from "dompurify";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { EvmAddressSchema } from "~/domain/address";
 import { uniqueParticipants } from "~/domain/user-activity/function.server";
+import DeleteServiceRequestModal from "~/features/delete-service-request";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
@@ -107,6 +108,12 @@ export default function ServiceRequest() {
 
   const { canReview, canSubmit } = usePrereqs({ laborMarket });
 
+  const showDelete =
+    user &&
+    user.address === serviceRequest.configuration.serviceRequester &&
+    serviceRequest.claimsToReview.length === 0 &&
+    serviceRequest.claimsToSubmit.length === 0;
+
   return (
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
@@ -118,6 +125,7 @@ export default function ServiceRequest() {
       <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
         <div className="flex flex-wrap gap-5 md:basis-1/3 justify-end">
+          {showDelete && <DeleteServiceRequestModal serviceRequest={serviceRequest} />}
           {showClaimToReview && (
             <WalletGuardedButtonLink
               buttonText="Claim to Review"
