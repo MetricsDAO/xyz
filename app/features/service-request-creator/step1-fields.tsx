@@ -1,62 +1,63 @@
-import type { Project, Token } from "@prisma/client";
-import { Controller, useFormContext } from "react-hook-form";
+import type { Project } from "@prisma/client";
 import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, Input, Select } from "~/components";
-import { claimDate, parseDatetime } from "~/utils/date";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import type { ServiceRequestForm } from "./schema";
+import { ServiceRequestForm, Step1Form, Step1Schema } from "./schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@remix-run/react";
+import { Controller, useForm } from "react-hook-form";
+import { useContracts } from "~/hooks/use-root-data";
 
-export function ServiceRequestCreatorFields({
-  validTokens,
-  validProjects,
-  page,
-  header,
+export function Step1Fields({
+  currentData,
+  projects,
+  onDataUpdate,
 }: {
-  validTokens: Token[];
-  validProjects: Project[];
-  page: number;
-  header: boolean;
+  currentData: Step1Form | null;
+  projects: Project[];
+  onDataUpdate: (data: Step1Form) => void;
 }) {
+  const contracts = useContracts();
+
   const {
     register,
+    control,
     setValue,
     watch,
-    control,
+    handleSubmit,
     formState: { errors },
-  } = useFormContext<ServiceRequestForm>();
+  } = useForm<Step1Form>({
+    resolver: zodResolver(Step1Schema),
+    defaultValues: {
+      ...currentData,
+    },
+  });
 
-  const selectedSubmitDate = watch("Step2.endDate");
-  const selectedSubmitTime = watch("Step2.endTime");
+  const navigate = useNavigate();
 
-  const selectedReviewDate = watch("Step3.reviewEndDate");
-  const selectedReviewTime = watch("Step3.reviewEndTime");
-
-  const formData = watch();
-
-  const currentDate = new Date();
-  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
-  const claimToReviewDeadline = new Date(claimDate(currentDate, parseDatetime(selectedReviewDate, selectedReviewTime)));
+  const onSubmit = (values: Step1Form) => {
+    onDataUpdate(values);
+    navigate(`/app/market/new2/step2`);
+  };
 
   return (
     <>
-      {header && (
-        <div className="space-y-2">
-          <h1 className="font-semibold text-3xl mb-2">Launch an Analytics Challenge</h1>
-          <p className="text-lg text-cyan-500">
-            Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
-            projects launch, grow and succeed.
-          </p>
-          <p className="text-sm text-gray-500">
-            Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These
-            parameters will be applied to all challenges in this marketplace
-          </p>
-        </div>
-      )}
+      <div className="space-y-2">
+        <h1 className="font-semibold text-3xl mb-2">Launch an Analytics Challenge</h1>
+        <p className="text-lg text-cyan-500">
+          Tap the world’s best Web3 analyst community to deliver quality analytics, tooling, or content that helps
+          projects launch, grow and succeed.
+        </p>
+        <p className="text-sm text-gray-500">
+          Define user permissions, blockchain/project and reward token allowlists, and the reward curve. These
+          parameters will be applied to all challenges in this marketplace
+        </p>
+      </div>
       <section className="space-y-3">
         <h2 className="font-bold">Challenge Title*</h2>
         <Field>
-          <Input {...register("Step1.title")} type="text" placeholder="Challenge Title" className="w-full" />
-          <Error error={errors.Step1?.title?.message} />
+          <Input {...register("title")} type="text" placeholder="Challenge Title" className="w-full" />
+          <Error error={errors.title?.message} />
         </Field>
       </section>
       <section className="space-y-3">
@@ -65,9 +66,9 @@ export function ServiceRequestCreatorFields({
           {() => (
             <div className="container overflow-auto">
               <MarkdownEditor
-                value={watch("Step1.description")}
+                value={watch("description")}
                 onChange={(v) => {
-                  setValue("Step1.description", v ?? "");
+                  setValue("description", v ?? "");
                 }}
               />
             </div>
@@ -79,7 +80,7 @@ export function ServiceRequestCreatorFields({
           <div className="flex-grow">
             <Field>
               <Controller
-                name="Step1.language"
+                name="language"
                 control={control}
                 render={({ field }) => {
                   return (
@@ -92,23 +93,23 @@ export function ServiceRequestCreatorFields({
                   );
                 }}
               />
-              <Error error={errors.Step1?.language?.message} />
+              <Error error={errors.language?.message} />
             </Field>
           </div>
           <div className="flex-grow">
             <Field>
               <Controller
                 control={control}
-                name="Step1.projectSlugs"
+                name="projectSlugs"
                 render={({ field }) => (
                   <Combobox
                     {...field}
                     placeholder="Blockchain/Project"
-                    options={validProjects.map((p) => ({ label: p.name, value: p.slug }))}
+                    options={projects.map((p) => ({ label: p.name, value: p.slug }))}
                   />
                 )}
               />
-              <Error error={errors.Step1?.projectSlugs?.message} />
+              <Error error={errors.projectSlugs?.message} />
             </Field>
           </div>
         </div>

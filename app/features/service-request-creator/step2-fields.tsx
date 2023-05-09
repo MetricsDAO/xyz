@@ -1,24 +1,11 @@
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 import { Controller, useFormContext } from "react-hook-form";
-import { ClientOnly } from "remix-utils";
-import { Combobox, Error, Field, Input, Select } from "~/components";
+import { Error, Field, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import type { ServiceRequestForm } from "./schema";
+import type { ServiceRequestForm, Step2Form } from "./schema";
 import invariant from "tiny-invariant";
 
-export function ServiceRequestCreatorFields({
-  validTokens,
-  validProjects,
-  page,
-  header,
-}: {
-  validTokens: Token[];
-  validProjects: Project[];
-  page: number;
-  header: boolean;
-}) {
+export function Step2Fields({ validTokens, currentData }: { validTokens: Token[]; currentData: Step2Form | null }) {
   const {
     register,
     setValue,
@@ -30,25 +17,20 @@ export function ServiceRequestCreatorFields({
   const selectedSubmitDate = watch("Step2.endDate");
   const selectedSubmitTime = watch("Step2.endTime");
 
-  const selectedReviewDate = watch("Step3.reviewEndDate");
-  const selectedReviewTime = watch("Step3.reviewEndTime");
-
   const formData = watch();
 
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
-  const claimToReviewDeadline = new Date(claimDate(currentDate, parseDatetime(selectedReviewDate, selectedReviewTime)));
 
   return (
     <>
-      {header && (
-        <div className="space-y-4">
-          <h1 className="font-semibold text-3xl">Analysts</h1>
-          <p className="text-lg text-cyan-500">
-            Analysts are rewarded based on the Marketplace reward curve once the review deadline is reached.
-          </p>
-        </div>
-      )}
+      <div className="space-y-4">
+        <h1 className="font-semibold text-3xl">Analysts</h1>
+        <p className="text-lg text-cyan-500">
+          Analysts are rewarded based on the Marketplace reward curve once the review deadline is reached.
+        </p>
+      </div>
+
       <section className="space-y-3">
         <h2 className="font-bold">Submission Deadline*</h2>
         <div className="flex flex-col md:flex-row gap-4">
@@ -112,7 +94,7 @@ export function ServiceRequestCreatorFields({
         <p className="text-gray-400 italic">
           Rewards are distributed based on overall submission scores. Higher scores are rewarded more.
         </p>
-        <h3 className="text-sm">Claim to Submit Limit*</h3>
+        <h3 className="text-sm">Total Submissions Limit*</h3>
         <div className="flex gap-4 items-center">
           <Field>
             <Input {...register("Step2.submitLimit")} type="text" />

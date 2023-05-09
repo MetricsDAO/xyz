@@ -1,24 +1,12 @@
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { Project, Token } from "@prisma/client";
 import { Controller, useFormContext } from "react-hook-form";
-import { ClientOnly } from "remix-utils";
-import { Combobox, Error, Field, Input, Select } from "~/components";
+import { Error, Field, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import type { ServiceRequestForm } from "./schema";
 import invariant from "tiny-invariant";
+import { BigNumber } from "ethers";
 
-export function ServiceRequestCreatorFields({
-  validTokens,
-  validProjects,
-  page,
-  header,
-}: {
-  validTokens: Token[];
-  validProjects: Project[];
-  page: number;
-  header: boolean;
-}) {
+export function Step3Fields({ validTokens, validProjects }: { validTokens: Token[]; validProjects: Project[] }) {
   const {
     register,
     setValue,
@@ -33,6 +21,11 @@ export function ServiceRequestCreatorFields({
   const selectedReviewDate = watch("Step3.reviewEndDate");
   const selectedReviewTime = watch("Step3.reviewEndTime");
 
+  const rewardPool = watch("Step3.rewardPool");
+  const reviewLimit = watch("Step3.reviewLimit");
+  const rewardTokenAddress = watch("Step3.rewardToken");
+  const rewardToken = validTokens.find((t) => t.contractAddress === rewardTokenAddress);
+
   const formData = watch();
 
   const currentDate = new Date();
@@ -41,15 +34,14 @@ export function ServiceRequestCreatorFields({
 
   return (
     <>
-      {header && (
-        <div className="space-y-4">
-          <h1 className="font-semibold text-3xl">Reviewers</h1>
-          <p className="text-lg text-cyan-500">
-            Reviewers are rewarded based on their shared of overall submissions scored once the review deadline is
-            reached.
-          </p>
-        </div>
-      )}
+      <div className="space-y-4">
+        <h1 className="font-semibold text-3xl">Reviewers</h1>
+        <p className="text-lg text-cyan-500">
+          Reviewers are rewarded based on their shared of overall submissions scored once the review deadline is
+          reached.
+        </p>
+      </div>
+
       <section className="space-y-3">
         <h2 className="font-bold">Review Deadline*</h2>
         <div className="flex gap-4 md:flex-row flex-col">
@@ -116,7 +108,11 @@ export function ServiceRequestCreatorFields({
             <Input {...register("Step3.reviewLimit")} type="text" />
             <Error error={errors.Step3?.reviewLimit?.message} />
           </Field>
-          <p className="text-neutral-600 text-sm">{"ensures a minimum reward of {amount} {token} per review"}</p>
+          {rewardPool && rewardToken && reviewLimit && (
+            <p className="text-neutral-600 text-sm">{`ensures a minimum reward of ${BigNumber.from(rewardPool)
+              .div(reviewLimit)
+              .toString()} ${rewardToken.symbol} per review`}</p>
+          )}
         </div>
       </section>
     </>

@@ -15,7 +15,7 @@ import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import type { ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
-import { ServiceRequestCreatorFields } from "./service-request-creator-fields.tsx";
+import { Step1Fields } from "./step1-fields";
 
 interface ServiceRequestFormProps {
   projects: Project[];
@@ -129,7 +129,7 @@ export function ServiceRequestCreator({
       )}
 
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <ServiceRequestCreatorFields validTokens={tokens} validProjects={projects} page={page} header={header} />
+        <Step1Fields validProjects={projects} />
       </form>
     </FormProvider>
   );
