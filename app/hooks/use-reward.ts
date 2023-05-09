@@ -1,7 +1,6 @@
 import { BigNumber } from "ethers";
 import { useContractRead } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
-import { displayBalance, fromTokenAmount } from "~/utils/helpers";
 import { useContracts } from "./use-root-data";
 
 type Props = {

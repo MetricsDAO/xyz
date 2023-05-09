@@ -29,6 +29,7 @@ export function RedeemRewardCreator({
 
   const transactor = useTransactor({
     onSuccess: () => {
+      // hack: we want to hide the redeem button to prevent a user from doing a "double redeem"
       setRedeemSuccess(true);
     },
   });
