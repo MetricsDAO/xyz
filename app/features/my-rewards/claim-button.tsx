@@ -9,9 +9,19 @@ import type { Reward } from "~/domain/reward/functions.server";
 import { fromTokenAmount, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
-export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
-  if (!reward.app.wallet) {
-    return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
+export function ClaimButton({
+  reward,
+  disabled,
+  payoutAddress,
+  network,
+}: {
+  reward: Reward;
+  disabled: boolean;
+  payoutAddress?: EvmAddress;
+  network?: string;
+}) {
+  if (!payoutAddress) {
+    return <NoWalletAddressFoundModalButton networkName={network} />;
   }
 
   const displayPaymentAmount = fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2);
@@ -20,7 +30,7 @@ export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: bo
       disabled={disabled}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
-      payoutAddress={reward.app.wallet.address as EvmAddress}
+      payoutAddress={payoutAddress}
       confirmationMessage={
         <>
           <div className="space-y-5 mt-5">
@@ -32,15 +42,13 @@ export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: bo
                 }`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">
-                <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
-                  {reward.app.wallet.networkName}
-                </p>
+                <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">{network}</p>
                 <div className="flex items-center p-3">
                   <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
                   <p className="text-sm text-gray-600">
                     <CopyToClipboard
-                      displayContent={truncateAddress(reward.app.wallet.address)}
-                      content={reward.app.wallet.address}
+                      displayContent={truncateAddress(payoutAddress)}
+                      content={payoutAddress}
                       iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                       hideTooltip={true}
                     />

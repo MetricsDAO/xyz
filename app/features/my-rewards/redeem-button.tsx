@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { useState } from "react";
-import { useBalance } from "wagmi";
+import { erc20ABI, useAccount, useBalance, useContractRead } from "wagmi";
 import { Button } from "~/components/button";
 import { Modal } from "~/components/modal";
 import type { EvmAddress } from "~/domain/address";
@@ -8,11 +8,17 @@ import type { Reward } from "~/domain/reward/functions.server";
 import { RedeemRewardCreator } from "../redeem-reward-creator/redeem-reward-creator";
 
 export function RedeemButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
-  const { data: balance } = useBalance({
+  const account = useAccount();
+
+  const { data: balance } = useContractRead({
+    enabled: !!account.address,
     address: reward.app.token?.contractAddress as EvmAddress,
+    abi: erc20ABI,
+    functionName: "balanceOf",
+    args: [account.address as EvmAddress],
   });
 
-  const hasIouTokenInWallet = balance?.value.gt(0) ?? false;
+  const hasEnoughIOU = balance?.gt(reward.chain.paymentTokenAmount) ?? false;
 
   if (!reward.app.wallet) {
     return <NoWalletAddressFoundModalButton networkName={reward.app.token?.networkName} />;
@@ -29,7 +35,7 @@ export function RedeemButton({ reward, disabled }: { reward: Reward; disabled: b
 
   return (
     <RedeemRewardCreator
-      disabled={disabled || !hasIouTokenInWallet}
+      disabled={disabled || !hasEnoughIOU}
       iouTokenAddress={reward.app.token.contractAddress as EvmAddress}
       laborMarketAddress={reward.submission.laborMarketAddress}
       submissionId={reward.submission.id}
