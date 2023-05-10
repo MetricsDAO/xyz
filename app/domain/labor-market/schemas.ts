@@ -125,7 +125,7 @@ export const LaborMarketFormSchema = z.object({
 });
 export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
 
-export const step1Schema = z.object({
+export const marketplaceDetailsSchema = z.object({
   title: z.string().min(1),
   type: LaborMarketTypeSchema.default("analyze"),
   description: z.string().min(1),
@@ -134,7 +134,7 @@ export const step1Schema = z.object({
   enforcement: EvmAddressSchema,
 });
 
-export type step1Data = z.infer<typeof step1Schema>;
+export type MarketplaceData = z.infer<typeof marketplaceDetailsSchema>;
 
 export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
 export const PermissionType = z.enum(["Badge"]);
@@ -150,19 +150,19 @@ export const BadgeSchema = z.preprocess(
   })
 );
 
-export const step2Schema = z.object({
+export const gatingSchema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
   numberBadgesRequired: z.coerce.number().optional(),
   badges: z.array(BadgeSchema),
 });
 
-export type step2Data = z.infer<typeof step2Schema>;
+export type GatingData = z.infer<typeof gatingSchema>;
 
 export const finalMarketSchema = z.object({
-  page1Data: step1Schema,
-  page2Data: step2Schema,
-  page3Data: step2Schema,
-  page4Data: step2Schema,
+  marketplaceData: marketplaceDetailsSchema,
+  sponsorData: gatingSchema,
+  analystData: gatingSchema,
+  reviewerData: gatingSchema,
 });
 
 export type finalMarketData = z.infer<typeof finalMarketSchema>;

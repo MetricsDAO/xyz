@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
-import type { step1Data, step2Data } from "~/domain/labor-market/schemas";
+import type { MarketplaceData, GatingData } from "~/domain/labor-market/schemas";
 import { requireUser } from "~/services/session.server";
 
 export type OutletContext = [formState, React.Dispatch<React.SetStateAction<formState>>];
@@ -12,19 +12,17 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 interface formState {
-  page1Data: step1Data | null;
-  page2Data: step2Data | null;
-  page3Data: step2Data | null;
-  page4Data: step2Data | null;
-  // Add more pages as needed
+  marketplaceData: MarketplaceData | null;
+  sponsorData: GatingData | null;
+  analystData: GatingData | null;
+  reviewerData: GatingData | null;
 }
 
 const initialFormState: formState = {
-  page1Data: null,
-  page2Data: null,
-  page3Data: null,
-  page4Data: null,
-  // Add more pages as needed
+  marketplaceData: null,
+  sponsorData: null,
+  analystData: null,
+  reviewerData: null,
 };
 
 export default function NewMarketRoute() {

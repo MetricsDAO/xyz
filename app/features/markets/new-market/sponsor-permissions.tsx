@@ -4,26 +4,26 @@ import { useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Container, Error, Field, Input, Label, Select } from "~/components";
 import type { EvmAddress } from "~/domain/address";
-import type { step2Data } from "~/domain/labor-market/schemas";
-import { step2Schema } from "~/domain/labor-market/schemas";
+import type { GatingData } from "~/domain/labor-market/schemas";
+import { gatingSchema } from "~/domain/labor-market/schemas";
 
-export function Step2({
+export function SponsorPermissions({
   currentData,
   onDataUpdate,
 }: {
-  currentData: step2Data | null;
-  onDataUpdate: (values: step2Data) => void;
+  currentData: GatingData | null;
+  onDataUpdate: (values: GatingData) => void;
 }) {
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<step2Data>({
+  } = useForm<GatingData>({
     defaultValues: {
       ...currentData,
     },
-    resolver: zodResolver(step2Schema),
+    resolver: zodResolver(gatingSchema),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -34,10 +34,10 @@ export function Step2({
   const navigate = useNavigate();
   const formData = watch();
 
-  const onSubmit = (values: step2Data) => {
+  const onSubmit = (values: GatingData) => {
     console.log(values);
     onDataUpdate(values);
-    navigate(`/app/market/new2/step3`);
+    navigate(`/app/market/new2/analyst-permissions`);
   };
 
   const onGoBack = () => {
@@ -108,21 +108,12 @@ export function Step2({
               {/* Render sponsorBadges array */}
               {fields.map((field, index) => (
                 <div key={field.id}>
-                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
-                    {/* <Field>
-                  <Label size="sm">Type</Label>
-                  <Controller
-                    name={`sponsorBadges[${index}].type` as keyof step2Data}
-                    control={control}
-                    render={({ field }) => <Select {...field} options={[{ label: "Badge", value: "Badge" }]} />}
-                  />
-                </Field> */}
+                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6 ">
                     <Field>
                       <Label size="sm">Contract Address</Label>
                       <Controller
                         name={`badges[${index}].contractAddress` as `badges.${number}.contractAddress`}
                         control={control}
-                        // defaultValue="0x0000000000000000000000000000000000000000"
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                         )}
@@ -155,19 +146,21 @@ export function Step2({
                     </Field>
                     <Field>
                       <Label size="sm">Max</Label>
-                      <Controller
-                        name={`badges[${index}].maxBadgeBalance` as `badges.${number}.maxBadgeBalance`}
-                        control={control}
-                        defaultValue={field.maxBadgeBalance}
-                        render={({ field: { onChange, onBlur, value, ref } }) => (
-                          <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
-                        )}
-                      />
+                      <div className="flex flex-row items-center gap-4">
+                        <Controller
+                          name={`badges[${index}].maxBadgeBalance` as `badges.${number}.maxBadgeBalance`}
+                          control={control}
+                          defaultValue={field.maxBadgeBalance}
+                          render={({ field: { onChange, onBlur, value, ref } }) => (
+                            <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                          )}
+                        />
+                        <button type="button" onClick={() => remove(index)}>
+                          <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
+                        </button>
+                      </div>
                       <Error error={errors.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
-                    <button type="button" onClick={() => remove(index)}>
-                      Remove
-                    </button>
                   </section>
                 </div>
               ))}
@@ -175,7 +168,7 @@ export function Step2({
               {formData.gatingType !== "Anyone" && (
                 <section>
                   <button className="text-blue-500" type="button" onClick={handleAddBadge}>
-                    + Add Type
+                    + Add Badge
                   </button>
                 </section>
               )}
@@ -189,11 +182,19 @@ export function Step2({
                 >
                   <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "40%" }} />
                 </Progress.Root>
-                <div className="max-w-4xl text-lg mx-auto py-4 gap-6 flex justify-start">
-                  <button onClick={onGoBack} type="button">
-                    Back
+                <div className="max-w-4xl mx-auto py-4 px-6 flex flex-row gap-4 justify-start">
+                  <button onClick={onGoBack} type="button" className="text-lg text-[#333333]">
+                    <div className="flex flex-row gap-2 items-center">
+                      <img src="/img/left-arrow.svg" alt="" />
+                      <span> Prev </span>
+                    </div>
                   </button>
-                  <button type="submit">Next</button>
+                  <button className="text-lg text-[#333333]" type="submit">
+                    <div className="flex flex-row gap-2 items-center">
+                      <span> Next </span>
+                      <img src="/img/right-arrow.svg" alt="" className="" />
+                    </div>
+                  </button>
                 </div>
               </div>
             </form>

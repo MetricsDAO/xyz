@@ -3,26 +3,27 @@ import * as Progress from "@radix-ui/react-progress";
 import { useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Container, Error, Field, Input, Label, Select } from "~/components";
-import type { step2Data } from "~/domain/labor-market/schemas";
-import { step2Schema } from "~/domain/labor-market/schemas";
+import type { EvmAddress } from "~/domain/address";
+import type { GatingData } from "~/domain/labor-market/schemas";
+import { gatingSchema } from "~/domain/labor-market/schemas";
 
-export function Step3({
+export function ReviewerPermissions({
   currentData,
   onDataUpdate,
 }: {
-  currentData: step2Data | null;
-  onDataUpdate: (values: step2Data) => void;
+  currentData: GatingData | null;
+  onDataUpdate: (values: GatingData) => void;
 }) {
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<step2Data>({
+  } = useForm<GatingData>({
     defaultValues: {
       ...currentData,
     },
-    resolver: zodResolver(step2Schema),
+    resolver: zodResolver(gatingSchema),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -33,16 +34,16 @@ export function Step3({
   const navigate = useNavigate();
   const formData = watch();
 
-  const onSubmit = (values: step2Data) => {
+  const onSubmit = (values: GatingData) => {
     console.log(values);
     onDataUpdate(values);
-    navigate(`/app/market/new2/step4`);
+    navigate(`/app/market/new2/review`);
   };
 
   const onGoBack = () => {
     console.log(formData);
     onDataUpdate(formData);
-    navigate(`/app/market/new2/step2`);
+    navigate(`/app/market/new2/analyst-permissions`);
   };
 
   return (
@@ -51,10 +52,10 @@ export function Step3({
         <Container className="py-16">
           <div className="max-w-2xl mx-auto">
             <section className="space-y-1">
-              <h1 className="text-3xl font-semibold antialiased">Analyst Permissions</h1>
+              <h1 className="text-3xl font-semibold antialiased">Reviewer Permissions</h1>
               <p className="text-cyan-500 text-lg">
-                Define who has permission to enter submissions on challenges in this Marketplace. Analysts submit
-                quality work to earn tokens from the reward pool.
+                Define who has permission to review and score submissions on challenges in this Marketplace. Reviewers
+                enforce and elevate quality work from Analysts.
               </p>
             </section>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
@@ -98,20 +99,11 @@ export function Step3({
               {fields.map((field, index) => (
                 <div key={field.id}>
                   <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
-                    {/* <Field>
-                  <Label size="sm">Type</Label>
-                  <Controller
-                    name={`sponsorBadges[${index}].type` as keyof step2Data}
-                    control={control}
-                    render={({ field }) => <Select {...field} options={[{ label: "Badge", value: "Badge" }]} />}
-                  />
-                </Field> */}
                     <Field>
                       <Label size="sm">Contract Address</Label>
                       <Controller
                         name={`badges[${index}].contractAddress` as `badges.${number}.contractAddress`}
                         control={control}
-                        // defaultValue="0x0000000000000000000000000000000000000000"
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                         )}
@@ -169,14 +161,14 @@ export function Step3({
                     onClick={() =>
                       append({
                         type: "Badge",
-                        contractAddress: "0x000",
+                        contractAddress: "" as EvmAddress,
                         tokenId: "",
                         minBadgeBalance: 1,
                         maxBadgeBalance: undefined,
                       })
                     }
                   >
-                    + Add Type
+                    + Add Badge
                   </button>
                 </section>
               )}
@@ -188,13 +180,21 @@ export function Step3({
                   style={{ height: 1, backgroundColor: "#EDEDED" }}
                   className="mx-auto w-full"
                 >
-                  <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "60%" }} />
+                  <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "80%" }} />
                 </Progress.Root>
-                <div className="max-w-4xl text-lg mx-auto py-4 gap-6 flex justify-start">
-                  <button onClick={onGoBack} type="button">
-                    Back
+                <div className="max-w-4xl mx-auto py-4 px-6 flex flex-row gap-4 justify-start">
+                  <button onClick={onGoBack} type="button" className="text-lg text-[#333333]">
+                    <div className="flex flex-row gap-2 items-center">
+                      <img src="/img/left-arrow.svg" alt="" />
+                      <span> Prev </span>
+                    </div>
                   </button>
-                  <button type="submit">Next</button>
+                  <button className="text-lg text-[#333333]" type="submit">
+                    <div className="flex flex-row gap-2 items-center">
+                      <span> Next </span>
+                      <img src="/img/right-arrow.svg" alt="" className="" />
+                    </div>
+                  </button>
                 </div>
               </div>
             </form>
@@ -219,12 +219,12 @@ function FormSteps() {
             <span className="text-[#666666] font-bold text-sm">2</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-            <span className="text-white font-bold text-sm">3</span>
+          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
+            <span className="text-[#666666] font-bold text-sm">3</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">4</span>
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
+            <span className="text-white font-bold text-sm">4</span>
           </div>
           <div className="border border-[#C9C9C9] h-16"></div>
           <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">

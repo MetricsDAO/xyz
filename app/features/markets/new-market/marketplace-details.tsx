@@ -4,20 +4,20 @@ import * as Progress from "@radix-ui/react-progress";
 import { useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
-import type { step1Data } from "~/domain/labor-market/schemas";
-import { step1Schema } from "~/domain/labor-market/schemas";
+import type { MarketplaceData } from "~/domain/labor-market/schemas";
+import { marketplaceDetailsSchema } from "~/domain/labor-market/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 
-export function Step1({
+export function MarketplaceDetails({
   currentData,
   tokens,
   projects,
   onDataUpdate,
 }: {
-  currentData: step1Data | null;
+  currentData: MarketplaceData | null;
   tokens: Token[];
   projects: Project[];
-  onDataUpdate: (data: step1Data) => void;
+  onDataUpdate: (data: MarketplaceData) => void;
 }) {
   const contracts = useContracts();
 
@@ -26,8 +26,8 @@ export function Step1({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<step1Data>({
-    resolver: zodResolver(step1Schema),
+  } = useForm<MarketplaceData>({
+    resolver: zodResolver(marketplaceDetailsSchema),
     defaultValues: {
       ...currentData,
     },
@@ -35,9 +35,9 @@ export function Step1({
 
   const navigate = useNavigate();
 
-  const onSubmit = (values: step1Data) => {
+  const onSubmit = (values: MarketplaceData) => {
     onDataUpdate(values);
-    navigate(`/app/market/new2/step2`);
+    navigate(`/app/market/new2/sponsor-permissions`);
   };
 
   // Filtering out MBETA for now. Might not be necessary later on.
@@ -46,7 +46,7 @@ export function Step1({
   return (
     <div className="relative min-h-screen">
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-9 max-w-4xl mx-auto">
-        <Container className="py-16">
+        <Container className="py-16 mb-16">
           <section className="space-y-1">
             <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
             <p className="text-cyan-500 text-lg">
@@ -129,9 +129,18 @@ export function Step1({
                 >
                   <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "20%" }} />
                 </Progress.Root>
-                <div className="max-w-4xl mx-auto py-4 px-6 flex justify-start">
+                <div className="max-w-4xl mx-auto py-4 px-6 flex flex-row gap-4 justify-start">
+                  <button disabled className="text-lg text-[#A5A5A5]">
+                    <div className="flex flex-row gap-2 items-center text-[#A5A5A5]">
+                      <img className="text-[#A5A5A5]" src="/img/left-arrow.svg" alt="" />
+                      <span> Prev </span>
+                    </div>
+                  </button>
                   <button className="text-lg text-[#333333]" type="submit">
-                    Next
+                    <div className="flex flex-row gap-2 items-center">
+                      <span> Next </span>
+                      <img src="/img/right-arrow.svg" alt="" className="" />
+                    </div>
                   </button>
                 </div>
               </div>
