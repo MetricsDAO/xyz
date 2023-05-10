@@ -8,6 +8,7 @@ export const ActivityTypeSchema = z.enum([
   "ReviewSignal",
   "RequestFulfilled",
   "RequestReviewed",
+  "RequestWithdrawn",
 ]);
 export const ActivityGroupTypeSchema = z.enum(["LaborMarket", "ServiceRequest", "Submission", "Review"]);
 export const ActivityIconTypeSchema = z.enum(["labor-market", "service-request", "submission", "review"]);
@@ -45,6 +46,10 @@ export const activityConfigSchema = z.discriminatedUnion("eventType", [
   }),
   z.object({
     eventType: z.literal("ReviewSignal"),
+    config: RequestConfigSchema,
+  }),
+  z.object({
+    eventType: z.literal("RequestWithdrawn"),
     config: RequestConfigSchema,
   }),
   z.object({

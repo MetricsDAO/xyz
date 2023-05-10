@@ -1,102 +1,40 @@
 ## Development
 
-To run your Remix app locally, make sure your project's local dependencies are installed:
+First time setup
 
 ```sh
+# install deps
 yarn install
+yarn build
+# start up services (e.g. database)
+yarn docker
+# seed the database
+yarn tsx prisma/seed.ts
 ```
 
-Afterwards, start the Remix development server like so:
+Otherwise
 
 ```sh
+# start indexer and app
 yarn dev
-```
-
-If setting up for the first time you may need to run `yarn run dev:css` before running `yarn dev`
-
-Generate the prisma client, run migrations and seed the database:
-
-```sh
-yarn setup
-```
-
-If you pull down commits with updates to the schema make sure you run migrations:
-
-```sh
-yarn prisma migrate dev
-```
-
-Sometimes you might also want to generate Typescript types, perhaps after a schema.prisma change
-
-```sh
-yarn prisma generate
-```
-
-To reset the database and start fresh you can run the following command to delete database data, run migrations and seed the database:
-
-```sh
-yarn reset
 ```
 
 Open up [http://localhost:3000](http://localhost:3000) and you should be ready to go!
 
-## Tips
-
-Sometimes you might also want to generate Typescript types, perhaps after a schema.prisma change
+## Tracer and indexing
 
 ```sh
-yarn prisma generate
+# create a tracer called "mdao-development" using dev contract configuration (-d)
+yarn pine create-tracer mdao-development 1.6.1 -d
+# start tracer
+yarn pine start-tracer mdao-development 1.6.1
+# view tracers
+yarn pine list-tracers
 ```
 
-## Connecting to dev database
+Developers can switch between using development and production contracts by changing the `ENVIRONMENT` env var. `ENVIRONMENT="development"` and `ENVIRONMENT="production"`.
 
-Log in to Fly
-
-```sh
-flyctl auth login
-```
-
-Create tunnel
-
-```sh
-fly proxy 5436:5432 -a mdao-db-staging
-```
-
-Connect to database
-
-- Host: localhost
-- Port: 5436
-- User: postgres
-- Password: get from a developer
-- Database: postgres
-
-## Indexing on-chain data
-
-Instead of reading from contracts directly we index the data into a MongoDB database for better queryability.
-
-To run the indexer locally you will need the following:
-
-- MongoDB server. The docker-compose file in the root of the project includes a mongo instance at `localhost:27017`
-- `MONGODB_URI` environment variable in `.env` is set to `mongodb://localhost:27017`
-- `PINE_API_KEY` environment variable in `.env` is set to a valid Pine API key.
-
-Create a tracer. The `--dev` flag will create a tracer pointing to dev contracts on Polygon.
-
-```sh
-yarn pine create-tracer --dev
-```
-
-Start the tracer:
-
-```sh
-yarn pine start-tracer
-```
-
-Run the indexer server:
-
-```sh
-yarn dev:indexer
-```
+You can then also use the `PINE_SUBSCRIBER_OVERRIDE` env var to create ephemeral Mongo databases when you want to "reindex". For example, `PINE_SUBSCRIBER_OVERRIDE="dev-computer-1"`.
 
 ## Issues
 
