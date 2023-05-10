@@ -2,7 +2,7 @@ import type { Project } from "@prisma/client";
 import { ClientOnly } from "remix-utils";
 import { Button, Combobox, Error, Field, Input, Progress, Select } from "~/components";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import { ServiceRequestForm, Step1Form, Step1Schema } from "./schema";
+import { Step1Form, Step1Schema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
@@ -45,9 +45,9 @@ export function Step1Fields({
   };
 
   return (
-    <div className="flex">
+    <div className="flex relative min-h-screen">
       <div className="w-full">
-        <div className="max-w-2xl mx-auto my-10 space-y-10">
+        <div className="max-w-2xl mx-auto my-16 space-y-10">
           <div className="space-y-2">
             <h1 className="font-semibold text-3xl mb-2">Launch an Analytics Challenge</h1>
             <p className="text-lg text-cyan-500">
@@ -123,11 +123,11 @@ export function Step1Fields({
             </div>
           </section>
         </div>
-        <div className="w-full">
+        <div className=" w-full">
           <Progress progress={25} />
           <div className="flex items-center justify-evenly">
             <div className="flex items-center">
-              <button className="flex gap-3 items-center cursor-pointer" type="submit">
+              <button className="flex gap-3 items-center cursor-pointer" onClick={handleSubmit(onSubmit)}>
                 <p>Next</p>
                 <ArrowRightCircleIcon className="h-8 w-8 text-black" />
               </button>
@@ -140,7 +140,7 @@ export function Step1Fields({
           </div>
         </div>
       </div>
-      <aside className="hidden md:block w-1/6">
+      <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper step={1} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
       </aside>
     </div>

@@ -7,7 +7,8 @@ import { requireUser } from "~/services/session.server";
 export type OutletContext = [formState, React.Dispatch<React.SetStateAction<formState>>];
 
 export const loader = async ({ request }: DataFunctionArgs) => {
-  await requireUser(request, `/app/login?redirectto=app/market/new2`);
+  await requireUser(request, `/app/login?redirectto=app/market/$address/request/new`);
+  //todo - actual address
   return null;
 };
 
@@ -26,10 +27,5 @@ const initialFormState: formState = {
 export default function NewMarketRoute() {
   const [formData, setFormData] = useState<formState>(initialFormState);
 
-  return (
-    <div>
-      <p>{JSON.stringify(formData)}</p>
-      <Outlet context={[formData, setFormData]} />
-    </div>
-  );
+  return <Outlet context={[formData, setFormData]} />;
 }

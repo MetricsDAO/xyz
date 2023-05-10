@@ -44,7 +44,7 @@ export const Step2Schema = z
     rewardToken: EvmAddressSchema,
     rewardTokenDecimals: z.coerce.number().int().positive(),
     rewardPool: z.string(),
-    submitLimit: z.number().positive().int(),
+    submitLimit: z.coerce.number().positive().int(),
   })
   .refine((data) => validTokenAmount(data.rewardPool, data.rewardTokenDecimals), {
     message: "Token amount is invalid.",
