@@ -16,6 +16,7 @@ model User {
   createdAt DateTime       @default(now())
   wallet    Wallet[]
   Ipfs      IpfsMetadata[]
+  Reward    Reward[]
 }
 
 model Wallet {
@@ -40,14 +41,15 @@ model Project {
 
 // Represents a token that MDAO supports. Appear in labor market creation flows and search.
 model Token {
-  id              String  @id @default(cuid()) @map("_id")
+  id              String   @id @default(cuid()) @map("_id")
   symbol          String
-  decimals        Int     @default(18)
-  iou             Boolean @default(false)
+  decimals        Int      @default(18)
+  iou             Boolean  @default(false)
   name            String
   networkName     String
   contractAddress String
-  chain           Network @relation(fields: [networkName], references: [name])
+  chain           Network  @relation(fields: [networkName], references: [name])
+  Reward          Reward[]
 
   @@unique([symbol, networkName])
 }
@@ -67,4 +69,23 @@ model IpfsMetadata {
   timestamp   DateTime
   createdById String
   createdBy   User     @relation(fields: [createdById], references: [id])
+}
+
+model Reward {
+  id                    String   @id @default(cuid()) @map("_id")
+  laborMarketAddress    String
+  submissionId          String
+  hasReward             Boolean
+  paymentTokenAmount    String
+  reputationTokenAmount String
+  hasClaimed            Boolean
+  isIou                 Boolean
+  // iouSignature        String?
+  iouHasRedeemed        Boolean?
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  tokenId               String?
+  token                 Token?   @relation(fields: [tokenId], references: [id])
+
+  @@unique([laborMarketAddress, submissionId])
 }

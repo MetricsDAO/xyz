@@ -42,35 +42,36 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function Rewards() {
-  const { walletsCount, rewards, search } = useTypedLoaderData<typeof loader>();
+  return <p>akjsdjasd</p>;
+  // const { walletsCount, rewards, search } = useTypedLoaderData<typeof loader>();
 
-  return (
-    <Container className="py-16 px-10">
-      <section className="space-y-2 max-w-3xl mb-16">
-        <h1 className="text-3xl font-semibold">Rewards</h1>
-        <div>
-          <p className="text-lg text-cyan-500">Claim reward tokens for all the challenges you’ve won</p>
-          <p className="text-gray-500 text-sm">
-            View all your pending and claimed rewards and manage all your payout addresses
-          </p>
-        </div>
-      </section>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={walletsCount} />
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
-        <main className="flex-1">
-          <div className="space-y-5">
-            <RewardsListView rewards={rewards} />
-            <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
-            </div>
-          </div>
-        </main>
-        <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter />
-        </aside>
-      </section>
-    </Container>
-  );
+  // return (
+  //   <Container className="py-16 px-10">
+  //     <section className="space-y-2 max-w-3xl mb-16">
+  //       <h1 className="text-3xl font-semibold">Rewards</h1>
+  //       <div>
+  //         <p className="text-lg text-cyan-500">Claim reward tokens for all the challenges you’ve won</p>
+  //         <p className="text-gray-500 text-sm">
+  //           View all your pending and claimed rewards and manage all your payout addresses
+  //         </p>
+  //       </div>
+  //     </section>
+  //     <RewardsTab rewardsNum={rewards.length} addressesNum={walletsCount} />
+  //     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
+  //       <main className="flex-1">
+  //         <div className="space-y-5">
+  //           <RewardsListView rewards={rewards} />
+  //           <div className="w-fit m-auto">
+  //             <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
+  //           </div>
+  //         </div>
+  //       </main>
+  //       <aside className="md:w-1/4 lg:md-1/5">
+  //         <SearchAndFilter />
+  //       </aside>
+  //     </section>
+  //   </Container>
+  // );
 }
 
 function RewardsListView({ rewards }: { rewards: Reward[] }) {

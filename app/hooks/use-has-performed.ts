@@ -4,7 +4,7 @@ import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "./use-root-data";
 
 // These constants should be the same as the internals on the contract
-const ACTIONS = {
+export const ACTIONS = {
   HAS_SIGNALED: ethers.utils.id("hasSignaled"),
   HAS_SUBMITTED: ethers.utils.id("hasSubmitted"),
   HAS_CLAIMED: ethers.utils.id("hasClaimed"),

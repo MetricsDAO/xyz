@@ -53,6 +53,16 @@ export const SubmissionDocSchema = z.object({
     })
     .optional(),
   appData: SubmissionFormSchema.nullable(),
+  reward: z
+    .object({
+      hasReward: z.boolean(),
+      paymentTokenAmount: z.string(),
+      reputationTokenAmount: z.string(),
+      hasClaimed: z.boolean(),
+      iouSignature: z.string().optional(),
+      iouHasRedeemed: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export const SubmissionEventSchema = z.object({
