@@ -10,7 +10,7 @@ export async function fetchSignatures(submissions: SubmissionWithAppData[]) {
       marketplaceAddress: s.laborMarketAddress,
       iouAddress: s.sr.configuration.pToken,
       type: "submission",
-      amount: s.reward?.paymentTokenAmount,
+      amount: s.app.reward?.paymentTokenAmount,
     };
   });
 
@@ -20,7 +20,10 @@ export async function fetchSignatures(submissions: SubmissionWithAppData[]) {
     method: "POST",
     body: JSON.stringify(parsedBody),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
-  }).then((res) => res.json());
+  }).then((res) => {
+    console.log("res", res);
+    return res.json();
+  });
 
   return fetchSignaturesResponseSchema.parse(res);
 }

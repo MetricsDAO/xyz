@@ -47,13 +47,10 @@ const getAppData = async (
   });
 };
 
-const updateTreasuryClaimStatus = async (
-  user: User,
-  submissions: SubmissionWithAppData[]
-): Promise<SubmissionWithAppData[]> => {
+const updateTreasuryClaimStatus = async (user: User, submissions: SubmissionWithAppData[]) => {
   const iouSubmissions = submissions.filter((r) => r.app.reward?.isIou === true && !r.app.reward?.iouHasRedeemed);
   if (iouSubmissions.length === 0) {
-    return submissions;
+    return;
   }
 
   const signatures = await fetchSignatures(iouSubmissions);
@@ -75,8 +72,6 @@ const updateTreasuryClaimStatus = async (
       },
     });
   }
-
-  return await getAppData(user, submissions);
 };
 
 const getSignature = (signatures: FetchSignaturesResponse, submission: SubmissionDoc) => {
@@ -196,13 +191,10 @@ const createRewards = async (user: User, submissions: SubmissionWithAppData[]): 
   return await getAppData(user, submissions);
 };
 
-const updateClaimStatus = async (
-  user: User,
-  submissions: SubmissionWithAppData[]
-): Promise<SubmissionWithAppData[]> => {
+const updateClaimStatus = async (user: User, submissions: SubmissionWithAppData[]) => {
   const unclaimedRewards = submissions.filter((s) => s.app.reward?.hasClaimed === false);
   if (unclaimedRewards.length === 0) {
-    return submissions;
+    return;
   }
   const contracts = getContracts();
   const m = (await multicall({
@@ -232,8 +224,6 @@ const updateClaimStatus = async (
       });
     }
   }
-
-  return await getAppData(user, submissions);
 };
 
 const synchronizeRewards = async (
@@ -242,10 +232,13 @@ const synchronizeRewards = async (
 ): Promise<SubmissionWithAppData[]> => {
   const withAppData = await getAppData(user, submissions);
   const withRewards = await createRewards(user, withAppData);
-  const withUpdatedClaimStatus = await updateClaimStatus(user, withRewards);
-  const withTreasuryData = await updateTreasuryClaimStatus(user, withUpdatedClaimStatus);
 
-  return withTreasuryData;
+  // Could run these concurrently
+  await updateClaimStatus(user, withRewards);
+  await updateTreasuryClaimStatus(user, withRewards);
+
+  const withUpdatedStatus = await getAppData(user, withRewards);
+  return withUpdatedStatus;
 };
 
 export const getRewards = async (user: User, search: RewardsSearch) => {
