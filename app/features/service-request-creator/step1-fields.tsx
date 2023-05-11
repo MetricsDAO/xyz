@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
 import { useContracts } from "~/hooks/use-root-data";
-import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import FormStepper from "~/components/form-stepper/form-stepper";
 
 export function Step1Fields({
@@ -127,6 +127,10 @@ export function Step1Fields({
           <Progress progress={25} />
           <div className="flex items-center justify-evenly">
             <div className="flex items-center">
+              <div className="flex gap-3 items-center">
+                <ArrowLeftCircleIcon className="h-8 w-8 text-neutral-400" />
+                <p className="mr-6 text-neutral-400">Prev</p>
+              </div>
               <button className="flex gap-3 items-center cursor-pointer" onClick={handleSubmit(onSubmit)}>
                 <p>Next</p>
                 <ArrowRightCircleIcon className="h-8 w-8 text-black" />

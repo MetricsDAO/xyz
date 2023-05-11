@@ -22,7 +22,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
     throw notFound("Labor market not found");
   }
   const laborMarketTokens = await findTokenBySymbol(laborMarket.appData.tokenAllowlist);
-  console.log(laborMarket.appData.tokenAllowlist);
   return typedjson({ address, laborMarketTokens });
 };
 

@@ -1,12 +1,11 @@
-import type { Project, Token } from "@prisma/client";
-import { Controller, useForm, useFormContext } from "react-hook-form";
+import type { Token } from "@prisma/client";
+import { Controller, useForm } from "react-hook-form";
 import { Button, Error, Field, Input, Progress, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { ServiceRequestForm, Step3Form, Step3Schema } from "./schema";
+import { Step3Form, Step3Schema } from "./schema";
 import invariant from "tiny-invariant";
 import { BigNumber } from "ethers";
-import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
-import { ArrowRightCircleIcon } from "@heroicons/react/20/solid";
+import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "@remix-run/react";
 import { useContracts } from "~/hooks/use-root-data";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,13 +42,12 @@ export function Step3Fields({
 
   const onSubmit = (values: Step3Form) => {
     onDataUpdate(values);
-    navigate(`/app/market/${address}/request/new/step3`);
+    navigate(`/app/market/${address}/request/new/overview`);
   };
 
   const onGoBack = () => {
-    console.log(formData);
     onDataUpdate(formData);
-    navigate(`/app/market/${address}/request/new/step1`);
+    navigate(`/app/market/${address}/request/new/step2`);
   };
 
   //const selectedSubmitDate = watch("endDate");
@@ -86,14 +84,14 @@ export function Step3Fields({
             <div className="flex gap-4 md:flex-row flex-col">
               <div className="flex-grow w-full">
                 <Field>
-                  <Input {...register("Step3.reviewEndDate")} type="date" />
-                  <Error error={errors.Step3?.reviewEndDate?.message} />
+                  <Input {...register("reviewEndDate")} type="date" />
+                  <Error error={errors.reviewEndDate?.message} />
                 </Field>
               </div>
               <div className="flex-grow w-full">
                 <Field>
-                  <Input {...register("Step3.reviewEndTime")} type="time" />
-                  <Error error={errors.Step3?.reviewEndTime?.message} />
+                  <Input {...register("reviewEndTime")} type="time" />
+                  <Error error={errors.reviewEndTime?.message} />
                 </Field>
               </div>
             </div>

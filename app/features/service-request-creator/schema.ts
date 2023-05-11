@@ -60,7 +60,7 @@ export const Step3Schema = z
     rewardToken: EvmAddressSchema,
     rewardTokenDecimals: z.coerce.number().int().positive(),
     rewardPool: z.string(),
-    reviewLimit: z.number().positive().int(),
+    reviewLimit: z.coerce.number().positive().int(),
   })
   .refine((data) => validTokenAmount(data.rewardPool, data.rewardTokenDecimals), {
     message: "Token amount is invalid.",
