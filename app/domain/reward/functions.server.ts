@@ -29,18 +29,8 @@ const getRewardData = async (
   user: User,
   submissions: SubmissionWithServiceRequest[]
 ): Promise<SubmissionWithReward[]> => {
-  let rewards = await findAllRewardsForUser(user.id);
-  const submissionsMissingReward = submissions.filter(
-    (s) => rewards.find((r) => r.submissionId === s.id && r.laborMarketAddress === s.laborMarketAddress) === undefined
-  );
-
-  if (submissionsMissingReward.length > 0) {
-    await createRewards(user, submissionsMissingReward);
-    // Call this again to get the newly created rewards
-    rewards = await findAllRewardsForUser(user.id);
-  }
-
   const wallets = await findAllWalletsForUser(user.id);
+  const rewards = await findAllRewardsForUser(user.id);
 
   return submissions.map((s) => {
     const reward = rewards.find((r) => r.submissionId === s.id && r.laborMarketAddress === s.laborMarketAddress);
@@ -58,7 +48,7 @@ const getRewardData = async (
 
 const updateTreasuryClaimStatus = async (submissions: SubmissionWithReward[]) => {
   const iouSubmissions = submissions.filter(
-    (r) => r.serviceProviderReward.reward?.isIou === true && !r.serviceProviderReward.reward?.iouHasRedeemed
+    (r) => r.serviceProviderReward.reward.isIou === true && !r.serviceProviderReward.reward.iouHasRedeemed
   );
   if (iouSubmissions.length === 0) {
     return;
@@ -200,7 +190,7 @@ const createRewards = async (user: User, submissions: SubmissionWithServiceReque
 };
 
 const updateClaimStatus = async (user: User, submissions: SubmissionWithReward[]) => {
-  const unclaimedRewards = submissions.filter((s) => s.serviceProviderReward.reward?.hasClaimed === false);
+  const unclaimedRewards = submissions.filter((s) => s.serviceProviderReward.reward.hasClaimed === false);
   if (unclaimedRewards.length === 0) {
     return;
   }
@@ -234,21 +224,23 @@ const updateClaimStatus = async (user: User, submissions: SubmissionWithReward[]
   }
 };
 
-const synchronizeRewards = async (
-  user: User,
-  submissions: SubmissionWithServiceRequest[]
-): Promise<SubmissionWithReward[]> => {
+const synchronizeRewards = async (user: User, submissions: SubmissionWithServiceRequest[]) => {
+  let rewards = await findAllRewardsForUser(user.id);
+  const submissionsMissingReward = submissions.filter(
+    (s) => rewards.find((r) => r.submissionId === s.id && r.laborMarketAddress === s.laborMarketAddress) === undefined
+  );
+
+  await createRewards(user, submissionsMissingReward);
+
   const withRewards = await getRewardData(user, submissions);
 
   // Could run these concurrently
   await updateClaimStatus(user, withRewards);
   await updateTreasuryClaimStatus(withRewards);
-
-  const withUpdatedStatus = await getRewardData(user, withRewards);
-  return withUpdatedStatus;
 };
 
 export const getRewards = async (user: User, search: RewardsSearch) => {
   const submissions = await searchUserSubmissions({ ...search, serviceProvider: user.address as EvmAddress });
-  return await synchronizeRewards(user, submissions);
+  await synchronizeRewards(user, submissions);
+  return await getRewardData(user, submissions);
 };
