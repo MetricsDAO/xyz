@@ -145,7 +145,7 @@ export function Step3Fields({
                 <Input {...register("reviewLimit")} type="text" />
                 <Error error={errors.reviewLimit?.message} />
               </Field>
-              {rewardPool && rewardToken && reviewLimit && (
+              {rewardPool && rewardToken && reviewLimit && reviewLimit != 0 && (
                 <p className="text-neutral-600 text-sm">{`ensures a minimum reward of ${BigNumber.from(rewardPool)
                   .div(reviewLimit)
                   .toString()} ${rewardToken.symbol} per review`}</p>
