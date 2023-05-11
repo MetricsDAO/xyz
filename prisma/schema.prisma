@@ -80,7 +80,7 @@ model Reward {
   reputationTokenAmount String
   hasClaimed            Boolean
   isIou                 Boolean
-  // iouSignature        String?
+  iouSignature          String?
   iouHasRedeemed        Boolean?
   userId                String
   user                  User     @relation(fields: [userId], references: [id])

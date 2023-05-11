@@ -1,20 +1,18 @@
-import type { RewardWithChainMeta } from "~/domain/reward/functions.server";
+import type { SubmissionWithAppData } from "~/domain/reward/functions.server";
 import { fetchClaimsResponseSchema, fetchSignaturesBodySchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
-export async function fetchSignatures(rewards: RewardWithChainMeta[]) {
-  const body = rewards
-    .filter((r) => r.app.wallet !== undefined)
-    .map((r) => {
-      return {
-        submissionID: Number(r.submission.id),
-        claimerAddress: r.app.wallet?.address,
-        marketplaceAddress: r.submission.laborMarketAddress,
-        iouAddress: r.submission.sr.configuration.pToken,
-        type: "submission",
-        amount: r.chain.paymentTokenAmount,
-      };
-    });
+export async function fetchSignatures(submissions: SubmissionWithAppData[]) {
+  const body = submissions.map((s) => {
+    return {
+      submissionID: Number(s.id),
+      claimerAddress: s.app.wallet?.address,
+      marketplaceAddress: s.laborMarketAddress,
+      iouAddress: s.sr.configuration.pToken,
+      type: "submission",
+      amount: s.reward?.paymentTokenAmount,
+    };
+  });
 
   const parsedBody = fetchSignaturesBodySchema.parse(body);
 
@@ -27,10 +25,10 @@ export async function fetchSignatures(rewards: RewardWithChainMeta[]) {
   return fetchSignaturesResponseSchema.parse(res);
 }
 
-export async function fetchClaims(rewards: RewardWithChainMeta[]) {
+export async function fetchClaims(submissions: SubmissionWithAppData[]) {
   return await Promise.all(
-    rewards.map(async (r) => {
-      const { laborMarketAddress, id: submissionId } = r.submission;
+    submissions.map(async (s) => {
+      const { laborMarketAddress, id: submissionId } = s;
       const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${laborMarketAddress}/${submissionId}/submission`, {
         method: "GET",
         headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
