@@ -69,7 +69,7 @@ export function ServiceRequestCreator({
     onSuccess: useCallback((receipt) => {}, []),
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
       submitTransactor.start({
@@ -77,14 +77,14 @@ export function ServiceRequestCreator({
         config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, values, laborMarketAddress } }),
       });
     }
-  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
+  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);*/
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
     defaultValues,
   });
 
-  const onSubmit = (values: ServiceRequestForm) => {
+  /*const onSubmit = (values: ServiceRequestForm) => {
     approveTransactor.start({
       metadata: {},
       config: () =>
@@ -109,7 +109,7 @@ export function ServiceRequestCreator({
         }),
     });
     setValues(values);
-  };
+  };*/
 
   return (
     <FormProvider {...methods}>
@@ -128,9 +128,7 @@ export function ServiceRequestCreator({
         />
       )}
 
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <Step1Fields validProjects={projects} />
-      </form>
+      <form className="space-y-10 py-5"></form>
     </FormProvider>
   );
 }
@@ -148,18 +146,18 @@ function configureFromValues({
 }) {
   const { values, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
-  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.endDate, values.endTime)));
+  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.Step2.endDate, values.Step2.endTime)));
 
   return configureWrite({
     abi: contracts.LaborMarket.abi,
     address: laborMarketAddress,
     functionName: "submitRequest",
     args: [
-      values.rewardToken,
-      toTokenAmount(values.rewardPool, values.rewardTokenDecimals),
+      values.Step2.rewardToken,
+      toTokenAmount(values.Step2.rewardPool, values.Step2.rewardTokenDecimals),
       BigNumber.from(unixTimestamp(signalDeadline)),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.endDate, values.endTime)))),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.reviewEndDate, values.reviewEndTime)))),
+      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.Step2.endDate, values.Step2.endTime)))),
+      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.Step3.reviewEndDate, values.Step3.reviewEndTime)))),
       cid,
     ],
   });
