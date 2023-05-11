@@ -56,7 +56,7 @@ const getRewardData = async (
   });
 };
 
-const updateTreasuryClaimStatus = async (user: User, submissions: SubmissionWithAppData[]) => {
+const updateTreasuryClaimStatus = async (submissions: SubmissionWithReward[]) => {
   const iouSubmissions = submissions.filter(
     (r) => r.serviceProviderReward.reward?.isIou === true && !r.serviceProviderReward.reward?.iouHasRedeemed
   );
@@ -199,8 +199,8 @@ const createRewards = async (user: User, submissions: SubmissionWithServiceReque
   });
 };
 
-const updateClaimStatus = async (user: User, submissions: SubmissionWithAppData[]) => {
-  const unclaimedRewards = submissions.filter((s) => s.app.reward?.hasClaimed === false);
+const updateClaimStatus = async (user: User, submissions: SubmissionWithReward[]) => {
+  const unclaimedRewards = submissions.filter((s) => s.serviceProviderReward.reward?.hasClaimed === false);
   if (unclaimedRewards.length === 0) {
     return;
   }
@@ -237,13 +237,12 @@ const updateClaimStatus = async (user: User, submissions: SubmissionWithAppData[
 const synchronizeRewards = async (
   user: User,
   submissions: SubmissionWithServiceRequest[]
-): Promise<SubmissionWithAppData[]> => {
-  const withAppData = await getRewardData(user, submissions);
-  const withRewards = await createRewards(user, withAppData);
+): Promise<SubmissionWithReward[]> => {
+  const withRewards = await getRewardData(user, submissions);
 
   // Could run these concurrently
   await updateClaimStatus(user, withRewards);
-  await updateTreasuryClaimStatus(user, withRewards);
+  await updateTreasuryClaimStatus(withRewards);
 
   const withUpdatedStatus = await getRewardData(user, withRewards);
   return withUpdatedStatus;
