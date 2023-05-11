@@ -16,39 +16,50 @@ import { findAllRewardsForUser } from "~/services/reward.server";
 import { prisma } from "~/services/prisma.server";
 import { ACTIONS } from "~/hooks/use-has-performed";
 import type { EvmAddress } from "../address";
+import invariant from "tiny-invariant";
 
-type AppData = {
-  reward?: Reward;
+type RewardWithWallet = {
+  reward: Reward & { token: Token | null };
   wallet?: Wallet;
-  token?: Token;
 };
 
-export type SubmissionWithAppData = SubmissionWithServiceRequest & { app: AppData };
+export type SubmissionWithReward = SubmissionWithServiceRequest & { serviceProviderReward: RewardWithWallet };
 
-const getAppData = async (
+const getRewardData = async (
   user: User,
   submissions: SubmissionWithServiceRequest[]
-): Promise<SubmissionWithAppData[]> => {
+): Promise<SubmissionWithReward[]> => {
+  let rewards = await findAllRewardsForUser(user.id);
+  const submissionsMissingReward = submissions.filter(
+    (s) => rewards.find((r) => r.submissionId === s.id && r.laborMarketAddress === s.laborMarketAddress) === undefined
+  );
+
+  if (submissionsMissingReward.length > 0) {
+    await createRewards(user, submissionsMissingReward);
+    // Call this again to get the newly created rewards
+    rewards = await findAllRewardsForUser(user.id);
+  }
+
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await findAllRewardsForUser(user.id);
-  const tokens = await listTokens();
+
   return submissions.map((s) => {
-    const token = tokens.find((t) => t.contractAddress === s.sr.configuration.pToken);
     const reward = rewards.find((r) => r.submissionId === s.id && r.laborMarketAddress === s.laborMarketAddress);
-    const wallet = wallets.find((w) => w.networkName === token?.networkName);
+    const wallet = wallets.find((w) => w.networkName === reward?.token?.networkName);
+    invariant(reward, "Reward should exist");
     return {
       ...s,
-      app: {
-        wallet,
+      serviceProviderReward: {
         reward,
-        token,
+        wallet,
       },
     };
   });
 };
 
 const updateTreasuryClaimStatus = async (user: User, submissions: SubmissionWithAppData[]) => {
-  const iouSubmissions = submissions.filter((r) => r.app.reward?.isIou === true && !r.app.reward?.iouHasRedeemed);
+  const iouSubmissions = submissions.filter(
+    (r) => r.serviceProviderReward.reward?.isIou === true && !r.serviceProviderReward.reward?.iouHasRedeemed
+  );
   if (iouSubmissions.length === 0) {
     return;
   }
@@ -151,17 +162,14 @@ const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionW
   return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
 };
 
-const createRewards = async (user: User, submissions: SubmissionWithAppData[]): Promise<SubmissionWithAppData[]> => {
-  const missingReward = submissions.filter((s) => s.app.reward === undefined);
-  if (missingReward.length === 0) {
-    return submissions;
-  }
+const createRewards = async (user: User, submissions: SubmissionWithServiceRequest[]) => {
+  if (submissions.length === 0) return;
 
   const contracts = getContracts();
   // multicall that returns all the rewards in format [BigNumber, BigNumber][]
   // where first element is the payment token amount and the second is the reputation token amount
   const m = (await multicall({
-    contracts: missingReward.map((s) => {
+    contracts: submissions.map((s) => {
       return {
         address: contracts.ScalableLikertEnforcement.address,
         abi: contracts.ScalableLikertEnforcement.abi,
@@ -171,24 +179,24 @@ const createRewards = async (user: User, submissions: SubmissionWithAppData[]): 
     }),
   })) as [BigNumber, BigNumber][];
 
+  const tokens = await listTokens();
   await prisma.reward.createMany({
-    data: missingReward.map((s, index) => {
+    data: submissions.map((s, index) => {
       const getReward = m[index]!;
+      const token = tokens.find((t) => t.contractAddress === s.sr.configuration.pToken);
       return {
         userId: user.id,
         submissionId: s.id,
         laborMarketAddress: s.laborMarketAddress,
         hasClaimed: false,
-        tokenId: s.app.token?.id,
-        isIou: s.app.token?.iou ?? false,
+        tokenId: token?.id,
+        isIou: token?.iou ?? false,
         hasReward: getReward[0].gt(0) || getReward[1].gt(0),
         paymentTokenAmount: getReward[0].toString(),
         reputationTokenAmount: getReward[1].toString(),
       };
     }),
   });
-
-  return await getAppData(user, submissions);
 };
 
 const updateClaimStatus = async (user: User, submissions: SubmissionWithAppData[]) => {
@@ -230,14 +238,14 @@ const synchronizeRewards = async (
   user: User,
   submissions: SubmissionWithServiceRequest[]
 ): Promise<SubmissionWithAppData[]> => {
-  const withAppData = await getAppData(user, submissions);
+  const withAppData = await getRewardData(user, submissions);
   const withRewards = await createRewards(user, withAppData);
 
   // Could run these concurrently
   await updateClaimStatus(user, withRewards);
   await updateTreasuryClaimStatus(user, withRewards);
 
-  const withUpdatedStatus = await getAppData(user, withRewards);
+  const withUpdatedStatus = await getRewardData(user, withRewards);
   return withUpdatedStatus;
 };
 
