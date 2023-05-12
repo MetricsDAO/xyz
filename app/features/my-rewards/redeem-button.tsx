@@ -11,13 +11,15 @@ export function RedeemButton({ submission }: { submission: SubmissionWithReward 
   // Would be great to be able to wagmi's useBalance here... except it doesn't work.
   const { data: balance } = useBalance({ tokenAddress: token?.contractAddress as EvmAddress });
 
-  const hasEnoughIOU = balance?.gt(paymentTokenAmount) ?? false;
-
   if (!submission.serviceProviderReward.wallet) {
     return <NoPayoutAddressFoundModalButton buttonText="Redeem" networkName={token?.networkName} />;
   }
 
-  // TODO this error handling?
+  const hasEnoughIOU = balance?.gt(paymentTokenAmount) ?? false;
+  if (!hasEnoughIOU) {
+    <p>Not enough IOUToken</p>;
+  }
+
   if (!iouSignature) {
     return <p>Missing signature</p>;
   }
