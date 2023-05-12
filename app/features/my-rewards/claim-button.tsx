@@ -2,43 +2,43 @@ import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/20/soli
 import { Link } from "@remix-run/react";
 import { CopyToClipboard } from "~/components";
 import type { EvmAddress } from "~/domain/address";
-import type { Reward } from "~/domain/reward/functions.server";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { fromTokenAmount, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 import { NoPayoutAddressFoundModalButton } from "./no-payout-address-modal-button";
 
-export function ClaimButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
-  if (!reward.app.wallet) {
-    return <NoPayoutAddressFoundModalButton buttonText="Claim" networkName={reward.app.token?.networkName} />;
+export function ClaimButton({ submission }: { submission: SubmissionWithReward }) {
+  const { hasClaimed, paymentTokenAmount, token } = submission.serviceProviderReward.reward;
+  const { wallet } = submission.serviceProviderReward;
+  if (!wallet) {
+    return <NoPayoutAddressFoundModalButton buttonText="Claim" networkName={token?.networkName} />;
   }
 
-  const displayPaymentAmount = fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2);
+  const displayPaymentAmount = fromTokenAmount(paymentTokenAmount, token?.decimals ?? 18, 2);
   return (
     <ClaimRewardCreator
-      disabled={disabled}
-      laborMarketAddress={reward.submission.laborMarketAddress}
-      submissionId={reward.submission.id}
-      payoutAddress={reward.app.wallet.address as EvmAddress}
+      disabled={hasClaimed}
+      laborMarketAddress={submission.laborMarketAddress}
+      submissionId={submission.id}
+      payoutAddress={wallet.address as EvmAddress}
       confirmationMessage={
         <>
           <div className="space-y-5 mt-5">
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">{`${displayPaymentAmount} ${
-                  reward.app.token?.symbol ?? ""
-                }`}</p>
+                <p className="text-yellow-700 text-2xl ml-2">{`${displayPaymentAmount} ${token?.symbol ?? ""}`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">
                 <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
-                  {reward.app.wallet.networkName}
+                  {wallet.networkName}
                 </p>
                 <div className="flex items-center p-3">
                   <CheckCircleIcon className="mr-1 text-lime-500 h-5 w-5" />
                   <p className="text-sm text-gray-600">
                     <CopyToClipboard
-                      displayContent={truncateAddress(reward.app.wallet.address)}
-                      content={reward.app.wallet.address}
+                      displayContent={truncateAddress(wallet.address)}
+                      content={wallet.address}
                       iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                       hideTooltip={true}
                     />

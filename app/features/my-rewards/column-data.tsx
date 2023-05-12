@@ -1,45 +1,36 @@
 import { RewardBadge } from "~/components/reward-badge";
-import type { Reward } from "~/domain/reward/functions.server";
-import { useHasPerformed } from "~/hooks/use-has-performed";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
 import { ClaimIouTokenButton } from "./claim-iou-token-button";
 import { RedeemButton } from "./redeem-button";
 
-export function RewardDisplay({ reward }: { reward: Reward }) {
+export function RewardDisplay({ submission }: { submission: SubmissionWithReward }) {
+  const { paymentTokenAmount, reputationTokenAmount, token } = submission.serviceProviderReward.reward;
   return (
     <RewardBadge
       payment={{
-        amount: fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2),
-        token: reward.app.token,
+        amount: fromTokenAmount(paymentTokenAmount, token?.decimals ?? 18, 2),
+        token: token ?? undefined,
       }}
-      reputation={{ amount: reward.chain.reputationTokenAmount }}
+      reputation={{ amount: reputationTokenAmount }}
     />
   );
 }
 
-export function Status({ reward }: { reward: Reward }) {
-  const hasClaimed = useHasPerformed({
-    laborMarketAddress: reward.submission.laborMarketAddress,
-    id: reward.submission.id,
-    action: "HAS_CLAIMED",
-  });
-  if (!reward.chain.hasReward) {
+export function Status({ submission }: { submission: SubmissionWithReward }) {
+  const { hasReward, isIou } = submission.serviceProviderReward.reward;
+  if (!hasReward) {
     return <span>No reward</span>;
   }
 
-  if (hasClaimed === undefined) {
-    // Loading
-    return <>--</>;
-  }
-  if (reward.app.token?.iou) {
+  if (isIou) {
     return (
       <div className="flex flex-wrap gap-2">
-        {/* Claim to the signed in wallet instead of user specified wallet */}
-        <ClaimIouTokenButton reward={reward} disabled={hasClaimed} />
-        <RedeemButton reward={reward} disabled={!hasClaimed || reward.treasury?.hasRedeemed === true} />
+        <ClaimIouTokenButton submission={submission} />
+        <RedeemButton submission={submission} />
       </div>
     );
   }
-  return <ClaimButton reward={reward} disabled={hasClaimed} />;
+  return <ClaimButton submission={submission} />;
 }

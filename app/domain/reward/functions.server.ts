@@ -47,9 +47,10 @@ const getRewardData = async (
 };
 
 const updateTreasuryClaimStatus = async (submissions: SubmissionWithReward[]) => {
-  const iouSubmissions = submissions.filter(
-    (r) => r.serviceProviderReward.reward.isIou === true && !r.serviceProviderReward.reward.iouHasRedeemed
-  );
+  const iouSubmissions = submissions.filter((s) => {
+    const { hasClaimed, isIou, iouHasRedeemed } = s.serviceProviderReward.reward;
+    return hasClaimed && isIou && !iouHasRedeemed;
+  });
   if (iouSubmissions.length === 0) {
     return;
   }
@@ -190,7 +191,9 @@ const createRewards = async (user: User, submissions: SubmissionWithServiceReque
 };
 
 const updateClaimStatus = async (user: User, submissions: SubmissionWithReward[]) => {
-  const unclaimedRewards = submissions.filter((s) => s.serviceProviderReward.reward.hasClaimed === false);
+  const unclaimedRewards = submissions.filter(
+    (s) => s.serviceProviderReward.reward.hasClaimed === false && s.serviceProviderReward.reward.hasReward === true
+  );
   if (unclaimedRewards.length === 0) {
     return;
   }
@@ -239,7 +242,7 @@ const synchronizeRewards = async (user: User, submissions: SubmissionWithService
   await updateTreasuryClaimStatus(withRewards);
 };
 
-export const getRewards = async (user: User, search: RewardsSearch) => {
+export const getSubmissionWithRewards = async (user: User, search: RewardsSearch) => {
   const submissions = await searchUserSubmissions({ ...search, serviceProvider: user.address as EvmAddress });
   await synchronizeRewards(user, submissions);
   return await getRewardData(user, submissions);

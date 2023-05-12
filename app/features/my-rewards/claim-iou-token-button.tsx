@@ -2,16 +2,17 @@ import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/20/soli
 import { useNetwork } from "wagmi";
 import { CopyToClipboard } from "~/components";
 import type { EvmAddress } from "~/domain/address";
-import type { Reward } from "~/domain/reward/functions.server";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { useUser } from "~/hooks/use-user";
 import { fromTokenAmount, truncateAddress } from "~/utils/helpers";
 import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 import { NoPayoutAddressFoundModalButton } from "./no-payout-address-modal-button";
 
-export function ClaimIouTokenButton({ reward, disabled }: { reward: Reward; disabled: boolean }) {
+export function ClaimIouTokenButton({ submission }: { submission: SubmissionWithReward }) {
   const user = useUser();
   const network = useNetwork();
 
+  // Claim to the signed in wallet instead of user specified wallet
   const payoutAddress = user.address as EvmAddress;
   const networkName = network.chain?.name;
 
@@ -19,12 +20,13 @@ export function ClaimIouTokenButton({ reward, disabled }: { reward: Reward; disa
     return <NoPayoutAddressFoundModalButton buttonText="Claim" networkName={networkName} />;
   }
 
-  const displayPaymentAmount = fromTokenAmount(reward.chain.paymentTokenAmount, reward.app.token?.decimals ?? 18, 2);
+  const { paymentTokenAmount, token, hasClaimed } = submission.serviceProviderReward.reward;
+  const displayPaymentAmount = fromTokenAmount(paymentTokenAmount, token?.decimals ?? 18, 2);
   return (
     <ClaimRewardCreator
-      disabled={disabled}
-      laborMarketAddress={reward.submission.laborMarketAddress}
-      submissionId={reward.submission.id}
+      disabled={hasClaimed}
+      laborMarketAddress={submission.laborMarketAddress}
+      submissionId={submission.id}
       payoutAddress={payoutAddress}
       confirmationMessage={
         <>
@@ -32,9 +34,7 @@ export function ClaimIouTokenButton({ reward, disabled }: { reward: Reward; disa
             <div className="space-y-2">
               <div className="flex items-center">
                 <img alt="" src="/img/trophy.svg" className="h-8 w-8" />
-                <p className="text-yellow-700 text-2xl ml-2">{`${displayPaymentAmount} ${
-                  reward.app.token?.symbol ?? ""
-                }`}</p>
+                <p className="text-yellow-700 text-2xl ml-2">{`${displayPaymentAmount} ${token?.symbol ?? ""}`}</p>
               </div>
               <div className="flex border-solid border rounded-md border-trueGray-200">
                 <p className="text-sm font-semiboldborder-solid border-0 border-r border-trueGray-200 p-3">
