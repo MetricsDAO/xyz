@@ -5,7 +5,7 @@ export const RewardsSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
   sortBy: z.enum(["sr[0].appData.title", "blockTimestamp"]).default("blockTimestamp"),
   order: z.enum(["asc", "desc"]).default("desc"),
-  first: z.number().default(100),
+  first: z.number().default(15),
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   isPastEnforcementExpiration: z.boolean().default(true),

@@ -7,18 +7,17 @@ import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import { Field, Label, ValidatedSelect } from "~/components";
-import { Checkbox } from "~/components/checkbox";
-import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
+import type { EvmAddress } from "~/domain/address";
 import type { SubmissionWithReward } from "~/domain/reward/functions.server";
+import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { getSubmissionWithRewards } from "~/domain/reward/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward/schema";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
-import { useTokens } from "~/hooks/use-root-data";
 import { requireUser } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
@@ -28,21 +27,25 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/rewards");
 
   const url = new URL(request.url);
-  const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
-
+  const search = {
+    ...getParamsOrFail(url.searchParams, RewardsSearchSchema),
+    serviceProvider: user.address as EvmAddress,
+  };
   const wallets = await findAllWalletsForUser(user.id);
   const submissionsWithReward = await getSubmissionWithRewards(user, search);
+  const submissionCount = await countSubmissionsWithRewards(search);
 
   return typedjson({
     walletsCount: wallets.length,
     submissionsWithReward,
+    submissionCount,
     user,
     search,
   });
 };
 
 export default function Rewards() {
-  const { walletsCount, submissionsWithReward, search } = useTypedLoaderData<typeof loader>();
+  const { walletsCount, submissionsWithReward, submissionCount, search } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -55,13 +58,13 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={submissionsWithReward.length} addressesNum={walletsCount} />
+      <RewardsTab rewardsNum={submissionCount} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
             <RewardsListView submissions={submissionsWithReward} />
             <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(submissionsWithReward.length / search.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(submissionCount / search.first)} />
             </div>
           </div>
         </main>
@@ -97,7 +100,7 @@ function RewardsListView({ submissions }: { submissions: SubmissionWithReward[] 
 }
 
 function SearchAndFilter() {
-  const tokens = useTokens();
+  // const tokens = useTokens();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -132,18 +135,18 @@ function SearchAndFilter() {
           ]}
         />
       </Field>
-      <p className="text-lg font-semibold">Filter:</p>
-      <Label size="md">Status</Label>
+      {/* <p className="text-lg font-semibold">Filter:</p> */}
+      {/* <Label size="md">Status</Label>
       <Checkbox value="unclaimed" label="Unclaimed" />
-      <Checkbox value="claimed" label="Claimed" />
-      <Label>Reward Token</Label>
+      <Checkbox value="claimed" label="Claimed" /> */}
+      {/* <Label>Reward Token</Label>
       <ValidatedCombobox
         placeholder="Select option"
         name="token"
         onChange={handleChange}
         size="sm"
         options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
-      />
+      /> */}
       {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
       <Combobox
         placeholder="Select option"

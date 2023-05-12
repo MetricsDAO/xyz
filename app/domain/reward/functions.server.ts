@@ -97,62 +97,6 @@ const hasRedeemed = (claims: FetchClaimsResponse[], submission: SubmissionDoc) =
   return !!redemptedClaim;
 };
 
-const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
-  const submissionsDocs = await mongo.submissions
-    .aggregate([
-      {
-        $match: {
-          $and: [params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {}],
-        },
-      },
-      {
-        $lookup: {
-          from: "serviceRequests",
-          let: {
-            sr_id: "$serviceRequestId",
-            m_addr: "$laborMarketAddress",
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$id", "$$sr_id"] },
-                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
-                    params.token
-                      ? {
-                          serviceRequestRewardPools: { $elemMatch: { "$configuration.pToken": { $in: params.token } } },
-                        }
-                      : {},
-                  ],
-                },
-              },
-            },
-          ],
-          as: "sr",
-        },
-      },
-      {
-        $unwind: "$sr",
-      },
-      ...(params.isPastEnforcementExpiration
-        ? [
-            {
-              $match: {
-                $and: [{ "sr.configuration.enforcementExp": { $lt: utcDate() } }],
-              },
-            },
-          ]
-        : []),
-    ])
-    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
-    .skip(params.first * (params.page - 1))
-    .limit(params.first)
-    .toArray();
-
-  return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
-};
-
 const createRewards = async (user: User, submissions: SubmissionWithServiceRequest[]) => {
   if (submissions.length === 0) return;
 
@@ -242,8 +186,87 @@ const synchronizeRewards = async (user: User, submissions: SubmissionWithService
   await updateTreasuryClaimStatus(withRewards);
 };
 
+const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
+  const submissionsDocs = await mongo.submissions
+    .aggregate(searchSubmissionsPipeline(params))
+    .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
+
+  return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
+};
+
+type SearchSubmissionsWithReward = Pick<
+  RewardsSearch,
+  "serviceProvider" | "q" | "token" | "isPastEnforcementExpiration"
+>;
+export const countSubmissionsWithRewards = async (params: SearchSubmissionsWithReward) => {
+  const agg = await mongo.submissions
+    .aggregate([
+      ...searchSubmissionsPipeline(params),
+      {
+        $count: "match_count",
+      },
+    ])
+    .toArray();
+  return agg[0]!.match_count;
+};
+
+const searchSubmissionsPipeline = (params: SearchSubmissionsWithReward) => {
+  return [
+    {
+      $match: {
+        $and: [
+          params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+          params.q ? { $text: { $search: params.q } } : {},
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "serviceRequests",
+        let: {
+          sr_id: "$serviceRequestId",
+          m_addr: "$laborMarketAddress",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$id", "$$sr_id"] },
+                  { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                  params.token
+                    ? {
+                        serviceRequestRewardPools: { $elemMatch: { "$configuration.pToken": { $in: params.token } } },
+                      }
+                    : {},
+                ],
+              },
+            },
+          },
+        ],
+        as: "sr",
+      },
+    },
+    {
+      $unwind: "$sr",
+    },
+    ...(params.isPastEnforcementExpiration
+      ? [
+          {
+            $match: {
+              $and: [{ "sr.configuration.enforcementExp": { $lt: utcDate() } }],
+            },
+          },
+        ]
+      : []),
+  ];
+};
+
 export const getSubmissionWithRewards = async (user: User, search: RewardsSearch) => {
-  const submissions = await searchUserSubmissions({ ...search, serviceProvider: user.address as EvmAddress });
+  const submissions = await searchUserSubmissions(search);
   await synchronizeRewards(user, submissions);
   return await getRewardData(user, submissions);
 };
