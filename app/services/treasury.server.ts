@@ -1,18 +1,20 @@
-import type { SubmissionWithAppData } from "~/domain/reward/functions.server";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { fetchClaimsResponseSchema, fetchSignaturesBodySchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
-export async function fetchSignatures(submissions: SubmissionWithAppData[]) {
-  const body = submissions.map((s) => {
-    return {
-      submissionID: Number(s.id),
-      claimerAddress: s.app.wallet?.address,
-      marketplaceAddress: s.laborMarketAddress,
-      iouAddress: s.sr.configuration.pToken,
-      type: "submission",
-      amount: s.app.reward?.paymentTokenAmount,
-    };
-  });
+export async function fetchSignatures(submissions: SubmissionWithReward[]) {
+  const body = submissions
+    .filter((s) => s.serviceProviderReward.wallet?.address !== undefined)
+    .map((s) => {
+      return {
+        submissionID: Number(s.id),
+        claimerAddress: s.serviceProviderReward.wallet?.address,
+        marketplaceAddress: s.laborMarketAddress,
+        iouAddress: s.sr.configuration.pToken,
+        type: "submission",
+        amount: s.serviceProviderReward.reward.paymentTokenAmount,
+      };
+    });
 
   const parsedBody = fetchSignaturesBodySchema.parse(body);
 
@@ -21,14 +23,13 @@ export async function fetchSignatures(submissions: SubmissionWithAppData[]) {
     body: JSON.stringify(parsedBody),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
   }).then((res) => {
-    console.log("res", res);
     return res.json();
   });
 
   return fetchSignaturesResponseSchema.parse(res);
 }
 
-export async function fetchClaims(submissions: SubmissionWithAppData[]) {
+export async function fetchClaims(submissions: SubmissionWithReward[]) {
   return await Promise.all(
     submissions.map(async (s) => {
       const { laborMarketAddress, id: submissionId } = s;
