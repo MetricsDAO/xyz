@@ -1,7 +1,7 @@
 import { useOutletContext } from "@remix-run/react";
 import type { OutletContext } from "./market_.$address.request.new";
-import { Step1Fields } from "~/features/service-request-creator/step1-fields";
-import { Step1Form } from "~/features/service-request-creator/schema";
+import { AppDataFields } from "~/features/service-request-creator/app-data-fields";
+import { AppDataForm } from "~/features/service-request-creator/schema";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { DataFunctionArgs } from "@remix-run/server-runtime";
 import { requireUser } from "~/services/session.server";
@@ -25,14 +25,14 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   return typedjson({ address, laborMarketProjects });
 };
 
-export default function Step1Page() {
+export default function AppDataPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
   const { laborMarketProjects, address } = useTypedLoaderData<typeof loader>();
   return (
-    <Step1Fields
+    <AppDataFields
       currentData={formData.page1Data}
       projects={laborMarketProjects}
-      onDataUpdate={(data: Step1Form) => {
+      onDataUpdate={(data: AppDataForm) => {
         setFormData((prevData) => ({ ...prevData, page1Data: data }));
       }}
       address={address}

@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
-import { Step1Form, Step2Form, Step3Form } from "~/features/service-request-creator/schema";
+import { AppDataForm, AnalystForm, ReviewerForm } from "~/features/service-request-creator/schema";
 import { requireUser } from "~/services/session.server";
 
 export type OutletContext = [formState, React.Dispatch<React.SetStateAction<formState>>];
@@ -13,9 +13,9 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 interface formState {
-  page1Data: Step1Form | null;
-  page2Data: Step2Form | null;
-  page3Data: Step3Form | null;
+  page1Data: AppDataForm | null;
+  page2Data: AnalystForm | null;
+  page3Data: ReviewerForm | null;
 }
 
 const initialFormState: formState = {

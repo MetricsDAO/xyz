@@ -2,7 +2,7 @@ import type { Project } from "@prisma/client";
 import { ClientOnly } from "remix-utils";
 import { Button, Combobox, Error, Field, Input, Progress, Select } from "~/components";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import { Step1Form, Step1Schema } from "./schema";
+import { AppDataForm, AppDataSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,15 +10,15 @@ import { useContracts } from "~/hooks/use-root-data";
 import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import FormStepper from "~/components/form-stepper/form-stepper";
 
-export function Step1Fields({
+export function AppDataFields({
   currentData,
   projects,
   onDataUpdate,
   address,
 }: {
-  currentData: Step1Form | null;
+  currentData: AppDataForm | null;
   projects: Project[];
-  onDataUpdate: (data: Step1Form) => void;
+  onDataUpdate: (data: AppDataForm) => void;
   address: `0x${string}`;
 }) {
   const contracts = useContracts();
@@ -30,8 +30,8 @@ export function Step1Fields({
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<Step1Form>({
-    resolver: zodResolver(Step1Schema),
+  } = useForm<AppDataForm>({
+    resolver: zodResolver(AppDataSchema),
     defaultValues: {
       ...currentData,
     },
@@ -39,9 +39,9 @@ export function Step1Fields({
 
   const navigate = useNavigate();
 
-  const onSubmit = (values: Step1Form) => {
+  const onSubmit = (values: AppDataForm) => {
     onDataUpdate(values);
-    navigate(`/app/market/${address}/request/new/step2`);
+    navigate(`/app/market/${address}/request/new/analyst`);
   };
 
   return (

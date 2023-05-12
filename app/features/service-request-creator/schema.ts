@@ -28,16 +28,16 @@ function validDeadlines(reviewDate: string, reviewTime: string, submitDate: stri
   return parseDatetime(reviewDate, reviewTime) > parseDatetime(submitDate, submitTime);
 }
 
-export const Step1Schema = z.object({
+export const AppDataSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   language: z.enum(["english", "spanish"]),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
 });
 
-export type Step1Form = z.infer<typeof Step1Schema>;
+export type AppDataForm = z.infer<typeof AppDataSchema>;
 
-export const Step2Schema = z
+export const AnalystSchema = z
   .object({
     endDate: InputDateSchema,
     endTime: InputTimeSchema,
@@ -51,9 +51,9 @@ export const Step2Schema = z
     path: ["rewardPool"],
   });
 
-export type Step2Form = z.infer<typeof Step2Schema>;
+export type AnalystForm = z.infer<typeof AnalystSchema>;
 
-export const Step3Schema = z
+export const ReviewerSchema = z
   .object({
     reviewEndDate: InputDateSchema,
     reviewEndTime: InputTimeSchema,
@@ -67,17 +67,22 @@ export const Step3Schema = z
     path: ["rewardPool"],
   });
 
-export type Step3Form = z.infer<typeof Step3Schema>;
+export type ReviewerForm = z.infer<typeof ReviewerSchema>;
 
 export const ServiceRequestFormSchema = z
   .object({
-    Step1: Step1Schema,
-    Step2: Step2Schema,
-    Step3: Step3Schema,
+    appData: AppDataSchema,
+    analystData: AnalystSchema,
+    reviewerData: ReviewerSchema,
   })
   .refine(
     (data) =>
-      validDeadlines(data.Step3.reviewEndDate, data.Step3.reviewEndTime, data.Step2.endDate, data.Step2.endTime),
+      validDeadlines(
+        data.reviewerData.reviewEndDate,
+        data.reviewerData.reviewEndTime,
+        data.analystData.endDate,
+        data.analystData.endTime
+      ),
     {
       message: "Review deadline cannot be before submission deadline.",
       path: ["reviewEndTime"],
@@ -93,13 +98,13 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
   const endDate = faker.date.between(startDate, reviewDate);
 
   return {
-    Step1: {
+    appData: {
       title: faker.commerce.productName(),
       description: faker.lorem.paragraphs(2),
       language: "english",
       projectSlugs: [],
     },
-    Step2: {
+    analystData: {
       endDate: dayjs(endDate).format("YYYY-MM-DD"),
       endTime: dayjs(endDate).format("HH:mm"),
       rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
@@ -107,7 +112,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
       rewardPool: "0.000001",
       submitLimit: 10,
     },
-    Step3: {
+    reviewerData: {
       reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
       reviewEndTime: dayjs(reviewDate).format("HH:mm"),
       rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",

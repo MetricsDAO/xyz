@@ -15,7 +15,6 @@ import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import type { ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
-import { Step1Fields } from "./step1-fields";
 
 interface ServiceRequestFormProps {
   projects: Project[];
@@ -146,18 +145,22 @@ function configureFromValues({
 }) {
   const { values, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
-  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.Step2.endDate, values.Step2.endTime)));
+  const signalDeadline = new Date(
+    claimDate(currentDate, parseDatetime(values.analystData.endDate, values.analystData.endTime))
+  );
 
   return configureWrite({
     abi: contracts.LaborMarket.abi,
     address: laborMarketAddress,
     functionName: "submitRequest",
     args: [
-      values.Step2.rewardToken,
-      toTokenAmount(values.Step2.rewardPool, values.Step2.rewardTokenDecimals),
+      values.analystData.rewardToken,
+      toTokenAmount(values.analystData.rewardPool, values.analystData.rewardTokenDecimals),
       BigNumber.from(unixTimestamp(signalDeadline)),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.Step2.endDate, values.Step2.endTime)))),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.Step3.reviewEndDate, values.Step3.reviewEndTime)))),
+      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.analystData.endDate, values.analystData.endTime)))),
+      BigNumber.from(
+        unixTimestamp(new Date(parseDatetime(values.reviewerData.reviewEndDate, values.reviewerData.reviewEndTime)))
+      ),
       cid,
     ],
   });
