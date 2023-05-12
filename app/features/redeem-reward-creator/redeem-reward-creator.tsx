@@ -5,32 +5,35 @@ import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 
 interface RedeemRewardCreatorProps {
   disabled: boolean;
   iouTokenAddress: EvmAddress;
-  laborMarketAddress: EvmAddress;
-  submissionId: string;
-  amount: string;
-  signature: `0x${string}`;
+  iouSignature: `0x${string}`;
+  submission: SubmissionWithReward;
   confirmationMessage?: React.ReactNode;
 }
 
 export function RedeemRewardCreator({
   disabled,
-  iouTokenAddress,
-  laborMarketAddress,
-  submissionId,
-  amount,
   confirmationMessage,
-  signature,
+  iouTokenAddress,
+  iouSignature,
+  submission,
 }: RedeemRewardCreatorProps) {
   const [redeemSuccess, setRedeemSuccess] = useState(false);
 
   const transactor = useTransactor({
     onSuccess: () => {
-      // hack: we want to hide the redeem button to prevent a user from doing a "double redeem"
+      // we want to hide the redeem button to prevent a user from doing a "double redeem"
       setRedeemSuccess(true);
+      fetch(`/api/reward/${submission.serviceProviderReward.reward.id}/mark-as-redeemed`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
     },
   });
 
@@ -38,7 +41,13 @@ export function RedeemRewardCreator({
     transactor.start({
       config: () =>
         configureFromValues({
-          inputs: { iouTokenAddress, laborMarketAddress, submissionId, amount, signature },
+          inputs: {
+            iouTokenAddress,
+            laborMarketAddress: submission.laborMarketAddress,
+            submissionId: submission.id,
+            amount: submission.serviceProviderReward.reward.paymentTokenAmount,
+            signature: iouSignature,
+          },
         }),
     });
   };

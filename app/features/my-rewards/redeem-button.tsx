@@ -5,7 +5,7 @@ import { NoPayoutAddressFoundModalButton } from "./no-payout-address-modal-butto
 import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 
 export function RedeemButton({ submission }: { submission: SubmissionWithReward }) {
-  const { token, paymentTokenAmount, iouSignature, hasClaimed, iouHasRedeemed } =
+  const { token, paymentTokenAmount, iouSignature, hasClaimed, iouHasRedeemed, iouClientTransactionSuccess } =
     submission.serviceProviderReward.reward;
 
   // Would be great to be able to wagmi's useBalance here... except it doesn't work.
@@ -30,12 +30,10 @@ export function RedeemButton({ submission }: { submission: SubmissionWithReward 
 
   return (
     <RedeemRewardCreator
-      disabled={!hasClaimed || iouHasRedeemed === true || !hasEnoughIOU}
+      disabled={!hasClaimed || iouHasRedeemed === true || iouClientTransactionSuccess || !hasEnoughIOU}
       iouTokenAddress={token.contractAddress as EvmAddress}
-      laborMarketAddress={submission.laborMarketAddress}
-      submissionId={submission.id}
-      amount={paymentTokenAmount}
-      signature={iouSignature as `0x${string}`}
+      iouSignature={iouSignature as `0x${string}`}
+      submission={submission}
       confirmationMessage={<></>} //TODO
     />
   );

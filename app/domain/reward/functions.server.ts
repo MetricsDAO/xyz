@@ -210,7 +210,7 @@ export const countSubmissionsWithRewards = async (params: SearchSubmissionsWithR
       },
     ])
     .toArray();
-  return agg[0]!.match_count;
+  return agg[0]?.match_count ?? 0;
 };
 
 const searchSubmissionsPipeline = (params: SearchSubmissionsWithReward) => {

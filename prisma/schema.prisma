@@ -72,20 +72,21 @@ model IpfsMetadata {
 }
 
 model Reward {
-  id                    String   @id @default(cuid()) @map("_id")
-  laborMarketAddress    String
-  submissionId          String
-  hasReward             Boolean
-  paymentTokenAmount    String
-  reputationTokenAmount String
-  hasClaimed            Boolean
-  isIou                 Boolean
-  iouSignature          String?
-  iouHasRedeemed        Boolean?
-  userId                String
-  user                  User     @relation(fields: [userId], references: [id])
-  tokenId               String?
-  token                 Token?   @relation(fields: [tokenId], references: [id])
+  id                          String   @id @default(cuid()) @map("_id")
+  laborMarketAddress          String
+  submissionId                String
+  hasReward                   Boolean
+  paymentTokenAmount          String
+  reputationTokenAmount       String
+  hasClaimed                  Boolean
+  isIou                       Boolean
+  iouSignature                String?
+  iouClientTransactionSuccess Boolean? // Not to be trusted. Used by front-end to hide the redeem button.
+  iouHasRedeemed              Boolean?
+  userId                      String
+  user                        User     @relation(fields: [userId], references: [id])
+  tokenId                     String?
+  token                       Token?   @relation(fields: [tokenId], references: [id])
 
   @@unique([laborMarketAddress, submissionId])
 }
