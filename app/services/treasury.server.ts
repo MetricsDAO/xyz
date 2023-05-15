@@ -1,20 +1,19 @@
+import type { EvmAddress } from "~/domain/address";
 import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { fetchClaimsResponseSchema, fetchSignaturesBodySchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
-export async function fetchSignatures(submissions: SubmissionWithReward[]) {
-  const body = submissions
-    .filter((s) => s.serviceProviderReward.wallet?.address !== undefined)
-    .map((s) => {
-      return {
-        submissionID: Number(s.id),
-        claimerAddress: s.serviceProviderReward.wallet?.address,
-        marketplaceAddress: s.laborMarketAddress,
-        iouAddress: s.sr.configuration.pToken,
-        type: "submission",
-        amount: s.serviceProviderReward.reward.paymentTokenAmount,
-      };
-    });
+export async function fetchSignatures(claimerAddress: EvmAddress, submissions: SubmissionWithReward[]) {
+  const body = submissions.map((s) => {
+    return {
+      submissionID: Number(s.id),
+      claimerAddress: claimerAddress,
+      marketplaceAddress: s.laborMarketAddress,
+      iouAddress: s.sr.configuration.pToken,
+      type: "submission",
+      amount: s.serviceProviderReward.reward.paymentTokenAmount,
+    };
+  });
 
   const parsedBody = fetchSignaturesBodySchema.parse(body);
 

@@ -46,16 +46,16 @@ const getRewardData = async (
   });
 };
 
-const updateTreasuryClaimStatus = async (submissions: SubmissionWithReward[]) => {
+const updateTreasuryClaimStatus = async (user: User, submissions: SubmissionWithReward[]) => {
   const iouSubmissions = submissions.filter((s) => {
-    const { hasClaimed, isIou, iouHasRedeemed } = s.serviceProviderReward.reward;
-    return hasClaimed && isIou && !iouHasRedeemed;
+    const { isIou, iouHasRedeemed } = s.serviceProviderReward.reward;
+    return isIou && !iouHasRedeemed;
   });
   if (iouSubmissions.length === 0) {
     return;
   }
 
-  const signatures = await fetchSignatures(iouSubmissions);
+  const signatures = await fetchSignatures(user.address as EvmAddress, iouSubmissions);
   const claims = await fetchClaims(iouSubmissions);
 
   for (const s of iouSubmissions) {
@@ -181,9 +181,9 @@ const synchronizeRewards = async (user: User, submissions: SubmissionWithService
 
   const withRewards = await getRewardData(user, submissions);
 
-  // Could run these concurrently
+  // Could probably run these concurrently
   await updateClaimStatus(user, withRewards);
-  await updateTreasuryClaimStatus(withRewards);
+  await updateTreasuryClaimStatus(user, withRewards);
 };
 
 const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionWithServiceRequest[]> => {
