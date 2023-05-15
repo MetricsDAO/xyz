@@ -60,7 +60,7 @@ async function main() {
   });
 
   await prisma.network.createMany({
-    data: [{ name: "Polygon" }, { name: "Ethereum" }],
+    data: [{ name: "Polygon" }, { name: "Ethereum" }, { name: "Solana" }],
   });
 
   await prisma.token.createMany({
