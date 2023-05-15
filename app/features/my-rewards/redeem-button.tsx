@@ -16,9 +16,6 @@ export function RedeemButton({ submission }: { submission: SubmissionWithReward 
   }
 
   const hasEnoughIOU = balance?.gt(paymentTokenAmount) ?? false;
-  if (!hasEnoughIOU) {
-    <p>Not enough IOUToken</p>;
-  }
 
   if (!iouSignature) {
     return <p>Missing signature</p>;
