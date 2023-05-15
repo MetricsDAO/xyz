@@ -171,6 +171,14 @@ const updateClaimStatus = async (user: User, submissions: SubmissionWithReward[]
   }
 };
 
+/**
+ * To prevent unnecessary calls to the blockchain and treasury service, which slows down page load, we can cache the rewards related data
+ * in our mongodb in much the same way the indexer caches other data.
+ *
+ * This should be called immediately before we ever show a user's rewards to avoid showing stale data.
+ * @param user
+ * @param submissions
+ */
 const synchronizeRewards = async (user: User, submissions: SubmissionWithServiceRequest[]) => {
   let rewards = await findAllRewardsForUser(user.id);
   const submissionsMissingReward = submissions.filter(
