@@ -229,8 +229,8 @@ export function FinalStep({
               <div className="mb-2">
                 {sponsorBadgeFields.map((field, index) => (
                   <div key={field.id}>
-                    <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
-                      <Field>
+                    <section className="grid grid-cols-1 align-center md:grid-cols-6 gap-6 items-center">
+                      <Field className="col-span-2">
                         <Label size="sm">Contract Address</Label>
                         <Controller
                           name={
@@ -283,8 +283,8 @@ export function FinalStep({
                         />
                         <Error error={errors.sponsorData?.badges?.[index]?.maxBadgeBalance?.message} />
                       </Field>
-                      <button type="button" onClick={() => removeSponsorBadge(index)}>
-                        Remove
+                      <button className="mt-8" type="button" onClick={() => removeSponsorBadge(index)}>
+                        <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
                       </button>
                     </section>
                   </div>
@@ -335,8 +335,8 @@ export function FinalStep({
 
               {analystBadgeFields.map((field, index) => (
                 <div key={field.id}>
-                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
-                    <Field>
+                  <section className="grid grid-cols-1 align-center md:grid-cols-6 gap-6 items-center">
+                    <Field className="col-span-2">
                       <Label size="sm">Contract Address</Label>
                       <Controller
                         name={
@@ -389,8 +389,8 @@ export function FinalStep({
                       />
                       <Error error={errors.analystData?.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
-                    <button type="button" onClick={() => removeAnalystBadge(index)}>
-                      Remove
+                    <button className="mt-8" type="button" onClick={() => removeAnalystBadge(index)}>
+                      <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
                     </button>
                   </section>
                 </div>
@@ -440,8 +440,8 @@ export function FinalStep({
 
               {reviewerBadgeFields.map((field, index) => (
                 <div key={field.id}>
-                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6">
-                    <Field>
+                  <section className="grid grid-cols-1 align-center md:grid-cols-6 gap-6 items-center">
+                    <Field className="col-span-2">
                       <Label size="sm">Contract Address</Label>
                       <Controller
                         name={
@@ -494,8 +494,8 @@ export function FinalStep({
                       />
                       <Error error={errors.reviewerData?.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
-                    <button type="button" onClick={() => removeReviewerBadge(index)}>
-                      Remove
+                    <button className="mt-8" type="button" onClick={() => removeReviewerBadge(index)}>
+                      <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
                     </button>
                   </section>
                 </div>

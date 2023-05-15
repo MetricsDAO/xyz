@@ -108,8 +108,8 @@ export function SponsorPermissions({
               {/* Render sponsorBadges array */}
               {fields.map((field, index) => (
                 <div key={field.id}>
-                  <section className="grid grid-cols-1 align-center md:grid-cols-5 gap-6 ">
-                    <Field>
+                  <section className="grid grid-cols-1 align-center md:grid-cols-6 gap-6 items-center">
+                    <Field className="col-span-2">
                       <Label size="sm">Contract Address</Label>
                       <Controller
                         name={`badges[${index}].contractAddress` as `badges.${number}.contractAddress`}
@@ -155,12 +155,12 @@ export function SponsorPermissions({
                             <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                           )}
                         />
-                        <button type="button" onClick={() => remove(index)}>
-                          <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
-                        </button>
                       </div>
                       <Error error={errors.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
+                    <button className="mt-8" type="button" onClick={() => remove(index)}>
+                      <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
+                    </button>
                   </section>
                 </div>
               ))}
