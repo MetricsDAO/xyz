@@ -8,25 +8,18 @@ import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 
 interface RedeemRewardCreatorProps {
-  disabled: boolean;
-  iouTokenAddress: EvmAddress;
-  iouSignature: `0x${string}`;
   submission: SubmissionWithReward;
   confirmationMessage?: React.ReactNode;
 }
 
-export function RedeemRewardCreator({
-  disabled,
-  confirmationMessage,
-  iouTokenAddress,
-  iouSignature,
-  submission,
-}: RedeemRewardCreatorProps) {
+export function RedeemRewardCreator({ confirmationMessage, submission }: RedeemRewardCreatorProps) {
+  const { token, paymentTokenAmount, iouSignature, hasClaimed, iouHasRedeemed, iouClientTransactionSuccess } =
+    submission.serviceProviderReward.reward;
   const [redeemSuccess, setRedeemSuccess] = useState(false);
 
   const transactor = useTransactor({
     onSuccess: () => {
-      // we want to hide the redeem button to prevent a user from doing a "double redeem"
+      // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
       fetch(`/api/reward/${submission.serviceProviderReward.reward.id}/mark-as-redeemed`, {
         method: "POST",
@@ -42,15 +35,23 @@ export function RedeemRewardCreator({
       config: () =>
         configureFromValues({
           inputs: {
-            iouTokenAddress,
+            iouTokenAddress: token?.contractAddress as EvmAddress, // token is guaranteed to be defined here
             laborMarketAddress: submission.laborMarketAddress,
             submissionId: submission.id,
-            amount: submission.serviceProviderReward.reward.paymentTokenAmount,
-            signature: iouSignature,
+            amount: paymentTokenAmount,
+            signature: iouSignature as `0x${string}`, // iouSignature is guaranteed to be defined here
           },
         }),
     });
   };
+
+  if (!iouSignature) {
+    return <p>Missing signature</p>;
+  }
+
+  if (!token) {
+    return <p>Missing token</p>;
+  }
 
   return (
     <>
@@ -58,7 +59,11 @@ export function RedeemRewardCreator({
         <TxModal transactor={transactor} title="Redeem your native tokens!" confirmationMessage={confirmationMessage} />
       )}
       <ConnectWalletWrapper onClick={onClick}>
-        <Button disabled={disabled || redeemSuccess}>Redeem</Button>
+        <Button
+          disabled={!hasClaimed || iouHasRedeemed === true || iouClientTransactionSuccess === true || redeemSuccess}
+        >
+          Redeem
+        </Button>
       </ConnectWalletWrapper>
     </>
   );
