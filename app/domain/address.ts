@@ -11,7 +11,7 @@ export const EvmAddressSchema = z
 
 export type EvmAddress = z.infer<typeof EvmAddressSchema>;
 
-export const SolAddressSchema = z.string().refine((address): address is `0x${string}` => {
+export const SolAddressSchema = z.string().refine((address) => {
   try {
     const pubkey = new PublicKey(address);
     return PublicKey.isOnCurve(pubkey.toBuffer());
@@ -19,5 +19,3 @@ export const SolAddressSchema = z.string().refine((address): address is `0x${str
     return false;
   }
 }, "Must be a valid Solana address.");
-
-// TODO: Add other address types
