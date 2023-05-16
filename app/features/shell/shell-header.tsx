@@ -11,6 +11,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ProfileMenu } from "~/components/connect-menu/dropdown";
 import { useNetwork } from "wagmi";
 import Progress from "~/components/global-progress-bar/progress";
+import { RewardsBadge } from "./rewards-badge";
 
 const primaryLinks = [
   { link: $path("/app/showcase"), label: "Showcase" },
@@ -21,9 +22,7 @@ const primaryLinks = [
 const userLinks = [
   {
     link: $path("/app/rewards"),
-    label: (
-      <span>Rewards {/*TODO: real data <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>*/}</span>
-    ),
+    label: <RewardsBadge />,
   },
 ];
 
