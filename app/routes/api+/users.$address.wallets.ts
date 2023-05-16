@@ -2,10 +2,11 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
 import { forbidden } from "remix-utils";
 import { z } from "zod";
+import { EvmAddressSchema } from "~/domain/address";
 import env from "~/env.server";
 import { findWalletsByUserAddress } from "~/services/user.server";
 
-const paramSchema = z.object({ address: z.string() });
+const paramSchema = z.object({ address: EvmAddressSchema });
 export async function loader({ request, params }: DataFunctionArgs) {
   const apiKey = request.headers.get("x-api-key");
 

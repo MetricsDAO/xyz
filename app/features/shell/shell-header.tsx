@@ -10,6 +10,8 @@ import { useOptionalUser } from "~/hooks/use-user";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ProfileMenu } from "~/components/connect-menu/dropdown";
 import { useNetwork } from "wagmi";
+import Progress from "~/components/global-progress-bar/progress";
+import { RewardsBadge } from "./rewards-badge";
 
 const primaryLinks = [
   { link: $path("/app/showcase"), label: "Showcase" },
@@ -20,9 +22,7 @@ const primaryLinks = [
 const userLinks = [
   {
     link: $path("/app/rewards"),
-    label: (
-      <span>Rewards {/*TODO: real data <span className="bg-gray-400 rounded-md py-1 px-2 text-white">3</span>*/}</span>
-    ),
+    label: <RewardsBadge />,
   },
 ];
 
@@ -64,6 +64,7 @@ export function AppHeader() {
 
   return (
     <header className="relative h-16 bg-white ring-1 ring-black/5 flex items-center justify-between px-6 z-20">
+      <Progress />
       <div className="flex items-center">
         <Menu as="div" className="relative">
           <Menu.Button className="flex items-center mr-3 md:hidden">
