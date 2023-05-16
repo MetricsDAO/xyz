@@ -13,7 +13,7 @@ import env from "./env.server";
 if (env.SENTRY_DSN) {
   Sentry.init({
     dsn: env.SENTRY_DSN,
-    tracesSampleRate: 1,
+    tracesSampleRate: 0.5,
     integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
   });
 }
