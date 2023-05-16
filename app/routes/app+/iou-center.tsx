@@ -1,22 +1,37 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { Outlet } from "@remix-run/react";
+import { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { getIOUTokenData } from "~/domain/reward/functions.server";
+import { requireUser } from "~/services/session.server";
+
+export const loader = async ({ request }: DataFunctionArgs) => {
+  const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
+  const iouTokens = await getIOUTokenData();
+
+  return typedjson({ iouTokens, user }, { status: 200 });
+};
 
 export default function IOUCenter() {
-  //to be replaced
-  const rewards = [{ id: 123, name: "silly string" }];
+  const { iouTokens, user } = useTypedLoaderData<typeof loader>();
+  console.log(user);
+
+  if (!user.isAdmin) {
+    return <p className="mt-12 mx-10 text-lg">Looks like you don't have permission to access this page</p>;
+  }
 
   return (
     <Container className="py-16">
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
-          <CreateIOUButton />
+          {/*<CreateIOUButton />*/}
         </section>
         <section className="max-w-3xl">
           <p className="text-lg text-cyan-500">
@@ -33,7 +48,7 @@ export default function IOUCenter() {
 
       <TabNav className="mb-8">
         <TabNavLink to="" end>
-          iouTokens ({rewards.length})
+          iouTokens ({iouTokens.metadata.length})
         </TabNavLink>
       </TabNav>
 

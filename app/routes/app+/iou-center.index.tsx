@@ -9,23 +9,26 @@ import { z } from "zod";
 import { withZod } from "@remix-validated-form/with-zod";
 import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/combobox";
-import { Pagination } from "~/components/pagination/pagination";
 import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
+import { DataFunctionArgs } from "@remix-run/server-runtime";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { getIOUTokenData } from "~/domain/reward/functions.server";
+import { IOUToken } from "~/domain/reward/schema";
+
+export const loader = async ({ params }: DataFunctionArgs) => {
+  const iouTokens = await getIOUTokenData();
+
+  return typedjson({ iouTokens }, { status: 200 });
+};
 
 export default function IOUTab() {
-  //to be replaced
-  const rewards = [{ id: 123, name: "silly string" }];
-  const totalResults = rewards.length;
-  const params = { first: 1, page: 1 };
+  const { iouTokens } = useTypedLoaderData<typeof loader>();
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
       <main className="flex-1 space-y-4">
-        <IOUListView iouTokens={rewards} />
-        <div className="w-fit m-auto">
-          <Pagination page={params.page} totalPages={Math.ceil(totalResults / params.first)} />
-        </div>
+        <IOUListView iouTokens={iouTokens.metadata} />
       </main>
       <aside className="md:1/4 lg:w-1/5">
         <SearchAndFilter />
@@ -68,7 +71,7 @@ function SearchAndFilter() {
   );
 }
 
-function IOUListView({ iouTokens }: { iouTokens: any }) {
+function IOUListView({ iouTokens }: { iouTokens: IOUToken[] }) {
   if (iouTokens.length === 0) {
     return (
       <div className="flex py-16">
@@ -91,23 +94,20 @@ function IOUListView({ iouTokens }: { iouTokens: any }) {
   );
 }
 
-function IOUTable({ iouTokens }: { iouTokens: any }) {
+function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
   return (
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column>Name</Header.Column>
-        <Header.Column>Circulating</Header.Column>
-        <Header.Column>Burned</Header.Column>
+        <Header.Column>Balance</Header.Column>
       </Header>
-      {iouTokens.map((t: { id: string; name: string }) => {
+      {iouTokens.map((t) => {
         return (
           <Row key={t.id} columns={6}>
-            <Row.Column>{t.name}</Row.Column>
-            <Row.Column>1000</Row.Column>
-            <Row.Column>1000</Row.Column>
-            <Row.Column span={3} className="flex flex-wrap gap-2 justify-end">
-              <BurnButton />
-              <IssueButton />
+            <Row.Column>{t.tokenName}</Row.Column>
+            <Row.Column>{t.balance}</Row.Column>
+            <Row.Column span={4} className="flex flex-wrap gap-2 justify-end">
+              {/*<IssueButton />*/}
             </Row.Column>
           </Row>
         );
@@ -116,22 +116,17 @@ function IOUTable({ iouTokens }: { iouTokens: any }) {
   );
 }
 
-function IOUCards({ iouTokens }: { iouTokens: any }) {
+function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
   return (
     <div className="space-y-3">
-      {iouTokens.map((t: { id: string; name: string }) => {
+      {iouTokens.map((t) => {
         return (
           <Card key={t.id} className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-3 py-5">
             <div>Name</div>
-            <p>{t.name}</p>
+            <p>{t.tokenName}</p>
             <div>Circulating</div>
-            <p>1000</p>
-            <div>Burned</div>
-            <p>1000</p>
-            <div className="flex flex-wrap col-span-2 gap-2 justify-center">
-              <BurnButton />
-              <IssueButton />
-            </div>
+            <p>{t.balance}</p>
+            <div className="flex flex-wrap col-span-2 gap-2 justify-center">{/*<IssueButton />*/}</div>
           </Card>
         );
       })}
