@@ -40,3 +40,14 @@ export async function fetchClaims(submissions: SubmissionWithReward[]) {
     })
   );
 }
+
+export async function fetchIouTokenMetadata() {
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/metadata`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
+  }).then((res) => {
+    return res.json();
+  });
+
+  return res;
+}
