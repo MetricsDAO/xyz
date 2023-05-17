@@ -109,7 +109,8 @@ function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
             <Row.Column>{t.fireblocksTokenName}</Row.Column>
             <Row.Column span={2}>{t.balance}</Row.Column>
             <Row.Column span={2} className="flex flex-wrap gap-2 justify-end">
-              {/*<IssueButton />*/}
+              <BurnButton disabled={true} />
+              <IssueButton disabled={true} />
             </Row.Column>
           </Row>
         );
@@ -130,7 +131,10 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
             <p>{t.balance}</p>
             <div>Fireblocks</div>
             <p>{t.fireblocksTokenName}</p>
-            <div className="flex flex-wrap col-span-2 gap-2 justify-center">{/*<IssueButton />*/}</div>
+            <div className="flex flex-wrap col-span-2 gap-2 justify-center">
+              <BurnButton disabled={true} />
+              <IssueButton disabled={true} />
+            </div>
           </Card>
         );
       })}
@@ -138,12 +142,12 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
   );
 }
 
-function BurnButton() {
+function BurnButton({ disabled }: { disabled: boolean }) {
   const [openedBurn, setOpenedBurn] = useState(false);
 
   return (
     <>
-      <Button onClick={() => setOpenedBurn(true)} variant="cancel">
+      <Button onClick={() => setOpenedBurn(true)} variant="cancel" disabled={disabled}>
         Burn
       </Button>
       <Modal isOpen={openedBurn} onClose={() => setOpenedBurn(false)} title="Burn iouTODO">
@@ -166,7 +170,7 @@ function BurnButton() {
   );
 }
 
-function IssueButton() {
+function IssueButton({ disabled }: { disabled: boolean }) {
   const [openedAlert, setOpenedAlert] = useState(false);
   const [openedIssue, setOpenedIssue] = useState(false);
 
@@ -177,7 +181,9 @@ function IssueButton() {
 
   return (
     <>
-      <Button onClick={() => setOpenedAlert(true)}>Issue</Button>
+      <Button onClick={() => setOpenedAlert(true)} disabled={disabled}>
+        Issue
+      </Button>
       <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
         <div className="mx-auto space-y-7">
           <ExclamationTriangleIcon className="text-yellow-700 mx-auto h-5 w-5" />

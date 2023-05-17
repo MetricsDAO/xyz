@@ -30,7 +30,7 @@ export default function IOUCenter() {
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
-          {/*<CreateIOUButton />*/}
+          <CreateIOUButton disabled={true} />
         </section>
         <section className="max-w-3xl">
           <p className="text-lg text-cyan-500">
@@ -56,13 +56,15 @@ export default function IOUCenter() {
   );
 }
 
-function CreateIOUButton() {
+function CreateIOUButton({ disabled }: { disabled: boolean }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
   const validAddress = false;
   return (
     <>
-      <Button onClick={() => setOpenedCreate(true)}>Create iouToken</Button>
+      <Button onClick={() => setOpenedCreate(true)} disabled={disabled}>
+        Create iouToken
+      </Button>
       <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Create new iouToken">
         <div className="space-y-5 mt-2">
           <p>The tokens will be created and start circulating</p>
