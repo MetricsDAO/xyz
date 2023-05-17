@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { Outlet } from "@remix-run/react";
-import { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { forbidden } from "remix-utils";
@@ -23,7 +23,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export default function IOUCenter() {
-  const { iouTokens, user } = useTypedLoaderData<typeof loader>();
+  const { iouTokens } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">

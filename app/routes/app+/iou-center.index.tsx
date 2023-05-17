@@ -11,10 +11,10 @@ import { ValidatedForm } from "remix-validated-form";
 import { Combobox } from "~/components/combobox";
 import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
-import { DataFunctionArgs } from "@remix-run/server-runtime";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getIOUTokenData } from "~/domain/reward/functions.server";
-import { IOUToken } from "~/domain/reward/schema";
+import type { IOUToken } from "~/domain/reward/schema";
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const iouTokens = await getIOUTokenData();
