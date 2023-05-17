@@ -2,12 +2,12 @@ import type { Token } from "@prisma/client";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Error, Field, Input, Progress, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { ReviewerForm, ReviewerSchema } from "./schema";
+import type { ReviewerForm } from "./schema";
+import { ReviewerSchema } from "./schema";
 import invariant from "tiny-invariant";
 import { BigNumber } from "ethers";
 import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "@remix-run/react";
-import { useContracts } from "~/hooks/use-root-data";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormStepper from "~/components/form-stepper/form-stepper";
 
@@ -22,8 +22,6 @@ export function ReviewerFields({
   onDataUpdate: (data: ReviewerForm) => void;
   address: `0x${string}`;
 }) {
-  const contracts = useContracts();
-
   const {
     register,
     control,

@@ -2,10 +2,10 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, Input, Error, Combobox, Select, Button, Progress } from "~/components";
 import type { Project, Token } from "@prisma/client";
-import { useContracts } from "~/hooks/use-root-data";
 import { Link, useNavigate } from "@remix-run/react";
 import { ClientOnly } from "remix-utils";
-import { ServiceRequestForm, ServiceRequestFormSchema, AppDataForm, AnalystForm, ReviewerForm } from "./schema";
+import type { ServiceRequestForm, AppDataForm, AnalystForm, ReviewerForm } from "./schema";
+import { ServiceRequestFormSchema } from "./schema";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import { claimDate, parseDatetime } from "~/utils/date";
 import invariant from "tiny-invariant";
@@ -30,7 +30,6 @@ export function FinalStep({
 }) {
   const {
     control,
-    handleSubmit,
     watch,
     register,
     setValue,
@@ -50,14 +49,7 @@ export function FinalStep({
     resolver: zodResolver(ServiceRequestFormSchema),
   });
 
-  const contracts = useContracts();
-
   const navigate = useNavigate();
-
-  const onSubmit = (data: ServiceRequestForm) => {
-    console.log(data);
-    // write to contract with values
-  };
 
   const onGoBack = () => {
     navigate(`/app/market/${address}/request/new/reviewer`);
@@ -73,8 +65,6 @@ export function FinalStep({
   const reviewLimit = watch("reviewerData.reviewLimit");
   const rewardTokenAddress = watch("reviewerData.rewardToken");
   const rewardToken = tokens.find((t) => t.contractAddress === rewardTokenAddress);
-
-  const formData = watch();
 
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));

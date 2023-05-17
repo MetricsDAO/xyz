@@ -2,11 +2,11 @@ import type { Project } from "@prisma/client";
 import { ClientOnly } from "remix-utils";
 import { Button, Combobox, Error, Field, Input, Progress, Select } from "~/components";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import { AppDataForm, AppDataSchema } from "./schema";
+import type { AppDataForm } from "./schema";
+import { AppDataSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
-import { useContracts } from "~/hooks/use-root-data";
 import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import FormStepper from "~/components/form-stepper/form-stepper";
 
@@ -21,8 +21,6 @@ export function AppDataFields({
   onDataUpdate: (data: AppDataForm) => void;
   address: `0x${string}`;
 }) {
-  const contracts = useContracts();
-
   const {
     register,
     control,

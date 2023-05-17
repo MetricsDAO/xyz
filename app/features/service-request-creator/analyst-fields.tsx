@@ -2,9 +2,9 @@ import type { Token } from "@prisma/client";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Error, Field, Input, Progress, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { AnalystForm, AnalystSchema } from "./schema";
+import type { AnalystForm } from "./schema";
+import { AnalystSchema } from "./schema";
 import invariant from "tiny-invariant";
-import { useContracts } from "~/hooks/use-root-data";
 import { Link, useNavigate } from "@remix-run/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormStepper from "~/components/form-stepper/form-stepper";
@@ -21,8 +21,6 @@ export function AnalystFields({
   onDataUpdate: (data: AnalystForm) => void;
   address: `0x${string}`;
 }) {
-  const contracts = useContracts();
-
   const {
     register,
     control,
