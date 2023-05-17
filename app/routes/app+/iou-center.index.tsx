@@ -100,13 +100,15 @@ function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column>Name</Header.Column>
         <Header.Column>Balance</Header.Column>
+        <Header.Column>Fireblocks</Header.Column>
       </Header>
       {iouTokens.map((t) => {
         return (
           <Row key={t.id} columns={6}>
             <Row.Column>{t.tokenName}</Row.Column>
             <Row.Column>{t.balance}</Row.Column>
-            <Row.Column span={4} className="flex flex-wrap gap-2 justify-end">
+            <Row.Column>{t.fireblocksTokenName}</Row.Column>
+            <Row.Column span={3} className="flex flex-wrap gap-2 justify-end">
               {/*<IssueButton />*/}
             </Row.Column>
           </Row>
@@ -126,6 +128,8 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
             <p>{t.tokenName}</p>
             <div>Circulating</div>
             <p>{t.balance}</p>
+            <div>Fireblocks</div>
+            <p>{t.fireblocksTokenName}</p>
             <div className="flex flex-wrap col-span-2 gap-2 justify-center">{/*<IssueButton />*/}</div>
           </Card>
         );
