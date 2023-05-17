@@ -1,17 +1,20 @@
 import type { Transactor } from "~/hooks/use-transactor";
 import { Button } from "../button";
 import { Modal } from "../modal";
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 
 type Props = {
   transactor: Transactor;
   title?: string;
   confirmationMessage?: React.ReactNode;
+  variant?: "primary" | "danger";
 };
 
-export function TxModal({ transactor, title, confirmationMessage }: Props) {
+export function TxModal({ transactor, title, confirmationMessage, variant = "primary" }: Props) {
   return (
     <Modal isOpen={transactor.state !== "idle"} onClose={transactor.cancel}>
       <div className="px-8 text-center mb-8 space-y-4">
+        {variant === "danger" && <ExclamationTriangleIcon className="h-8 w-8 text-red-500 mx-auto my-4" />}
         <h1 className="text-base font-medium">{title ?? "Execute transaction"}</h1>
 
         {transactor.state === "preparing" ? <div>Preparing...</div> : null}
@@ -51,8 +54,8 @@ export function TxModal({ transactor, title, confirmationMessage }: Props) {
           <Button variant="cancel" size="md" onClick={transactor.cancel}>
             Cancel
           </Button>
-          <Button variant="primary" size="md" onClick={transactor.write}>
-            Confirm
+          <Button variant={variant} size="md" onClick={transactor.write}>
+            {variant === "primary" ? "Confirm" : "Delete"}
           </Button>
         </div>
       ) : null}
