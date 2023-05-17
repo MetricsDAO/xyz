@@ -26,7 +26,7 @@ export default function IOUCenter() {
   const { iouTokens, user } = useTypedLoaderData<typeof loader>();
 
   return (
-    <Container className="py-16">
+    <Container className="py-16 px-10">
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>

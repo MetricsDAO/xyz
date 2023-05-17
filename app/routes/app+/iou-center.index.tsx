@@ -99,16 +99,16 @@ function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
     <Table>
       <Header columns={6} className="text-xs text-gray-500 font-medium mb-2">
         <Header.Column>Name</Header.Column>
-        <Header.Column>Balance</Header.Column>
         <Header.Column>Fireblocks</Header.Column>
+        <Header.Column>Balance</Header.Column>
       </Header>
       {iouTokens.map((t) => {
         return (
           <Row key={t.id} columns={6}>
             <Row.Column>{t.tokenName}</Row.Column>
-            <Row.Column>{t.balance}</Row.Column>
             <Row.Column>{t.fireblocksTokenName}</Row.Column>
-            <Row.Column span={3} className="flex flex-wrap gap-2 justify-end">
+            <Row.Column span={2}>{t.balance}</Row.Column>
+            <Row.Column span={2} className="flex flex-wrap gap-2 justify-end">
               {/*<IssueButton />*/}
             </Row.Column>
           </Row>
