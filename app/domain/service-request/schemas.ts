@@ -78,7 +78,7 @@ export type ServiceRequestFilter = z.infer<typeof ServiceRequestFilterSchema>;
 export const ServiceRequestSearchSchema = ServiceRequestFilterSchema.extend({
   sortBy: z
     .enum(["blockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
-    .default("blockTimestamp"),
+    .default("configuration.submissionExp"),
   order: z.enum(["asc", "desc"]).default("desc"),
   permissions: z.array(z.enum(["submit", "review"])).optional(),
   page: z.coerce.number().min(1).default(1),
