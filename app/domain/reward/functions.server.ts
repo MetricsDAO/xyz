@@ -4,13 +4,14 @@ import { BigNumber } from "ethers";
 import { z } from "zod";
 import { mongo } from "~/services/mongo.server";
 import { listTokens } from "~/services/tokens.server";
-import { fetchSignatures, fetchClaims } from "~/services/treasury.server";
+import { fetchSignatures, fetchClaims, fetchIouTokenMetadata } from "~/services/treasury.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 import { getContracts } from "~/utils/contracts.server";
 import { utcDate } from "~/utils/date";
 import type { SubmissionDoc, SubmissionWithServiceRequest } from "../submission/schemas";
 import { SubmissionWithServiceRequestSchema } from "../submission/schemas";
 import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
+import { IOUData } from "./schema";
 import type { RewardsSearch } from "./schema";
 import { findAllRewardsForUser } from "~/services/reward.server";
 import { prisma } from "~/services/prisma.server";
@@ -277,4 +278,10 @@ export const getSubmissionWithRewards = async (user: User, search: RewardsSearch
   const submissions = await searchUserSubmissions(search);
   await synchronizeRewards(user, submissions);
   return await getRewardData(user, submissions);
+};
+
+export const getIOUTokenData = async () => {
+  const tokens = await fetchIouTokenMetadata();
+  const cleanTokens = IOUData.parse(tokens);
+  return cleanTokens;
 };
