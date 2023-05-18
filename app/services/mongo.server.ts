@@ -7,7 +7,7 @@ import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { pineConfig } from "~/utils/pine-config.server";
 
 const client = new MongoClient(env.MONGODB_URI, {
-  connectTimeoutMS: 30000, // increase timeout to 30 seconds
+  connectTimeoutMS: 60000, // set timeout to 60 seconds
   maxPoolSize: 200, // set the maximum number of connections in the pool
 });
 

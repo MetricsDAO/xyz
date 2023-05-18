@@ -2,6 +2,7 @@ import * as pine from "pinekit";
 import { handleLaborMarketConfiguredEvent } from "~/domain/labor-market/functions.server";
 import {
   handleRequestConfiguredEvent,
+  handleRequestWithdrawnEvent,
   indexClaimToReview,
   indexClaimToSubmit,
 } from "~/domain/service-request/functions.server";
@@ -62,4 +63,8 @@ worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
   return indexReview(event);
 });
 
-worker.run();
+worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
+  return handleRequestWithdrawnEvent(event);
+});
+
+export { worker };

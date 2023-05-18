@@ -57,12 +57,10 @@ async function main() {
       { slug: "phase", name: "Phase" },
       { slug: "metricsdao", name: "MetricsDAO" },
     ],
-    skipDuplicates: true,
   });
 
   await prisma.network.createMany({
     data: [{ name: "Polygon" }, { name: "Ethereum" }],
-    skipDuplicates: true,
   });
 
   await prisma.token.createMany({

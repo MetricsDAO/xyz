@@ -20,6 +20,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
   invariant(address, "serviceRequestId is required");
   invariant(requestId, "laborMarketAddress is required");
+
   const url = new URL(request.url);
   const search = getParamsOrFail(url.searchParams, ParticipantSearchSchema);
   const participations = await findParticipants({

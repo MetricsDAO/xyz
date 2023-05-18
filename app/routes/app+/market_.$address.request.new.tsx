@@ -15,6 +15,7 @@ const paramsSchema = z.object({ address: EvmAddressSchema });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address } = paramsSchema.parse(params);
   await requireUser(request, `/app/login?redirectto=app/market/${address}/request/new`);
+
   const laborMarket = await getIndexedLaborMarket(address);
   if (!laborMarket) {
     throw notFound("Labor market not found");

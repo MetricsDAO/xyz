@@ -56,6 +56,7 @@ export interface TracerDetails {
 
 export interface EventsParams {
   limit?: number;
+  exitOnCaughtUp?: boolean;
 }
 
 export interface EventsCommitParams {
