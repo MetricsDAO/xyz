@@ -1,13 +1,13 @@
 import { BigNumber } from "ethers";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
-import { useContracts } from "~/hooks/use-root-data";
-import invariant from "tiny-invariant";
 import { RedeemConfirmation } from "./redeem-confirmation";
 
 interface RedeemRewardCreatorProps {
@@ -31,7 +31,7 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
     },
   });
 
-  const startRedeem = useCallback(() => {
+  const startRedeem = () => {
     invariant(iouSignature, "Missing signature");
     invariant(token, "Missing token");
     redeemTransactor.start({
@@ -46,10 +46,12 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
           },
         }),
     });
-  }, [iouSignature, paymentTokenAmount, redeemTransactor, submission.id, submission.laborMarketAddress, token]);
+  };
 
   const claimTransactor = useTransactor({
-    onSuccess: startRedeem,
+    onSuccess: () => {
+      startRedeem();
+    },
   });
 
   const startClaim = () => {
