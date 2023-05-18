@@ -9,6 +9,11 @@ import { NoPayoutAddressFoundModalButton } from "./no-payout-address-modal-butto
 
 export function ClaimButton({ submission }: { submission: SubmissionWithReward }) {
   const { hasClaimed, paymentTokenAmount, token } = submission.serviceProviderReward.reward;
+
+  if (hasClaimed) {
+    return <span>Claimed</span>;
+  }
+
   const { wallet } = submission.serviceProviderReward;
   if (!wallet) {
     return <NoPayoutAddressFoundModalButton buttonText="Claim" networkName={token?.networkName} />;
