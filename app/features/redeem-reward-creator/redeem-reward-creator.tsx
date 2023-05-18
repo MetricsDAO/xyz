@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
@@ -18,6 +18,7 @@ interface RedeemRewardCreatorProps {
 export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCreatorProps) {
   const { token, paymentTokenAmount, iouSignature, hasClaimed } = submission.serviceProviderReward.reward;
   const [redeemSuccess, setRedeemSuccess] = useState(false);
+  const [claimSuccess, setClaimSuccess] = useState(false);
   const contracts = useContracts();
 
   const redeemTransactor = useTransactor({
@@ -31,7 +32,7 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
     },
   });
 
-  const startRedeem = () => {
+  const startRedeem = useCallback(() => {
     invariant(iouSignature, "Missing signature");
     invariant(token, "Missing token");
     redeemTransactor.start({
@@ -46,12 +47,18 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
           },
         }),
     });
-  };
+    // We can't have redeemTransactor be part of this list of dependencies because it will cause an infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [iouSignature, paymentTokenAmount, submission.id, submission.laborMarketAddress, token]);
 
   const claimTransactor = useTransactor({
-    onSuccess: () => {
-      startRedeem();
-    },
+    onSuccess: useCallback(
+      (receipt) => {
+        setClaimSuccess(true);
+        startRedeem();
+      },
+      [startRedeem]
+    ),
   });
 
   const startClaim = () => {
@@ -69,7 +76,7 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
   };
 
   const onClick = () => {
-    if (!hasClaimed) {
+    if (!hasClaimed && !claimSuccess) {
       startClaim();
     } else {
       startRedeem();
