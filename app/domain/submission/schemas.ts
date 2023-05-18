@@ -86,7 +86,7 @@ export const ShowcaseSearchSchema = z.object({
   project: z.array(z.string()).optional(),
   score: z.enum(["good", "stellar"]).optional(),
   timeframe: z.enum(["day", "month", "week"]).default("month"),
-  first: z.number().default(100),
+  first: z.number().default(50),
   page: z.number().default(1),
 });
 
