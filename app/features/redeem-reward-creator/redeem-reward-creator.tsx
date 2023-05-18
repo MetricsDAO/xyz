@@ -1,75 +1,123 @@
 import { BigNumber } from "ethers";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
+import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
+import { RedeemConfirmation } from "./redeem-confirmation";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;
-  confirmationMessage?: React.ReactNode;
+  userAddress: EvmAddress;
 }
 
-export function RedeemRewardCreator({ confirmationMessage, submission }: RedeemRewardCreatorProps) {
-  const { token, paymentTokenAmount, iouSignature, hasClaimed, iouHasRedeemed, iouClientTransactionSuccess } =
-    submission.serviceProviderReward.reward;
+export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCreatorProps) {
+  const { token, paymentTokenAmount, iouSignature, hasClaimed } = submission.serviceProviderReward.reward;
   const [redeemSuccess, setRedeemSuccess] = useState(false);
+  const [claimSuccess, setClaimSuccess] = useState(false);
+  const contracts = useContracts();
 
-  const transactor = useTransactor({
+  const redeemTransactor = useTransactor({
     onSuccess: () => {
       // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
       fetch(`/api/reward/${submission.serviceProviderReward.reward.id}/mark-as-redeemed`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
     },
   });
 
-  const onClick = () => {
-    transactor.start({
+  const startRedeem = useCallback(() => {
+    invariant(iouSignature, "Missing signature");
+    invariant(token, "Missing token");
+    redeemTransactor.start({
       config: () =>
-        configureFromValues({
+        configureRedeem({
           inputs: {
-            iouTokenAddress: token?.contractAddress as EvmAddress, // token is guaranteed to be defined here
+            iouTokenAddress: token.contractAddress as EvmAddress,
             laborMarketAddress: submission.laborMarketAddress,
             submissionId: submission.id,
             amount: paymentTokenAmount,
-            signature: iouSignature as `0x${string}`, // iouSignature is guaranteed to be defined here
+            signature: iouSignature as `0x${string}`,
+          },
+        }),
+    });
+    // We can't have redeemTransactor be part of this list of dependencies because it will cause an infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [iouSignature, paymentTokenAmount, submission.id, submission.laborMarketAddress, token]);
+
+  const claimTransactor = useTransactor({
+    onSuccess: useCallback(
+      (receipt) => {
+        setClaimSuccess(true);
+        startRedeem();
+      },
+      [startRedeem]
+    ),
+  });
+
+  const startClaim = () => {
+    claimTransactor.start({
+      config: () =>
+        configureClaim({
+          contracts,
+          inputs: {
+            laborMarketAddress: submission.laborMarketAddress,
+            submissionId: submission.id,
+            payoutAddress: userAddress,
           },
         }),
     });
   };
 
-  if (!iouSignature) {
-    return <p>Missing signature</p>;
-  }
-
-  if (!token) {
-    return <p>Missing token</p>;
-  }
+  const onClick = () => {
+    if (!hasClaimed && !claimSuccess) {
+      startClaim();
+    } else {
+      startRedeem();
+    }
+  };
 
   return (
     <>
-      {transactor.state !== "success" && (
-        <TxModal transactor={transactor} title="Redeem your native tokens!" confirmationMessage={confirmationMessage} />
-      )}
+      <TxModal transactor={claimTransactor} title="Claim your reward!" />
+      <TxModal
+        transactor={redeemTransactor}
+        title={`Redeem your native ${token?.networkName ?? ""} tokens!`}
+        confirmationMessage={<RedeemConfirmation submission={submission} />}
+      />
       <ConnectWalletWrapper onClick={onClick}>
-        <Button
-          disabled={!hasClaimed || iouHasRedeemed === true || iouClientTransactionSuccess === true || redeemSuccess}
-        >
-          Redeem
-        </Button>
+        <Button disabled={redeemSuccess}>Claim</Button>
       </ConnectWalletWrapper>
     </>
   );
 }
 
-function configureFromValues({
+function configureClaim({
+  contracts,
+  inputs,
+}: {
+  contracts: ReturnType<typeof useContracts>;
+  inputs: {
+    laborMarketAddress: EvmAddress;
+    submissionId: string;
+    payoutAddress: EvmAddress;
+  };
+}) {
+  return configureWrite({
+    address: inputs.laborMarketAddress,
+    abi: contracts.LaborMarket.abi,
+    functionName: "claim",
+    args: [BigNumber.from(inputs.submissionId), inputs.payoutAddress],
+  });
+}
+
+function configureRedeem({
   inputs,
 }: {
   inputs: {

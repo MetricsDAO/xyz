@@ -2,7 +2,6 @@ import { RewardBadge } from "~/components/reward-badge";
 import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
-import { ClaimIouTokenButton } from "./claim-iou-token-button";
 import { RedeemButton } from "./redeem-button";
 
 export function RewardDisplay({ submission }: { submission: SubmissionWithReward }) {
@@ -25,12 +24,7 @@ export function Status({ submission }: { submission: SubmissionWithReward }) {
   }
 
   if (isIou) {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <ClaimIouTokenButton submission={submission} />
-        <RedeemButton submission={submission} />
-      </div>
-    );
+    return <RedeemButton submission={submission} />;
   }
   return <ClaimButton submission={submission} />;
 }
