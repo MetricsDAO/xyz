@@ -83,6 +83,10 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
     }
   };
 
+  if (redeemSuccess) {
+    return <p>Pending</p>;
+  }
+
   return (
     <>
       <TxModal transactor={claimTransactor} title="Claim your reward!" />
@@ -92,7 +96,7 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
         confirmationMessage={<RedeemConfirmation submission={submission} />}
       />
       <ConnectWalletWrapper onClick={onClick}>
-        <Button disabled={redeemSuccess}>Claim</Button>
+        <Button>Claim</Button>
       </ConnectWalletWrapper>
     </>
   );
