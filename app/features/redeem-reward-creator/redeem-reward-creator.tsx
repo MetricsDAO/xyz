@@ -79,7 +79,7 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
       <TxModal transactor={claimTransactor} title="Claim your reward!" />
       <TxModal
         transactor={redeemTransactor}
-        title="Redeem your native tokens!"
+        title={`Redeem your native ${token?.networkName ?? ""} tokens!`}
         confirmationMessage={<RedeemConfirmation submission={submission} />}
       />
       <ConnectWalletWrapper onClick={onClick}>
