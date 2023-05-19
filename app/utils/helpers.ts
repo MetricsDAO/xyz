@@ -36,7 +36,7 @@ export const fromTokenAmount = (units: string, decimals: number, round?: number)
     return fixed.toString();
   }
   const nonZeroMatch = fixed.toString().match(/[1-9]/m)?.index;
-  const precision = nonZeroMatch && nonZeroMatch > 2 ? nonZeroMatch + round : round; // magic number 2 to account for "0."
+  const precision = nonZeroMatch && nonZeroMatch > 2 ? nonZeroMatch - 2 + round : round; // magic number 2 to account for "0."
   return fixed.round(precision).toString();
 };
 

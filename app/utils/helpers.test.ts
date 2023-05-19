@@ -11,10 +11,10 @@ describe("fromTokenAmount rounding", () => {
   });
   test("numbers less than 1", () => {
     let result = fromTokenAmount("355555000000000", 18, 2);
-    expect(result).toBe("0.0003556");
+    expect(result).toBe("0.00036");
     result = fromTokenAmount("355555000000000", 18, 4);
-    expect(result).toBe("0.000355555");
+    expect(result).toBe("0.0003556");
     result = fromTokenAmount("12555", 18, 2);
-    expect(result).toBe("0.00000000000001256");
+    expect(result).toBe("0.000000000000013");
   });
 });
