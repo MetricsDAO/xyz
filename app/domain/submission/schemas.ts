@@ -82,11 +82,12 @@ export const RewardsSearchSchema = z.object({
 
 export const ShowcaseSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
-  count: z.number().default(0),
   marketplace: z.array(EvmAddressSchema).optional(),
   project: z.array(z.string()).optional(),
   score: z.enum(["good", "stellar"]).optional(),
   timeframe: z.enum(["day", "month", "week"]).default("month"),
+  first: z.number().default(50),
+  page: z.number().default(1),
 });
 
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
