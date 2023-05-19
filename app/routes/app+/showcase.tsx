@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
-import { Link, useSearchParams, useSubmit } from "@remix-run/react";
+import { Link, useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { CombinedDoc } from "~/domain/submission/schemas";
 import { ShowcaseSearchSchema } from "~/domain/submission/schemas";
@@ -17,7 +17,7 @@ import { findProjectsBySlug, submissionCreatedDate, truncateAddress } from "~/ut
 import { Container } from "~/components";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getParamsOrFail } from "remix-params-helper";
-import { searchSubmissionsShowcase } from "~/domain/submission/functions.server";
+import { countShowcases, searchSubmissionsShowcase } from "~/domain/submission/functions.server";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { listProjects } from "~/services/projects.server";
 import type { Project } from "@prisma/client";
@@ -27,6 +27,7 @@ import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import { Pagination } from "~/components/pagination";
 
 const validator = withZod(ShowcaseSearchSchema);
 
@@ -36,18 +37,18 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const submissions = await searchSubmissionsShowcase({ ...search });
   const projects = await listProjects();
   const laborMarkets = await findLaborMarkets({});
+  const totalSubmissions = await countShowcases({ ...search });
   return typedjson({
     submissions,
     search,
     projects,
     laborMarkets,
+    totalSubmissions,
   });
 };
 
 export default function Showcase() {
-  const { submissions, projects, search, laborMarkets } = useTypedLoaderData<typeof loader>();
-  const [searchParams] = useSearchParams();
-  searchParams.set("count", String(5 + search.count));
+  const { submissions, projects, search, laborMarkets, totalSubmissions } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -63,9 +64,9 @@ export default function Showcase() {
           <p className="font-semibold">Top Submissions</p>
           <hr className="bg-gray-200" />
           <SubmissionsListView submissions={submissions} projects={projects} />
-          <Link to={`?${searchParams.toString()}`} className="text-md text-stone-500">
-            View 5 more
-          </Link>
+          <div className="w-fit m-auto">
+            <Pagination page={search.page} totalPages={Math.ceil(totalSubmissions / search.first)} />
+          </div>
         </div>
         <aside className="md:w-1/4 lg:w-1/5 pt-11">
           <SearchAndFilter projects={projects} laborMarkets={laborMarkets} />

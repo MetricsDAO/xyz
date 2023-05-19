@@ -233,74 +233,96 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
  * Returns an array of Submissions with their Service Request and LaborMarket sorted by score
  */
 export const searchSubmissionsShowcase = async (params: ShowcaseSearch) => {
-  const timeframe = oneUnitAgo(params.timeframe);
   return mongo.submissions
-    .aggregate<CombinedDoc>([
+    .aggregate<CombinedDoc>(searchShowcasePipline(params))
+    .sort({ blockTimestamp: -1 })
+    .skip(params.first * (params.page - 1))
+    .limit(params.first)
+    .toArray();
+};
+
+/**
+ * Counts the number of Submissions that match a given ShowcaseSearch.
+ * @param {ShowcaseSearch} params - The search parameters.
+ * @returns {number} - The number of submissions that match the search.
+ */
+export const countShowcases = async (params: ShowcaseSearch) => {
+  const submissions = await mongo.submissions
+    .aggregate([
+      ...searchShowcasePipline(params),
       {
-        $match: {
-          $and: [
-            { "score.avg": { $gte: 70 } },
-            //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
-          ],
-        },
-      },
-      {
-        $lookup: {
-          from: "serviceRequests",
-          let: {
-            sr_id: "$serviceRequestId",
-            m_addr: "$laborMarketAddress",
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
-                },
-              },
-            },
-          ],
-          as: "sr",
-        },
-      },
-      {
-        $lookup: {
-          from: "laborMarkets",
-          let: {
-            m_addr: "$laborMarketAddress",
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [{ $eq: ["$address", "$$m_addr"] }],
-                },
-              },
-            },
-          ],
-          as: "lm",
-        },
-      },
-      {
-        $unwind: "$sr",
-      },
-      {
-        $unwind: "$lm",
-      },
-      {
-        $match: {
-          $and: [
-            { "sr.configuration.enforcementExp": { $lt: utcDate() } },
-            { "lm.appData.type": "analyze" },
-            params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
-            params.score ? { "score.avg": scoreRange(params.score) } : {},
-            { blockTimestamp: { $gte: timeframe } },
-            params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
-          ],
-        },
+        $count: "match_count",
       },
     ])
-    .sort({ blockTimestamp: -1 })
-    .limit(5 + params.count)
     .toArray();
+  return submissions[0]?.match_count ?? 0;
+};
+
+const searchShowcasePipline = (params: ShowcaseSearch) => {
+  const timeframe = oneUnitAgo(params.timeframe);
+  return [
+    {
+      $match: {
+        $and: [
+          { "score.avg": { $gte: 70 } },
+          //params.q ? { $text: { $search: params.q, $language: "english" } } : {},
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "serviceRequests",
+        let: {
+          sr_id: "$serviceRequestId",
+          m_addr: "$laborMarketAddress",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$id", "$$sr_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
+              },
+            },
+          },
+        ],
+        as: "sr",
+      },
+    },
+    {
+      $lookup: {
+        from: "laborMarkets",
+        let: {
+          m_addr: "$laborMarketAddress",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [{ $eq: ["$address", "$$m_addr"] }],
+              },
+            },
+          },
+        ],
+        as: "lm",
+      },
+    },
+    {
+      $unwind: "$sr",
+    },
+    {
+      $unwind: "$lm",
+    },
+    {
+      $match: {
+        $and: [
+          { "sr.configuration.enforcementExp": { $lt: utcDate() } },
+          { "lm.appData.type": "analyze" },
+          params.marketplace ? { "lm.address": { $in: params.marketplace } } : {},
+          params.score ? { "score.avg": scoreRange(params.score) } : {},
+          { blockTimestamp: { $gte: timeframe } },
+          params.project ? { "sr.appData.projectSlugs": { $in: params.project } } : {},
+        ],
+      },
+    },
+  ];
 };
