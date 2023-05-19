@@ -1,5 +1,5 @@
 import { useOutletContext } from "@remix-run/react";
-import { FinalStep } from "~/features/markets/new-market/review";
+import { Review } from "~/features/markets/new-market/review";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 import type { OutletContext } from "./market_.new2";
 
@@ -10,7 +10,7 @@ export default function MarketplaceReview() {
   const projects = useProjects();
   return (
     <div>
-      <FinalStep
+      <Review
         tokens={tokens}
         projects={projects}
         marketplaceData={formData?.marketplaceData}

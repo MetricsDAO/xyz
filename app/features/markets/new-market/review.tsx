@@ -8,8 +8,73 @@ import type { Project, Token } from "@prisma/client";
 import { useContracts } from "~/hooks/use-root-data";
 import type { EvmAddress } from "~/domain/address";
 import { Link, useNavigate } from "@remix-run/react";
+import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import type { ethers } from "ethers";
+import { BigNumber } from "ethers";
+import type { NBadgeAuthInterface } from "~/contracts";
+import { LaborMarket__factory } from "~/contracts";
+import type { MarketNewValues } from "./schema";
+import { TxModal } from "~/components/tx-modal/tx-modal";
+import { useCallback } from "react";
 
-export function FinalStep({
+/**
+ * Filters and parses the logs for a specific event.
+ */
+function getEventFromLogs(
+  address: string,
+  iface: ethers.utils.Interface,
+  logs: ethers.providers.Log[],
+  eventName: string
+) {
+  return logs
+    .filter((log) => log.address === address)
+    .map((log) => iface.parseLog(log))
+    .find((e) => e.name === eventName);
+}
+
+function configureFromValues(
+  contracts: ReturnType<typeof useContracts>,
+  inputs: { owner: EvmAddress; cid: string; values: finalMarketData }
+) {
+  const { owner, cid, values } = inputs;
+  const auxilaries = [BigNumber.from(100)];
+  const alphas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(90)];
+  const betas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(100)];
+  const enforcementAddress = "" as EvmAddress;
+  // const sigs: any = [laborMarketSingleton.interface.getSighash('signal(uint256)')];
+  const sigs: EvmAddress[] = [LaborMarket__factory.createInterface().getSighash("signal(uint256)") as EvmAddress];
+
+  const sponsorBadges: NBadgeAuthInterface.BadgeStruct[] = [];
+  const analystBadges: NBadgeAuthInterface.BadgeStruct[] = [];
+  const reviewerBadges: NBadgeAuthInterface.BadgeStruct[] = [];
+
+  const nodes: NBadgeAuthInterface.NodeStruct[] = [
+    {
+      deployerAllowed: true,
+      required: BigNumber.from(2),
+      badges: sponsorBadges,
+    },
+    {
+      deployerAllowed: true,
+      required: BigNumber.from(2),
+      badges: analystBadges,
+    },
+    {
+      deployerAllowed: true,
+      required: BigNumber.from(2),
+      badges: reviewerBadges,
+    },
+  ];
+
+  return configureWrite({
+    abi: contracts.LaborMarketFactory.abi,
+    address: contracts.LaborMarketFactory.address,
+    functionName: "createLaborMarket",
+    args: [owner, enforcementAddress, auxilaries, alphas, betas, sigs, nodes],
+  });
+}
+
+export function Review({
   marketplaceData,
   sponsorData,
   analystData,
@@ -112,9 +177,24 @@ export function FinalStep({
 
   const navigate = useNavigate();
 
+  const transactor = useTransactor({
+    onSuccess: useCallback(
+      (receipt) => {
+        const iface = LaborMarket__factory.createInterface();
+        const event = getEventFromLogs(contracts.LaborMarket.address, iface, receipt.logs, "LaborMarketCreated");
+        if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
+      },
+      [contracts.LaborMarket.address, navigate]
+    ),
+  });
+
   const onSubmit = (data: finalMarketData) => {
-    console.log(data);
+    console.log(data, "Form Submitted");
     // write to contract with values
+    transactor.start({
+      metadata: data.marketplaceData,
+      config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values: data }),
+    });
   };
 
   const onGoBack = () => {
@@ -127,6 +207,12 @@ export function FinalStep({
     <div className="relative min-h-screen">
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-9 max-w-4xl mx-auto">
         <Container className="py-8 mb-16">
+          <TxModal
+            transactor={transactor}
+            title="Create Marketplace"
+            confirmationMessage="Confirm that you would like to create a new marketplace."
+          />
+
           <main className="flex-1">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
               <input
@@ -175,20 +261,15 @@ export function FinalStep({
                     />
                     <Error error={errors.marketplaceData?.tokenAllowlist?.message} />
                   </Field>
-                  <Field>
+                  {/* <Field>
                     <Label>Reward Curve</Label>
                     <Controller
                       control={control}
                       name="marketplaceData.enforcement"
-                      render={({ field }) => (
-                        <Select
-                          {...field}
-                          options={[{ label: "Constant Likert", value: contracts.ScalableLikertEnforcement.address }]}
-                        />
-                      )}
+                      render={({ field }) => <Select {...field} options={[{ label: "Constant Likert", value: "" }]} />}
                     />
                     <Error error={errors.marketplaceData?.enforcement?.message} />
-                  </Field>
+                  </Field> */}
                 </div>
               </section>
 

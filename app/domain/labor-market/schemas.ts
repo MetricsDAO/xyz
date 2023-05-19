@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { number, z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
@@ -11,6 +11,28 @@ export const BadgePairSchema = z.preprocess(
   })
 );
 export type BadgePair = z.infer<typeof BadgePairSchema>;
+
+export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
+export const PermissionType = z.enum(["Badge"]);
+
+export const BadgeSchema = z.preprocess(
+  arrayToObject,
+  z.object({
+    type: PermissionType.default("Badge"),
+    contractAddress: EvmAddressSchema,
+    tokenId: z.coerce.string(),
+    minBadgeBalance: z.coerce.number().min(1).default(1),
+    maxBadgeBalance: z.coerce.number().optional(),
+  })
+);
+
+export const gatingSchema = z.object({
+  gatingType: BadgeGatingType.default("Anyone"),
+  numberBadgesRequired: z.coerce.number().optional(),
+  badges: z.array(BadgeSchema),
+});
+
+export type GatingData = z.infer<typeof gatingSchema>;
 
 export const LaborMarketModules = z.object({
   network: EvmAddressSchema,
@@ -32,12 +54,9 @@ export const LaborMarketReputationParams = z.object({
 export const LaborMarketConfigSchema = z.preprocess(
   arrayToObject,
   z.object({
-    marketUri: z.string(),
-    owner: EvmAddressSchema,
-    maintainerBadge: BadgePairSchema,
-    delegateBadge: BadgePairSchema,
-    reputationBadge: BadgePairSchema,
-    reputationParams: z.preprocess(arrayToObject, LaborMarketReputationParams),
+    sponsorBadges: z.array(gatingSchema),
+    analystBadges: z.array(gatingSchema),
+    reviewerBadges: z.array(gatingSchema),
     modules: z.preprocess(arrayToObject, LaborMarketModules),
   })
 );
@@ -120,7 +139,7 @@ export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;
 
 /** For creating and updating LaborMarkets */
 export const LaborMarketFormSchema = z.object({
-  configuration: LaborMarketConfigSchema.sourceType().omit({ marketUri: true, owner: true }),
+  configuration: LaborMarketConfigSchema.sourceType(),
   appData: LaborMarketAppDataSchema,
 });
 export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
@@ -135,28 +154,6 @@ export const marketplaceDetailsSchema = z.object({
 });
 
 export type MarketplaceData = z.infer<typeof marketplaceDetailsSchema>;
-
-export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
-export const PermissionType = z.enum(["Badge"]);
-
-export const BadgeSchema = z.preprocess(
-  arrayToObject,
-  z.object({
-    type: PermissionType.default("Badge"),
-    contractAddress: EvmAddressSchema,
-    tokenId: z.coerce.string(),
-    minBadgeBalance: z.coerce.number().min(1).default(1),
-    maxBadgeBalance: z.coerce.number().optional(),
-  })
-);
-
-export const gatingSchema = z.object({
-  gatingType: BadgeGatingType.default("Anyone"),
-  numberBadgesRequired: z.coerce.number().optional(),
-  badges: z.array(BadgeSchema),
-});
-
-export type GatingData = z.infer<typeof gatingSchema>;
 
 export const finalMarketSchema = z.object({
   marketplaceData: marketplaceDetailsSchema,

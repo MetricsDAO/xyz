@@ -8,5 +8,5 @@ export function getContracts() {
 }
 
 export function contractsByEnv(isDev?: boolean) {
-  return isDev ? DevContracts : ProdContracts;
+  return ProdContracts;
 }
