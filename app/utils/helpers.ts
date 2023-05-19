@@ -24,7 +24,7 @@ export const toTokenAmount = (amount: string, decimals: number): BigNumber => {
 /**
  * Convert units to a decimal representation
  * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001 USDC (decimals = 6).
- * Rounding works by finding the first non-zero digit and then rounding to number of decimal places specified (default is DEFAULT_ROUND = 2)
+ * Rounding works by finding the first non-zero digit and then rounding to number of decimal places specified.
  * @param units string number of units
  * @param decimals number of decimals used by the token (e.g. 6 for USDC)
  * @param round number of decimals to round to
@@ -35,8 +35,8 @@ export const fromTokenAmount = (units: string, decimals: number, round?: number)
   if (round === undefined) {
     return fixed.toString();
   }
-  const nonZeroMatch = fixed.toString().match(/[1-9]/m);
-  const precision = (nonZeroMatch?.index ?? 2) - 2 + round; // subtract 2 to account for the "0."
+  const nonZeroMatch = fixed.toString().match(/[1-9]/m)?.index;
+  const precision = nonZeroMatch && nonZeroMatch > 2 ? nonZeroMatch + round : round; // magic number 2 to account for "0."
   return fixed.round(precision).toString();
 };
 
