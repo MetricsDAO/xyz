@@ -18,9 +18,8 @@ export const PermissionType = z.enum(["Badge"]);
 export const BadgeSchema = z.preprocess(
   arrayToObject,
   z.object({
-    type: PermissionType.default("Badge"),
     contractAddress: EvmAddressSchema,
-    tokenId: z.coerce.string(),
+    tokenId: z.number(),
     minBadgeBalance: z.coerce.number().min(1).default(1),
     maxBadgeBalance: z.coerce.number().optional(),
   })

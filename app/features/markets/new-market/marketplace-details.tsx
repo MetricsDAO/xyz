@@ -111,7 +111,7 @@ export function MarketplaceDetails({
                       render={({ field }) => (
                         <Select
                           {...field}
-                          options={[{ label: "Constant Likert", value: contracts.ScalableLikertEnforcement.address }]}
+                          options={[{ label: "Constant Likert", value: "0x0b9CDd330C8FF08D7E3D298dcBc84B3077C33C7C" }]}
                         />
                       )}
                     />

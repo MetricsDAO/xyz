@@ -1,21 +1,19 @@
-import { Controller, useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { GatingData, MarketplaceData, finalMarketData } from "~/domain/labor-market/schemas";
-import { finalMarketSchema } from "~/domain/labor-market/schemas";
-import { Container, Field, Input, Label, Error, Textarea, Combobox, Select, Button } from "~/components";
-import * as Progress from "@radix-ui/react-progress";
 import type { Project, Token } from "@prisma/client";
-import { useContracts } from "~/hooks/use-root-data";
-import type { EvmAddress } from "~/domain/address";
+import * as Progress from "@radix-ui/react-progress";
 import { Link, useNavigate } from "@remix-run/react";
-import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
-import type { NBadgeAuthInterface } from "~/contracts";
-import { LaborMarket__factory } from "~/contracts";
-import type { MarketNewValues } from "./schema";
-import { TxModal } from "~/components/tx-modal/tx-modal";
 import { useCallback } from "react";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Button, Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
+import { TxModal } from "~/components/tx-modal/tx-modal";
+import { LaborMarket__factory } from "~/contracts";
+import type { EvmAddress } from "~/domain/address";
+import type { GatingData, MarketplaceData, finalMarketData } from "~/domain/labor-market/schemas";
+import { finalMarketSchema } from "~/domain/labor-market/schemas";
+import { useContracts } from "~/hooks/use-root-data";
+import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 
 /**
  * Filters and parses the logs for a specific event.
@@ -36,32 +34,65 @@ function configureFromValues(
   contracts: ReturnType<typeof useContracts>,
   inputs: { owner: EvmAddress; cid: string; values: finalMarketData }
 ) {
-  const { owner, cid, values } = inputs;
+  const { owner } = inputs;
   const auxilaries = [BigNumber.from(100)];
   const alphas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(90)];
   const betas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(100)];
-  const enforcementAddress = "" as EvmAddress;
-  // const sigs: any = [laborMarketSingleton.interface.getSighash('signal(uint256)')];
-  const sigs: EvmAddress[] = [LaborMarket__factory.createInterface().getSighash("signal(uint256)") as EvmAddress];
+  const enforcementAddress = contracts.BucketEnforcement.address;
 
-  const sponsorBadges: NBadgeAuthInterface.BadgeStruct[] = [];
-  const analystBadges: NBadgeAuthInterface.BadgeStruct[] = [];
-  const reviewerBadges: NBadgeAuthInterface.BadgeStruct[] = [];
+  const sigs: EvmAddress[] = [
+    LaborMarket__factory.createInterface().getSighash(
+      "submitRequest(uint8,tuple(uint48,uint48,uint48,uint64,uint64,uint256,uint256,address,address),string)"
+    ) as EvmAddress,
+    LaborMarket__factory.createInterface().getSighash("signal(uint256)") as EvmAddress,
+    LaborMarket__factory.createInterface().getSighash("signalReview(uint256,uint24)") as EvmAddress,
+  ];
+  console.log("VALUES", inputs.values);
 
-  const nodes: NBadgeAuthInterface.NodeStruct[] = [
+  const sponsorBadges = inputs.values.sponsorData.badges.map((badge) => {
+    return {
+      badge: badge.contractAddress,
+      id: BigNumber.from(badge.tokenId),
+      min: BigNumber.from(badge.minBadgeBalance),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 0),
+      points: BigNumber.from(1),
+    };
+  });
+
+  const analystBadges = inputs.values.analystData.badges.map((badge) => {
+    return {
+      badge: badge.contractAddress,
+      id: BigNumber.from(badge.tokenId),
+      min: BigNumber.from(badge.minBadgeBalance),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 0),
+      points: BigNumber.from(1),
+    };
+  });
+
+  const reviewerBadges = inputs.values.reviewerData.badges.map((badge) => {
+    return {
+      badge: badge.contractAddress,
+      id: BigNumber.from(badge.tokenId),
+      min: BigNumber.from(badge.minBadgeBalance),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 0),
+      points: BigNumber.from(1),
+    };
+  });
+
+  const nodes = [
     {
       deployerAllowed: true,
-      required: BigNumber.from(2),
+      required: BigNumber.from(inputs.values.sponsorData.numberBadgesRequired || 0),
       badges: sponsorBadges,
     },
     {
       deployerAllowed: true,
-      required: BigNumber.from(2),
+      required: BigNumber.from(inputs.values.analystData.numberBadgesRequired || 0),
       badges: analystBadges,
     },
     {
       deployerAllowed: true,
-      required: BigNumber.from(2),
+      required: BigNumber.from(inputs.values.reviewerData.numberBadgesRequired || 0),
       badges: reviewerBadges,
     },
   ];
@@ -93,6 +124,7 @@ export function Review({
     control,
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = useForm<finalMarketData>({
     defaultValues: {
@@ -147,31 +179,28 @@ export function Review({
 
   const handleAddSponsorBadge = () => {
     appendSponsorBadge({
-      type: "Badge",
       contractAddress: "" as EvmAddress,
-      tokenId: "",
+      tokenId: 1,
       minBadgeBalance: 1,
-      maxBadgeBalance: undefined,
+      maxBadgeBalance: 0,
     });
   };
 
   const handleAddAnalystBadge = () => {
     appendAnalystBadge({
-      type: "Badge",
       contractAddress: "" as EvmAddress,
-      tokenId: "",
+      tokenId: 1,
       minBadgeBalance: 1,
-      maxBadgeBalance: undefined,
+      maxBadgeBalance: 0,
     });
   };
 
   const handleAddReviewerBadge = () => {
     appendReviewerBadge({
-      type: "Badge",
       contractAddress: "" as EvmAddress,
-      tokenId: "",
+      tokenId: 1,
       minBadgeBalance: 1,
-      maxBadgeBalance: undefined,
+      maxBadgeBalance: 0,
     });
   };
 
@@ -181,15 +210,14 @@ export function Review({
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarket__factory.createInterface();
-        const event = getEventFromLogs(contracts.LaborMarket.address, iface, receipt.logs, "LaborMarketCreated");
+        const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
         if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
       },
-      [contracts.LaborMarket.address, navigate]
+      [contracts.LaborMarketFactory.address, navigate]
     ),
   });
 
   const onSubmit = (data: finalMarketData) => {
-    console.log(data, "Form Submitted");
     // write to contract with values
     transactor.start({
       metadata: data.marketplaceData,
@@ -202,6 +230,10 @@ export function Review({
   };
 
   const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
+
+  const sponsorGatingType = watch("sponsorData.gatingType");
+  const analystGatingType = watch("analystData.gatingType");
+  const reviewerGatingType = watch("reviewerData.gatingType");
 
   return (
     <div className="relative min-h-screen">
@@ -261,15 +293,20 @@ export function Review({
                     />
                     <Error error={errors.marketplaceData?.tokenAllowlist?.message} />
                   </Field>
-                  {/* <Field>
+                  <Field>
                     <Label>Reward Curve</Label>
                     <Controller
                       control={control}
                       name="marketplaceData.enforcement"
-                      render={({ field }) => <Select {...field} options={[{ label: "Constant Likert", value: "" }]} />}
+                      render={({ field }) => (
+                        <Select
+                          {...field}
+                          options={[{ label: "Constant Likert", value: contracts.BucketEnforcement.address }]}
+                        />
+                      )}
                     />
                     <Error error={errors.marketplaceData?.enforcement?.message} />
-                  </Field> */}
+                  </Field>
                 </div>
               </section>
 
@@ -293,20 +330,26 @@ export function Review({
                   />
                   <Error error={errors.sponsorData?.gatingType?.message} />
                 </Field>
-                <Field>
-                  <Controller
-                    name="sponsorData.numberBadgesRequired"
-                    control={control}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" />
-                    )}
-                  />
-                  <Error error={errors.sponsorData?.numberBadgesRequired?.message} />
-                </Field>
-                <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                {sponsorGatingType === ("Any" || "All") && (
+                  <Field>
+                    <Controller
+                      name="sponsorData.numberBadgesRequired"
+                      control={control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      )}
+                    />
+                    <Error error={errors.sponsorData?.numberBadgesRequired?.message} />
+                  </Field>
+                )}
+                {sponsorGatingType === ("Any" || "All") ? (
+                  <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                ) : (
+                  <span className="text-xs text-black-[#4D4D4D]"> Can launch challenges in this marketplace. </span>
+                )}
               </section>
-              {/* Render sponsorBadges array */}
 
+              {/* Render sponsorBadges array */}
               <div className="mb-2">
                 {sponsorBadgeFields.map((field, index) => (
                   <div key={field.id}>
@@ -371,7 +414,7 @@ export function Review({
                   </div>
                 ))}
 
-                {sponsorData?.gatingType !== "Anyone" && (
+                {sponsorGatingType !== "Anyone" && (
                   <section>
                     <button className="text-blue-500" type="button" onClick={handleAddSponsorBadge}>
                       + Add Badge
@@ -400,17 +443,23 @@ export function Review({
                   />
                   <Error error={errors.analystData?.gatingType?.message} />
                 </Field>
-                <Field>
-                  <Controller
-                    name="analystData.numberBadgesRequired"
-                    control={control}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
-                    )}
-                  />
-                  <Error error={errors.analystData?.numberBadgesRequired?.message} />
-                </Field>
-                <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                {analystGatingType === ("Any" || "All") && (
+                  <Field>
+                    <Controller
+                      name="analystData.numberBadgesRequired"
+                      control={control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      )}
+                    />
+                    <Error error={errors.analystData?.numberBadgesRequired?.message} />
+                  </Field>
+                )}
+                {analystGatingType === ("Any" || "All") ? (
+                  <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                ) : (
+                  <span className="text-xs text-black-[#4D4D4D]"> Can enter submissions in this marketplace. </span>
+                )}
               </section>
               {/* Render sponsorBadges array */}
 
@@ -477,7 +526,7 @@ export function Review({
                 </div>
               ))}
 
-              {analystData?.gatingType !== "Anyone" && (
+              {analystGatingType !== "Anyone" && (
                 <section>
                   <button className="text-blue-500" type="button" onClick={handleAddAnalystBadge}>
                     + Add Badge
@@ -505,17 +554,23 @@ export function Review({
                   />
                   <Error error={errors.reviewerData?.gatingType?.message} />
                 </Field>
-                <Field>
-                  <Controller
-                    name="reviewerData.numberBadgesRequired"
-                    control={control}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
-                    )}
-                  />
-                  <Error error={errors.reviewerData?.numberBadgesRequired?.message} />
-                </Field>
-                <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                {reviewerGatingType === ("Any" || "All") && (
+                  <Field>
+                    <Controller
+                      name="reviewerData.numberBadgesRequired"
+                      control={control}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      )}
+                    />
+                    <Error error={errors.reviewerData?.numberBadgesRequired?.message} />
+                  </Field>
+                )}
+                {reviewerGatingType === ("Any" || "All") ? (
+                  <span className="text-xs text-black-[#4D4D4D]"> of the following criteria needs to be met. </span>
+                ) : (
+                  <span className="text-xs text-black-[#4D4D4D]"> Can review challenges in this marketplace. </span>
+                )}{" "}
               </section>
               {/* Render sponsorBadges array */}
 
@@ -582,7 +637,7 @@ export function Review({
                 </div>
               ))}
 
-              {reviewerData?.gatingType !== "Anyone" && (
+              {reviewerGatingType !== "Anyone" && (
                 <section>
                   <button className="text-blue-500" type="button" onClick={handleAddReviewerBadge}>
                     + Add Badge
