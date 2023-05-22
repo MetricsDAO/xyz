@@ -132,7 +132,6 @@ export default function ChallengeSubmission() {
     <Container className="pt-7 pb-16 px-10">
       <Breadcrumbs
         crumbs={[
-          { link: `/app/analyze`, name: "Marketplaces" },
           { link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" },
           {
             link: `/app/market/${laborMarket.address}/request/${submission.serviceRequestId}`,
