@@ -11,7 +11,7 @@ export function RewardsBadge() {
 
   return (
     <span>
-      Rewards {data && data > 0 && <span className="bg-gray-400 rounded-md py-1 px-2 text-white">{data}</span>}
+      Rewards {data && data > 0 ? <span className="bg-gray-400 rounded-md py-1 px-2 text-white">{data}</span> : null}
     </span>
   );
 }
