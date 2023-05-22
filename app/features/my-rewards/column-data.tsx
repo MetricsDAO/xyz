@@ -5,7 +5,8 @@ import { ClaimButton } from "./claim-button";
 import { RedeemButton } from "./redeem-button";
 
 export function RewardDisplay({ submission }: { submission: SubmissionWithReward }) {
-  const { paymentTokenAmount, reputationTokenAmount, token } = submission.serviceProviderReward.reward;
+  const { paymentTokenAmount, reputationTokenAmount, token, hasReward } = submission.serviceProviderReward.reward;
+  if (!hasReward) return null;
   return (
     <RewardBadge
       payment={{

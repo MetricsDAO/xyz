@@ -5,12 +5,13 @@ import { requireUser } from "~/services/session.server";
 export async function loader({ request }: DataFunctionArgs) {
   const user = await requireUser(request);
 
-  const rewards = await prisma.reward.findMany({
+  const count = await prisma.reward.count({
     where: {
       userId: user.id,
-      hasClaimed: false,
+      hasReward: true,
+      OR: [{ hasClaimed: false }, { iouHasRedeemed: false }],
     },
   });
 
-  return rewards;
+  return count;
 }

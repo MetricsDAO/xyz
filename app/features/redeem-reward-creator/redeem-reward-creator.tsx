@@ -83,16 +83,24 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
     }
   };
 
+  if (redeemSuccess) {
+    return <p>Pending</p>;
+  }
+
   return (
     <>
-      <TxModal transactor={claimTransactor} title="Claim your reward!" />
+      <TxModal
+        transactor={claimTransactor}
+        title="Begin Reward Claim"
+        confirmationMessage="This process requires two transactions."
+      />
       <TxModal
         transactor={redeemTransactor}
-        title={`Redeem your native ${token?.networkName ?? ""} tokens!`}
+        title="Claim Reward"
         confirmationMessage={<RedeemConfirmation submission={submission} />}
       />
       <ConnectWalletWrapper onClick={onClick}>
-        <Button disabled={redeemSuccess}>Claim</Button>
+        <Button>Claim</Button>
       </ConnectWalletWrapper>
     </>
   );

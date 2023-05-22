@@ -126,7 +126,7 @@ const createRewards = async (user: User, submissions: SubmissionWithServiceReque
         laborMarketAddress: s.laborMarketAddress,
         hasClaimed: false,
         tokenId: token?.id,
-        isIou: token?.iou ?? false,
+        isIou: token?.isIou ?? false,
         hasReward: getReward[0].gt(0) || getReward[1].gt(0),
         paymentTokenAmount: getReward[0].toString(),
         reputationTokenAmount: getReward[1].toString(),
