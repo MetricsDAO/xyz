@@ -1,5 +1,4 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import type { Token, Wallet } from "@prisma/client";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -8,19 +7,18 @@ import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import { Field, Label, ValidatedSelect } from "~/components";
-import { Checkbox } from "~/components/checkbox";
-import { ValidatedCombobox } from "~/components/combobox";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
-import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
-import { RewardsSearchSchema } from "~/domain/submission/schemas";
+import type { EvmAddress } from "~/domain/address";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
+import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
+import { getSubmissionWithRewards } from "~/domain/reward/functions.server";
+import { RewardsSearchSchema } from "~/domain/reward/schema";
 import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
 import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
 import RewardsTab from "~/features/rewards-tab";
 import { requireUser } from "~/services/session.server";
-import { searchUserSubmissions } from "~/domain/submission/functions.server";
-import { listTokens } from "~/services/tokens.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
 const validator = withZod(RewardsSearchSchema);
@@ -29,21 +27,25 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/rewards");
 
   const url = new URL(request.url);
-  const search = getParamsOrFail(url.searchParams, RewardsSearchSchema);
+  const search = {
+    ...getParamsOrFail(url.searchParams, RewardsSearchSchema),
+    serviceProvider: user.address as EvmAddress,
+  };
   const wallets = await findAllWalletsForUser(user.id);
-  const rewards = await searchUserSubmissions({ ...search, serviceProvider: user.address as `0x${string}` });
-  const tokens = await listTokens();
+  const submissionsWithReward = await getSubmissionWithRewards(user, search);
+  const submissionCount = await countSubmissionsWithRewards(search);
+
   return typedjson({
-    wallets,
-    rewards,
+    walletsCount: wallets.length,
+    submissionsWithReward,
+    submissionCount,
     user,
-    tokens,
     search,
   });
 };
 
 export default function Rewards() {
-  const { wallets, rewards, tokens, search } = useTypedLoaderData<typeof loader>();
+  const { walletsCount, submissionsWithReward, submissionCount, search } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -56,26 +58,26 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={rewards.length} addressesNum={wallets.length} />
+      <RewardsTab rewardsNum={submissionCount} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView rewards={rewards} wallets={wallets} />
+            <RewardsListView submissions={submissionsWithReward} />
             <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(rewards.length / search.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(submissionCount / search.first)} />
             </div>
           </div>
         </main>
         <aside className="md:w-1/4 lg:md-1/5">
-          <SearchAndFilter tokens={tokens} />
+          <SearchAndFilter />
         </aside>
       </section>
     </Container>
   );
 }
 
-function RewardsListView({ rewards, wallets }: { rewards: SubmissionWithServiceRequest[]; wallets: Wallet[] }) {
-  if (rewards.length === 0) {
+function RewardsListView({ submissions }: { submissions: SubmissionWithReward[] }) {
+  if (submissions.length === 0) {
     return (
       <div className="flex">
         <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
@@ -87,17 +89,18 @@ function RewardsListView({ rewards, wallets }: { rewards: SubmissionWithServiceR
     <>
       {/* Desktop */}
       <div className="hidden lg:block">
-        <RewardsTable rewards={rewards} wallets={wallets} />
+        <RewardsTable submissions={submissions} />
       </div>
       {/* Mobile */}
       <div className="block lg:hidden">
-        <RewardsCards rewards={rewards} wallets={wallets} />
+        <RewardsCards submissions={submissions} />
       </div>
     </>
   );
 }
 
-function SearchAndFilter({ tokens }: { tokens: Token[] }) {
+function SearchAndFilter() {
+  // const tokens = useTokens();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -132,18 +135,18 @@ function SearchAndFilter({ tokens }: { tokens: Token[] }) {
           ]}
         />
       </Field>
-      <p className="text-lg font-semibold">Filter:</p>
-      <Label size="md">Status</Label>
+      {/* <p className="text-lg font-semibold">Filter:</p> */}
+      {/* <Label size="md">Status</Label>
       <Checkbox value="unclaimed" label="Unclaimed" />
-      <Checkbox value="claimed" label="Claimed" />
-      <Label>Reward Token</Label>
+      <Checkbox value="claimed" label="Claimed" /> */}
+      {/* <Label>Reward Token</Label>
       <ValidatedCombobox
         placeholder="Select option"
         name="token"
         onChange={handleChange}
         size="sm"
         options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
-      />
+      /> */}
       {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
       <Combobox
         placeholder="Select option"

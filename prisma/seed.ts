@@ -60,7 +60,7 @@ async function main() {
   });
 
   await prisma.network.createMany({
-    data: [{ name: "Polygon" }, { name: "Ethereum" }],
+    data: [{ name: "Polygon" }, { name: "Ethereum" }, { name: "Solana" }],
   });
 
   await prisma.token.createMany({
@@ -86,6 +86,25 @@ async function main() {
         contractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
         symbol: "USDC",
       },
+      // iou testing in dev
+      // {
+      //   name: "Goerli ETH IOU",
+      //   decimals: 18,
+      //   networkName: "Ethereum",
+      //   isIou: true,
+      //   contractAddress: "0xdfE107Ad982939e91eaeBaC5DC49da3A2322863D",
+      //   symbol: "ETH_TEST3",
+      //   iouSymbol: "ETH",
+      // },
+      // {
+      //   name: "Solana IOU",
+      //   decimals: 9,
+      //   networkName: "Solana",
+      //   isIou: true,
+      //   contractAddress: "0xE6dA74d529c8132FA9f129C9956efA2Fd727c9Fd",
+      //   symbol: "SOL_TEST",
+      //   iouSymbol: "SOL",
+      // },
     ],
   });
 }

@@ -9,6 +9,7 @@ import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface ClaimRewardCreatorProps {
+  disabled: boolean;
   laborMarketAddress: EvmAddress;
   submissionId: string;
   payoutAddress: EvmAddress;
@@ -16,6 +17,7 @@ interface ClaimRewardCreatorProps {
 }
 
 export function ClaimRewardCreator({
+  disabled,
   laborMarketAddress,
   submissionId,
   payoutAddress,
@@ -44,7 +46,7 @@ export function ClaimRewardCreator({
     <>
       <TxModal transactor={transactor} title="Claim your reward!" confirmationMessage={confirmationMessage} />
       <ConnectWalletWrapper onClick={onClick}>
-        <Button>Claim</Button>
+        <Button disabled={disabled}>Claim</Button>
       </ConnectWalletWrapper>
     </>
   );

@@ -1,7 +1,6 @@
 import { BigNumber } from "ethers";
 import { useContractRead } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
-import { displayBalance, fromTokenAmount } from "~/utils/helpers";
 import { useContracts } from "./use-root-data";
 
 type Props = {
@@ -25,8 +24,6 @@ export function useReward({ laborMarketAddress, submissionId, tokenDecimals }: P
       return {
         paymentTokenAmount: data[0],
         reputationTokenAmount: data[1],
-        displayPaymentTokenAmount: fromTokenAmount(data[0].toString(), tokenDecimals, 2),
-        displayReputationTokenAmount: displayBalance(data[1]),
         hasReward: data[0].gt(0) || data[1].gt(0),
       };
     },

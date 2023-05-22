@@ -1,50 +1,31 @@
-import type { Token, Wallet } from "@prisma/client";
 import { RewardBadge } from "~/components/reward-badge";
-import type { SubmissionWithServiceRequest } from "~/domain/submission/schemas";
-import { useHasPerformed } from "~/hooks/use-has-performed";
-import type { Reward as RewardHook } from "~/hooks/use-reward";
+import type { SubmissionWithReward } from "~/domain/reward/functions.server";
+import { fromTokenAmount } from "~/utils/helpers";
 import { ClaimButton } from "./claim-button";
+import { RedeemButton } from "./redeem-button";
 
-export function Reward({ reward, token }: { reward: RewardHook; token?: Token }) {
+export function RewardDisplay({ submission }: { submission: SubmissionWithReward }) {
+  const { paymentTokenAmount, reputationTokenAmount, token, hasReward } = submission.serviceProviderReward.reward;
+  if (!hasReward) return null;
   return (
-    <>
-      {reward?.hasReward ? (
-        <RewardBadge
-          payment={{ amount: reward.displayPaymentTokenAmount, token }}
-          reputation={{ amount: reward.displayReputationTokenAmount }}
-        />
-      ) : (
-        <span>--</span>
-      )}
-    </>
+    <RewardBadge
+      payment={{
+        amount: fromTokenAmount(paymentTokenAmount, token?.decimals ?? 18, 2),
+        token: token ?? undefined,
+      }}
+      reputation={{ amount: reputationTokenAmount }}
+    />
   );
 }
 
-export function Status({
-  reward,
-  submission,
-  wallets,
-}: {
-  reward: RewardHook;
-  submission: SubmissionWithServiceRequest;
-  wallets: Wallet[];
-}) {
-  const hasClaimed = useHasPerformed({
-    laborMarketAddress: submission.laborMarketAddress,
-    id: submission.id,
-    action: "HAS_CLAIMED",
-  });
-  return (
-    <>
-      {!reward ? (
-        <>--</>
-      ) : hasClaimed === false && reward.hasReward ? (
-        <ClaimButton rewardAmount={reward.displayPaymentTokenAmount} submission={submission} wallets={wallets} />
-      ) : hasClaimed === true ? (
-        <span>Claimed</span>
-      ) : (
-        <span>No reward</span>
-      )}
-    </>
-  );
+export function Status({ submission }: { submission: SubmissionWithReward }) {
+  const { hasReward, isIou } = submission.serviceProviderReward.reward;
+  if (!hasReward) {
+    return <span>No reward</span>;
+  }
+
+  if (isIou) {
+    return <RedeemButton submission={submission} />;
+  }
+  return <ClaimButton submission={submission} />;
 }

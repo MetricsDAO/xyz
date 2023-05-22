@@ -15,7 +15,8 @@ import { Container } from "~/components/container";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
-import { countSubmissions } from "~/domain/submission/functions.server";
+import type { EvmAddress } from "~/domain/address";
+import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/rewards-tab";
@@ -54,8 +55,9 @@ export async function action({ request }: ActionArgs) {
 export const loader = async (data: DataFunctionArgs) => {
   const user = await requireUser(data.request, "/app/login?redirectto=app/rewards/addresses");
   const wallets = await findAllWalletsForUser(user.id);
-  const submissionCount = await countSubmissions({
-    serviceProvider: user.address as `0x${string}`,
+  const submissionCount = await countSubmissionsWithRewards({
+    serviceProvider: user.address as EvmAddress,
+    isPastEnforcementExpiration: true,
   });
   const userNetworks = wallets.map((w) => w.chain.name);
   const networks = await listNetworks();
