@@ -5,7 +5,6 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { badRequest, ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
-import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
