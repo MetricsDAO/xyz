@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Button, Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import { LaborMarket__factory } from "~/contracts";
+import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import type { GatingData, MarketplaceData, finalMarketData } from "~/domain/labor-market/schemas";
 import { finalMarketSchema } from "~/domain/labor-market/schemas";
@@ -24,6 +24,9 @@ function getEventFromLogs(
   logs: ethers.providers.Log[],
   eventName: string
 ) {
+  console.log("logs", logs);
+  console.log("address", address);
+  console.log("eventName", eventName);
   return logs
     .filter((log) => log.address === address)
     .map((log) => iface.parseLog(log))
@@ -34,7 +37,7 @@ function configureFromValues(
   contracts: ReturnType<typeof useContracts>,
   inputs: { owner: EvmAddress; cid: string; values: finalMarketData }
 ) {
-  const { owner } = inputs;
+  const { owner, cid } = inputs;
   const auxilaries = [BigNumber.from(100)];
   const alphas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(90)];
   const betas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(100)];
@@ -101,7 +104,7 @@ function configureFromValues(
     abi: contracts.LaborMarketFactory.abi,
     address: contracts.LaborMarketFactory.address,
     functionName: "createLaborMarket",
-    args: [owner, enforcementAddress, auxilaries, alphas, betas, sigs, nodes],
+    args: [owner, cid, enforcementAddress, auxilaries, alphas, betas, sigs, nodes],
   });
 }
 
@@ -209,8 +212,11 @@ export function Review({
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        const iface = LaborMarket__factory.createInterface();
+        const iface = LaborMarketFactoryInterface__factory.createInterface();
         const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
+        console.log("event from transactor", event);
+        console.log("receipt", receipt);
+        console.log("args", event?.args["uri"]);
         if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
       },
       [contracts.LaborMarketFactory.address, navigate]

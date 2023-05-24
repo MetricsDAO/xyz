@@ -2,7 +2,7 @@ import type { User } from "@prisma/client";
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
-import { LaborMarket__factory } from "~/contracts";
+import { LaborMarketFactory__factory, LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
@@ -35,7 +35,8 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 
 export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
-  const lm = await upsertIndexedLaborMarket(laborMarketAddress, event);
+  const ipfsUri = event.decoded.inputs.cid as string;
+  const lm = await upsertIndexedLaborMarket(laborMarketAddress, ipfsUri, event);
   if (!lm) {
     logger.warn("Labor market was not indexed", { laborMarketAddress });
     return;
@@ -50,21 +51,28 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
     },
     iconType: "labor-market",
     actionName: "Create Marketplace",
-    userAddress: lm.configuration.owner,
+    userAddress: event.decoded.inputs.deployer as EvmAddress,
     blockTimestamp: lm.blockTimestamp,
     indexedAt: lm.indexData.indexedAt,
   });
 }
 
+export async function handleLaborMarketCreatedEvent(event: TracerEvent) {
+  const cid = event.decoded.inputs;
+  console.log("INPUTS", cid);
+
+  return;
+}
+
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function upsertIndexedLaborMarket(address: EvmAddress, event?: TracerEvent) {
+export async function upsertIndexedLaborMarket(address: EvmAddress, cid: string, event?: TracerEvent) {
   const checksumAddress = getAddress(address);
   const configuration = await getLaborMarketConfig(checksumAddress, event?.block.number);
   let appData;
   try {
-    appData = await getLaborMarketAppData(configuration.marketUri);
+    appData = await getLaborMarketAppData(cid);
   } catch (e) {
     logger.warn(`Failed to fetch and parse labor market app data for ${checksumAddress}. Skipping indexing.`, e);
     return;

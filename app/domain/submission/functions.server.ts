@@ -135,7 +135,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
 export const upsertSubmission = async (address: EvmAddress, id: string, event?: TracerEvent) => {
   const contract = LaborMarket__factory.connect(address, nodeProvider);
 
-  const submission = await contract.serviceSubmissions(id, { blockTag: event?.block.number });
+  const submission = await contract.requestIdToRequest(id, { blockTag: event?.block.number });
   const appData = await fetchIpfsJson(submission.uri)
     .then(SubmissionFormSchema.parse)
     .catch(() => null);

@@ -1,5 +1,8 @@
 import * as pine from "pinekit";
-import { handleLaborMarketConfiguredEvent } from "~/domain/labor-market/functions.server";
+import {
+  handleLaborMarketConfiguredEvent,
+  handleLaborMarketCreatedEvent,
+} from "~/domain/labor-market/functions.server";
 import {
   handleRequestConfiguredEvent,
   handleRequestWithdrawnEvent,
@@ -27,21 +30,22 @@ const worker = pine.createWorker({
   },
 });
 
-const LaborMarketNetwork = worker.contract("LaborMarketFactory", {
+const LaborMarketFactory = worker.contract("LaborMarketFactory", {
   addresses: [contracts.LaborMarketFactory.address],
   schema: contracts.LaborMarketFactory.abi,
 });
 
 const LaborMarket = worker.contractFromEvent("LaborMarket", {
-  contract: LaborMarketNetwork,
+  contract: LaborMarketFactory,
   event: "LaborMarketCreated",
   arg: "marketAddress",
   schema: contracts.LaborMarket.abi,
 });
 
-// worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-//   return handleLaborMarketConfiguredEvent(event);
-// });
+worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
+  console.log("LaborMarketCreated EVENT", event);
+  return handleLaborMarketCreatedEvent(event);
+});
 
 // worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
 //   return handleRequestConfiguredEvent(event);
