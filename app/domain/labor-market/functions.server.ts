@@ -61,9 +61,8 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
 export async function upsertIndexedLaborMarket(address: EvmAddress, event: TracerEvent) {
   const checksumAddress = getAddress(address);
   let appData;
-  const eventData = event.decoded.inputs;
-  console.log("eventData", eventData);
-  const cid = eventData.uri as string;
+  const configuration = event.decoded.inputs;
+  const cid = configuration.uri as string;
   console.log("cid", cid);
   try {
     appData = await getLaborMarketAppData(cid);
@@ -74,7 +73,7 @@ export async function upsertIndexedLaborMarket(address: EvmAddress, event: Trace
   }
   const laborMarket = {
     checksumAddress,
-    eventData,
+    configuration,
     appData,
     blockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : undefined,
   };
