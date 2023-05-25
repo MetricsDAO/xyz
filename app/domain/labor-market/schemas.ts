@@ -1,4 +1,4 @@
-import { number, z } from "zod";
+import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
@@ -53,10 +53,9 @@ export const LaborMarketReputationParams = z.object({
 export const LaborMarketConfigSchema = z.preprocess(
   arrayToObject,
   z.object({
-    sponsorBadges: z.array(gatingSchema),
-    analystBadges: z.array(gatingSchema),
-    reviewerBadges: z.array(gatingSchema),
-    modules: z.preprocess(arrayToObject, LaborMarketModules),
+    deployer: EvmAddressSchema,
+    criteria: EvmAddressSchema,
+    uri: z.string(),
   })
 );
 export type LaborMarketConfig = z.infer<typeof LaborMarketConfigSchema>;
@@ -103,9 +102,9 @@ export type LaborMarketIndexData = z.infer<typeof LaborMarketIndexDataSchema>;
  */
 export const LaborMarketSchema = z.object({
   address: EvmAddressSchema,
+  blockTimestamp: z.date(),
   configuration: LaborMarketConfigSchema,
   appData: LaborMarketAppDataSchema,
-  blockTimestamp: z.date().nullable().optional(),
 });
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 
