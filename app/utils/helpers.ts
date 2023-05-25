@@ -23,7 +23,8 @@ export const toTokenAmount = (amount: string, decimals: number): BigNumber => {
 
 /**
  * Convert units to a decimal representation
- * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001 USDC (decimals = 6)
+ * A unit of 1 represents the smallest denomination. 1 USDC = 1000000 units. This will convert to fraction for display => 0.000001 USDC (decimals = 6).
+ * Rounding works by finding the first non-zero digit and then rounding to number of decimal places specified.
  * @param units string number of units
  * @param decimals number of decimals used by the token (e.g. 6 for USDC)
  * @param round number of decimals to round to
@@ -31,10 +32,12 @@ export const toTokenAmount = (amount: string, decimals: number): BigNumber => {
  */
 export const fromTokenAmount = (units: string, decimals: number, round?: number) => {
   const fixed = ethers.FixedNumber.fromValue(BigNumber.from(units), decimals);
-  if (typeof round === "number") {
-    return fixed.round(round).toString();
+  if (round === undefined) {
+    return fixed.toString();
   }
-  return fixed.toString();
+  const nonZeroMatch = fixed.toString().match(/[1-9]/m)?.index;
+  const precision = nonZeroMatch && nonZeroMatch > 2 ? nonZeroMatch - 2 + round : round; // magic number 2 to account for "0."
+  return fixed.round(precision).toString();
 };
 
 export function findProjectsBySlug(projects: Project[], slugs: string[]) {

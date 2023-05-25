@@ -9,8 +9,8 @@ export function RewardsTable({ submissions }: { submissions: SubmissionWithRewar
   return (
     <Table>
       <Header columns={12} className="mb-2">
-        <Header.Column span={4}>Challenge Title</Header.Column>
-        <Header.Column span={4}>Reward</Header.Column>
+        <Header.Column span={3}>Challenge Title</Header.Column>
+        <Header.Column span={5}>Reward</Header.Column>
         <Header.Column span={2}>Submitted</Header.Column>
         <Header.Column span={2}>Status</Header.Column>
       </Header>
@@ -27,12 +27,12 @@ function RewardsTableRow({ submission }: { submission: SubmissionWithReward }) {
 
   return (
     <Row columns={12}>
-      <Row.Column span={4}>
+      <Row.Column span={3}>
         <Link className="text-blue-600" to={`/app/market/${laborMarketAddress}/submission/${id}`}>
           {submission.sr.appData.title}
         </Link>
       </Row.Column>
-      <Row.Column span={4}>
+      <Row.Column span={5}>
         <RewardDisplay submission={submission} />
       </Row.Column>
       <Row.Column span={2} className="text-black">

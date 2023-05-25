@@ -14,6 +14,7 @@ model User {
   id        String         @id @default(cuid()) @map("_id")
   address   String         @default("")
   createdAt DateTime       @default(now())
+  isAdmin   Boolean        @default(false)
   wallet    Wallet[]
   Ipfs      IpfsMetadata[]
   Reward    Reward[]
@@ -44,7 +45,8 @@ model Token {
   id              String   @id @default(cuid()) @map("_id")
   symbol          String
   decimals        Int      @default(18)
-  iou             Boolean  @default(false)
+  isIou           Boolean  @default(false)
+  iouSymbol       String?
   name            String
   networkName     String
   contractAddress String

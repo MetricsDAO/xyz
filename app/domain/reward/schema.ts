@@ -18,5 +18,20 @@ export const RewardedSubmissionSchema = z.object({
 
 export const RewardedSubmissionsSchema = z.array(RewardedSubmissionSchema);
 
+const IOUTokenSchema = z.object({
+  id: z.string(),
+  tokenName: z.string(),
+  chain: z.string(),
+  fireblocksTokenName: z.string(),
+  decimals: z.number(),
+  balance: z.string(),
+});
+
+export const IOUData = z.object({
+  metadata: z.array(IOUTokenSchema),
+  signature: z.string(),
+});
+
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type RewardedSubmission = z.infer<typeof RewardedSubmissionSchema>;
+export type IOUToken = z.infer<typeof IOUTokenSchema>;
