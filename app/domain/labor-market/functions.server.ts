@@ -2,11 +2,9 @@ import type { User } from "@prisma/client";
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
-import { LaborMarketFactory__factory, LaborMarket__factory } from "~/contracts";
 import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
 import { logger } from "~/services/logger.server";
 import { mongo } from "~/services/mongo.server";
-import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
 import { EvmAddressSchema } from "../address";
 import type {
@@ -16,7 +14,8 @@ import type {
   LaborMarketSearch,
   LaborMarketWithIndexData,
 } from "./schemas";
-import { LaborMarketAppDataSchema, LaborMarketConfigSchema, LaborMarketWithIndexDataSchema } from "./schemas";
+import { LaborMarketWithIndexDataSchema } from "./schemas";
+import { LaborMarketAppDataSchema } from "./schemas";
 
 /**
  * Returns a LaborMarketWithIndexData from mongodb, if it exists.
@@ -35,8 +34,7 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 
 export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
-  const ipfsUri = event.decoded.inputs.cid as string;
-  const lm = await upsertIndexedLaborMarket(laborMarketAddress, ipfsUri, event);
+  const lm = await upsertIndexedLaborMarket(laborMarketAddress, event);
   if (!lm) {
     logger.warn("Labor market was not indexed", { laborMarketAddress });
     return;
@@ -57,29 +55,26 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
   });
 }
 
-export async function handleLaborMarketCreatedEvent(event: TracerEvent) {
-  const cid = event.decoded.inputs;
-  console.log("INPUTS", cid);
-
-  return;
-}
-
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function upsertIndexedLaborMarket(address: EvmAddress, cid: string, event?: TracerEvent) {
+export async function upsertIndexedLaborMarket(address: EvmAddress, event: TracerEvent) {
   const checksumAddress = getAddress(address);
-  const configuration = await getLaborMarketConfig(checksumAddress, event?.block.number);
   let appData;
+  const eventData = event.decoded.inputs;
+  console.log("eventData", eventData);
+  const cid = eventData.uri as string;
+  console.log("cid", cid);
   try {
     appData = await getLaborMarketAppData(cid);
+    console.log("appData", appData);
   } catch (e) {
     logger.warn(`Failed to fetch and parse labor market app data for ${checksumAddress}. Skipping indexing.`, e);
     return;
   }
   const laborMarket = {
     checksumAddress,
-    configuration,
+    eventData,
     appData,
     blockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : undefined,
   };
@@ -138,14 +133,15 @@ function filterToMongo(filter: LaborMarketFilter): Parameters<typeof mongo.labor
   };
 }
 
-async function getLaborMarketConfig(address: string, block?: number) {
-  const contract = LaborMarket__factory.connect(address, nodeProvider);
-  const data = await contract.configuration();
-  return LaborMarketConfigSchema.parse(data);
-}
+// async function getLaborMarketConfig(address: string, block?: number) {
+//   const contract = LaborMarket__factory.connect(address, nodeProvider);
+//   const data = await contract.configuration();
+//   return LaborMarketConfigSchema.parse(data);
+// }
 
 async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppData> {
   const data = await fetchIpfsJson(marketUri);
+  console.log("IPFS DATA", data);
   return LaborMarketAppDataSchema.parse(data);
 }
 

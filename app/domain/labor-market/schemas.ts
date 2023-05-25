@@ -72,10 +72,11 @@ export type LaborMarketType = z.infer<typeof LaborMarketTypeSchema>;
  */
 export const LaborMarketAppDataSchema = z.object({
   title: z.string().min(1),
-  description: z.string().min(1),
   type: LaborMarketTypeSchema.default("analyze"),
+  description: z.string().min(1),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  enforcement: EvmAddressSchema,
 });
 export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
 
