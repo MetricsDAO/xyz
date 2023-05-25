@@ -36,15 +36,11 @@ export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborM
 
 export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
-  // Check to see if client has already eagerly indexed this labor market
-  let lm = await mongo.laborMarkets.findOne({ address: laborMarketAddress });
+  const config = LaborMarketConfigSchema.parse(event.decoded.inputs);
+  const lm = await upsertLaborMarket(laborMarketAddress, new Date(event.block.timestamp), config);
   if (!lm) {
-    const config = LaborMarketConfigSchema.parse(event.decoded.inputs);
-    lm = await createLaborMarket(laborMarketAddress, new Date(event.block.timestamp), config);
-    if (!lm) {
-      logger.warn("Labor market was not indexed", { laborMarketAddress });
-      return;
-    }
+    logger.warn("Labor market was not indexed", { laborMarketAddress });
+    return;
   }
 
   //log this event in user activity collection
@@ -65,7 +61,7 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function createLaborMarket(address: EvmAddress, blockTimestamp: Date, configuration: LaborMarketConfig) {
+export async function upsertLaborMarket(address: EvmAddress, blockTimestamp: Date, configuration: LaborMarketConfig) {
   let appData;
   try {
     appData = await getLaborMarketAppData(configuration.uri);
@@ -74,26 +70,32 @@ export async function createLaborMarket(address: EvmAddress, blockTimestamp: Dat
     return null;
   }
 
-  try {
-    await mongo.laborMarkets.insertOne({
+  const res = await mongo.laborMarkets.findOneAndUpdate(
+    {
       address,
-      appData,
-      blockTimestamp,
-      configuration,
-      indexData: {
-        indexedAt: new Date(),
-        serviceRequestCount: 0,
-        serviceRequestRewardPools: [],
+    },
+    {
+      $setOnInsert: {
+        address,
+        appData,
+        blockTimestamp,
+        configuration,
+        indexData: {
+          indexedAt: new Date(),
+          serviceRequestCount: 0,
+          serviceRequestRewardPools: [],
+        },
       },
-    });
-  } catch (e) {
-    // Probably a race condition between indexer and eager indexing mechanism
-    logger.warn(
-      `Failed to insert labor market into mongodb for ${address}. Probably a race condition and a violation of unique constraint.`,
-      e
-    );
+    },
+    {
+      upsert: true,
+      returnDocument: "after",
+    }
+  );
+  if (res.ok) {
+    return res.value;
   }
-  return await mongo.laborMarkets.findOne({ address });
+  return null;
 }
 
 /**
@@ -144,7 +146,7 @@ async function getLaborMarketFromEventLogs(address: EvmAddress): Promise<LaborMa
   if (event) {
     const blockTimestamp = (await event.getBlock()).timestamp;
     const config = LaborMarketConfigSchema.parse(event.args);
-    return await createLaborMarket(address, new Date(blockTimestamp), config);
+    return await upsertLaborMarket(address, new Date(blockTimestamp), config);
   }
   return null;
 }
