@@ -232,7 +232,7 @@ export function Review({
   };
 
   const onGoBack = () => {
-    navigate(`/app/market/new2/reviewer-permissions`);
+    navigate(`/app/market/new/reviewer-permissions`);
   };
 
   const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
@@ -304,6 +304,7 @@ export function Review({
                     <Controller
                       control={control}
                       name="marketplaceData.enforcement"
+                      defaultValue={contracts.BucketEnforcement.address}
                       render={({ field }) => (
                         <Select
                           {...field}

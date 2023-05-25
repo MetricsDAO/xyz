@@ -37,13 +37,13 @@ export function ReviewerPermissions({
   const onSubmit = (values: GatingData) => {
     console.log(values);
     onDataUpdate(values);
-    navigate(`/app/market/new2/review`);
+    navigate(`/app/market/new/review`);
   };
 
   const onGoBack = () => {
     console.log(formData);
     onDataUpdate(formData);
-    navigate(`/app/market/new2/analyst-permissions`);
+    navigate(`/app/market/new/analyst-permissions`);
   };
 
   return (
@@ -160,9 +160,8 @@ export function ReviewerPermissions({
                     type="button"
                     onClick={() =>
                       append({
-                        type: "Badge",
                         contractAddress: "" as EvmAddress,
-                        tokenId: "",
+                        tokenId: 1,
                         minBadgeBalance: 1,
                         maxBadgeBalance: undefined,
                       })

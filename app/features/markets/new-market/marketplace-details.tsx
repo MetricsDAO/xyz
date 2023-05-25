@@ -37,7 +37,7 @@ export function MarketplaceDetails({
 
   const onSubmit = (values: MarketplaceData) => {
     onDataUpdate(values);
-    navigate(`/app/market/new2/sponsor-permissions`);
+    navigate(`/app/market/new/sponsor-permissions`);
   };
 
   // Filtering out MBETA for now. Might not be necessary later on.

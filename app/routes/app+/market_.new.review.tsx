@@ -1,7 +1,7 @@
 import { useOutletContext } from "@remix-run/react";
 import { Review } from "~/features/markets/new-market/review";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
-import type { OutletContext } from "./market_.new2";
+import type { OutletContext } from "./market_.new";
 
 export default function MarketplaceReview() {
   const [formData, setFormData] = useOutletContext<OutletContext>();

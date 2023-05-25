@@ -37,13 +37,13 @@ export function AnalystPermissions({
   const onSubmit = (values: GatingData) => {
     console.log(values);
     onDataUpdate(values);
-    navigate(`/app/market/new2/reviewer-permissions`);
+    navigate(`/app/market/new/reviewer-permissions`);
   };
 
   const onGoBack = () => {
     console.log(formData);
     onDataUpdate(formData);
-    navigate(`/app/market/new2/sponsor-permissions`);
+    navigate(`/app/market/new/sponsor-permissions`);
   };
 
   return (
@@ -162,9 +162,8 @@ export function AnalystPermissions({
                     type="button"
                     onClick={() =>
                       append({
-                        type: "Badge",
                         contractAddress: "" as EvmAddress,
-                        tokenId: "",
+                        tokenId: 1,
                         minBadgeBalance: 1,
                         maxBadgeBalance: undefined,
                       })

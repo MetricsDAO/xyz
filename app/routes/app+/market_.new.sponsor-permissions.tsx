@@ -1,7 +1,7 @@
 import { useOutletContext } from "@remix-run/react";
 import type { GatingData } from "~/domain/labor-market/schemas";
 import { SponsorPermissions } from "~/features/markets/new-market/sponsor-permissions";
-import type { OutletContext } from "./market_.new2";
+import type { OutletContext } from "./market_.new";
 
 export default function SponsorPermissionsPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
