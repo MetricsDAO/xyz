@@ -1,4 +1,4 @@
-import type { BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 import { useAccount, useContractRead } from "wagmi";
 import { REPUTATION_TOKEN_ID } from "~/utils/constants";
 import { useContracts } from "./use-root-data";
@@ -18,5 +18,5 @@ export function useReputationTokenBalance(): BigNumber | undefined {
   //   args: [],
   // });
 
-  return null;
+  return BigNumber.from(0);
 }
