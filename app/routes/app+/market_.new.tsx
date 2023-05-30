@@ -30,7 +30,6 @@ export default function NewMarketRoute() {
 
   return (
     <div>
-      <p>{JSON.stringify(formData)}</p>
       <Outlet context={[formData, setFormData]} />
     </div>
   );

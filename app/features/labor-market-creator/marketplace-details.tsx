@@ -1,9 +1,10 @@
+import { ArrowLeftCircleIcon, ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
-import * as Progress from "@radix-ui/react-progress";
-import { useNavigate } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
-import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
+import { Button, Combobox, Error, Field, Input, Label, Progress, Select, Textarea } from "~/components";
+import { CurveChart } from "~/components/curve-chart";
 import FormStepper from "~/components/form-stepper/form-stepper";
 import type { MarketplaceData } from "~/domain/labor-market/schemas";
 import { marketplaceDetailsSchema } from "~/domain/labor-market/schemas";
@@ -22,6 +23,7 @@ export function MarketplaceDetails({
   const {
     register,
     control,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm<MarketplaceData>({
@@ -41,10 +43,12 @@ export function MarketplaceDetails({
   // Filtering out MBETA for now. Might not be necessary later on.
   const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
 
+  const enforcement = watch("enforcement");
+
   return (
-    <div className="relative min-h-screen">
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-9 max-w-4xl mx-auto">
-        <Container className="py-16 mb-16">
+    <div className="flex relative min-h-screen">
+      <div className="w-full justify-between flex flex-col">
+        <div className="max-w-2xl mx-auto my-16 space-y-10">
           <section className="space-y-1">
             <h1 className="text-3xl font-semibold antialiased">Create an Analytics Marketplace</h1>
             <p className="text-cyan-500 text-lg">
@@ -118,68 +122,47 @@ export function MarketplaceDetails({
                 </div>
               </section>
 
-              <div className="absolute bottom-0 left-0 w-full bg-transparent">
-                <Progress.Root
-                  value={1}
-                  max={5}
-                  style={{ height: 1, backgroundColor: "#EDEDED" }}
-                  className="mx-auto w-full"
-                >
-                  <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "20%" }} />
-                </Progress.Root>
-                <div className="max-w-4xl mx-auto py-4 px-6 flex flex-row gap-4 justify-start">
-                  <button disabled className="text-lg text-[#A5A5A5]">
-                    <div className="flex flex-row gap-2 items-center text-[#A5A5A5]">
-                      <img className="text-[#A5A5A5]" src="/img/left-arrow.svg" alt="" />
-                      <span> Prev </span>
-                    </div>
-                  </button>
-                  <button className="text-lg text-[#333333]" type="submit">
-                    <div className="flex flex-row gap-2 items-center">
-                      <span> Next </span>
-                      <img src="/img/right-arrow.svg" alt="" className="" />
-                    </div>
-                  </button>
-                </div>
-              </div>
+              {enforcement && <CurveChart type={"Constant"} />}
             </form>
           </main>
-        </Container>
+        </div>
+        <div className=" w-full">
+          <Progress progress={40} />
+          <div className="flex items-center justify-evenly">
+            <div className="flex items-center">
+              <div className="flex gap-3 items-center cursor-pointer">
+                <ArrowLeftCircleIcon className="h-8 w-8 text-neutral-400" />
+                <p className="mr-6 text-neutral-400">Prev</p>
+              </div>
+              <button className="flex gap-3 items-center cursor-pointer" onClick={handleSubmit(onSubmit)}>
+                <p>Next</p>
+                <ArrowRightCircleIcon className="h-8 w-8 text-black" />
+              </button>
+            </div>
+            <div className="flex items-center">
+              <Button className="my-5 mr-4" variant="cancel">
+                <Link to={`/analyze`}>Cancel</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper
           step={1}
           labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
         />
-      </section>
-    </div>
-  );
-}
-
-function FormSteps() {
-  return (
-    <aside className="py-28 md:w-1/5 hidden md:block">
-      <div className="grid grid-cols-3 gap-2">
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-            <span className="text-white font-bold text-sm">1</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-text-[#666666] font-bold text-sm">2</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">3</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">4</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">5</span>
-          </div>
+        <div className="flex mt-16 gap-x-2 items-center">
+          <InformationCircleIcon className="h-6 w-6 mr-2" />
+          <Link to={"https://www.trybadger.com/"} className="text-sm text-blue-600">
+            Launch Badger
+          </Link>
+          <p className="text-sm text-blue-600">|</p>
+          <Link to={"https://docs.trybadger.com/"} className="text-sm text-blue-600">
+            Badger Docs
+          </Link>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   );
 }
