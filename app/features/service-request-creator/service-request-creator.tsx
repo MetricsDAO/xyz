@@ -139,14 +139,14 @@ function configureFromValues({
   contracts: ReturnType<typeof useContracts>;
   inputs: {
     cid: string;
-    values: ServiceRequestForm;
+    form: ServiceRequestForm;
     laborMarketAddress: EvmAddress;
   };
 }) {
-  const { values, cid, laborMarketAddress } = inputs;
+  const { form, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
   const signalDeadline = new Date(
-    claimDate(currentDate, parseDatetime(values.analystData.endDate, values.analystData.endTime))
+    claimDate(currentDate, parseDatetime(form.analystData.endDate, form.analystData.endTime))
   );
 
   return configureWrite({
@@ -154,13 +154,20 @@ function configureFromValues({
     address: laborMarketAddress,
     functionName: "submitRequest",
     args: [
-      values.analystData.rewardToken,
-      toTokenAmount(values.analystData.rewardPool, values.analystData.rewardTokenDecimals),
-      BigNumber.from(unixTimestamp(signalDeadline)),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.analystData.endDate, values.analystData.endTime)))),
-      BigNumber.from(
-        unixTimestamp(new Date(parseDatetime(values.reviewerData.reviewEndDate, values.reviewerData.reviewEndTime)))
-      ),
+      0, // Ok to hardcode here. Nonce is used to prevent duplicate ids in multicall.
+      {
+        pTokenProvider: form.analystData.rewardToken,
+        pTokenProviderTotal: toTokenAmount(form.analystData.rewardPool, form.analystData.rewardTokenDecimals),
+        pTokenReviewer: form.reviewerData.rewardToken,
+        pTokenReviewerTotal: toTokenAmount(form.reviewerData.rewardPool, form.reviewerData.rewardTokenDecimals),
+        providerLimit: BigNumber.from(form.analystData.submitLimit),
+        reviewerLimit: BigNumber.from(form.reviewerData.reviewLimit),
+        enforcementExp: unixTimestamp(
+          new Date(parseDatetime(form.reviewerData.reviewEndDate, form.reviewerData.reviewEndTime))
+        ),
+        signalExp: unixTimestamp(signalDeadline),
+        submissionExp: unixTimestamp(new Date(parseDatetime(form.analystData.endDate, form.analystData.endTime))),
+      },
       cid,
     ],
   });
