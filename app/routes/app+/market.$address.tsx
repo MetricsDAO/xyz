@@ -36,9 +36,11 @@ export default function Marketplace() {
   const { laborMarket, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   const description = laborMarket?.appData?.description ? laborMarket.appData.description : "";
 
+  // return <p>{JSON.stringify(laborMarket)}</p>;
   const user = useOptionalUser();
   const userSignedIn = !!user;
   const { canLaunchChallenges } = usePrereqs({ laborMarket });
+  console.log("canLaunchChallenges", canLaunchChallenges);
 
   return (
     <Container className="pb-16 pt-7 px-10">
@@ -56,16 +58,16 @@ export default function Marketplace() {
       </section>
       <section className="flex flex-col space-y-7 pb-12">
         <div className="flex flex-wrap gap-x-8">
-          <Detail>
-            {laborMarket.configuration.owner ? (
+          {/* <Detail>
+            {laborMarket.configuration.deployer ? (
               <DetailItem title="Sponsor">
-                <UserBadge address={laborMarket.configuration.owner} />
+                <UserBadge address={laborMarket.configuration.deployer} />
               </DetailItem>
             ) : (
               <></>
             )}
             <DetailItem title="Chain/Project">{<ProjectBadges projects={laborMarketProjects} />}</DetailItem>
-          </Detail>
+          </Detail> */}
         </div>
         <ClientOnly>{() => <ParsedMarkdown text={DOMPurify.sanitize(description)} />}</ClientOnly>
       </section>
@@ -74,7 +76,8 @@ export default function Marketplace() {
         <main className="flex-1">
           <TabNav className="mb-10">
             <TabNavLink to="./#tabNav" end>
-              Challenges ({laborMarket.indexData.serviceRequestCount})
+              {/* Challenges ({laborMarket.indexData.serviceRequestCount}) */}
+              Challenges (number will go here )
             </TabNavLink>
             <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
             <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>

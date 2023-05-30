@@ -93,7 +93,10 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
 export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
   const submissionId = z.string().parse(event.decoded.inputs.submissionId);
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
-  const submission = await upsertSubmission(laborMarketAddress, submissionId, event);
+
+  const ipfsUri = z.string().parse(event.decoded.inputs.uri);
+
+  const submission = await upsertSubmission(laborMarketAddress, submissionId, event, ipfsUri);
   invariant(submission, "Submission should exist after upserting");
 
   //log this event in user activity collection
@@ -132,7 +135,7 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
 export const upsertSubmission = async (address: EvmAddress, id: string, event?: TracerEvent) => {
   const contract = LaborMarket__factory.connect(address, nodeProvider);
 
-  const submission = await contract.serviceSubmissions(id, { blockTag: event?.block.number });
+  const submission = await contract.requestIdToRequest(id, { blockTag: event?.block.number });
   const appData = await fetchIpfsJson(submission.uri)
     .then(SubmissionFormSchema.parse)
     .catch(() => null);
@@ -145,7 +148,7 @@ export const upsertSubmission = async (address: EvmAddress, id: string, event?: 
   const doc: SubmissionDoc = {
     id: id,
     laborMarketAddress: address,
-    serviceRequestId: submission.requestId.toString(),
+    serviceRequestId: a,
     indexedAt: new Date(),
     configuration: {
       serviceProvider: EvmAddressSchema.parse(submission.serviceProvider),

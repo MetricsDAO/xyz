@@ -1,21 +1,37 @@
-import type { DataFunctionArgs } from "@remix-run/node";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { listProjects } from "~/services/projects.server";
-import { listTokens } from "~/services/tokens.server";
-import { fakeLaborMarketFormValues, NewMarket } from "~/features/markets/new-market";
+import { Outlet } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { useState } from "react";
+import type { MarketplaceData, GatingData } from "~/domain/labor-market/schemas";
 import { requireUser } from "~/services/session.server";
 
-export const loader = async ({ request, params }: DataFunctionArgs) => {
-  const url = new URL(request.url);
-  await requireUser(request, `/app/login?redirectto=app/market/new`);
+export type OutletContext = [formState, React.Dispatch<React.SetStateAction<formState>>];
 
-  const projects = await listProjects();
-  const tokens = await listTokens();
-  const defaultValues = url.searchParams.get("fake") ? fakeLaborMarketFormValues() : {};
-  return typedjson({ projects, tokens, defaultValues });
+export const loader = async ({ request }: DataFunctionArgs) => {
+  await requireUser(request, `/app/login?redirectto=app/market`);
+  return null;
+};
+
+interface formState {
+  marketplaceData: MarketplaceData | null;
+  sponsorData: GatingData | null;
+  analystData: GatingData | null;
+  reviewerData: GatingData | null;
+}
+
+const initialFormState: formState = {
+  marketplaceData: null,
+  sponsorData: null,
+  analystData: null,
+  reviewerData: null,
 };
 
 export default function NewMarketRoute() {
-  const { projects, defaultValues, tokens } = useTypedLoaderData<typeof loader>();
-  return <NewMarket defaultValues={defaultValues} projects={projects} tokens={tokens} />;
+  const [formData, setFormData] = useState<formState>(initialFormState);
+
+  return (
+    <div>
+      <p>{JSON.stringify(formData)}</p>
+      <Outlet context={[formData, setFormData]} />
+    </div>
+  );
 }

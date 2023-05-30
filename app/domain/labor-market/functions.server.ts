@@ -1,5 +1,4 @@
 import type { User } from "@prisma/client";
-import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
 import { LaborMarket__factory } from "~/contracts";
@@ -10,37 +9,40 @@ import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
 import { EvmAddressSchema } from "../address";
 import type {
+  LaborMarket,
   LaborMarketAppData,
+  LaborMarketConfig,
   LaborMarketFilter,
-  LaborMarketIndexData,
   LaborMarketSearch,
   LaborMarketWithIndexData,
 } from "./schemas";
-import { LaborMarketAppDataSchema, LaborMarketConfigSchema, LaborMarketWithIndexDataSchema } from "./schemas";
+import { LaborMarketConfigSchema } from "./schemas";
+import { LaborMarketAppDataSchema } from "./schemas";
 
 /**
  * Returns a LaborMarketWithIndexData from mongodb, if it exists.
  * If it doesn't exist, it probably means that it hasn't been indexed yet so we
  * index it eagerly and return the result.
  */
-export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborMarketWithIndexData> {
+export async function getIndexedLaborMarket(address: EvmAddress): Promise<LaborMarket> {
   const doc = await mongo.laborMarkets.findOne({ address });
   if (!doc) {
-    const newDoc = await upsertIndexedLaborMarket(address);
+    const newDoc = await getLaborMarketFromEventLogs(address);
     invariant(newDoc, "Labor market should have been indexed");
     return newDoc;
   }
-  return LaborMarketWithIndexDataSchema.parse(doc);
+  return doc;
 }
 
 export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
-  const lm = await upsertIndexedLaborMarket(laborMarketAddress, event);
+  const config = LaborMarketConfigSchema.parse(event.decoded.inputs);
+  const lm = await upsertLaborMarket(laborMarketAddress, new Date(event.block.timestamp), config);
   if (!lm) {
     logger.warn("Labor market was not indexed", { laborMarketAddress });
     return;
   }
-  invariant(lm.blockTimestamp, "Labor market should have a block timestamp");
+
   //log this event in user activity collection
   await mongo.userActivity.insertOne({
     groupType: "LaborMarket",
@@ -50,7 +52,7 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
     },
     iconType: "labor-market",
     actionName: "Create Marketplace",
-    userAddress: lm.configuration.owner,
+    userAddress: event.decoded.inputs.deployer as EvmAddress,
     blockTimestamp: lm.blockTimestamp,
     indexedAt: lm.indexData.indexedAt,
   });
@@ -59,35 +61,41 @@ export async function handleLaborMarketConfiguredEvent(event: TracerEvent) {
 /**
  * Creates a LaborMarketWithIndexData in mongodb from chain and ipfs data.
  */
-export async function upsertIndexedLaborMarket(address: EvmAddress, event?: TracerEvent) {
-  const checksumAddress = getAddress(address);
-  const configuration = await getLaborMarketConfig(checksumAddress, event?.block.number);
+export async function upsertLaborMarket(address: EvmAddress, blockTimestamp: Date, configuration: LaborMarketConfig) {
   let appData;
   try {
-    appData = await getLaborMarketAppData(configuration.marketUri);
+    appData = await getLaborMarketAppData(configuration.uri);
   } catch (e) {
-    logger.warn(`Failed to fetch and parse labor market app data for ${checksumAddress}. Skipping indexing.`, e);
-    return;
+    logger.warn(`Failed to fetch and parse labor market app data for ${address}. Skipping indexing.`, e);
+    return null;
   }
-  const laborMarket = {
-    checksumAddress,
-    configuration,
-    appData,
-    blockTimestamp: event?.block.timestamp ? new Date(event.block.timestamp) : undefined,
-  };
-  const indexData: LaborMarketIndexData = {
-    indexedAt: new Date(),
-    serviceRequestCount: 0,
-    serviceRequestRewardPools: [],
-  };
 
   const res = await mongo.laborMarkets.findOneAndUpdate(
-    { address },
-    { $set: laborMarket, $setOnInsert: { indexData } },
-    { upsert: true, returnDocument: "after" }
+    {
+      address,
+    },
+    {
+      $setOnInsert: {
+        address,
+        appData,
+        blockTimestamp,
+        configuration,
+        indexData: {
+          indexedAt: new Date(),
+          serviceRequestCount: 0,
+          serviceRequestRewardPools: [],
+        },
+      },
+    },
+    {
+      upsert: true,
+      returnDocument: "after",
+    }
   );
-
-  return res.value;
+  if (res.ok) {
+    return res.value;
+  }
+  return null;
 }
 
 /**
@@ -130,14 +138,22 @@ function filterToMongo(filter: LaborMarketFilter): Parameters<typeof mongo.labor
   };
 }
 
-async function getLaborMarketConfig(address: string, block?: number) {
+async function getLaborMarketFromEventLogs(address: EvmAddress): Promise<LaborMarketWithIndexData | null> {
   const contract = LaborMarket__factory.connect(address, nodeProvider);
-  const data = await contract.configuration();
-  return LaborMarketConfigSchema.parse(data);
+  const eventFilter = contract.filters.LaborMarketConfigured();
+  const data = await contract.queryFilter(eventFilter, -150); // Look back 150 blocks (~5 minutes on Polygon)
+  const event = data[0]; // There should only be 1 "LaborMarketConfigured" event
+  if (event) {
+    const blockTimestamp = (await event.getBlock()).timestamp;
+    const config = LaborMarketConfigSchema.parse(event.args);
+    return await upsertLaborMarket(address, new Date(blockTimestamp), config);
+  }
+  return null;
 }
 
 async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppData> {
   const data = await fetchIpfsJson(marketUri);
+  console.log("IPFS DATA", data);
   return LaborMarketAppDataSchema.parse(data);
 }
 

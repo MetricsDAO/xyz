@@ -1,12 +1,12 @@
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
-import { ScalableLikertEnforcement__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review/schemas";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review/schemas";
 import { getContracts } from "~/utils/contracts.server";
 import { mongo } from "../../services/mongo.server";
 import { nodeProvider } from "../../services/node.server";
+import { ScalableLikertEnforcement__factory } from "~/contracts/factories/ScalableLikertEnforcement__factory";
 
 const contracts = getContracts();
 
@@ -70,10 +70,7 @@ export const indexReview = async (event: TracerEvent) => {
   const blockTimestamp = new Date(event.block.timestamp);
 
   // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)
-  const enforceContract = ScalableLikertEnforcement__factory.connect(
-    contracts.ScalableLikertEnforcement.address,
-    nodeProvider
-  );
+  const enforceContract = ScalableLikertEnforcement__factory.connect(event.contract.address, nodeProvider);
   const submissionToScore = await enforceContract.submissionToScore(contractAddress, submissionId, {
     blockTag: event.block.number,
   });

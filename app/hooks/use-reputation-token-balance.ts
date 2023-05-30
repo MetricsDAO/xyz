@@ -8,15 +8,15 @@ import { useContracts } from "./use-root-data";
  * @returns {BigNumber | undefined} - undefined if user is not connected or still loading
  */
 export function useReputationTokenBalance(): BigNumber | undefined {
-  const contracts = useContracts();
-  const { address: userAddress } = useAccount();
-  const { data: reputationBalance } = useContractRead({
-    enabled: !!userAddress,
-    address: contracts.ReputationToken.address,
-    abi: contracts.ReputationToken.abi,
-    functionName: "balanceOf",
-    args: [userAddress as `0x${string}`, BigNumber.from(REPUTATION_TOKEN_ID)],
-  });
+  // const contracts = useContracts();
+  // const { address: userAddress } = useAccount();
+  // const { data: reputationBalance } = useContractRead({
+  //   enabled: !!userAddress,
+  //   address: contracts.BucketEnforcement.address,
+  //   abi: contracts.BucketEnforcement.abi,
+  //   functionName: "marketToMaxScore",
+  //   args: [],
+  // });
 
-  return reputationBalance;
+  return BigNumber.from(0);
 }

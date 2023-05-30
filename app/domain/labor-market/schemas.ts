@@ -12,6 +12,27 @@ export const BadgePairSchema = z.preprocess(
 );
 export type BadgePair = z.infer<typeof BadgePairSchema>;
 
+export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
+export const PermissionType = z.enum(["Badge"]);
+
+export const BadgeSchema = z.preprocess(
+  arrayToObject,
+  z.object({
+    contractAddress: EvmAddressSchema,
+    tokenId: z.number(),
+    minBadgeBalance: z.coerce.number().min(1).default(1),
+    maxBadgeBalance: z.coerce.number().optional(),
+  })
+);
+
+export const gatingSchema = z.object({
+  gatingType: BadgeGatingType.default("Anyone"),
+  numberBadgesRequired: z.coerce.number().optional(),
+  badges: z.array(BadgeSchema),
+});
+
+export type GatingData = z.infer<typeof gatingSchema>;
+
 export const LaborMarketModules = z.object({
   network: EvmAddressSchema,
   enforcement: EvmAddressSchema,
@@ -32,13 +53,9 @@ export const LaborMarketReputationParams = z.object({
 export const LaborMarketConfigSchema = z.preprocess(
   arrayToObject,
   z.object({
-    marketUri: z.string(),
-    owner: EvmAddressSchema,
-    maintainerBadge: BadgePairSchema,
-    delegateBadge: BadgePairSchema,
-    reputationBadge: BadgePairSchema,
-    reputationParams: z.preprocess(arrayToObject, LaborMarketReputationParams),
-    modules: z.preprocess(arrayToObject, LaborMarketModules),
+    deployer: EvmAddressSchema,
+    criteria: EvmAddressSchema,
+    uri: z.string(),
   })
 );
 export type LaborMarketConfig = z.infer<typeof LaborMarketConfigSchema>;
@@ -54,10 +71,11 @@ export type LaborMarketType = z.infer<typeof LaborMarketTypeSchema>;
  */
 export const LaborMarketAppDataSchema = z.object({
   title: z.string().min(1),
-  description: z.string().min(1),
   type: LaborMarketTypeSchema.default("analyze"),
+  description: z.string().min(1),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  enforcement: EvmAddressSchema,
 });
 export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
 
@@ -84,9 +102,9 @@ export type LaborMarketIndexData = z.infer<typeof LaborMarketIndexDataSchema>;
  */
 export const LaborMarketSchema = z.object({
   address: EvmAddressSchema,
+  blockTimestamp: z.date(),
   configuration: LaborMarketConfigSchema,
   appData: LaborMarketAppDataSchema,
-  blockTimestamp: z.date().nullable().optional(),
 });
 export type LaborMarket = z.infer<typeof LaborMarketSchema>;
 
@@ -120,7 +138,27 @@ export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;
 
 /** For creating and updating LaborMarkets */
 export const LaborMarketFormSchema = z.object({
-  configuration: LaborMarketConfigSchema.sourceType().omit({ marketUri: true, owner: true }),
+  configuration: LaborMarketConfigSchema.sourceType(),
   appData: LaborMarketAppDataSchema,
 });
 export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
+
+export const marketplaceDetailsSchema = z.object({
+  title: z.string().min(1),
+  type: LaborMarketTypeSchema.default("analyze"),
+  description: z.string().min(1),
+  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  enforcement: EvmAddressSchema,
+});
+
+export type MarketplaceData = z.infer<typeof marketplaceDetailsSchema>;
+
+export const finalMarketSchema = z.object({
+  marketplaceData: marketplaceDetailsSchema,
+  sponsorData: gatingSchema,
+  analystData: gatingSchema,
+  reviewerData: gatingSchema,
+});
+
+export type finalMarketData = z.infer<typeof finalMarketSchema>;

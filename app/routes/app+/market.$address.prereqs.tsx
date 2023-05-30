@@ -9,10 +9,9 @@ import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 export default function MarketplaceIdPrerequesites() {
   const { laborMarket } = useMarketAddressData();
 
-  const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
-  const delegateData = useTokenData(laborMarket.configuration.delegateBadge);
+  // const maintainerData = useTokenData(laborMarket.configuration.deployer);
 
-  const { canReview, canLaunchChallenges, canSubmit } = usePrereqs({ laborMarket });
+  const { canLaunchChallenges } = usePrereqs({ laborMarket });
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
@@ -29,22 +28,23 @@ export default function MarketplaceIdPrerequesites() {
                   <h3 className="font-medium mb-4">
                     You must hold this much rMETRIC to enter submissions on challenges
                   </h3>
-                  <PermissionIcon isAllowed={canSubmit} />
+                  {/* <PermissionIcon isAllowed={canSubmit} /> */}
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex flex-col">
                     <div className="text-xs text-gray-500 mb-2">MIN BALANCE</div>
-                    <Badge>
+                    {/* <Badge>
                       <div className="normal-case">{laborMarket.configuration.reputationParams.submitMin} rMETRIC</div>
-                    </Badge>
+                    </Badge> */}
                   </div>
                   <div className="flex flex-col">
-                    <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
+                    {/* <div className="text-xs text-gray-500 mb-2">MAX BALANCE</div>
                     {isUnlimitedSubmitRepMax(laborMarket) ? (
                       <Badge>Unlimited</Badge>
                     ) : (
                       <Badge>{laborMarket.configuration.reputationParams.submitMax} rMETRIC</Badge>
                     )}
+                  </div> */}
                   </div>
                 </div>
               </Card>
@@ -53,24 +53,24 @@ export default function MarketplaceIdPrerequesites() {
                   <h3 className="font-medium mb-4">
                     You must hold this badge to review and score submissions on challenges
                   </h3>
-                  <PermissionIcon isAllowed={canReview} />
+                  {/* <PermissionIcon isAllowed={canReview} /> */}
                 </div>
-                <div className="text-xs text-gray-500">{maintainerData?.name}</div>
+                {/* <div className="text-xs text-gray-500">{maintainerData?.name}</div> */}
                 <div className="flex gap-2 items-center">
-                  <img src={maintainerData?.image} alt="" className="h-4 w-4" />
-                  <p className="text-base text-[#252525]">{`${laborMarket.configuration.maintainerBadge.token} #${laborMarket.configuration.maintainerBadge.tokenId}`}</p>
+                  {/* <img src={maintainerData?.image} alt="" className="h-4 w-4" /> */}
+                  {/* <p className="text-base text-[#252525]">{`${laborMarket.configuration.maintainerBadge.token} #${laborMarket.configuration.maintainerBadge.tokenId}`}</p> */}
                 </div>
               </Card>
               <Card className="p-4 space-y-2">
                 <div className="flex justify-between">
                   <h3 className="font-medium mb-4">You must hold this badge to launch new challenges</h3>
-                  <PermissionIcon isAllowed={canLaunchChallenges} />
+                  {/* <PermissionIcon isAllowed={canLaunchChallenges} /> */}
                 </div>
-                <div className="text-xs text-gray-500">{delegateData?.name}</div>
-                <div className="flex gap-2 items-center">
+                {/* <div className="text-xs text-gray-500">{delegateData?.name}</div> */}
+                {/* <div className="flex gap-2 items-center">
                   <img src={delegateData?.image} alt="" className="h-4 w-4" />
                   <p className="text-base text-[#252525]">{`${laborMarket.configuration.delegateBadge.token} #${laborMarket.configuration.delegateBadge.tokenId}`}</p>
-                </div>
+                </div> */}
               </Card>
             </div>
           </div>

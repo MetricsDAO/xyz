@@ -3,41 +3,38 @@ import { multicall } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { useAccount } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
+import type { LaborMarket as LaborMarketType } from "~/domain/labor-market/schemas";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import { useReputationTokenBalance } from "./use-reputation-token-balance";
 import { useTokenBalance } from "./use-token-balance";
+import { useContracts } from "./use-root-data";
+import { configureWrite } from "./use-transactor";
+import { LaborMarketFactoryInterface__factory, LaborMarketInterface__factory, LaborMarket__factory } from "~/contracts";
 
 // Determines which actions a user can perform by looking at token balances.
-export function usePrereqs({ laborMarket }: { laborMarket: LaborMarketWithIndexData }) {
-  const maintainerBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.maintainerBadge.token,
-    tokenId: laborMarket.configuration.maintainerBadge.tokenId,
-  });
+export function usePrereqs({ laborMarket }: { laborMarket: LaborMarketType }) {
+  const { address: userAddress } = useAccount();
 
-  const delegateBadgeTokenBalance = useTokenBalance({
-    tokenAddress: laborMarket.configuration.delegateBadge.token,
-    tokenId: laborMarket.configuration.delegateBadge.tokenId,
-  });
+  const contracts = useContracts();
 
-  const reputationBalance = useReputationTokenBalance();
+  const iface = LaborMarket__factory.createInterface();
 
-  const canLaunchChallenges = delegateBadgeTokenBalance?.gt(0);
-  const canReview = maintainerBadgeTokenBalance?.gt(0);
-  const canSubmit =
-    reputationBalance?.gte(laborMarket.configuration.reputationParams.submitMin) &&
-    reputationBalance?.lte(laborMarket.configuration.reputationParams.submitMax);
+  const canLaunchChallenges = iface.functions["isAuthorized(address,bytes4)"];
+
+  console.log(canLaunchChallenges);
+
+  //const canReview =
+  //const canSubmit =
 
   return {
     canLaunchChallenges,
-    canReview,
-    canSubmit,
   };
 }
 
 type Prereq = {
   canLaunchChallenges: boolean;
-  canReview: boolean;
-  canSubmit: boolean;
+  // canReview: boolean;
+  // canSubmit: boolean;
 };
 
 /**

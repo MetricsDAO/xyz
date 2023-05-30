@@ -197,7 +197,7 @@ export async function createServiceRequestAppData(appData: ServiceRequestAppData
 
 async function getServiceRequestConfig(address: string, id: string, event?: TracerEvent) {
   const contract = LaborMarket__factory.connect(address, nodeProvider);
-  const data = await contract.serviceRequests(id, { blockTag: event?.block.number });
+  const data = await contract.requestIdToRequest(id, { blockTag: event?.block.number });
   return ServiceRequestConfigSchema.parse(data);
 }
 

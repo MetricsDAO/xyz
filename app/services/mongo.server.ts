@@ -29,6 +29,7 @@ const reviews = db.collection<ReviewDoc>("reviews");
 const userActivity = db.collection<ActivityDoc>("userActivity");
 
 laborMarkets.createIndex({ "appData.title": "text" });
+laborMarkets.createIndex({ address: 1 }, { unique: true });
 serviceRequests.createIndex({ "appData.title": "text" });
 userActivity.createIndex({ laborMarketTitle: "text" });
 submissions.createIndex({ "appData.title": "text" });
