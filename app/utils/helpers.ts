@@ -48,6 +48,14 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
     .filter((p): p is Project => !!p);
 }
 
+export function findTokensBySymbolHelper(tokens: Token[], symbols: string[]) {
+  return symbols
+    .map((symbol) => {
+      return tokens.find((t) => t.symbol === symbol);
+    })
+    .filter((t): t is Token => !!t);
+}
+
 /**
  * Take a contract address and return the corresponing token abbreviation
  * @param address Contract address of the token

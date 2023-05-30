@@ -13,16 +13,16 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import { Button } from "../../components/button";
 import type { ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
-import { ServiceRequestCreatorFields } from "./service-request-creator-fields.tsx";
 
 interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
   laborMarketAddress: EvmAddress;
+  page: number;
+  header: boolean;
 }
 
 /**
@@ -44,6 +44,8 @@ export function ServiceRequestCreator({
   tokens,
   defaultValues,
   laborMarketAddress,
+  page,
+  header,
 }: ServiceRequestFormProps) {
   const contracts = useContracts();
   const [values, setValues] = useState<ServiceRequestForm>();
@@ -66,7 +68,7 @@ export function ServiceRequestCreator({
     onSuccess: useCallback((receipt) => {}, []),
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
       submitTransactor.start({
@@ -74,14 +76,14 @@ export function ServiceRequestCreator({
         config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, values, laborMarketAddress } }),
       });
     }
-  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
+  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);*/
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
     defaultValues,
   });
 
-  const onSubmit = (values: ServiceRequestForm) => {
+  /*const onSubmit = (values: ServiceRequestForm) => {
     approveTransactor.start({
       metadata: {},
       config: () =>
@@ -106,7 +108,7 @@ export function ServiceRequestCreator({
         }),
     });
     setValues(values);
-  };
+  };*/
 
   return (
     <FormProvider {...methods}>
@@ -125,12 +127,7 @@ export function ServiceRequestCreator({
         />
       )}
 
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-10 py-5">
-        <ServiceRequestCreatorFields validTokens={tokens} validProjects={projects} />
-        <Button size="lg" type="submit">
-          Next
-        </Button>
-      </form>
+      <form className="space-y-10 py-5"></form>
     </FormProvider>
   );
 }
@@ -148,18 +145,22 @@ function configureFromValues({
 }) {
   const { values, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
-  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(values.endDate, values.endTime)));
+  const signalDeadline = new Date(
+    claimDate(currentDate, parseDatetime(values.analystData.endDate, values.analystData.endTime))
+  );
 
   return configureWrite({
     abi: contracts.LaborMarket.abi,
     address: laborMarketAddress,
     functionName: "submitRequest",
     args: [
-      values.rewardToken,
-      toTokenAmount(values.rewardPool, values.rewardTokenDecimals),
+      values.analystData.rewardToken,
+      toTokenAmount(values.analystData.rewardPool, values.analystData.rewardTokenDecimals),
       BigNumber.from(unixTimestamp(signalDeadline)),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.endDate, values.endTime)))),
-      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.reviewEndDate, values.reviewEndTime)))),
+      BigNumber.from(unixTimestamp(new Date(parseDatetime(values.analystData.endDate, values.analystData.endTime)))),
+      BigNumber.from(
+        unixTimestamp(new Date(parseDatetime(values.reviewerData.reviewEndDate, values.reviewerData.reviewEndTime)))
+      ),
       cid,
     ],
   });
