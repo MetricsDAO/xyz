@@ -3,12 +3,9 @@ import type { TracerEvent } from "pinekit/types";
 import type { EvmAddress } from "~/domain/address";
 import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review/schemas";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review/schemas";
-import { getContracts } from "~/utils/contracts.server";
 import { mongo } from "../../services/mongo.server";
 import { nodeProvider } from "../../services/node.server";
 import { ScalableLikertEnforcement__factory } from "~/contracts/factories/ScalableLikertEnforcement__factory";
-
-const contracts = getContracts();
 
 /**
  * Returns an array of ReviewDoc for a given Submission.

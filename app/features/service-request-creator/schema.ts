@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "~/domain/address";
-import { ServiceRequestAppDataSchema } from "~/domain/service-request/schemas";
 import { parseDatetime, validateDate, validateTime } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 

@@ -6,7 +6,6 @@ import { Controller, useForm } from "react-hook-form";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
 import type { MarketplaceData } from "~/domain/labor-market/schemas";
 import { marketplaceDetailsSchema } from "~/domain/labor-market/schemas";
-import { useContracts } from "~/hooks/use-root-data";
 
 export function MarketplaceDetails({
   currentData,
@@ -19,8 +18,6 @@ export function MarketplaceDetails({
   projects: Project[];
   onDataUpdate: (data: MarketplaceData) => void;
 }) {
-  const contracts = useContracts();
-
   const {
     register,
     control,

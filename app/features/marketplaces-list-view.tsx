@@ -2,11 +2,11 @@ import { Link, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
-import { usePrereqsMulticall } from "~/hooks/use-prereqs";
 import type { MarketplaceTableProps } from "~/routes/app+/analyze";
 import { findProjectsBySlug } from "~/utils/helpers";
 import { ChallengePoolBadges } from "./challenge-pool-badges";
 import { ProjectBadges } from "./project-badges";
+import { usePrereqsMulticall } from "~/hooks/use-prereqs-multicall";
 
 export function MarketplacesListView({ marketplaces, ...props }: MarketplaceTableProps) {
   // This breaks server-side pagination so that we can filter by badges which we look up on the client-side.
