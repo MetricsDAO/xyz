@@ -1,7 +1,7 @@
 import { useOutletContext } from "@remix-run/react";
 import type { GatingData } from "~/domain/labor-market/schemas";
-import { ReviewerPermissions } from "~/features/markets/new-market/reviewer-permissions";
 import type { OutletContext } from "./market_.new";
+import { ReviewerPermissions } from "~/features/labor-market-creator/reviewer-permissions";
 
 export default function ReviewerPermissionsPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
