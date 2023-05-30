@@ -3,15 +3,6 @@ import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
 
-export const BadgePairSchema = z.preprocess(
-  arrayToObject,
-  z.object({
-    token: EvmAddressSchema,
-    tokenId: z.coerce.string(),
-  })
-);
-export type BadgePair = z.infer<typeof BadgePairSchema>;
-
 export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
 export const PermissionType = z.enum(["Badge"]);
 
@@ -19,7 +10,7 @@ export const BadgeSchema = z.preprocess(
   arrayToObject,
   z.object({
     contractAddress: EvmAddressSchema,
-    tokenId: z.number(),
+    tokenId: z.coerce.number(),
     minBadgeBalance: z.coerce.number().min(1).default(1),
     maxBadgeBalance: z.coerce.number().optional(),
   })

@@ -1,15 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { multicall } from "@wagmi/core";
 import { BigNumber } from "ethers";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
+import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
-import type { LaborMarket as LaborMarketType } from "~/domain/labor-market/schemas";
-import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import type { LaborMarket as LaborMarketType, LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import { useReputationTokenBalance } from "./use-reputation-token-balance";
-import { useTokenBalance } from "./use-token-balance";
 import { useContracts } from "./use-root-data";
-import { configureWrite } from "./use-transactor";
-import { LaborMarketFactoryInterface__factory, LaborMarketInterface__factory, LaborMarket__factory } from "~/contracts";
 
 // Determines which actions a user can perform by looking at token balances.
 export function usePrereqs({ laborMarket }: { laborMarket: LaborMarketType }) {
@@ -19,15 +16,50 @@ export function usePrereqs({ laborMarket }: { laborMarket: LaborMarketType }) {
 
   const iface = LaborMarket__factory.createInterface();
 
-  const canLaunchChallenges = iface.functions["isAuthorized(address,bytes4)"];
+  const { data: canLaunchChallege } = useContractRead({
+    enabled: !!userAddress,
+    address: laborMarket.address,
+    abi: contracts.LaborMarket.abi,
+    functionName: "isAuthorized",
+    args: [
+      // @ts-ignore "enabled" ensures userAddress is defined
+      userAddress,
+      iface.getSighash(
+        iface.functions[
+          "submitRequest(uint8,(uint48,uint48,uint48,uint64,uint64,uint256,uint256,address,address),string)"
+        ]
+      ) as `0x${string}`,
+    ],
+  });
 
-  console.log(canLaunchChallenges);
+  const { data: canReview } = useContractRead({
+    enabled: !!userAddress,
+    address: laborMarket.address,
+    abi: contracts.LaborMarket.abi,
+    functionName: "isAuthorized",
+    args: [
+      // @ts-ignore "enabled" ensures userAddress is defined
+      userAddress,
+      iface.getSighash(iface.functions["signalReview(uint256,uint24)"]) as `0x${string}`,
+    ],
+  });
 
-  //const canReview =
-  //const canSubmit =
+  const { data: canSubmit } = useContractRead({
+    enabled: !!userAddress,
+    address: laborMarket.address,
+    abi: contracts.LaborMarket.abi,
+    functionName: "isAuthorized",
+    args: [
+      // @ts-ignore "enabled" ensures userAddress is defined
+      userAddress,
+      iface.getSighash(iface.functions["signal(uint256)"]) as `0x${string}`,
+    ],
+  });
 
   return {
-    canLaunchChallenges,
+    canLaunchChallenges: canLaunchChallege ?? false,
+    canReview: canReview ?? false,
+    canSubmit: canSubmit ?? false,
   };
 }
 
