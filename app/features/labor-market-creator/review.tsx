@@ -7,6 +7,7 @@ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Button, Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
+import FormStepper from "~/components/form-stepper/form-stepper";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
@@ -688,52 +689,11 @@ export function Review({
             </form>
           </main>
         </Container>
-        <FormSteps />
+        <FormStepper
+          step={5}
+          labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
+        />
       </section>
     </div>
-  );
-}
-
-function FormSteps() {
-  return (
-    <aside className="py-28 md:w-1/3 hidden md:block">
-      <div className="flex flex-col items-start justify-start gap-4 ">
-        <div className="grid grid-cols-3 gap-2">
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-              <span className="text-[#666666] font-bold text-sm">1</span>
-            </div>
-            <div className="border border-[#C9C9C9] h-16"></div>
-            <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-              <span className="text-text-[#666666] font-bold text-sm">2</span>
-            </div>
-            <div className="border border-[#C9C9C9] h-16"></div>
-            <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-              <span className="text-[#666666] font-bold text-sm">3</span>
-            </div>
-            <div className="border border-[#C9C9C9] h-16"></div>
-            <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-              <span className="text-[#666666] font-bold text-sm">4</span>
-            </div>
-            <div className="border border-[#C9C9C9] h-16"></div>
-            <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-              <span className="text-white font-bold text-sm">5</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-row items-center flex-shrink-0">
-          <div className="flex flex-row items-center space-x-1">
-            <img src="/img/information.svg" alt="" />
-            <Link className="text-[#116FDE] font-bold text-xs" to="https://www.trybadger.com/dashboard/">
-              Launch Badger
-            </Link>
-            <div className="text-[#116FDE] mx-2">|</div>
-            <Link className="text-[#116FDE] font-bold text-xs" to="https://docs.trybadger.com/">
-              Badger Docs
-            </Link>
-          </div>
-        </div>
-      </div>
-    </aside>
   );
 }

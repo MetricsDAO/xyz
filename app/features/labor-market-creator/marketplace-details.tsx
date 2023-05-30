@@ -4,6 +4,7 @@ import * as Progress from "@radix-ui/react-progress";
 import { useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
+import FormStepper from "~/components/form-stepper/form-stepper";
 import type { MarketplaceData } from "~/domain/labor-market/schemas";
 import { marketplaceDetailsSchema } from "~/domain/labor-market/schemas";
 import { useContracts } from "~/hooks/use-root-data";
@@ -147,7 +148,10 @@ export function MarketplaceDetails({
             </form>
           </main>
         </Container>
-        <FormSteps />
+        <FormStepper
+          step={1}
+          labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
+        />
       </section>
     </div>
   );
