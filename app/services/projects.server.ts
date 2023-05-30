@@ -1,4 +1,3 @@
-import { findProjectsBySlug as findProjectsBySlugHelper } from "~/utils/helpers";
 import { prisma } from "./prisma.server";
 
 export const listProjects = () => {
@@ -11,6 +10,11 @@ export const listProjects = () => {
  * @returns {Promise<Project>}
  */
 export const findProjectsBySlug = async (slugs: string[]) => {
-  const allProjects = await listProjects();
-  return findProjectsBySlugHelper(allProjects, slugs);
+  return prisma.project.findMany({
+    where: {
+      slug: {
+        in: slugs,
+      },
+    },
+  });
 };
