@@ -3,6 +3,7 @@ import * as Progress from "@radix-ui/react-progress";
 import { useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Container, Error, Field, Input, Label, Select } from "~/components";
+import FormStepper from "~/components/form-stepper/form-stepper";
 import type { EvmAddress } from "~/domain/address";
 import type { GatingData } from "~/domain/labor-market/schemas";
 import { gatingSchema } from "~/domain/labor-market/schemas";
@@ -201,38 +202,11 @@ export function AnalystPermissions({
             </form>
           </div>
         </Container>
-        <FormSteps />
+        <FormStepper
+          step={3}
+          labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
+        />
       </section>
     </div>
-  );
-}
-
-function FormSteps() {
-  return (
-    <aside className="py-28 md:w-1/5 hidden md:block">
-      <div className="grid grid-cols-3 gap-2">
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">1</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">2</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-500">
-            <span className="text-white font-bold text-sm">3</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">4</span>
-          </div>
-          <div className="border border-[#C9C9C9] h-16"></div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full border border-[#A5A5A5] bg-transparent">
-            <span className="text-[#666666] font-bold text-sm">5</span>
-          </div>
-        </div>
-      </div>
-    </aside>
   );
 }
