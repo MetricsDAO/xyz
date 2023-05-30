@@ -34,7 +34,7 @@ export function CurveChart({
 
 function ConstantCurve({ token, amount }: { token: string; amount: string }) {
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="w-full flex">
         <div style={{ width: `25%` }} className="font-semibold justify-between flex flex-col">
           <p className="text-sm font-medium">0%</p>
@@ -98,7 +98,7 @@ function ConstantCurve({ token, amount }: { token: string; amount: string }) {
 
 function AggresiveCurve({ token, amount }: { token: string; amount: string }) {
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="w-full flex">
         <div style={{ width: `50%` }} className="font-semibold justify-between flex flex-col">
           <p className="text-sm font-medium">0%</p>
@@ -150,7 +150,7 @@ function AggresiveCurve({ token, amount }: { token: string; amount: string }) {
 
 function AcceptableCurve({ token, amount }: { token: string; amount: string }) {
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="w-full flex">
         <div style={{ width: `75%` }} className="font-semibold justify-between flex flex-col">
           <p className="text-sm font-medium">0%</p>
@@ -190,7 +190,7 @@ function AcceptableCurve({ token, amount }: { token: string; amount: string }) {
 
 function PassFailCurve({ token, amount }: { token: string; amount: string }) {
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="w-full flex">
         <div style={{ width: `70%` }} className="font-semibold justify-between flex flex-col">
           <p className="text-sm font-medium">0%</p>
