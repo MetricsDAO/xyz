@@ -121,7 +121,12 @@ export function MarketplaceDetails({
                 </div>
               </section>
 
-              {enforcement && <CurveChart type={"Constant"} />}
+              {enforcement && (
+                <>
+                  <CurveChart type={"Constant"} />
+                  <p className="text-gray-400 italic">Ex: 1000 USDC pool with a claim limit of 10</p>
+                </>
+              )}
             </form>
           </main>
         </div>

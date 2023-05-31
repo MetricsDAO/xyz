@@ -13,16 +13,18 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import type { ServiceRequestForm } from "./schema";
+import type { AnalystForm, AppDataForm, ReviewerForm, ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
+import { FinalStep } from "./overview-fields";
 
 interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
   laborMarketAddress: EvmAddress;
-  page: number;
-  header: boolean;
+  page1Data: AppDataForm | null;
+  page2Data: AnalystForm | null;
+  page3Data: ReviewerForm | null;
 }
 
 /**
@@ -40,12 +42,13 @@ function getEventFromLogs(
 }
 
 export function ServiceRequestCreator({
-  projects,
-  tokens,
   defaultValues,
   laborMarketAddress,
-  page,
-  header,
+  page1Data,
+  page2Data,
+  page3Data,
+  tokens,
+  projects,
 }: ServiceRequestFormProps) {
   const contracts = useContracts();
   const [values, setValues] = useState<ServiceRequestForm>();
@@ -68,7 +71,7 @@ export function ServiceRequestCreator({
     onSuccess: useCallback((receipt) => {}, []),
   });
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
       submitTransactor.start({
@@ -76,12 +79,21 @@ export function ServiceRequestCreator({
         config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, values, laborMarketAddress } }),
       });
     }
-  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);*/
+  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
     defaultValues,
   });
+
+  const onSubmit = (data: ServiceRequestForm) => {
+    // write to contract with values
+    approveTransactor.start({
+      metadata: data.appData,
+      config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, form: data, laborMarketAddress } }),
+    });
+    setValues(data);
+  };
 
   /*const onSubmit = (values: ServiceRequestForm) => {
     approveTransactor.start({
@@ -127,7 +139,15 @@ export function ServiceRequestCreator({
         />
       )}
 
-      <form className="space-y-10 py-5"></form>
+      <FinalStep
+        onSubmit={onSubmit}
+        tokens={tokens}
+        projects={projects}
+        address={laborMarketAddress}
+        page1Data={page1Data}
+        page2Data={page2Data}
+        page3Data={page3Data}
+      />
     </FormProvider>
   );
 }
@@ -145,6 +165,7 @@ function configureFromValues({
 }) {
   const { form, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
+  console.log(form.analystData);
   const signalDeadline = new Date(
     claimDate(currentDate, parseDatetime(form.analystData.endDate, form.analystData.endTime))
   );

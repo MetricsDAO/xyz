@@ -18,6 +18,7 @@ export function FinalStep({
   tokens,
   projects,
   address,
+  onSubmit,
 }: {
   page1Data: AppDataForm | null;
   page2Data: AnalystForm | null;
@@ -25,6 +26,7 @@ export function FinalStep({
   tokens: Token[];
   projects: Project[];
   address: `0x${string}`;
+  onSubmit: () => void;
 }) {
   const {
     control,
@@ -32,6 +34,7 @@ export function FinalStep({
     register,
     setValue,
     formState: { errors },
+    handleSubmit,
   } = useForm<ServiceRequestForm>({
     defaultValues: {
       appData: {
@@ -71,7 +74,7 @@ export function FinalStep({
   return (
     <div className="flex relative min-h-screen">
       <div className="w-full">
-        <div className="max-w-2xl mx-auto my-16 space-y-10">
+        <form className="max-w-2xl mx-auto my-16 space-y-10">
           <section className="space-y-3">
             <h2 className="font-bold">Challenge Title*</h2>
             <Field>
@@ -281,12 +284,13 @@ export function FinalStep({
                 .toString()} ${rewardToken.symbol} per review`}</p>
             )}
           </section>
-        </div>
+        </form>
         <FormProgress
           percent={100}
           onGoBack={onGoBack}
           cancelLink={`/app/market/${address}`}
-          submitLabel="launch Challenge"
+          submitLabel="Launch Challenge"
+          onSubmit={handleSubmit(onSubmit)}
         />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">

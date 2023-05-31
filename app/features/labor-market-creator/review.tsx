@@ -252,7 +252,7 @@ export function Review({
           />
 
           <main className="flex-1">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
+            <form className="space-y-10 py-5">
               <input
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 type="hidden"
@@ -654,7 +654,13 @@ export function Review({
             </form>
           </main>
         </div>
-        <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
+        <FormProgress
+          percent={100}
+          onGoBack={onGoBack}
+          cancelLink={"/analyze"}
+          submitLabel="Create Marketplace"
+          onSubmit={handleSubmit(onSubmit)}
+        />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper
