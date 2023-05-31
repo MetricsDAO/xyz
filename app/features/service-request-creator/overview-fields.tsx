@@ -1,8 +1,8 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, Input, Error, Combobox, Select, Button, Progress } from "~/components";
+import { Field, Input, Error, Combobox, Select, FormProgress, FormStepper } from "~/components";
 import type { Project, Token } from "@prisma/client";
-import { Link, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { ClientOnly } from "remix-utils";
 import type { ServiceRequestForm, AppDataForm, AnalystForm, ReviewerForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
@@ -10,8 +10,6 @@ import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import { claimDate, parseDatetime } from "~/utils/date";
 import invariant from "tiny-invariant";
 import { BigNumber } from "ethers";
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import FormStepper from "~/components/form-stepper/form-stepper";
 
 export function FinalStep({
   page1Data,
@@ -284,27 +282,12 @@ export function FinalStep({
             )}
           </section>
         </div>
-        <div className=" w-full">
-          <Progress progress={100} />
-          <div className="flex items-center justify-evenly">
-            <div className="flex items-center">
-              <div className="flex gap-3 items-center cursor-pointer" onClick={onGoBack}>
-                <ArrowLeftCircleIcon className="h-8 w-8 text-black" />
-                <p className="mr-6 text-neutral-400">Prev</p>
-              </div>
-              <div className="flex gap-3 items-center">
-                <p className="text-neutral-400">Next</p>
-                <ArrowRightCircleIcon className="h-8 w-8 text-neutral-400" />
-              </div>
-            </div>
-            <div className="flex items-center">
-              <Button className="my-5 mr-4" variant="cancel">
-                <Link to={`/app/market/${address}`}>Cancel</Link>
-              </Button>
-              <Button>Launch Challenge</Button>
-            </div>
-          </div>
-        </div>
+        <FormProgress
+          percent={100}
+          onGoBack={onGoBack}
+          cancelLink={`/app/market/${address}`}
+          submitLabel="launch Challenge"
+        />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper step={4} labels={["Create", "Analysts", "Reviewers", "Overview"]} />

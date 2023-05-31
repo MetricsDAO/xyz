@@ -1,13 +1,12 @@
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
-import * as Progress from "@radix-ui/react-progress";
 import { Link, useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Button, Combobox, Container, Error, Field, Input, Label, Select, Textarea } from "~/components";
-import FormStepper from "~/components/form-stepper/form-stepper";
+import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
@@ -243,9 +242,9 @@ export function Review({
   const reviewerGatingType = watch("reviewerData.gatingType");
 
   return (
-    <div className="relative min-h-screen">
-      <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-9 max-w-4xl mx-auto">
-        <Container className="py-8 mb-16">
+    <div className="flex relative min-h-screen">
+      <div className="w-full justify-between flex flex-col">
+        <div className="max-w-2xl mx-auto my-16 space-y-10">
           <TxModal
             transactor={transactor}
             title="Create Marketplace"
@@ -652,48 +651,27 @@ export function Review({
                   </button>
                 </section>
               )}
-
-              <div className="absolute bottom-0 left-0 w-full bg-transparent">
-                <Progress.Root
-                  value={1}
-                  max={5}
-                  style={{ height: 1, backgroundColor: "#EDEDED" }}
-                  className="mx-auto w-full"
-                >
-                  <Progress.Indicator className="h-1 bg-blue-500" style={{ width: "100%" }} />
-                </Progress.Root>
-                {/* <div className="flex flex-row items-center"> */}
-                <div className="max-w-4xl text-lg mx-auto py-4 gap-6 flex justify-between items-center">
-                  <div className="max-w-4xl py-4 px-6 flex flex-row gap-4">
-                    <button onClick={onGoBack} type="button" className="text-lg text-[#333333]">
-                      <div className="flex flex-row gap-2 items-center">
-                        <img src="/img/left-arrow.svg" alt="" />
-                        <span> Prev </span>
-                      </div>
-                    </button>
-                    <button disabled className="text-lg text-[#A5A5A5]" type="submit">
-                      <div className="flex flex-row gap-2 items-center">
-                        <span> Next </span>
-                        <img src="/img/right-arrow.svg" alt="" className="" />
-                      </div>
-                    </button>
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    <Button onClick={() => navigate(`/app`)} variant="outline" type="button">
-                      Cancel
-                    </Button>
-                    <Button type="submit">Create Marketplace</Button>
-                  </div>
-                </div>
-              </div>
             </form>
           </main>
-        </Container>
+        </div>
+        <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
+      </div>
+      <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper
           step={5}
           labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
         />
-      </section>
+        <div className="flex mt-16 gap-x-2 items-center">
+          <InformationCircleIcon className="h-6 w-6 mr-2" />
+          <Link to={"https://www.trybadger.com/"} className="text-sm text-blue-600">
+            Launch Badger
+          </Link>
+          <p className="text-sm text-blue-600">|</p>
+          <Link to={"https://docs.trybadger.com/"} className="text-sm text-blue-600">
+            Badger Docs
+          </Link>
+        </div>
+      </aside>
     </div>
   );
 }

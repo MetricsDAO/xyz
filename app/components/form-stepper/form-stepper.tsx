@@ -1,9 +1,9 @@
 import { CheckIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
-export default function FormStepper({ step, labels }: { step: number; labels: string[] }) {
+export function FormStepper({ step, labels }: { step: number; labels: string[] }) {
   return (
-    <div className="flex flex-col justify-items-start">
+    <div className="flex flex-col justify-items-start hidden lg:block">
       {labels.map((label, index) => (
         <>
           {index > 0 && (

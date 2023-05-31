@@ -1,15 +1,13 @@
 import type { Token } from "@prisma/client";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Error, Field, Input, Progress, Select } from "~/components";
+import { Error, Field, Input, Select, FormProgress, FormStepper } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
 import type { ReviewerForm } from "./schema";
 import { ReviewerSchema } from "./schema";
 import invariant from "tiny-invariant";
 import { BigNumber } from "ethers";
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import { Link, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import FormStepper from "~/components/form-stepper/form-stepper";
 
 export function ReviewerFields({
   validTokens,
@@ -152,26 +150,12 @@ export function ReviewerFields({
             )}
           </section>
         </div>
-        <div className=" w-full">
-          <Progress progress={75} />
-          <div className="flex items-center justify-evenly">
-            <div className="flex items-center">
-              <div className="flex gap-3 items-center cursor-pointer" onClick={onGoBack}>
-                <ArrowLeftCircleIcon className="h-8 w-8 text-black" />
-                <p className="mr-6">Prev</p>
-              </div>
-              <button className="flex gap-3 items-center cursor-pointer" onClick={handleSubmit(onSubmit)}>
-                <p>Next</p>
-                <ArrowRightCircleIcon className="h-8 w-8 text-black" />
-              </button>
-            </div>
-            <div className="flex items-center">
-              <Button className="my-5 mr-4" variant="cancel">
-                <Link to={`/app/market/${address}`}>Cancel</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <FormProgress
+          percent={75}
+          onGoBack={onGoBack}
+          onNext={handleSubmit(onSubmit)}
+          cancelLink={`/app/market/${address}`}
+        />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper step={3} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
