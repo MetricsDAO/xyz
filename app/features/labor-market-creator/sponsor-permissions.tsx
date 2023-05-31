@@ -1,9 +1,8 @@
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Button, Error, Field, Input, Label, Progress, Select } from "~/components";
-import FormStepper from "~/components/form-stepper/form-stepper";
+import { Error, Field, Input, Label, Select, FormProgress, FormStepper } from "~/components";
 import type { EvmAddress } from "~/domain/address";
 import type { GatingData } from "~/domain/labor-market/schemas";
 import { gatingSchema } from "~/domain/labor-market/schemas";
@@ -173,26 +172,7 @@ export function SponsorPermissions({
             )}
           </form>
         </div>
-        <div className=" w-full">
-          <Progress progress={40} />
-          <div className="flex items-center justify-evenly">
-            <div className="flex items-center">
-              <div className="flex gap-3 items-center cursor-pointer" onClick={onGoBack}>
-                <ArrowLeftCircleIcon className="h-8 w-8 text-black" />
-                <p className="mr-6">Prev</p>
-              </div>
-              <button className="flex gap-3 items-center cursor-pointer" onClick={handleSubmit(onSubmit)}>
-                <p>Next</p>
-                <ArrowRightCircleIcon className="h-8 w-8 text-black" />
-              </button>
-            </div>
-            <div className="flex items-center">
-              <Button className="my-5 mr-4" variant="cancel">
-                <Link to={`/analyze`}>Cancel</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <FormProgress percent={40} onGoBack={onGoBack} onNext={handleSubmit(onSubmit)} cancelLink={"/app/analyze"} />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper

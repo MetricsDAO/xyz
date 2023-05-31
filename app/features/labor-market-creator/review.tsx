@@ -1,4 +1,4 @@
-import { ArrowLeftCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
 import { Link, useNavigate } from "@remix-run/react";
@@ -6,8 +6,7 @@ import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Button, Combobox, Error, Field, Input, Label, Progress, Select, Textarea } from "~/components";
-import FormStepper from "~/components/form-stepper/form-stepper";
+import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
@@ -655,23 +654,7 @@ export function Review({
             </form>
           </main>
         </div>
-        <div className=" w-full">
-          <Progress progress={100} />
-          <div className="flex items-center justify-evenly">
-            <div className="flex items-center">
-              <div className="flex gap-3 items-center cursor-pointer" onClick={onGoBack}>
-                <ArrowLeftCircleIcon className="h-8 w-8 text-black" />
-                <p className="mr-6 text-black">Prev</p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <Button className="my-5 mr-4" variant="cancel">
-                <Link to={`/analyze`}>Cancel</Link>
-              </Button>
-              <Button type="submit">Create Marketplace</Button>
-            </div>
-          </div>
-        </div>
+        <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper

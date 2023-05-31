@@ -1,11 +1,10 @@
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
 import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Combobox, Error, Field, Input, Label, Progress, Select, Textarea } from "~/components";
+import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
-import FormStepper from "~/components/form-stepper/form-stepper";
 import type { MarketplaceData } from "~/domain/labor-market/schemas";
 import { marketplaceDetailsSchema } from "~/domain/labor-market/schemas";
 
@@ -126,26 +125,7 @@ export function MarketplaceDetails({
             </form>
           </main>
         </div>
-        <div className=" w-full">
-          <Progress progress={40} />
-          <div className="flex items-center justify-evenly">
-            <div className="flex items-center">
-              <div className="flex gap-3 items-center cursor-pointer">
-                <ArrowLeftCircleIcon className="h-8 w-8 text-neutral-400" />
-                <p className="mr-6 text-neutral-400">Prev</p>
-              </div>
-              <button className="flex gap-3 items-center cursor-pointer" onClick={handleSubmit(onSubmit)}>
-                <p>Next</p>
-                <ArrowRightCircleIcon className="h-8 w-8 text-black" />
-              </button>
-            </div>
-            <div className="flex items-center">
-              <Button className="my-5 mr-4" variant="cancel">
-                <Link to={`/analyze`}>Cancel</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <FormProgress percent={20} onNext={handleSubmit(onSubmit)} cancelLink={"/appp/analyze"} />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper
