@@ -5,8 +5,8 @@ import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
-import type { MarketplaceData } from "~/domain/labor-market/schemas";
-import { marketplaceDetailsSchema } from "~/domain/labor-market/schemas";
+import type { MarketplaceData } from "./schema";
+import { marketplaceDetailsSchema } from "./schema";
 
 export function MarketplaceDetails({
   currentData,

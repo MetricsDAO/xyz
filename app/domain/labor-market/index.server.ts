@@ -11,14 +11,15 @@ import { safeCreateEvent } from "../event/functions.server";
 import type { Event } from "../event/schema";
 import { logger } from "~/services/logger.server";
 
+const BLOCK_LOOK_BACK = -150; // Look back 150 blocks (~5 minutes on Polygon)
+
 export async function appIndexLaborMarket(event: Event) {
   const { blockNumber, transactionHash, address } = event;
   const contract = LaborMarket__factory.connect(address, nodeProvider);
   const eventFilter = contract.filters.LaborMarketConfigured();
-  const events = await contract.queryFilter(eventFilter, -150); // Look back 150 blocks (~5 minutes on Polygon)
+  const events = await contract.queryFilter(eventFilter, BLOCK_LOOK_BACK);
   for (const event of events) {
     if (event.blockNumber === blockNumber && event.transactionHash === transactionHash) {
-      console.log("found event", event);
       const blockTimestamp = (await event.getBlock()).timestamp;
       const inputs = LaborMarketConfigSchema.parse(event.args);
       const isNewEvent = await safeCreateEvent({ address, blockNumber, transactionHash, args: inputs });
@@ -27,6 +28,7 @@ export async function appIndexLaborMarket(event: Event) {
         return;
       }
       await createLaborMarket(address, new Date(blockTimestamp), inputs);
+      return;
     }
   }
 }
