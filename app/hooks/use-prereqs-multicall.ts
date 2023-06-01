@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { multicall } from "@wagmi/core";
 import { useAccount } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
-import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { sigHashes } from "./use-is-authorized";
 import { useContracts } from "./use-root-data";
 
@@ -17,7 +17,7 @@ type Prereq = {
  * @param laborMarkets
  * @returns a React query where the data type is a map of labormarket address to prereqs.
  */
-export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarketWithIndexData[] }) {
+export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarketDoc[] }) {
   const { address } = useAccount();
   const contracts = useContracts();
   return useQuery({
@@ -39,7 +39,7 @@ export function usePrereqsMulticall({ laborMarkets }: { laborMarkets: LaborMarke
  */
 async function prereqs(
   contracts: ReturnType<typeof useContracts>,
-  laborMarkets: LaborMarketWithIndexData[],
+  laborMarkets: LaborMarketDoc[],
   userAddress: EvmAddress
 ): Promise<Record<EvmAddress, Prereq>> {
   const launchChallengeAuthMulticall = (await multicall({

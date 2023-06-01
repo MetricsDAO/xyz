@@ -4,8 +4,8 @@ import { Link, useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Error, Field, Input, Label, Select, FormProgress, FormStepper } from "~/components";
 import type { EvmAddress } from "~/domain/address";
-import type { GatingData } from "~/domain/labor-market/schemas";
-import { gatingSchema } from "~/domain/labor-market/schemas";
+import type { GatingData } from "./schema";
+import { gatingSchema } from "./schema";
 
 export function SponsorPermissions({
   currentData,

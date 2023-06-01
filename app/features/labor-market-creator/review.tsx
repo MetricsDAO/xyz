@@ -10,10 +10,11 @@ import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, F
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
-import type { GatingData, MarketplaceData, finalMarketData } from "~/domain/labor-market/schemas";
-import { finalMarketSchema } from "~/domain/labor-market/schemas";
+import type { GatingData, MarketplaceData, finalMarketData } from "./schema";
+import { finalMarketSchema } from "./schema";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { postNewEvent } from "~/utils/fetch";
 
 /**
  * Filters and parses the logs for a specific event.
@@ -212,12 +213,17 @@ export function Review({
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
+        console.log("receipt", receipt);
+        console.log("receiptjson", JSON.stringify(receipt));
         const iface = LaborMarketFactoryInterface__factory.createInterface();
         const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
-        console.log("event from transactor", event);
-        console.log("receipt", receipt);
-        console.log("args", event?.args["uri"]);
-        if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
+        const newLaborMarketAddress = event?.args["marketAddress"];
+        postNewEvent({
+          eventFilter: "LaborMarketConfigured",
+          address: newLaborMarketAddress,
+          blockNumber: receipt.blockNumber,
+          transactionHash: receipt.transactionHash,
+        }).then(() => navigate(`/app/market/${newLaborMarketAddress}`));
       },
       [contracts.LaborMarketFactory.address, navigate]
     ),
@@ -651,10 +657,10 @@ export function Review({
                   </button>
                 </section>
               )}
+              <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
             </form>
           </main>
         </div>
-        <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper

@@ -26,7 +26,7 @@ import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
 import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
-import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { Pagination } from "~/components/pagination";
 
 const validator = withZod(ShowcaseSearchSchema);
@@ -76,13 +76,7 @@ export default function Showcase() {
   );
 }
 
-function SearchAndFilter({
-  projects,
-  laborMarkets,
-}: {
-  projects: Project[];
-  laborMarkets: LaborMarketWithIndexData[];
-}) {
+function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; laborMarkets: LaborMarketDoc[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 

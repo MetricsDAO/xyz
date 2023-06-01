@@ -3,41 +3,6 @@ import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
 
-export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
-export const PermissionType = z.enum(["Badge"]);
-
-export const BadgeSchema = z.preprocess(
-  arrayToObject,
-  z.object({
-    contractAddress: EvmAddressSchema,
-    tokenId: z.coerce.number(),
-    minBadgeBalance: z.coerce.number().min(1).default(1),
-    maxBadgeBalance: z.coerce.number().optional(),
-  })
-);
-
-export const gatingSchema = z.object({
-  gatingType: BadgeGatingType.default("Anyone"),
-  numberBadgesRequired: z.coerce.number().optional(),
-  badges: z.array(BadgeSchema),
-});
-
-export type GatingData = z.infer<typeof gatingSchema>;
-
-export const LaborMarketModules = z.object({
-  network: EvmAddressSchema,
-  enforcement: EvmAddressSchema,
-  enforcementKey: z.string(),
-  reputation: EvmAddressSchema,
-});
-
-export const LaborMarketReputationParams = z.object({
-  rewardPool: z.coerce.string(),
-  provideStake: z.coerce.string(),
-  submitMin: z.coerce.string(),
-  submitMax: z.coerce.string(),
-});
-
 /**
  * Normalizes the `configuration` method from the LaborMarket contract so both the contract and the index can use the same type.
  */
@@ -87,23 +52,22 @@ export const LaborMarketIndexDataSchema = z.object({
 });
 export type LaborMarketIndexData = z.infer<typeof LaborMarketIndexDataSchema>;
 
+export const LaborMarketBaseSchema = z.object({
+  address: EvmAddressSchema,
+  blockTimestamp: z.date(),
+  configuration: LaborMarketConfigSchema,
+});
+export type LaborMarketBase = z.infer<typeof LaborMarketBaseSchema>;
+
 /**
  * This is the canonical shape of a LaborMarket in our system.
  * Data stored both in the database and the contract/ipfs should match this shape.
  */
-export const LaborMarketSchema = z.object({
-  address: EvmAddressSchema,
-  blockTimestamp: z.date(),
-  configuration: LaborMarketConfigSchema,
+export const LaborMarketDocSchema = LaborMarketBaseSchema.extend({
   appData: LaborMarketAppDataSchema,
+  indexData: LaborMarketIndexDataSchema,
 });
-export type LaborMarket = z.infer<typeof LaborMarketSchema>;
-
-/**
- * This is the same as the LaborMarket but with additional index-specific data.
- */
-export const LaborMarketWithIndexDataSchema = LaborMarketSchema.extend({ indexData: LaborMarketIndexDataSchema });
-export type LaborMarketWithIndexData = z.infer<typeof LaborMarketWithIndexDataSchema>;
+export type LaborMarketDoc = z.infer<typeof LaborMarketDocSchema>;
 
 /**
  * For filtering labor markets.
@@ -126,30 +90,3 @@ export const LaborMarketSearchSchema = LaborMarketFilterSchema.extend({
   first: z.coerce.number().min(1).max(100).default(12),
 });
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;
-
-/** For creating and updating LaborMarkets */
-export const LaborMarketFormSchema = z.object({
-  configuration: LaborMarketConfigSchema.sourceType(),
-  appData: LaborMarketAppDataSchema,
-});
-export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
-
-export const marketplaceDetailsSchema = z.object({
-  title: z.string().min(1),
-  type: LaborMarketTypeSchema.default("analyze"),
-  description: z.string().min(1),
-  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  enforcement: EvmAddressSchema,
-});
-
-export type MarketplaceData = z.infer<typeof marketplaceDetailsSchema>;
-
-export const finalMarketSchema = z.object({
-  marketplaceData: marketplaceDetailsSchema,
-  sponsorData: gatingSchema,
-  analystData: gatingSchema,
-  reviewerData: gatingSchema,
-});
-
-export type finalMarketData = z.infer<typeof finalMarketSchema>;

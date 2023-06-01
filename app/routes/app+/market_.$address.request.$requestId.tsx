@@ -12,7 +12,7 @@ import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
@@ -41,7 +41,7 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getLaborMarket(address);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }

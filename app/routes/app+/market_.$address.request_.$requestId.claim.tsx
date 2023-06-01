@@ -7,7 +7,7 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { EvmAddressSchema } from "~/domain/address";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
 import { serviceRequestCreatedDate } from "~/utils/helpers";
@@ -16,7 +16,10 @@ const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string()
 export const loader = async ({ params, request }: DataFunctionArgs) => {
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getLaborMarket(address);
+  if (!laborMarket) {
+    throw notFound({ address });
+  }
   if (!serviceRequest) {
     throw notFound({ id: requestId });
   }

@@ -28,8 +28,8 @@ import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
+import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { ReviewSearchSchema } from "~/domain/review/schemas";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
@@ -68,7 +68,7 @@ export const loader = async (data: DataFunctionArgs) => {
   if (!submission) {
     throw notFound({ submissionId });
   }
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
   const serviceRequest = await getIndexedServiceRequest(address, submission.serviceRequestId);
@@ -282,7 +282,7 @@ function ReviewQuestionDrawerButton({
   laborMarket,
 }: {
   submission: SubmissionDoc;
-  laborMarket: LaborMarketWithIndexData;
+  laborMarket: LaborMarketDoc;
 }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const { canReview } = usePrereqs({ laborMarket });

@@ -10,7 +10,7 @@ import { Detail, DetailItem } from "~/components/detail";
 import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { EvmAddressSchema } from "~/domain/address";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { ProjectBadges } from "~/features/project-badges";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
@@ -22,7 +22,7 @@ const paramsSchema = z.object({ address: EvmAddressSchema });
 export const loader = async (data: DataFunctionArgs) => {
   const parsed = paramsSchema.safeParse(data.params);
   if (!parsed.success) throw serverError("Error parsing params");
-  const laborMarket = await getIndexedLaborMarket(parsed.data.address);
+  const laborMarket = await getLaborMarket(parsed.data.address);
   if (!laborMarket) throw notFound("Labor market not found");
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);

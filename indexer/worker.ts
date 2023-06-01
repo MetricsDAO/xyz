@@ -1,15 +1,7 @@
 import * as pine from "pinekit";
-import { handleLaborMarketConfiguredEvent } from "~/domain/labor-market/functions.server";
-import {
-  handleRequestConfiguredEvent,
-  handleRequestWithdrawnEvent,
-  indexClaimToReview,
-  indexClaimToSubmit,
-} from "~/domain/service-request/functions.server";
-import { handleRequestFulfilledEvent } from "~/domain/submission/functions.server";
+import { indexerLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
-import { indexReview } from "~/domain/review/functions.server";
 import { getContracts } from "~/utils/contracts.server";
 import { pineConfig } from "~/utils/pine-config.server";
 
@@ -40,8 +32,8 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  console.log("LaborMarketCreated EVENT", event);
-  return handleLaborMarketConfiguredEvent(event);
+  // console.log("LaborMarketCreated EVENT", event);
+  return indexerLaborMarketConfiguredEvent(event);
 });
 
 // worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
