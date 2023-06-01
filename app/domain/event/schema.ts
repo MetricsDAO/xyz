@@ -1,15 +1,15 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "../address";
 
-export const EventKeySchema = z.object({
+export const EventSchema = z.object({
   address: EvmAddressSchema,
   blockNumber: z.number(),
   transactionHash: z.string(),
 });
 
-export type EventKey = z.infer<typeof EventKeySchema>;
+export type Event = z.infer<typeof EventSchema>;
 
-export const EventDocSchema = EventKeySchema.extend({
+export const EventDocSchema = EventSchema.extend({
   args: z.any(),
 });
 

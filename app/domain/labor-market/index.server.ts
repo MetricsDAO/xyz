@@ -8,15 +8,14 @@ import { LaborMarketConfigSchema } from "~/domain/labor-market/schemas";
 import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { safeCreateEvent } from "../event/functions.server";
-import type { EventKey } from "../event/schema";
+import type { Event } from "../event/schema";
 import { logger } from "~/services/logger.server";
 
-export async function appIndexLaborMarket(event: EventKey) {
+export async function appIndexLaborMarket(event: Event) {
   const { blockNumber, transactionHash, address } = event;
   const contract = LaborMarket__factory.connect(address, nodeProvider);
   const eventFilter = contract.filters.LaborMarketConfigured();
-  const events = await contract.queryFilter(eventFilter, -6000); // Look back 150 blocks (~5 minutes on Polygon)
-  console.log("events", events);
+  const events = await contract.queryFilter(eventFilter, -150); // Look back 150 blocks (~5 minutes on Polygon)
   for (const event of events) {
     if (event.blockNumber === blockNumber && event.transactionHash === transactionHash) {
       console.log("found event", event);

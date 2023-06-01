@@ -6,23 +6,12 @@ import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import {
-  Combobox,
-  Error,
-  Field,
-  Input,
-  Label,
-  Select,
-  Textarea,
-  FormProgress,
-  FormStepper,
-  Button,
-} from "~/components";
+import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
-import type { GatingData, MarketplaceData, finalMarketData } from "~/domain/labor-market/schemas";
-import { finalMarketSchema } from "~/domain/labor-market/schemas";
+import type { GatingData, MarketplaceData, finalMarketData } from "./schema";
+import { finalMarketSchema } from "./schema";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 

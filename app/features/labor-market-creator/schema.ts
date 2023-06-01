@@ -1,54 +1,71 @@
-import { faker } from "@faker-js/faker";
 import { z } from "zod";
+import { zfd } from "zod-form-data";
+import { EvmAddressSchema } from "~/domain/address";
 import {
   LaborMarketAppDataSchema,
   LaborMarketConfigSchema,
-  finalMarketSchema,
-  LaborMarketReputationParams,
-  marketplaceDetailsSchema,
+  LaborMarketTypeSchema,
 } from "~/domain/labor-market/schemas";
+import { arrayToObject } from "~/domain/shared/utils";
 
-export const MarketNewValuesSchema = z.object({
-  appData: LaborMarketAppDataSchema,
-  configuration: finalMarketSchema,
+export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
+export const PermissionType = z.enum(["Badge"]);
+
+export const BadgeSchema = z.preprocess(
+  arrayToObject,
+  z.object({
+    contractAddress: EvmAddressSchema,
+    tokenId: z.coerce.number(),
+    minBadgeBalance: z.coerce.number().min(1).default(1),
+    maxBadgeBalance: z.coerce.number().optional(),
+  })
+);
+
+export const gatingSchema = z.object({
+  gatingType: BadgeGatingType.default("Anyone"),
+  numberBadgesRequired: z.coerce.number().optional(),
+  badges: z.array(BadgeSchema),
 });
 
-export type MarketNewValues = z.infer<typeof MarketNewValuesSchema>;
+export type GatingData = z.infer<typeof gatingSchema>;
 
-// export function fakeLaborMarketFormValues(): MarketNewValues {
-//   return {
-//     appData: {
-//       title: faker.commerce.productName(),
-//       description: faker.lorem.paragraphs(2),
-//       type: "analyze",
-//       projectSlugs: ["ethereum", "polygon"],
-//       tokenAllowlist: ["eth"],
-//     },
-//     configuration: {
-//       modules: {
-//         enforcement: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-//         network: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-//         enforcementKey: "aggressive",
-//         reputation: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-//       },
-//       delegateBadge: {
-//         token: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-//         tokenId: "2",
-//       },
-//       maintainerBadge: {
-//         token: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-//         tokenId: "3",
-//       },
-//       reputationBadge: {
-//         token: "0x854DE1bf96dFBe69FC46f1a888d26934Ad47B77f",
-//         tokenId: "4",
-//       },
-//       reputationParams: {
-//         rewardPool: faker.datatype.number(100),
-//         provideStake: faker.datatype.number(100),
-//         reviewStake: faker.datatype.number(100),
-//         submitMin: 0,
-//       },
-//     },
-//   };
-// }
+export const LaborMarketModules = z.object({
+  network: EvmAddressSchema,
+  enforcement: EvmAddressSchema,
+  enforcementKey: z.string(),
+  reputation: EvmAddressSchema,
+});
+
+export const LaborMarketReputationParams = z.object({
+  rewardPool: z.coerce.string(),
+  provideStake: z.coerce.string(),
+  submitMin: z.coerce.string(),
+  submitMax: z.coerce.string(),
+});
+
+/** For creating and updating LaborMarkets */
+export const LaborMarketFormSchema = z.object({
+  configuration: LaborMarketConfigSchema.sourceType(),
+  appData: LaborMarketAppDataSchema,
+});
+export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
+
+export const marketplaceDetailsSchema = z.object({
+  title: z.string().min(1),
+  type: LaborMarketTypeSchema.default("analyze"),
+  description: z.string().min(1),
+  projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
+  enforcement: EvmAddressSchema,
+});
+
+export type MarketplaceData = z.infer<typeof marketplaceDetailsSchema>;
+
+export const finalMarketSchema = z.object({
+  marketplaceData: marketplaceDetailsSchema,
+  sponsorData: gatingSchema,
+  analystData: gatingSchema,
+  reviewerData: gatingSchema,
+});
+
+export type finalMarketData = z.infer<typeof finalMarketSchema>;

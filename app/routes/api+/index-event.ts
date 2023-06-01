@@ -1,10 +1,10 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
-import { EventKeySchema } from "~/domain";
+import { EventSchema } from "~/domain";
 import { appIndexLaborMarket } from "~/domain/labor-market/index.server";
 import { requireUser } from "~/services/session.server";
 
-const bodySchema = EventKeySchema.extend({
+const bodySchema = EventSchema.extend({
   eventFilter: z.enum(["LaborMarketConfigured"]),
 });
 export async function action({ request }: DataFunctionArgs) {

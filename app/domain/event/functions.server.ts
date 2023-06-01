@@ -1,5 +1,5 @@
 import { mongo } from "~/services/mongo.server";
-import type { EventDoc, EventKey } from "./schema";
+import type { EventDoc, Event } from "./schema";
 import { logger } from "~/services/logger.server";
 
 async function createEvent({ address, blockNumber, transactionHash, args }: EventDoc) {
@@ -11,7 +11,7 @@ async function createEvent({ address, blockNumber, transactionHash, args }: Even
   });
 }
 
-async function findEvent({ address, blockNumber, transactionHash }: EventKey) {
+async function findEvent({ address, blockNumber, transactionHash }: Event) {
   return mongo.events.findOne({
     address,
     blockNumber,
