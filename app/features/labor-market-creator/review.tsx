@@ -6,7 +6,18 @@ import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
+import {
+  Combobox,
+  Error,
+  Field,
+  Input,
+  Label,
+  Select,
+  Textarea,
+  FormProgress,
+  FormStepper,
+  Button,
+} from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
@@ -214,10 +225,26 @@ export function Review({
       (receipt) => {
         const iface = LaborMarketFactoryInterface__factory.createInterface();
         const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
-        console.log("event from transactor", event);
-        console.log("receipt", receipt);
-        console.log("args", event?.args["uri"]);
-        if (event) navigate(`/app/market/${event.args["marketAddress"]}`);
+        // console.log("event from transactor", event);
+        // console.log("receipt", receipt);
+        // console.log("args", event?.args["uri"]);
+        const newLaborMarketAddress = event?.args["marketAddress"];
+        const body = JSON.stringify({
+          eventFilter: "LaborMarketConfigured",
+          address: newLaborMarketAddress,
+          blockNumber: receipt.blockNumber,
+          transactionHash: receipt.transactionHash,
+        });
+        console.log("body", body);
+        fetch("/api/index-event", {
+          method: "POST",
+          body,
+          headers: { "Content-Type": "application/json" },
+        }).then((res) => {
+          console.log("res", res);
+          res.json().then((r) => console.log("r", r));
+          navigate(`/app/market/${newLaborMarketAddress}`);
+        });
       },
       [contracts.LaborMarketFactory.address, navigate]
     ),
@@ -651,10 +678,10 @@ export function Review({
                   </button>
                 </section>
               )}
+              <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
             </form>
           </main>
         </div>
-        <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper

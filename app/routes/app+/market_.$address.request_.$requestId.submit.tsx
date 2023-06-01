@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 import { Container } from "~/components";
 import { EvmAddressSchema } from "~/domain/address";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import SubmissionCreator from "~/features/submission-creator/submission-creator";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
@@ -12,7 +12,7 @@ const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string()
 export const loader = async ({ request, params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
 
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getLaborMarket(address);
   invariant(laborMarket, "labormarket must exist");
 
   return typedjson({ laborMarket, requestId }, { status: 200 });

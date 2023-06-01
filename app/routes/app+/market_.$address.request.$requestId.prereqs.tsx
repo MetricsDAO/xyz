@@ -3,7 +3,7 @@ import invariant from "tiny-invariant";
 import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
 import { Detail, DetailItem } from "~/components/detail";
-import type { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import type { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { PermissionIcon } from "~/features/permission-icon";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useTokenData } from "~/hooks/use-token-data";
@@ -13,7 +13,7 @@ import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
 export default function ServiceIdPrereqs() {
   const data = useRouteData<{
     serviceRequest: Awaited<ReturnType<typeof findServiceRequest>>;
-    laborMarket: Awaited<ReturnType<typeof getIndexedLaborMarket>>;
+    laborMarket: Awaited<ReturnType<typeof getLaborMarket>>;
   }>("routes/app+/market_.$address.request.$requestId");
   if (!data) {
     throw new Error("ServiceIdPrereqs must be rendered under a serviceId route");

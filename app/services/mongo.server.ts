@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import type { ActivityDoc, ReviewDoc } from "~/domain";
+import type { ActivityDoc, EventDoc, ReviewDoc } from "~/domain";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
@@ -20,19 +20,21 @@ try {
 // Since every index is a deterministic history, we can have each subscriber have its own database.
 // This is useful for deploying changes to the index and having it recreate from scratch.
 const pine = pineConfig();
-const db = client.db(`${pine.namespace}-${pine.subscriber}`);
+const db = client.db(`${pine.namespace}-testingdups`);
 
 const laborMarkets = db.collection<LaborMarketWithIndexData>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestWithIndexData>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");
 const userActivity = db.collection<ActivityDoc>("userActivity");
+const events = db.collection<EventDoc>("events");
 
 laborMarkets.createIndex({ "appData.title": "text" });
 laborMarkets.createIndex({ address: 1 }, { unique: true });
 serviceRequests.createIndex({ "appData.title": "text" });
 userActivity.createIndex({ laborMarketTitle: "text" });
 submissions.createIndex({ "appData.title": "text" });
+events.createIndex({ address: 1, blockNumber: 1, transactionHash: 1 }, { unique: true });
 
 export const mongo = {
   db,
@@ -41,4 +43,5 @@ export const mongo = {
   submissions,
   reviews,
   userActivity,
+  events,
 };
