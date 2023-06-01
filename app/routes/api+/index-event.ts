@@ -9,6 +9,7 @@ const EventWithFilterSchema = EventSchema.extend({
 });
 export type EventWithFilter = z.infer<typeof EventWithFilterSchema>;
 export async function action({ request }: DataFunctionArgs) {
+  // only authenticated users can call this
   await requireUser(request);
   const requestBody = EventWithFilterSchema.parse(await request.json());
 
@@ -18,7 +19,6 @@ export async function action({ request }: DataFunctionArgs) {
 }
 
 async function parseEventFilter(event: EventWithFilter) {
-  console.log("the event filter is ", event.eventFilter);
   switch (event.eventFilter) {
     case "LaborMarketConfigured":
       await appLaborMarketConfiguredEvent(event);
