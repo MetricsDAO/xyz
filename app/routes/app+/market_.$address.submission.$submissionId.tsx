@@ -29,7 +29,7 @@ import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { getLaborMarket } from "~/domain/labor-market/functions.server";
-import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { ReviewSearchSchema } from "~/domain/review/schemas";
 import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
@@ -282,7 +282,7 @@ function ReviewQuestionDrawerButton({
   laborMarket,
 }: {
   submission: SubmissionDoc;
-  laborMarket: LaborMarketWithIndexData;
+  laborMarket: LaborMarketDoc;
 }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const { canReview } = usePrereqs({ laborMarket });

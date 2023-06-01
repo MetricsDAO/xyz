@@ -14,6 +14,7 @@ import type { GatingData, MarketplaceData, finalMarketData } from "./schema";
 import { finalMarketSchema } from "./schema";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { postNewEvent } from "~/utils/fetch";
 
 /**
  * Filters and parses the logs for a specific event.
@@ -212,28 +213,17 @@ export function Review({
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
+        console.log("receipt", receipt);
+        console.log("receiptjson", JSON.stringify(receipt));
         const iface = LaborMarketFactoryInterface__factory.createInterface();
         const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
-        // console.log("event from transactor", event);
-        // console.log("receipt", receipt);
-        // console.log("args", event?.args["uri"]);
         const newLaborMarketAddress = event?.args["marketAddress"];
-        const body = JSON.stringify({
+        postNewEvent({
           eventFilter: "LaborMarketConfigured",
           address: newLaborMarketAddress,
           blockNumber: receipt.blockNumber,
           transactionHash: receipt.transactionHash,
-        });
-        console.log("body", body);
-        fetch("/api/index-event", {
-          method: "POST",
-          body,
-          headers: { "Content-Type": "application/json" },
-        }).then((res) => {
-          console.log("res", res);
-          res.json().then((r) => console.log("r", r));
-          navigate(`/app/market/${newLaborMarketAddress}`);
-        });
+        }).then(() => navigate(`/app/market/${newLaborMarketAddress}`));
       },
       [contracts.LaborMarketFactory.address, navigate]
     ),

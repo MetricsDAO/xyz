@@ -1,20 +1,29 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { z } from "zod";
 import { EventSchema } from "~/domain";
-import { appIndexLaborMarket } from "~/domain/labor-market/index.server";
+import { appLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
 import { requireUser } from "~/services/session.server";
 
-const bodySchema = EventSchema.extend({
+const EventWithFilterSchema = EventSchema.extend({
   eventFilter: z.enum(["LaborMarketConfigured"]),
 });
+export type EventWithFilter = z.infer<typeof EventWithFilterSchema>;
 export async function action({ request }: DataFunctionArgs) {
-  // await requireUser(request);
-  const body = bodySchema.parse(await request.json());
-  console.log("body", body);
-  if (body.eventFilter === "LaborMarketConfigured") {
-    await appIndexLaborMarket(body);
-    return { ok: true };
-  }
+  await requireUser(request);
+  const requestBody = EventWithFilterSchema.parse(await request.json());
 
-  return { ok: false };
+  await parseEventFilter(requestBody);
+
+  return { ok: true };
+}
+
+async function parseEventFilter(event: EventWithFilter) {
+  console.log("the event filter is ", event.eventFilter);
+  switch (event.eventFilter) {
+    case "LaborMarketConfigured":
+      await appLaborMarketConfiguredEvent(event);
+      break;
+    default:
+      throw new Error(`Unknown event filter: ${event.eventFilter}`);
+  }
 }

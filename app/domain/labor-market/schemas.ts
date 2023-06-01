@@ -52,23 +52,22 @@ export const LaborMarketIndexDataSchema = z.object({
 });
 export type LaborMarketIndexData = z.infer<typeof LaborMarketIndexDataSchema>;
 
+export const LaborMarketBaseSchema = z.object({
+  address: EvmAddressSchema,
+  blockTimestamp: z.date(),
+  configuration: LaborMarketConfigSchema,
+});
+export type LaborMarketBase = z.infer<typeof LaborMarketBaseSchema>;
+
 /**
  * This is the canonical shape of a LaborMarket in our system.
  * Data stored both in the database and the contract/ipfs should match this shape.
  */
-export const LaborMarketSchema = z.object({
-  address: EvmAddressSchema,
-  blockTimestamp: z.date(),
-  configuration: LaborMarketConfigSchema,
+export const LaborMarketDocSchema = LaborMarketBaseSchema.extend({
   appData: LaborMarketAppDataSchema,
+  indexData: LaborMarketIndexDataSchema,
 });
-export type LaborMarket = z.infer<typeof LaborMarketSchema>;
-
-/**
- * This is the same as the LaborMarket but with additional index-specific data.
- */
-export const LaborMarketWithIndexDataSchema = LaborMarketSchema.extend({ indexData: LaborMarketIndexDataSchema });
-export type LaborMarketWithIndexData = z.infer<typeof LaborMarketWithIndexDataSchema>;
+export type LaborMarketDoc = z.infer<typeof LaborMarketDocSchema>;
 
 /**
  * For filtering labor markets.

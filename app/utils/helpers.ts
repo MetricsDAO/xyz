@@ -1,6 +1,6 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
-import type { LaborMarket } from "~/domain/labor-market/schemas";
+import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { claimDate } from "./date";
@@ -95,7 +95,7 @@ export function displayBalance(balance: BigNumber): string {
   }
 }
 
-export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
+export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
   return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
 }
 

@@ -3,14 +3,14 @@ import { mongo } from "~/services/mongo.server";
 import type { EvmAddress } from "../address";
 import type {
   LaborMarketAppData,
-  LaborMarketConfig,
+  LaborMarketBase,
+  LaborMarketDoc,
   LaborMarketFilter,
   LaborMarketSearch,
-  LaborMarketWithIndexData,
 } from "./schemas";
 import { LaborMarketAppDataSchema } from "./schemas";
 
-export async function getLaborMarket(address: EvmAddress): Promise<LaborMarketWithIndexData | null> {
+export async function getLaborMarket(address: EvmAddress): Promise<LaborMarketDoc | null> {
   return await mongo.laborMarkets.findOne({ address });
 }
 
@@ -26,7 +26,8 @@ async function getLaborMarketAppData(marketUri: string): Promise<LaborMarketAppD
  * @param configuration
  * @throws {Error} if IPFS data is invalid
  */
-export async function createLaborMarket(address: EvmAddress, blockTimestamp: Date, configuration: LaborMarketConfig) {
+export async function createLaborMarket(laborMarket: LaborMarketBase) {
+  const { configuration, address, blockTimestamp } = laborMarket;
   const appData = await getLaborMarketAppData(configuration.uri);
 
   await mongo.laborMarkets.insertOne({
