@@ -20,7 +20,7 @@ try {
 // Since every index is a deterministic history, we can have each subscriber have its own database.
 // This is useful for deploying changes to the index and having it recreate from scratch.
 const pine = pineConfig();
-const db = client.db(`${pine.namespace}-testingdups`);
+const db = client.db(`${pine.namespace}-${pine.subscriber}`);
 
 const laborMarkets = db.collection<LaborMarketDoc>("laborMarkets");
 const serviceRequests = db.collection<ServiceRequestWithIndexData>("serviceRequests");
