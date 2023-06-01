@@ -26,7 +26,7 @@ export function FinalStep({
   tokens: Token[];
   projects: Project[];
   address: `0x${string}`;
-  onSubmit: () => void;
+  onSubmit: (data: ServiceRequestForm) => void;
 }) {
   const {
     control,

@@ -74,9 +74,10 @@ export function ServiceRequestCreator({
   useEffect(() => {
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
+      console.log(values);
       submitTransactor.start({
         metadata: values.appData,
-        config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, values, laborMarketAddress } }),
+        config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, form: values, laborMarketAddress } }),
       });
     }
   }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
