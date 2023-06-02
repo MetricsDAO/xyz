@@ -1,28 +1,25 @@
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, Input, Error, Combobox, Select, FormProgress, FormStepper } from "~/components";
 import type { Project, Token } from "@prisma/client";
 import { useNavigate } from "@remix-run/react";
+import { BigNumber } from "ethers";
+import { Controller, useForm } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
-import type { ServiceRequestForm, AppDataForm, AnalystForm, ReviewerForm } from "./schema";
-import { ServiceRequestFormSchema } from "./schema";
+import invariant from "tiny-invariant";
+import { Combobox, Error, Field, FormProgress, FormStepper, Input, Select } from "~/components";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import { claimDate, parseDatetime } from "~/utils/date";
-import invariant from "tiny-invariant";
-import { BigNumber } from "ethers";
+import type { ServiceRequestForm } from "./schema";
+import { ServiceRequestFormSchema } from "./schema";
+import type { ServiceRequestFormState } from "~/routes/app+/market_.$address.request.new";
 
 export function FinalStep({
-  page1Data,
-  page2Data,
-  page3Data,
+  defaultValues,
   tokens,
   projects,
   address,
   onSubmit,
 }: {
-  page1Data: AppDataForm | null;
-  page2Data: AnalystForm | null;
-  page3Data: ReviewerForm | null;
+  defaultValues?: ServiceRequestFormState;
   tokens: Token[];
   projects: Project[];
   address: `0x${string}`;
@@ -37,15 +34,9 @@ export function FinalStep({
     handleSubmit,
   } = useForm<ServiceRequestForm>({
     defaultValues: {
-      appData: {
-        ...page1Data,
-      },
-      analystData: {
-        ...page2Data,
-      },
-      reviewerData: {
-        ...page3Data,
-      },
+      appData: { ...defaultValues?.appData },
+      analyst: { ...defaultValues?.analyst },
+      reviewer: { ...defaultValues?.reviewer },
     },
     resolver: zodResolver(ServiceRequestFormSchema),
   });
@@ -56,15 +47,15 @@ export function FinalStep({
     navigate(`/app/market/${address}/request/new/reviewer`);
   };
 
-  const selectedSubmitDate = watch("analystData.endDate");
-  const selectedSubmitTime = watch("analystData.endTime");
+  const selectedSubmitDate = watch("analyst.endDate");
+  const selectedSubmitTime = watch("analyst.endTime");
 
-  const selectedReviewDate = watch("reviewerData.reviewEndDate");
-  const selectedReviewTime = watch("reviewerData.reviewEndTime");
+  const selectedReviewDate = watch("reviewer.reviewEndDate");
+  const selectedReviewTime = watch("reviewer.reviewEndTime");
 
-  const rewardPool = watch("reviewerData.rewardPool");
-  const reviewLimit = watch("reviewerData.reviewLimit");
-  const rewardTokenAddress = watch("reviewerData.rewardToken");
+  const rewardPool = watch("reviewer.rewardPool");
+  const reviewLimit = watch("reviewer.reviewLimit");
+  const rewardTokenAddress = watch("reviewer.rewardToken");
   const rewardToken = tokens.find((t) => t.contractAddress === rewardTokenAddress);
 
   const currentDate = new Date();
@@ -143,14 +134,14 @@ export function FinalStep({
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-grow w-full">
                 <Field>
-                  <Input {...register("analystData.endDate")} type="date" />
-                  <Error error={errors.analystData?.endDate?.message} />
+                  <Input {...register("analyst.endDate")} type="date" />
+                  <Error error={errors.analyst?.endDate?.message} />
                 </Field>
               </div>
               <div className="flex-grow w-full">
                 <Field>
-                  <Input {...register("analystData.endTime")} type="time" />
-                  <Error error={errors.analystData?.endTime?.message} />
+                  <Input {...register("analyst.endTime")} type="time" />
+                  <Error error={errors.analyst?.endTime?.message} />
                 </Field>
               </div>
             </div>
@@ -167,7 +158,7 @@ export function FinalStep({
                 <Field>
                   <h3 className="text-sm">Reward Token*</h3>
                   <Controller
-                    name="analystData.rewardToken"
+                    name="analyst.rewardToken"
                     control={control}
                     render={({ field }) => {
                       return (
@@ -177,7 +168,7 @@ export function FinalStep({
                           onChange={(v) => {
                             const token = tokens.find((t) => t.contractAddress === v);
                             invariant(token, "Token not found");
-                            setValue("analystData.rewardTokenDecimals", token.decimals);
+                            setValue("analyst.rewardTokenDecimals", token.decimals);
                             field.onChange(v);
                           }}
                           options={tokens.map((t) => {
@@ -187,14 +178,14 @@ export function FinalStep({
                       );
                     }}
                   />
-                  <Error error={errors.analystData?.rewardToken?.message} />
+                  <Error error={errors.analyst?.rewardToken?.message} />
                 </Field>
               </div>
               <div className="flex-grow w-full">
                 <Field>
                   <h3 className="text-sm">Reward Pool*</h3>
-                  <Input {...register("analystData.rewardPool")} type="text" placeholder="Pool amount" />
-                  <Error error={errors.analystData?.rewardPool?.message} />
+                  <Input {...register("analyst.rewardPool")} type="text" placeholder="Pool amount" />
+                  <Error error={errors.analyst?.rewardPool?.message} />
                 </Field>
               </div>
             </div>
@@ -204,8 +195,8 @@ export function FinalStep({
             <h3 className="text-sm">Claim to Submit Limit*</h3>
             <div className="flex gap-4 items-center">
               <Field>
-                <Input {...register("analystData.submitLimit")} type="text" />
-                <Error error={errors.analystData?.submitLimit?.message} />
+                <Input {...register("analyst.submitLimit")} type="text" />
+                <Error error={errors.analyst?.submitLimit?.message} />
               </Field>
               <p className="text-neutral-600 text-sm">Analysts will be able to submit for this Challenge.</p>
             </div>
@@ -215,14 +206,14 @@ export function FinalStep({
             <div className="flex gap-4 md:flex-row flex-col">
               <div className="flex-grow w-full">
                 <Field>
-                  <Input {...register("reviewerData.reviewEndDate")} type="date" />
-                  <Error error={errors.reviewerData?.reviewEndDate?.message} />
+                  <Input {...register("reviewer.reviewEndDate")} type="date" />
+                  <Error error={errors.reviewer?.reviewEndDate?.message} />
                 </Field>
               </div>
               <div className="flex-grow w-full">
                 <Field>
-                  <Input {...register("reviewerData.reviewEndTime")} type="time" />
-                  <Error error={errors.reviewerData?.reviewEndTime?.message} />
+                  <Input {...register("reviewer.reviewEndTime")} type="time" />
+                  <Error error={errors.reviewer?.reviewEndTime?.message} />
                 </Field>
               </div>
             </div>
@@ -239,7 +230,7 @@ export function FinalStep({
                 <Field>
                   <h3 className="text-sm">Reward Token*</h3>
                   <Controller
-                    name="reviewerData.rewardToken"
+                    name="reviewer.rewardToken"
                     control={control}
                     render={({ field }) => {
                       return (
@@ -249,7 +240,7 @@ export function FinalStep({
                           onChange={(v) => {
                             const token = tokens.find((t) => t.contractAddress === v);
                             invariant(token, "Token not found");
-                            setValue("reviewerData.rewardTokenDecimals", token.decimals);
+                            setValue("reviewer.rewardTokenDecimals", token.decimals);
                             field.onChange(v);
                           }}
                           options={tokens.map((t) => {
@@ -259,22 +250,22 @@ export function FinalStep({
                       );
                     }}
                   />
-                  <Error error={errors.reviewerData?.rewardToken?.message} />
+                  <Error error={errors.reviewer?.rewardToken?.message} />
                 </Field>
               </div>
               <div className="flex-grow w-full">
                 <Field>
                   <h3 className="text-sm">Reward Pool*</h3>
-                  <Input {...register("reviewerData.rewardPool")} placeholder="Pool amount" />
-                  <Error error={errors.reviewerData?.rewardPool?.message} />
+                  <Input {...register("reviewer.rewardPool")} placeholder="Pool amount" />
+                  <Error error={errors.reviewer?.rewardPool?.message} />
                 </Field>
               </div>
             </div>
             <h3 className="text-sm">Total Review Limit*</h3>
             <div className="flex gap-4 items-center">
               <Field>
-                <Input {...register("reviewerData.reviewLimit")} type="text" />
-                <Error error={errors.reviewerData?.reviewLimit?.message} />
+                <Input {...register("reviewer.reviewLimit")} type="text" />
+                <Error error={errors.reviewer?.reviewLimit?.message} />
               </Field>
               <p>Reviewers will be able to review this Challenge.</p>
             </div>

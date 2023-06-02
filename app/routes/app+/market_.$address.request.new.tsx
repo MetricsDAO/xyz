@@ -1,10 +1,10 @@
 import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
-import { AppDataForm, AnalystForm, ReviewerForm } from "~/features/service-request-creator/schema";
+import type { AppDataForm, AnalystForm, ReviewerForm } from "~/features/service-request-creator/schema";
 import { requireUser } from "~/services/session.server";
 
-export type OutletContext = [formState, React.Dispatch<React.SetStateAction<formState>>];
+export type OutletContext = [ServiceRequestFormState, React.Dispatch<React.SetStateAction<ServiceRequestFormState>>];
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   await requireUser(request, `/app/login?redirectto=app/market/$address/request/new`);
@@ -12,20 +12,20 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   return null;
 };
 
-interface formState {
-  page1Data: AppDataForm | null;
-  page2Data: AnalystForm | null;
-  page3Data: ReviewerForm | null;
+export interface ServiceRequestFormState {
+  appData: AppDataForm | null;
+  analyst: AnalystForm | null;
+  reviewer: ReviewerForm | null;
 }
 
-const initialFormState: formState = {
-  page1Data: null,
-  page2Data: null,
-  page3Data: null,
+const initialFormState: ServiceRequestFormState = {
+  appData: null,
+  analyst: null,
+  reviewer: null,
 };
 
-export default function NewMarketRoute() {
-  const [formData, setFormData] = useState<formState>(initialFormState);
+export default function NewServiceRequestRoute() {
+  const [formData, setFormData] = useState<ServiceRequestFormState>(initialFormState);
 
   return <Outlet context={[formData, setFormData]} />;
 }

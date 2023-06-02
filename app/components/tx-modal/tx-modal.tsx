@@ -12,7 +12,7 @@ type Props = {
 
 export function TxModal({ transactor, title, confirmationMessage, variant = "primary" }: Props) {
   return (
-    <Modal isOpen={transactor.state !== "idle"} onClose={transactor.cancel}>
+    <Modal isOpen={transactor.state !== "idle" && transactor.state !== "success"} onClose={transactor.cancel}>
       <div className="px-8 text-center mb-8 space-y-4">
         {variant === "danger" && <ExclamationTriangleIcon className="h-8 w-8 text-red-500 mx-auto my-4" />}
         <h1 className="text-base font-medium">{title ?? "Execute transaction"}</h1>
@@ -58,10 +58,6 @@ export function TxModal({ transactor, title, confirmationMessage, variant = "pri
             {variant === "primary" ? "Confirm" : "Delete"}
           </Button>
         </div>
-      ) : null}
-
-      {transactor.state === "success" ? (
-        <p>Transaction success. Please wait while we index your data and you will be redirected.</p>
       ) : null}
     </Modal>
   );

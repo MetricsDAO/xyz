@@ -71,16 +71,16 @@ export type ReviewerForm = z.infer<typeof ReviewerSchema>;
 export const ServiceRequestFormSchema = z
   .object({
     appData: AppDataSchema,
-    analystData: AnalystSchema,
-    reviewerData: ReviewerSchema,
+    analyst: AnalystSchema,
+    reviewer: ReviewerSchema,
   })
   .refine(
     (data) =>
       validDeadlines(
-        data.reviewerData.reviewEndDate,
-        data.reviewerData.reviewEndTime,
-        data.analystData.endDate,
-        data.analystData.endTime
+        data.reviewer.reviewEndDate,
+        data.reviewer.reviewEndTime,
+        data.analyst.endDate,
+        data.analyst.endTime
       ),
     {
       message: "Review deadline cannot be before submission deadline.",
@@ -103,20 +103,20 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
       language: "english",
       projectSlugs: [],
     },
-    analystData: {
+    analyst: {
       endDate: dayjs(endDate).format("YYYY-MM-DD"),
       endTime: dayjs(endDate).format("HH:mm"),
-      rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      rewardToken: "0xCce422781e1818821f50226C14E6289a7144a898",
       rewardTokenDecimals: 18,
-      rewardPool: "0.000001",
+      rewardPool: "1",
       submitLimit: 10,
     },
-    reviewerData: {
+    reviewer: {
       reviewEndDate: dayjs(reviewDate).format("YYYY-MM-DD"),
       reviewEndTime: dayjs(reviewDate).format("HH:mm"),
-      rewardToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      rewardToken: "0xCce422781e1818821f50226C14E6289a7144a898",
       rewardTokenDecimals: 18,
-      rewardPool: "0.000001",
+      rewardPool: "2",
       reviewLimit: 10,
     },
   };

@@ -31,10 +31,10 @@ export default function AnalystPage() {
   return (
     <div>
       <AnalystFields
-        currentData={formData.page2Data}
+        currentData={formData.analyst}
         validTokens={laborMarketTokens}
         onDataUpdate={(data: AnalystForm) => {
-          setFormData((prevData) => ({ ...prevData, page2Data: data }));
+          setFormData((prevData) => ({ ...prevData, analyst: data }));
         }}
         address={address}
       />

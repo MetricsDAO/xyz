@@ -1,60 +1,64 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
 import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
-import type { DefaultValues } from "react-hook-form";
-import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import type { ServiceRequestFormState } from "~/routes/app+/market_.$address.request.new";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import type { AnalystForm, AppDataForm, ReviewerForm, ServiceRequestForm } from "./schema";
-import { ServiceRequestFormSchema } from "./schema";
 import { FinalStep } from "./overview-fields";
+import type { ServiceRequestForm } from "./schema";
+
+type SequenceState =
+  | { state: "initial" }
+  | { state: "approve-analyst-reward"; data: ServiceRequestForm }
+  | { state: "approve-reviewer-reward"; data: ServiceRequestForm }
+  | { state: "create-service-request"; data: ServiceRequestForm };
 
 interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
-  defaultValues?: DefaultValues<ServiceRequestForm>;
+  defaultValues?: ServiceRequestFormState;
   laborMarketAddress: EvmAddress;
-  page1Data: AppDataForm | null;
-  page2Data: AnalystForm | null;
-  page3Data: ReviewerForm | null;
-}
-
-/**
- * Filters and parses the logs for a specific event.
- */
-function getEventFromLogs(
-  iface: ethers.utils.Interface,
-  logs: ethers.providers.Log[],
-  eventName: string,
-  laborMarketAddress: EvmAddress
-) {
-  const filtered = logs.filter((log) => log.address === laborMarketAddress);
-  const mapped = filtered.map((log) => iface.parseLog(log));
-  return mapped.find((e) => e.name === eventName);
 }
 
 export function ServiceRequestCreator({
   defaultValues,
   laborMarketAddress,
-  page1Data,
-  page2Data,
-  page3Data,
   tokens,
   projects,
 }: ServiceRequestFormProps) {
   const contracts = useContracts();
-  const [values, setValues] = useState<ServiceRequestForm>();
-  const [approved, setApproved] = useState(false);
+  const [sequence, setSequence] = useState<SequenceState>({ state: "initial" });
 
   const navigate = useNavigate();
+
+  const approveAnalystRewardTransactor = useTransactor({
+    onSuccess: useCallback(
+      (receipt) => {
+        if (sequence.state === "approve-analyst-reward") {
+          setSequence({ state: "approve-reviewer-reward", data: sequence.data });
+        }
+      },
+      [sequence]
+    ),
+  });
+
+  const approveReviewerRewardTransactor = useTransactor({
+    onSuccess: useCallback(
+      (receipt) => {
+        if (sequence.state === "approve-reviewer-reward") {
+          setSequence({ state: "create-service-request", data: sequence.data });
+        }
+      },
+      [sequence]
+    ),
+  });
 
   const submitTransactor = useTransactor({
     onSuccess: useCallback(
@@ -67,89 +71,69 @@ export function ServiceRequestCreator({
     ),
   });
 
-  const approveTransactor = useTransactor({
-    onSuccess: useCallback((receipt) => {}, []),
-  });
-
   useEffect(() => {
-    if (values && approveTransactor.state === "success" && !approved) {
-      setApproved(true);
-      console.log(values);
+    if (sequence.state === "approve-analyst-reward") {
+      const values = sequence.data;
+      approveAnalystRewardTransactor.start({
+        config: () =>
+          configureWrite({
+            address: values.analyst.rewardToken,
+            abi: ERC20_APPROVE_PARTIAL_ABI,
+            functionName: "approve",
+            args: [laborMarketAddress, toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals)],
+          }),
+      });
+    } else if (sequence.state === "approve-reviewer-reward") {
+      const values = sequence.data;
+      approveReviewerRewardTransactor.start({
+        config: () =>
+          configureWrite({
+            address: values.reviewer.rewardToken,
+            abi: ERC20_APPROVE_PARTIAL_ABI,
+            functionName: "approve",
+            args: [laborMarketAddress, toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals)],
+          }),
+      });
+    } else if (sequence.state === "create-service-request") {
+      const values = sequence.data;
       submitTransactor.start({
         metadata: values.appData,
         config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, form: values, laborMarketAddress } }),
       });
     }
-  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sequence]);
 
-  const methods = useForm<ServiceRequestForm>({
-    resolver: zodResolver(ServiceRequestFormSchema),
-    defaultValues,
-  });
-
-  const onSubmit = (data: ServiceRequestForm) => {
-    // write to contract with values
-    approveTransactor.start({
-      metadata: data.appData,
-      config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, form: data, laborMarketAddress } }),
-    });
-    setValues(data);
+  const onSubmit = (values: ServiceRequestForm) => {
+    setSequence({ state: "approve-analyst-reward", data: values });
   };
 
-  // const onSubmit = (values: ServiceRequestForm) => {
-  //   approveTransactor.start({
-  //     metadata: {},
-  //     config: () =>
-  //       configureWrite({
-  //         address: values.rewardToken,
-  //         abi: [
-  //           {
-  //             constant: false,
-  //             inputs: [
-  //               { name: "spender", type: "address" },
-  //               { name: "value", type: "uint256" },
-  //             ],
-  //             name: "approve",
-  //             outputs: [{ name: "", type: "bool" }],
-  //             payable: false,
-  //             stateMutability: "nonpayable",
-  //             type: "function",
-  //           },
-  //         ],
-  //         functionName: "approve",
-  //         args: [laborMarketAddress, toTokenAmount(values.rewardPool, values.rewardTokenDecimals)],
-  //       }),
-  //   });
-  //   setValues(values);
-  // };
-
   return (
-    <FormProvider {...methods}>
-      {!approved && (
-        <TxModal
-          transactor={approveTransactor}
-          title="Approve Challenge"
-          confirmationMessage={"Approve the app to transfer the tokens on your behalf"}
-        />
-      )}
-      {approved && (
-        <TxModal
-          transactor={submitTransactor}
-          title="Launch Challenge"
-          confirmationMessage={"Confirm that you would like to launch this challenge and transfer the funds"}
-        />
-      )}
+    <>
+      <TxModal
+        transactor={approveAnalystRewardTransactor}
+        title="Approve Analyst Reward"
+        confirmationMessage={"Approve the app to transfer the tokens on your behalf"}
+      />
+      <TxModal
+        transactor={approveReviewerRewardTransactor}
+        title="Approve Reviewer Reward"
+        confirmationMessage={"Approve the app to transfer the tokens on your behalf"}
+      />
+      <TxModal
+        transactor={submitTransactor}
+        title="Launch Challenge"
+        confirmationMessage={"Confirm that you would like to launch this challenge and transfer the funds"}
+      />
 
       <FinalStep
         onSubmit={onSubmit}
         tokens={tokens}
         projects={projects}
         address={laborMarketAddress}
-        page1Data={page1Data}
-        page2Data={page2Data}
-        page3Data={page3Data}
+        defaultValues={defaultValues}
       />
-    </FormProvider>
+    </>
   );
 }
 
@@ -166,25 +150,21 @@ function configureFromValues({
 }) {
   const { form, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
-  console.log(form.analystData);
-  const signalDeadline = new Date(
-    claimDate(currentDate, parseDatetime(form.analystData.endDate, form.analystData.endTime))
-  );
+  console.log(form.analyst);
+  const signalDeadline = new Date(claimDate(currentDate, parseDatetime(form.analyst.endDate, form.analyst.endTime)));
 
   console.log("inputs", inputs);
 
   const obj = {
-    pTokenProvider: form.analystData.rewardToken,
-    pTokenProviderTotal: toTokenAmount(form.analystData.rewardPool, form.analystData.rewardTokenDecimals),
-    pTokenReviewer: form.reviewerData.rewardToken,
-    pTokenReviewerTotal: toTokenAmount(form.reviewerData.rewardPool, form.reviewerData.rewardTokenDecimals),
-    providerLimit: BigNumber.from(form.analystData.submitLimit),
-    reviewerLimit: BigNumber.from(form.reviewerData.reviewLimit),
-    enforcementExp: unixTimestamp(
-      new Date(parseDatetime(form.reviewerData.reviewEndDate, form.reviewerData.reviewEndTime))
-    ),
+    pTokenProvider: form.analyst.rewardToken,
+    pTokenProviderTotal: toTokenAmount(form.analyst.rewardPool, form.analyst.rewardTokenDecimals),
+    pTokenReviewer: form.reviewer.rewardToken,
+    pTokenReviewerTotal: toTokenAmount(form.reviewer.rewardPool, form.reviewer.rewardTokenDecimals),
+    providerLimit: BigNumber.from(form.analyst.submitLimit),
+    reviewerLimit: BigNumber.from(form.reviewer.reviewLimit),
+    enforcementExp: unixTimestamp(new Date(parseDatetime(form.reviewer.reviewEndDate, form.reviewer.reviewEndTime))),
     signalExp: unixTimestamp(signalDeadline),
-    submissionExp: unixTimestamp(new Date(parseDatetime(form.analystData.endDate, form.analystData.endTime))),
+    submissionExp: unixTimestamp(new Date(parseDatetime(form.analyst.endDate, form.analyst.endTime))),
   };
 
   console.log("obj", obj);
@@ -200,3 +180,32 @@ function configureFromValues({
     ],
   });
 }
+
+/**
+ * Filters and parses the logs for a specific event.
+ */
+function getEventFromLogs(
+  iface: ethers.utils.Interface,
+  logs: ethers.providers.Log[],
+  eventName: string,
+  laborMarketAddress: EvmAddress
+) {
+  const filtered = logs.filter((log) => log.address === laborMarketAddress);
+  const mapped = filtered.map((log) => iface.parseLog(log));
+  return mapped.find((e) => e.name === eventName);
+}
+
+const ERC20_APPROVE_PARTIAL_ABI = [
+  {
+    constant: false,
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+] as const;

@@ -31,10 +31,10 @@ export default function ReviewerPage() {
   return (
     <div>
       <ReviewerFields
-        currentData={formData.page3Data}
+        currentData={formData.reviewer}
         validTokens={laborMarketTokens}
         onDataUpdate={(data: ReviewerForm) => {
-          setFormData((prevData) => ({ ...prevData, page3Data: data }));
+          setFormData((prevData) => ({ ...prevData, reviewer: data }));
         }}
         address={address}
       />

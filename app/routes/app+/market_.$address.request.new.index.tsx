@@ -30,10 +30,10 @@ export default function AppDataPage() {
   const { laborMarketProjects, address } = useTypedLoaderData<typeof loader>();
   return (
     <AppDataFields
-      currentData={formData.page1Data}
+      currentData={formData.appData}
       projects={laborMarketProjects}
       onDataUpdate={(data: AppDataForm) => {
-        setFormData((prevData) => ({ ...prevData, page1Data: data }));
+        setFormData((prevData) => ({ ...prevData, appData: data }));
       }}
       address={address}
     />
