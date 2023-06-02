@@ -8,6 +8,7 @@ const EventWithFilterSchema = EventSchema.extend({
   eventFilter: z.enum(["LaborMarketConfigured"]),
 });
 export type EventWithFilter = z.infer<typeof EventWithFilterSchema>;
+export type IndexEventResponse = Awaited<ReturnType<typeof action>>;
 export async function action({ request }: DataFunctionArgs) {
   // only authenticated users can call this
   await requireUser(request);

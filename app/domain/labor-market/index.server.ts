@@ -48,8 +48,8 @@ export async function indexerLaborMarketConfiguredEvent(event: TracerEvent) {
 }
 
 /**
- * This where "indexing" the labor market into our DB happens. Different event and inputtypes from different systems should be coalesced into this function.
- * This function gaurds against duplicate events (race conditions) by utilizing "safeCreateEvent"
+ * This where "indexing" the labor market into our DB happens. Different event and input types from different systems should be coalesced into this function.
+ * This function guards against duplicate events (race conditions) by utilizing "safeCreateEvent"
  * @param event the standardized event
  * @returns
  */
