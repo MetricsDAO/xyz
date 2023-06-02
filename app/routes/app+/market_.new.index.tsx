@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext } from "@remix-run/react";
 import { FormStepper } from "~/components";
 import { BadgerLinks } from "~/features/labor-market-creator/badger-links";
-import { MarketplaceMetaForm } from "~/features/labor-market-creator/meta-form";
+import { MarketplaceMetaForm } from "~/features/labor-market-creator/metadata-form";
 import type { MarketplaceMeta } from "~/features/labor-market-creator/schema";
 import type { OutletContext } from "./market_.new";
 

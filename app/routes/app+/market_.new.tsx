@@ -25,6 +25,7 @@ const initialForm: MarketplaceFormState = {
   reviewer: null,
 };
 
+// Takes advantage of Outlet to maintain state across pages. If a user refreshes, state will be lost (not persisted on any backend)
 export default function NewMarketRoute() {
   const [formState, setFormState] = useState<MarketplaceFormState>(initialForm);
 

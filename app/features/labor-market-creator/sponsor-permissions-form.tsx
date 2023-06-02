@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Error, Field, FormProgress, Input, Label, Select } from "~/components";
 import type { EvmAddress } from "~/domain/address";
@@ -32,7 +31,6 @@ export function SponsorPermissionsForm({
     name: "badges",
   });
 
-  const navigate = useNavigate();
   const formData = watch();
 
   const onGoBack = () => {

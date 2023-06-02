@@ -9,7 +9,7 @@ export default function NewMarketplaceReviewPage() {
   const navigate = useNavigate();
 
   const onPrevious = () => {
-    // TODO: update values
+    // TODO: update values?
     navigate(`/app/market/new/reviewer-permissions`);
   };
 
