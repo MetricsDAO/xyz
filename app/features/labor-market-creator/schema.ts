@@ -1,11 +1,7 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "~/domain/address";
-import {
-  LaborMarketAppDataSchema,
-  LaborMarketConfigSchema,
-  LaborMarketTypeSchema,
-} from "~/domain/labor-market/schemas";
+import { LaborMarketTypeSchema } from "~/domain/labor-market/schemas";
 import { arrayToObject } from "~/domain/shared/utils";
 
 export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
@@ -21,36 +17,15 @@ export const BadgeSchema = z.preprocess(
   })
 );
 
-export const gatingSchema = z.object({
+export const GatingSchema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
   numberBadgesRequired: z.coerce.number().optional(),
   badges: z.array(BadgeSchema),
 });
 
-export type GatingData = z.infer<typeof gatingSchema>;
+export type GatingData = z.infer<typeof GatingSchema>;
 
-export const LaborMarketModules = z.object({
-  network: EvmAddressSchema,
-  enforcement: EvmAddressSchema,
-  enforcementKey: z.string(),
-  reputation: EvmAddressSchema,
-});
-
-export const LaborMarketReputationParams = z.object({
-  rewardPool: z.coerce.string(),
-  provideStake: z.coerce.string(),
-  submitMin: z.coerce.string(),
-  submitMax: z.coerce.string(),
-});
-
-/** For creating and updating LaborMarkets */
-export const LaborMarketFormSchema = z.object({
-  configuration: LaborMarketConfigSchema.sourceType(),
-  appData: LaborMarketAppDataSchema,
-});
-export type LaborMarketForm = z.infer<typeof LaborMarketFormSchema>;
-
-export const marketplaceDetailsSchema = z.object({
+export const MarketplaceMetaSchema = z.object({
   title: z.string().min(1),
   type: LaborMarketTypeSchema.default("analyze"),
   description: z.string().min(1),
@@ -59,13 +34,13 @@ export const marketplaceDetailsSchema = z.object({
   enforcement: EvmAddressSchema,
 });
 
-export type MarketplaceData = z.infer<typeof marketplaceDetailsSchema>;
+export type MarketplaceMeta = z.infer<typeof MarketplaceMetaSchema>;
 
-export const finalMarketSchema = z.object({
-  marketplaceData: marketplaceDetailsSchema,
-  sponsorData: gatingSchema,
-  analystData: gatingSchema,
-  reviewerData: gatingSchema,
+export const MarketplaceFormSchema = z.object({
+  meta: MarketplaceMetaSchema,
+  sponsor: GatingSchema,
+  analyst: GatingSchema,
+  reviewer: GatingSchema,
 });
 
-export type finalMarketData = z.infer<typeof finalMarketSchema>;
+export type MarketplaceForm = z.infer<typeof MarketplaceFormSchema>;

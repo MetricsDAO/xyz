@@ -1,13 +1,13 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Error, Field, Input, Label, Select, FormProgress, FormStepper } from "~/components";
+import { Error, Field, FormProgress, FormStepper, Input, Label, Select } from "~/components";
 import type { EvmAddress } from "~/domain/address";
+import { BadgerLinks } from "./badger-links";
 import type { GatingData } from "./schema";
-import { gatingSchema } from "./schema";
+import { GatingSchema } from "./schema";
 
-export function ReviewerPermissions({
+export function ReviewerPermissionsForm({
   currentData,
   onDataUpdate,
 }: {
@@ -23,7 +23,7 @@ export function ReviewerPermissions({
     defaultValues: {
       ...currentData,
     },
-    resolver: zodResolver(gatingSchema),
+    resolver: zodResolver(GatingSchema),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -35,13 +35,11 @@ export function ReviewerPermissions({
   const formData = watch();
 
   const onSubmit = (values: GatingData) => {
-    console.log(values);
     onDataUpdate(values);
     navigate(`/app/market/new/review`);
   };
 
   const onGoBack = () => {
-    console.log(formData);
     onDataUpdate(formData);
     navigate(`/app/market/new/analyst-permissions`);
   };
@@ -179,16 +177,7 @@ export function ReviewerPermissions({
           step={4}
           labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
         />
-        <div className="flex mt-16 gap-x-2 items-center">
-          <InformationCircleIcon className="h-6 w-6 mr-2" />
-          <Link to={"https://www.trybadger.com/"} className="text-sm text-blue-600">
-            Launch Badger
-          </Link>
-          <p className="text-sm text-blue-600">|</p>
-          <Link to={"https://docs.trybadger.com/"} className="text-sm text-blue-600">
-            Badger Docs
-          </Link>
-        </div>
+        <BadgerLinks />
       </aside>
     </div>
   );

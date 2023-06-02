@@ -1,23 +1,23 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
-import { Link, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { Controller, useForm } from "react-hook-form";
-import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, FormStepper } from "~/components";
+import { Combobox, Error, Field, FormProgress, FormStepper, Input, Label, Select, Textarea } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
-import type { MarketplaceData } from "./schema";
-import { marketplaceDetailsSchema } from "./schema";
+import { BadgerLinks } from "./badger-links";
+import type { MarketplaceMeta } from "./schema";
+import { MarketplaceMetaSchema } from "./schema";
 
-export function MarketplaceDetails({
+export function MarketplaceMetaForm({
   currentData,
   tokens,
   projects,
   onDataUpdate,
 }: {
-  currentData: MarketplaceData | null;
+  currentData: MarketplaceMeta | null;
   tokens: Token[];
   projects: Project[];
-  onDataUpdate: (data: MarketplaceData) => void;
+  onDataUpdate: (data: MarketplaceMeta) => void;
 }) {
   const {
     register,
@@ -25,8 +25,8 @@ export function MarketplaceDetails({
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<MarketplaceData>({
-    resolver: zodResolver(marketplaceDetailsSchema),
+  } = useForm<MarketplaceMeta>({
+    resolver: zodResolver(MarketplaceMetaSchema),
     defaultValues: {
       ...currentData,
     },
@@ -34,13 +34,12 @@ export function MarketplaceDetails({
 
   const navigate = useNavigate();
 
-  const onSubmit = (values: MarketplaceData) => {
+  const onSubmit = (values: MarketplaceMeta) => {
     onDataUpdate(values);
     navigate(`/app/market/new/sponsor-permissions`);
   };
 
-  // Filtering out MBETA for now. Might not be necessary later on.
-  const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
+  const tokenAllowlist = tokens.map((t) => ({ label: t.name, value: t.symbol }));
 
   const enforcement = watch("enforcement");
 
@@ -132,16 +131,7 @@ export function MarketplaceDetails({
           step={1}
           labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
         />
-        <div className="flex mt-16 gap-x-2 items-center">
-          <InformationCircleIcon className="h-6 w-6 mr-2" />
-          <Link to={"https://www.trybadger.com/"} className="text-sm text-blue-600">
-            Launch Badger
-          </Link>
-          <p className="text-sm text-blue-600">|</p>
-          <Link to={"https://docs.trybadger.com/"} className="text-sm text-blue-600">
-            Badger Docs
-          </Link>
-        </div>
+        <BadgerLinks />
       </aside>
     </div>
   );

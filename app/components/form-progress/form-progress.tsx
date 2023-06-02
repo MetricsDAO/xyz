@@ -8,12 +8,14 @@ export function FormProgress({
   onNext,
   cancelLink,
   submitLabel,
+  onSubmit,
 }: {
   percent: number;
   onGoBack?: () => void;
   onNext?: () => void;
   cancelLink: string;
   submitLabel?: string;
+  onSubmit?: () => void;
 }) {
   return (
     <div className=" w-full">
@@ -37,7 +39,7 @@ export function FormProgress({
           <Button className="my-5 mr-4" variant="cancel">
             <Link to={cancelLink}>Cancel</Link>
           </Button>
-          {submitLabel && <Button type="submit">{submitLabel}</Button>}
+          {submitLabel && onSubmit && <Button onClick={onSubmit}>{submitLabel}</Button>}
         </div>
       </div>
     </div>

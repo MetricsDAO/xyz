@@ -1,19 +1,16 @@
 import { useOutletContext } from "@remix-run/react";
-import type { GatingData } from "~/domain/labor-market/schemas";
 import type { OutletContext } from "./market_.new";
-import { SponsorPermissions } from "~/features/labor-market-creator/sponsor-permissions";
+import { SponsorPermissionsForm } from "~/features/labor-market-creator/sponsor-permissions-form";
+import type { GatingData } from "~/features/labor-market-creator/schema";
 
 export default function SponsorPermissionsPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
-  console.log("formdata", formData);
   return (
-    <div>
-      <SponsorPermissions
-        currentData={formData.sponsorData}
-        onDataUpdate={(data: GatingData) => {
-          setFormData((prevData) => ({ ...prevData, sponsorData: data }));
-        }}
-      />
-    </div>
+    <SponsorPermissionsForm
+      currentData={formData.sponsor}
+      onDataUpdate={(data: GatingData) => {
+        setFormData((prevData) => ({ ...prevData, sponsor: data }));
+      }}
+    />
   );
 }

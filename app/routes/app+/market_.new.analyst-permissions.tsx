@@ -1,19 +1,16 @@
 import { useOutletContext } from "@remix-run/react";
-import type { GatingData } from "~/domain/labor-market/schemas";
-import { AnalystPermissions } from "~/features/labor-market-creator/analyst-permissions";
+import { AnalystPermissionsForm } from "~/features/labor-market-creator/analyst-permissions-form";
 import type { OutletContext } from "./market_.new";
+import type { GatingData } from "~/features/labor-market-creator/schema";
 
 export default function AnalystPermissionsPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
-  console.log("formdata", formData);
   return (
-    <div>
-      <AnalystPermissions
-        currentData={formData.analystData}
-        onDataUpdate={(data: GatingData) => {
-          setFormData((prevData) => ({ ...prevData, analystData: data }));
-        }}
-      />
-    </div>
+    <AnalystPermissionsForm
+      currentData={formData.analyst}
+      onDataUpdate={(data: GatingData) => {
+        setFormData((prevData) => ({ ...prevData, analyst: data }));
+      }}
+    />
   );
 }

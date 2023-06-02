@@ -10,8 +10,8 @@ import { Combobox, Error, Field, Input, Label, Select, Textarea, FormProgress, F
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
-import type { GatingData, MarketplaceData, finalMarketData } from "./schema";
-import { finalMarketSchema } from "./schema";
+import type { GatingData, MarketplaceMeta, MarketplaceForm } from "./schema";
+import { MarketplaceFormSchema } from "./schema";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { postNewEvent } from "~/utils/fetch";
@@ -25,9 +25,6 @@ function getEventFromLogs(
   logs: ethers.providers.Log[],
   eventName: string
 ) {
-  console.log("logs", logs);
-  console.log("address", address);
-  console.log("eventName", eventName);
   return logs
     .filter((log) => log.address === address)
     .map((log) => iface.parseLog(log))
@@ -36,7 +33,7 @@ function getEventFromLogs(
 
 function configureFromValues(
   contracts: ReturnType<typeof useContracts>,
-  inputs: { owner: EvmAddress; cid: string; values: finalMarketData }
+  inputs: { owner: EvmAddress; cid: string; values: MarketplaceForm }
 ) {
   const { owner, cid } = inputs;
   const auxilaries = [BigNumber.from(100)];
@@ -53,7 +50,7 @@ function configureFromValues(
   ];
   console.log("VALUES", inputs.values);
 
-  const sponsorBadges = inputs.values.sponsorData.badges.map((badge) => {
+  const sponsorBadges = inputs.values.sponsor.badges.map((badge) => {
     return {
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
@@ -63,7 +60,7 @@ function configureFromValues(
     };
   });
 
-  const analystBadges = inputs.values.analystData.badges.map((badge) => {
+  const analystBadges = inputs.values.analyst.badges.map((badge) => {
     return {
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
@@ -73,7 +70,7 @@ function configureFromValues(
     };
   });
 
-  const reviewerBadges = inputs.values.reviewerData.badges.map((badge) => {
+  const reviewerBadges = inputs.values.reviewer.badges.map((badge) => {
     return {
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
@@ -86,17 +83,17 @@ function configureFromValues(
   const nodes = [
     {
       deployerAllowed: true,
-      required: BigNumber.from(inputs.values.sponsorData.numberBadgesRequired || 0),
+      required: BigNumber.from(inputs.values.sponsor.numberBadgesRequired || 0),
       badges: sponsorBadges,
     },
     {
       deployerAllowed: true,
-      required: BigNumber.from(inputs.values.analystData.numberBadgesRequired || 0),
+      required: BigNumber.from(inputs.values.analyst.numberBadgesRequired || 0),
       badges: analystBadges,
     },
     {
       deployerAllowed: true,
-      required: BigNumber.from(inputs.values.reviewerData.numberBadgesRequired || 0),
+      required: BigNumber.from(inputs.values.reviewer.numberBadgesRequired || 0),
       badges: reviewerBadges,
     },
   ];
@@ -117,7 +114,7 @@ export function Review({
   tokens,
   projects,
 }: {
-  marketplaceData: MarketplaceData | null;
+  marketplaceData: MarketplaceMeta | null;
   sponsorData: GatingData | null;
   analystData: GatingData | null;
   reviewerData: GatingData | null;
@@ -130,29 +127,29 @@ export function Review({
     register,
     watch,
     formState: { errors },
-  } = useForm<finalMarketData>({
+  } = useForm<MarketplaceForm>({
     defaultValues: {
-      marketplaceData: {
+      meta: {
         ...marketplaceData,
       },
-      sponsorData: {
+      sponsor: {
         ...sponsorData,
       },
-      analystData: {
+      analyst: {
         ...analystData,
       },
-      reviewerData: {
+      reviewer: {
         ...reviewerData,
       },
     },
-    resolver: zodResolver(finalMarketSchema),
+    resolver: zodResolver(MarketplaceFormSchema),
   });
 
   const contracts = useContracts();
 
-  const sponsorBadges = "sponsorData.badges";
-  const analystBadges = "analystData.badges";
-  const reviewerBadges = "reviewerData.badges";
+  const sponsorBadges = "sponsor.badges";
+  const analystBadges = "analyst.badges";
+  const reviewerBadges = "reviewer.badges";
 
   const {
     fields: sponsorBadgeFields,
@@ -213,8 +210,6 @@ export function Review({
   const transactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        console.log("receipt", receipt);
-        console.log("receiptjson", JSON.stringify(receipt));
         const iface = LaborMarketFactoryInterface__factory.createInterface();
         const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
         const newLaborMarketAddress = event?.args["marketAddress"];
@@ -229,10 +224,10 @@ export function Review({
     ),
   });
 
-  const onSubmit = (data: finalMarketData) => {
+  const onSubmit = (data: MarketplaceForm) => {
     // write to contract with values
     transactor.start({
-      metadata: data.marketplaceData,
+      metadata: data.meta,
       config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values: data }),
     });
   };
@@ -243,9 +238,9 @@ export function Review({
 
   const tokenAllowlist = tokens.filter((t) => t.symbol !== "MBETA").map((t) => ({ label: t.name, value: t.symbol }));
 
-  const sponsorGatingType = watch("sponsorData.gatingType");
-  const analystGatingType = watch("analystData.gatingType");
-  const reviewerGatingType = watch("reviewerData.gatingType");
+  const sponsorGatingType = watch("sponsor.gatingType");
+  const analystGatingType = watch("analyst.gatingType");
+  const reviewerGatingType = watch("reviewer.gatingType");
 
   return (
     <div className="flex relative min-h-screen">
@@ -258,39 +253,39 @@ export function Review({
           />
 
           <main className="flex-1">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
+            <form className="space-y-10 py-5">
               <input
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 type="hidden"
-                {...register("marketplaceData.type", { value: "analyze" })}
+                {...register("meta.type", { value: "analyze" })}
               />
 
               <Field>
                 <Label size="lg">Challenge Marketplace Title</Label>
-                <Input {...register("marketplaceData.title")} type="text" placeholder="e.g Solana Breakpoint 2023" />
-                <Error error={errors.marketplaceData?.title?.message} />
+                <Input {...register("meta.title")} type="text" placeholder="e.g Solana Breakpoint 2023" />
+                <Error error={errors.meta?.title?.message} />
               </Field>
 
               <Field>
                 <Label size="lg">Details*</Label>
                 <Textarea
-                  {...register("marketplaceData.description")}
+                  {...register("meta.description")}
                   placeholder="What's the goal of this marketplace?"
                   rows={7}
                 />
-                <Error error={errors.marketplaceData?.description?.message} />
+                <Error error={errors.meta?.description?.message} />
               </Field>
 
               <Field>
                 <Label size="lg">Blockchain/Project(s)*</Label>
                 <Controller
                   control={control}
-                  name="marketplaceData.projectSlugs"
+                  name="meta.projectSlugs"
                   render={({ field }) => (
                     <Combobox {...field} options={projects.map((p) => ({ label: p.name, value: p.slug }))} />
                   )}
                 />
-                <Error error={errors.marketplaceData?.projectSlugs?.message} />
+                <Error error={errors.meta?.projectSlugs?.message} />
               </Field>
 
               <section>
@@ -300,16 +295,16 @@ export function Review({
                     <Label>Reward Token Allowlist</Label>
                     <Controller
                       control={control}
-                      name="marketplaceData.tokenAllowlist"
+                      name="meta.tokenAllowlist"
                       render={({ field }) => <Combobox {...field} options={tokenAllowlist} />}
                     />
-                    <Error error={errors.marketplaceData?.tokenAllowlist?.message} />
+                    <Error error={errors.meta?.tokenAllowlist?.message} />
                   </Field>
                   <Field>
                     <Label>Reward Curve</Label>
                     <Controller
                       control={control}
-                      name="marketplaceData.enforcement"
+                      name="meta.enforcement"
                       defaultValue={contracts.BucketEnforcement.address}
                       render={({ field }) => (
                         <Select
@@ -318,7 +313,7 @@ export function Review({
                         />
                       )}
                     />
-                    <Error error={errors.marketplaceData?.enforcement?.message} />
+                    <Error error={errors.meta?.enforcement?.message} />
                   </Field>
                 </div>
               </section>
@@ -329,7 +324,7 @@ export function Review({
                 <Field>
                   <Controller
                     control={control}
-                    name="sponsorData.gatingType"
+                    name="sponsor.gatingType"
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -341,18 +336,18 @@ export function Review({
                       />
                     )}
                   />
-                  <Error error={errors.sponsorData?.gatingType?.message} />
+                  <Error error={errors.sponsor?.gatingType?.message} />
                 </Field>
                 {sponsorGatingType === ("Any" || "All") && (
                   <Field>
                     <Controller
-                      name="sponsorData.numberBadgesRequired"
+                      name="sponsor.numberBadgesRequired"
                       control={control}
                       render={({ field: { onChange, onBlur, value, ref } }) => (
                         <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                       )}
                     />
-                    <Error error={errors.sponsorData?.numberBadgesRequired?.message} />
+                    <Error error={errors.sponsor?.numberBadgesRequired?.message} />
                   </Field>
                 )}
                 {sponsorGatingType === ("Any" || "All") ? (
@@ -371,32 +366,32 @@ export function Review({
                         <Label size="sm">Contract Address</Label>
                         <Controller
                           name={
-                            `sponsorData.badges[${index}].contractAddress` as `sponsorData.badges.${number}.contractAddress`
+                            `sponsor.badges[${index}].contractAddress` as `sponsor.badges.${number}.contractAddress`
                           }
                           control={control}
                           render={({ field: { onChange, onBlur, value, ref } }) => (
                             <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                           )}
                         />
-                        <Error error={errors.sponsorData?.badges?.[index]?.contractAddress?.message} />
+                        <Error error={errors.sponsor?.badges?.[index]?.contractAddress?.message} />
                       </Field>
                       <Field>
                         <Label size="sm">token ID</Label>
                         <Controller
-                          name={`sponsorData.badges[${index}].tokenId` as `sponsorData.badges.${number}.tokenId`}
+                          name={`sponsor.badges[${index}].tokenId` as `sponsor.badges.${number}.tokenId`}
                           control={control}
                           defaultValue={field.tokenId}
                           render={({ field: { onChange, onBlur, value, ref } }) => (
                             <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                           )}
                         />
-                        <Error error={errors.sponsorData?.badges?.[index]?.tokenId?.message} />
+                        <Error error={errors.sponsor?.badges?.[index]?.tokenId?.message} />
                       </Field>
                       <Field>
                         <Label size="sm">Min</Label>
                         <Controller
                           name={
-                            `sponsorData.badges[${index}].minBadgeBalance` as `sponsorData.badges.${number}.minBadgeBalance`
+                            `sponsor.badges[${index}].minBadgeBalance` as `sponsor.badges.${number}.minBadgeBalance`
                           }
                           control={control}
                           defaultValue={field.minBadgeBalance}
@@ -404,13 +399,13 @@ export function Review({
                             <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                           )}
                         />
-                        <Error error={errors.sponsorData?.badges?.[index]?.minBadgeBalance?.message} />
+                        <Error error={errors.sponsor?.badges?.[index]?.minBadgeBalance?.message} />
                       </Field>
                       <Field>
                         <Label size="sm">Max</Label>
                         <Controller
                           name={
-                            `sponsorData.badges[${index}].maxBadgeBalance` as `sponsorData.badges.${number}.maxBadgeBalance`
+                            `sponsor.badges[${index}].maxBadgeBalance` as `sponsor.badges.${number}.maxBadgeBalance`
                           }
                           control={control}
                           defaultValue={field.maxBadgeBalance}
@@ -418,7 +413,7 @@ export function Review({
                             <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                           )}
                         />
-                        <Error error={errors.sponsorData?.badges?.[index]?.maxBadgeBalance?.message} />
+                        <Error error={errors.sponsor?.badges?.[index]?.maxBadgeBalance?.message} />
                       </Field>
                       <button className="mt-8" type="button" onClick={() => removeSponsorBadge(index)}>
                         <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
@@ -442,7 +437,7 @@ export function Review({
                 <Field>
                   <Controller
                     control={control}
-                    name="analystData.gatingType"
+                    name="analyst.gatingType"
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -454,18 +449,18 @@ export function Review({
                       />
                     )}
                   />
-                  <Error error={errors.analystData?.gatingType?.message} />
+                  <Error error={errors.analyst?.gatingType?.message} />
                 </Field>
                 {analystGatingType === ("Any" || "All") && (
                   <Field>
                     <Controller
-                      name="analystData.numberBadgesRequired"
+                      name="analyst.numberBadgesRequired"
                       control={control}
                       render={({ field: { onChange, onBlur, value, ref } }) => (
                         <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                       )}
                     />
-                    <Error error={errors.analystData?.numberBadgesRequired?.message} />
+                    <Error error={errors.analyst?.numberBadgesRequired?.message} />
                   </Field>
                 )}
                 {analystGatingType === ("Any" || "All") ? (
@@ -482,55 +477,49 @@ export function Review({
                     <Field className="col-span-2">
                       <Label size="sm">Contract Address</Label>
                       <Controller
-                        name={
-                          `analystData.badges[${index}].contractAddress` as `analystData.badges.${number}.contractAddress`
-                        }
+                        name={`analyst.badges[${index}].contractAddress` as `analyst.badges.${number}.contractAddress`}
                         control={control}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                         )}
                       />
-                      <Error error={errors.analystData?.badges?.[index]?.contractAddress?.message} />
+                      <Error error={errors.analyst?.badges?.[index]?.contractAddress?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">token ID</Label>
                       <Controller
-                        name={`analystData.badges[${index}].tokenId` as `analystData.badges.${number}.tokenId`}
+                        name={`analyst.badges[${index}].tokenId` as `analyst.badges.${number}.tokenId`}
                         control={control}
                         defaultValue={field.tokenId}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
-                      <Error error={errors.analystData?.badges?.[index]?.tokenId?.message} />
+                      <Error error={errors.analyst?.badges?.[index]?.tokenId?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Min</Label>
                       <Controller
-                        name={
-                          `analystData.badges[${index}].minBadgeBalance` as `analystData.badges.${number}.minBadgeBalance`
-                        }
+                        name={`analyst.badges[${index}].minBadgeBalance` as `analyst.badges.${number}.minBadgeBalance`}
                         control={control}
                         defaultValue={field.minBadgeBalance}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
-                      <Error error={errors.analystData?.badges?.[index]?.minBadgeBalance?.message} />
+                      <Error error={errors.analyst?.badges?.[index]?.minBadgeBalance?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Max</Label>
                       <Controller
-                        name={
-                          `analystData.badges[${index}].maxBadgeBalance` as `analystData.badges.${number}.maxBadgeBalance`
-                        }
+                        name={`analyst.badges[${index}].maxBadgeBalance` as `analyst.badges.${number}.maxBadgeBalance`}
                         control={control}
                         defaultValue={field.maxBadgeBalance}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
-                      <Error error={errors.analystData?.badges?.[index]?.maxBadgeBalance?.message} />
+                      <Error error={errors.analyst?.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
                     <button className="mt-8" type="button" onClick={() => removeAnalystBadge(index)}>
                       <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
@@ -553,7 +542,7 @@ export function Review({
                 <Field>
                   <Controller
                     control={control}
-                    name="reviewerData.gatingType"
+                    name="reviewer.gatingType"
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -565,18 +554,18 @@ export function Review({
                       />
                     )}
                   />
-                  <Error error={errors.reviewerData?.gatingType?.message} />
+                  <Error error={errors.reviewer?.gatingType?.message} />
                 </Field>
                 {reviewerGatingType === ("Any" || "All") && (
                   <Field>
                     <Controller
-                      name="reviewerData.numberBadgesRequired"
+                      name="reviewer.numberBadgesRequired"
                       control={control}
                       render={({ field: { onChange, onBlur, value, ref } }) => (
                         <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                       )}
                     />
-                    <Error error={errors.reviewerData?.numberBadgesRequired?.message} />
+                    <Error error={errors.reviewer?.numberBadgesRequired?.message} />
                   </Field>
                 )}
                 {reviewerGatingType === ("Any" || "All") ? (
@@ -594,32 +583,32 @@ export function Review({
                       <Label size="sm">Contract Address</Label>
                       <Controller
                         name={
-                          `reviewerData.badges[${index}].contractAddress` as `reviewerData.badges.${number}.contractAddress`
+                          `reviewer.badges[${index}].contractAddress` as `reviewer.badges.${number}.contractAddress`
                         }
                         control={control}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="text" />
                         )}
                       />
-                      <Error error={errors.reviewerData?.badges?.[index]?.contractAddress?.message} />
+                      <Error error={errors.reviewer?.badges?.[index]?.contractAddress?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">token ID</Label>
                       <Controller
-                        name={`reviewerData.badges[${index}].tokenId` as `reviewerData.badges.${number}.tokenId`}
+                        name={`reviewer.badges[${index}].tokenId` as `reviewer.badges.${number}.tokenId`}
                         control={control}
                         defaultValue={field.tokenId}
                         render={({ field: { onChange, onBlur, value, ref } }) => (
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
-                      <Error error={errors.reviewerData?.badges?.[index]?.tokenId?.message} />
+                      <Error error={errors.reviewer?.badges?.[index]?.tokenId?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Min</Label>
                       <Controller
                         name={
-                          `reviewerData.badges[${index}].minBadgeBalance` as `reviewerData.badges.${number}.minBadgeBalance`
+                          `reviewer.badges[${index}].minBadgeBalance` as `reviewer.badges.${number}.minBadgeBalance`
                         }
                         control={control}
                         defaultValue={field.minBadgeBalance}
@@ -627,13 +616,13 @@ export function Review({
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
-                      <Error error={errors.reviewerData?.badges?.[index]?.minBadgeBalance?.message} />
+                      <Error error={errors.reviewer?.badges?.[index]?.minBadgeBalance?.message} />
                     </Field>
                     <Field>
                       <Label size="sm">Max</Label>
                       <Controller
                         name={
-                          `reviewerData.badges[${index}].maxBadgeBalance` as `reviewerData.badges.${number}.maxBadgeBalance`
+                          `reviewer.badges[${index}].maxBadgeBalance` as `reviewer.badges.${number}.maxBadgeBalance`
                         }
                         control={control}
                         defaultValue={field.maxBadgeBalance}
@@ -641,7 +630,7 @@ export function Review({
                           <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
                         )}
                       />
-                      <Error error={errors.reviewerData?.badges?.[index]?.maxBadgeBalance?.message} />
+                      <Error error={errors.reviewer?.badges?.[index]?.maxBadgeBalance?.message} />
                     </Field>
                     <button className="mt-8" type="button" onClick={() => removeReviewerBadge(index)}>
                       <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
@@ -657,10 +646,16 @@ export function Review({
                   </button>
                 </section>
               )}
-              <FormProgress percent={100} onGoBack={onGoBack} cancelLink={"/analyze"} submitLabel="CreateMarketplace" />
             </form>
           </main>
         </div>
+        <FormProgress
+          percent={100}
+          onGoBack={onGoBack}
+          cancelLink={"/analyze"}
+          submitLabel="Create Marketplace"
+          onSubmit={handleSubmit(onSubmit)}
+        />
       </div>
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper

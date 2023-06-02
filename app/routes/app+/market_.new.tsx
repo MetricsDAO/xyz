@@ -1,36 +1,36 @@
 import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
-import type { MarketplaceData, GatingData } from "~/domain/labor-market/schemas";
+import type { MarketplaceMeta, GatingData } from "~/features/labor-market-creator/schema";
 import { requireUser } from "~/services/session.server";
 
-export type OutletContext = [formState, React.Dispatch<React.SetStateAction<formState>>];
+export type OutletContext = [MarketplaceFormState, React.Dispatch<React.SetStateAction<MarketplaceFormState>>];
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   await requireUser(request, `/app/login?redirectto=app/market`);
   return null;
 };
 
-interface formState {
-  marketplaceData: MarketplaceData | null;
-  sponsorData: GatingData | null;
-  analystData: GatingData | null;
-  reviewerData: GatingData | null;
+interface MarketplaceFormState {
+  meta: MarketplaceMeta | null;
+  sponsor: GatingData | null;
+  analyst: GatingData | null;
+  reviewer: GatingData | null;
 }
 
-const initialFormState: formState = {
-  marketplaceData: null,
-  sponsorData: null,
-  analystData: null,
-  reviewerData: null,
+const initialForm: MarketplaceFormState = {
+  meta: null,
+  sponsor: null,
+  analyst: null,
+  reviewer: null,
 };
 
 export default function NewMarketRoute() {
-  const [formData, setFormData] = useState<formState>(initialFormState);
+  const [formState, setFormState] = useState<MarketplaceFormState>(initialForm);
 
   return (
     <div>
-      <Outlet context={[formData, setFormData]} />
+      <Outlet context={[formState, setFormState]} />
     </div>
   );
 }

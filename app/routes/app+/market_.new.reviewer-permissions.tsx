@@ -1,19 +1,16 @@
 import { useOutletContext } from "@remix-run/react";
-import type { GatingData } from "~/domain/labor-market/schemas";
+import { ReviewerPermissionsForm } from "~/features/labor-market-creator/reviewer-permissions-form";
+import type { GatingData } from "~/features/labor-market-creator/schema";
 import type { OutletContext } from "./market_.new";
-import { ReviewerPermissions } from "~/features/labor-market-creator/reviewer-permissions";
 
 export default function ReviewerPermissionsPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
-  console.log("formdata", formData);
   return (
-    <div>
-      <ReviewerPermissions
-        currentData={formData.reviewerData}
-        onDataUpdate={(data: GatingData) => {
-          setFormData((prevData) => ({ ...prevData, reviewerData: data }));
-        }}
-      />
-    </div>
+    <ReviewerPermissionsForm
+      currentData={formData.reviewer}
+      onDataUpdate={(data: GatingData) => {
+        setFormData((prevData) => ({ ...prevData, reviewer: data }));
+      }}
+    />
   );
 }
