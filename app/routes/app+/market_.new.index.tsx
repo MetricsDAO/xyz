@@ -9,14 +9,14 @@ export default function NewMarketplaceMetaPage() {
   const navigate = useNavigate();
   const [formState, setFormData] = useOutletContext<OutletContext>();
 
-  const onSubmit = (values: MarketplaceMeta) => {
+  const onNext = (values: MarketplaceMeta) => {
     setFormData((prevData) => ({ ...prevData, meta: values }));
     navigate(`/app/market/new/sponsor-permissions`);
   };
 
   return (
     <div className="flex relative min-h-screen">
-      <MarketplaceMetaForm defaultValues={formState.meta} onSubmit={onSubmit} />
+      <MarketplaceMetaForm defaultValues={formState.meta} onNext={onNext} />
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper
           step={1}

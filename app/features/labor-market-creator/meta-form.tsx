@@ -8,10 +8,10 @@ import { useProjects, useTokens } from "~/hooks/use-root-data";
 
 export function MarketplaceMetaForm({
   defaultValues,
-  onSubmit,
+  onNext,
 }: {
   defaultValues: MarketplaceMeta | null;
-  onSubmit: (values: MarketplaceMeta) => void;
+  onNext: (values: MarketplaceMeta) => void;
 }) {
   const tokens = useTokens();
   const projects = useProjects();
@@ -111,7 +111,7 @@ export function MarketplaceMetaForm({
           </form>
         </main>
       </div>
-      <FormProgress percent={20} onNext={handleSubmit(onSubmit)} cancelLink={"/appp/analyze"} />
+      <FormProgress percent={20} onNext={handleSubmit(onNext)} cancelLink={"/appp/analyze"} />
     </div>
   );
 }
