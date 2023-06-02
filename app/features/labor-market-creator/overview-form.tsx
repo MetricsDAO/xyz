@@ -8,11 +8,11 @@ import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
 
 export function OverviewForm({
-  currentData,
+  defaultValues,
   onPrevious,
   onSubmit,
 }: {
-  currentData: MarketplaceFormState;
+  defaultValues: MarketplaceFormState;
   onPrevious: () => void;
   onSubmit: (data: MarketplaceForm) => void;
 }) {
@@ -27,16 +27,16 @@ export function OverviewForm({
   } = useForm<MarketplaceForm>({
     defaultValues: {
       meta: {
-        ...currentData.meta,
+        ...defaultValues.meta,
       },
       sponsor: {
-        ...currentData.sponsor,
+        ...defaultValues.sponsor,
       },
       analyst: {
-        ...currentData.analyst,
+        ...defaultValues.analyst,
       },
       reviewer: {
-        ...currentData.reviewer,
+        ...defaultValues.reviewer,
       },
     },
     resolver: zodResolver(MarketplaceFormSchema),

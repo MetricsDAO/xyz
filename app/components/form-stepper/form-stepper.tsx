@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 export function FormStepper({ step, labels }: { step: number; labels: string[] }) {
   return (
-    <div className="flex flex-col justify-items-start hidden lg:block">
+    <div className="flex flex-col justify-items-start lg:block">
       {labels.map((label, index) => (
         <>
           {index > 0 && (

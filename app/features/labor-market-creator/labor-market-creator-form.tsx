@@ -2,7 +2,6 @@ import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { FormStepper } from "~/components";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
@@ -10,11 +9,16 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import { postNewEvent } from "~/utils/fetch";
-import { BadgerLinks } from "./badger-links";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
 
-export function LaborMarketCreator({ currentData }: { currentData: MarketplaceFormState }) {
+export function LaborMarketCreatorForm({
+  defaultValues,
+  onPrevious,
+}: {
+  defaultValues: MarketplaceFormState;
+  onPrevious: () => void;
+}) {
   const contracts = useContracts();
   const navigate = useNavigate();
 
@@ -43,11 +47,6 @@ export function LaborMarketCreator({ currentData }: { currentData: MarketplaceFo
     });
   };
 
-  const onGoBack = () => {
-    // TODO: update values
-    navigate(`/app/market/new/reviewer-permissions`);
-  };
-
   return (
     <>
       <TxModal
@@ -55,16 +54,7 @@ export function LaborMarketCreator({ currentData }: { currentData: MarketplaceFo
         title="Create Marketplace"
         confirmationMessage="Confirm that you would like to create a new marketplace."
       />
-      <div className="flex relative min-h-screen">
-        <OverviewForm currentData={currentData} onPrevious={onGoBack} onSubmit={onSubmit} />
-        <aside className="absolute w-1/6 py-28 right-0 top-0">
-          <FormStepper
-            step={5}
-            labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}
-          />
-          <BadgerLinks />
-        </aside>
-      </div>
+      <OverviewForm defaultValues={defaultValues} onPrevious={onPrevious} onSubmit={onSubmit} />
     </>
   );
 }

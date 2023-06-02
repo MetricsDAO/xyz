@@ -1,22 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Project, Token } from "@prisma/client";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
 import type { MarketplaceMeta } from "./schema";
 import { MarketplaceMetaSchema } from "./schema";
+import { useProjects, useTokens } from "~/hooks/use-root-data";
 
 export function MarketplaceMetaForm({
-  currentData,
-  tokens,
-  projects,
+  defaultValues,
   onSubmit,
 }: {
-  currentData: MarketplaceMeta | null;
-  tokens: Token[];
-  projects: Project[];
+  defaultValues: MarketplaceMeta | null;
   onSubmit: (values: MarketplaceMeta) => void;
 }) {
+  const tokens = useTokens();
+  const projects = useProjects();
   const {
     register,
     control,
@@ -26,7 +24,7 @@ export function MarketplaceMetaForm({
   } = useForm<MarketplaceMeta>({
     resolver: zodResolver(MarketplaceMetaSchema),
     defaultValues: {
-      ...currentData,
+      ...defaultValues,
     },
   });
 
