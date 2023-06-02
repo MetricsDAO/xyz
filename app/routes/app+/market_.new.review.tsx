@@ -7,14 +7,5 @@ export default function MarketplaceReview() {
   const [formData] = useOutletContext<OutletContext>();
   const tokens = useTokens();
   const projects = useProjects();
-  return (
-    <Review
-      tokens={tokens}
-      projects={projects}
-      marketplaceData={formData?.meta}
-      sponsorData={formData?.sponsor}
-      analystData={formData?.analyst}
-      reviewerData={formData?.reviewer}
-    />
-  );
+  return <Review tokens={tokens} projects={projects} currentData={formData} />;
 }

@@ -11,7 +11,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   return null;
 };
 
-interface MarketplaceFormState {
+export interface MarketplaceFormState {
   meta: MarketplaceMeta | null;
   sponsor: GatingData | null;
   analyst: GatingData | null;
