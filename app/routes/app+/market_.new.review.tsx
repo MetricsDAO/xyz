@@ -1,11 +1,8 @@
 import { useOutletContext } from "@remix-run/react";
-import { useProjects, useTokens } from "~/hooks/use-root-data";
+import { LaborMarketCreator } from "~/features/labor-market-creator/labor-market-creator";
 import type { OutletContext } from "./market_.new";
-import { Review } from "~/features/labor-market-creator/review";
 
-export default function MarketplaceReview() {
+export default function NewMarketplaceReviewPage() {
   const [formData] = useOutletContext<OutletContext>();
-  const tokens = useTokens();
-  const projects = useProjects();
-  return <Review tokens={tokens} projects={projects} currentData={formData} />;
+  return <LaborMarketCreator currentData={formData} />;
 }

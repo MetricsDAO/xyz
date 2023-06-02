@@ -1,26 +1,23 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Project, Token } from "@prisma/client";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
 import type { EvmAddress } from "~/domain/address";
-import { useContracts } from "~/hooks/use-root-data";
+import { useContracts, useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
 
-export function MarketplaceOverviewForm({
+export function OverviewForm({
   currentData,
-  tokens,
-  projects,
   onPrevious,
   onSubmit,
 }: {
   currentData: MarketplaceFormState;
-  tokens: Token[];
-  projects: Project[];
   onPrevious: () => void;
   onSubmit: (data: MarketplaceForm) => void;
 }) {
+  const tokens = useTokens();
+  const projects = useProjects();
   const {
     control,
     handleSubmit,

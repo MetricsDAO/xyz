@@ -1,4 +1,3 @@
-import type { Project, Token } from "@prisma/client";
 import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
@@ -12,18 +11,10 @@ import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import { postNewEvent } from "~/utils/fetch";
 import { BadgerLinks } from "./badger-links";
-import { MarketplaceOverviewForm } from "./marketplace-overview-form";
+import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
 
-export function Review({
-  currentData,
-  tokens,
-  projects,
-}: {
-  currentData: MarketplaceFormState;
-  tokens: Token[];
-  projects: Project[];
-}) {
+export function LaborMarketCreator({ currentData }: { currentData: MarketplaceFormState }) {
   const contracts = useContracts();
   const navigate = useNavigate();
 
@@ -65,13 +56,7 @@ export function Review({
         confirmationMessage="Confirm that you would like to create a new marketplace."
       />
       <div className="flex relative min-h-screen">
-        <MarketplaceOverviewForm
-          currentData={currentData}
-          tokens={tokens}
-          projects={projects}
-          onPrevious={onGoBack}
-          onSubmit={onSubmit}
-        />
+        <OverviewForm currentData={currentData} onPrevious={onGoBack} onSubmit={onSubmit} />
         <aside className="absolute w-1/6 py-28 right-0 top-0">
           <FormStepper
             step={5}
