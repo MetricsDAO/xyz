@@ -13,16 +13,18 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import type { ServiceRequestForm } from "./schema";
+import type { AnalystForm, AppDataForm, ReviewerForm, ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
+import { FinalStep } from "./overview-fields";
 
 interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
   defaultValues?: DefaultValues<ServiceRequestForm>;
   laborMarketAddress: EvmAddress;
-  page: number;
-  header: boolean;
+  page1Data: AppDataForm | null;
+  page2Data: AnalystForm | null;
+  page3Data: ReviewerForm | null;
 }
 
 /**
@@ -40,12 +42,13 @@ function getEventFromLogs(
 }
 
 export function ServiceRequestCreator({
-  projects,
-  tokens,
   defaultValues,
   laborMarketAddress,
-  page,
-  header,
+  page1Data,
+  page2Data,
+  page3Data,
+  tokens,
+  projects,
 }: ServiceRequestFormProps) {
   const contracts = useContracts();
   const [values, setValues] = useState<ServiceRequestForm>();
@@ -68,47 +71,57 @@ export function ServiceRequestCreator({
     onSuccess: useCallback((receipt) => {}, []),
   });
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (values && approveTransactor.state === "success" && !approved) {
       setApproved(true);
+      console.log(values);
       submitTransactor.start({
         metadata: values.appData,
-        config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, values, laborMarketAddress } }),
+        config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, form: values, laborMarketAddress } }),
       });
     }
-  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);*/
+  }, [approveTransactor, approved, laborMarketAddress, submitTransactor, values, contracts]);
 
   const methods = useForm<ServiceRequestForm>({
     resolver: zodResolver(ServiceRequestFormSchema),
     defaultValues,
   });
 
-  /*const onSubmit = (values: ServiceRequestForm) => {
+  const onSubmit = (data: ServiceRequestForm) => {
+    // write to contract with values
     approveTransactor.start({
-      metadata: {},
-      config: () =>
-        configureWrite({
-          address: values.rewardToken,
-          abi: [
-            {
-              constant: false,
-              inputs: [
-                { name: "spender", type: "address" },
-                { name: "value", type: "uint256" },
-              ],
-              name: "approve",
-              outputs: [{ name: "", type: "bool" }],
-              payable: false,
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-          ],
-          functionName: "approve",
-          args: [laborMarketAddress, toTokenAmount(values.rewardPool, values.rewardTokenDecimals)],
-        }),
+      metadata: data.appData,
+      config: ({ cid }) => configureFromValues({ contracts, inputs: { cid, form: data, laborMarketAddress } }),
     });
-    setValues(values);
-  };*/
+    setValues(data);
+  };
+
+  // const onSubmit = (values: ServiceRequestForm) => {
+  //   approveTransactor.start({
+  //     metadata: {},
+  //     config: () =>
+  //       configureWrite({
+  //         address: values.rewardToken,
+  //         abi: [
+  //           {
+  //             constant: false,
+  //             inputs: [
+  //               { name: "spender", type: "address" },
+  //               { name: "value", type: "uint256" },
+  //             ],
+  //             name: "approve",
+  //             outputs: [{ name: "", type: "bool" }],
+  //             payable: false,
+  //             stateMutability: "nonpayable",
+  //             type: "function",
+  //           },
+  //         ],
+  //         functionName: "approve",
+  //         args: [laborMarketAddress, toTokenAmount(values.rewardPool, values.rewardTokenDecimals)],
+  //       }),
+  //   });
+  //   setValues(values);
+  // };
 
   return (
     <FormProvider {...methods}>
@@ -127,7 +140,15 @@ export function ServiceRequestCreator({
         />
       )}
 
-      <form className="space-y-10 py-5"></form>
+      <FinalStep
+        onSubmit={onSubmit}
+        tokens={tokens}
+        projects={projects}
+        address={laborMarketAddress}
+        page1Data={page1Data}
+        page2Data={page2Data}
+        page3Data={page3Data}
+      />
     </FormProvider>
   );
 }
@@ -145,9 +166,28 @@ function configureFromValues({
 }) {
   const { form, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
+  console.log(form.analystData);
   const signalDeadline = new Date(
     claimDate(currentDate, parseDatetime(form.analystData.endDate, form.analystData.endTime))
   );
+
+  console.log("inputs", inputs);
+
+  const obj = {
+    pTokenProvider: form.analystData.rewardToken,
+    pTokenProviderTotal: toTokenAmount(form.analystData.rewardPool, form.analystData.rewardTokenDecimals),
+    pTokenReviewer: form.reviewerData.rewardToken,
+    pTokenReviewerTotal: toTokenAmount(form.reviewerData.rewardPool, form.reviewerData.rewardTokenDecimals),
+    providerLimit: BigNumber.from(form.analystData.submitLimit),
+    reviewerLimit: BigNumber.from(form.reviewerData.reviewLimit),
+    enforcementExp: unixTimestamp(
+      new Date(parseDatetime(form.reviewerData.reviewEndDate, form.reviewerData.reviewEndTime))
+    ),
+    signalExp: unixTimestamp(signalDeadline),
+    submissionExp: unixTimestamp(new Date(parseDatetime(form.analystData.endDate, form.analystData.endTime))),
+  };
+
+  console.log("obj", obj);
 
   return configureWrite({
     abi: contracts.LaborMarket.abi,
@@ -155,19 +195,7 @@ function configureFromValues({
     functionName: "submitRequest",
     args: [
       0, // Ok to hardcode here. Nonce is used to prevent duplicate ids in multicall.
-      {
-        pTokenProvider: form.analystData.rewardToken,
-        pTokenProviderTotal: toTokenAmount(form.analystData.rewardPool, form.analystData.rewardTokenDecimals),
-        pTokenReviewer: form.reviewerData.rewardToken,
-        pTokenReviewerTotal: toTokenAmount(form.reviewerData.rewardPool, form.reviewerData.rewardTokenDecimals),
-        providerLimit: BigNumber.from(form.analystData.submitLimit),
-        reviewerLimit: BigNumber.from(form.reviewerData.reviewLimit),
-        enforcementExp: unixTimestamp(
-          new Date(parseDatetime(form.reviewerData.reviewEndDate, form.reviewerData.reviewEndTime))
-        ),
-        signalExp: unixTimestamp(signalDeadline),
-        submissionExp: unixTimestamp(new Date(parseDatetime(form.analystData.endDate, form.analystData.endTime))),
-      },
+      obj,
       cid,
     ],
   });

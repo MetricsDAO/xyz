@@ -1,6 +1,5 @@
 import { useOutletContext } from "@remix-run/react";
 import type { OutletContext } from "./market_.$address.request.new";
-import { FinalStep } from "~/features/service-request-creator/overview-fields";
 import { findTokenBySymbol } from "~/services/tokens.server";
 import { requireUser } from "~/services/session.server";
 import { getLaborMarket } from "~/domain/labor-market/functions.server";
@@ -10,6 +9,7 @@ import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { EvmAddressSchema } from "~/domain/address";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { z } from "zod";
+import { ServiceRequestCreator } from "~/features/service-request-creator/service-request-creator";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -31,10 +31,10 @@ export default function ChallengeOverview() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
   const { laborMarketTokens, address, laborMarketProjects } = useTypedLoaderData<typeof loader>();
   return (
-    <FinalStep
+    <ServiceRequestCreator
       tokens={laborMarketTokens}
       projects={laborMarketProjects}
-      address={address}
+      laborMarketAddress={address}
       page1Data={formData?.page1Data}
       page2Data={formData?.page2Data}
       page3Data={formData?.page3Data}
