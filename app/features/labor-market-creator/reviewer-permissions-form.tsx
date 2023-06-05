@@ -28,7 +28,7 @@ export function ReviewerPermissionsForm({
 
   return (
     <div className="w-full justify-between flex flex-col">
-      <div className="max-w-2xl mx-auto my-16 space-y-10">
+      <div className="max-w-2xl mx-auto px-5 my-16 space-y-10">
         <section className="space-y-1">
           <h1 className="text-3xl font-semibold antialiased">Reviewer Permissions</h1>
           <p className="text-cyan-500 text-lg">

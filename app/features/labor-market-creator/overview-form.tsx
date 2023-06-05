@@ -97,7 +97,7 @@ export function OverviewForm({
 
   return (
     <div className="w-full justify-between flex flex-col">
-      <div className="max-w-2xl mx-auto my-16 space-y-10">
+      <div className="max-w-2xl mx-auto px-5 my-16 space-y-10">
         <main className="flex-1">
           <form className="space-y-10 py-5">
             <input
