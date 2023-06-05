@@ -1,11 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { DefaultValues } from "react-hook-form";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
+import { Combobox, Error, Field, FormProgress, Input, Label, Select } from "~/components";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts, useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
+import { ClientOnly } from "remix-utils";
+import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 
 export function OverviewForm({
   defaultValues,
@@ -23,6 +25,7 @@ export function OverviewForm({
     handleSubmit,
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<MarketplaceForm>({
     defaultValues,
@@ -113,11 +116,18 @@ export function OverviewForm({
 
           <Field>
             <Label size="lg">Details*</Label>
-            <Textarea
-              {...register("appData.description")}
-              placeholder="What's the goal of this marketplace?"
-              rows={7}
-            />
+            <ClientOnly>
+              {() => (
+                <div className="container overflow-auto">
+                  <MarkdownEditor
+                    value={watch("appData.description")}
+                    onChange={(v) => {
+                      setValue("appData.description", v ?? "");
+                    }}
+                  />
+                </div>
+              )}
+            </ClientOnly>
             <Error error={errors.appData?.description?.message} />
           </Field>
 

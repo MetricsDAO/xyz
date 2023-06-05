@@ -6,6 +6,8 @@ import { CurveChart } from "~/components/curve-chart";
 import type { AppData } from "./schema";
 import { AppDataSchema } from "./schema";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
+import { ClientOnly } from "remix-utils";
+import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 
 export function MarketplaceAppDataForm({
   defaultValues,
@@ -21,6 +23,7 @@ export function MarketplaceAppDataForm({
     control,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<AppData>({
     resolver: zodResolver(AppDataSchema),
@@ -63,7 +66,18 @@ export function MarketplaceAppDataForm({
 
             <Field>
               <Label size="lg">Details*</Label>
-              <Textarea {...register("description")} placeholder="What's the goal of this marketplace?" rows={7} />
+              <ClientOnly>
+                {() => (
+                  <div className="container overflow-auto">
+                    <MarkdownEditor
+                      value={watch("description")}
+                      onChange={(v) => {
+                        setValue("description", v ?? "");
+                      }}
+                    />
+                  </div>
+                )}
+              </ClientOnly>
               <Error error={errors.description?.message} />
             </Field>
 
