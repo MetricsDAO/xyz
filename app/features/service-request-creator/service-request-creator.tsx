@@ -13,11 +13,11 @@ import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { OverviewForm } from "./overview-form";
 import type { ServiceRequestForm } from "./schema";
+import e from "express";
 
 type SequenceState =
   | { state: "initial" }
-  | { state: "approve-total-reward"; data: ServiceRequestForm } // in the case where reviewer and analyst token are the same
-  | { state: "approve-analyst-reward"; data: ServiceRequestForm }
+  | { state: "approve-reward"; data: ServiceRequestForm; approveAmount: BigNumber; skipApproveReviewerReward: boolean }
   | { state: "approve-reviewer-reward"; data: ServiceRequestForm }
   | { state: "create-service-request"; data: ServiceRequestForm };
 
@@ -39,13 +39,16 @@ export function ServiceRequestCreator({
 
   const navigate = useNavigate();
 
-  const approveAnalystRewardTransactor = useTransactor({
+  const approveRewardTransactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        if (sequence.state === "approve-analyst-reward") {
-          setSequence({ state: "approve-reviewer-reward", data: sequence.data });
-        } else if (sequence.state === "approve-total-reward") {
-          setSequence({ state: "create-service-request", data: sequence.data });
+        if (sequence.state === "approve-reward") {
+          if (sequence.skipApproveReviewerReward) {
+            // No need to do a separate approval for reviewer reward
+            setSequence({ state: "create-service-request", data: sequence.data });
+          } else {
+            setSequence({ state: "approve-reviewer-reward", data: sequence.data });
+          }
         }
       },
       [sequence]
@@ -75,29 +78,15 @@ export function ServiceRequestCreator({
   });
 
   useEffect(() => {
-    if (sequence.state === "approve-total-reward") {
+    if (sequence.state === "approve-reward") {
       const values = sequence.data;
-      const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
-      const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
-      const approveAmount = analystReward.add(reviewerReward);
-      approveAnalystRewardTransactor.start({
+      approveRewardTransactor.start({
         config: () =>
           configureWrite({
             address: values.analyst.rewardToken,
             abi: ERC20_APPROVE_PARTIAL_ABI,
             functionName: "approve",
-            args: [laborMarketAddress, approveAmount],
-          }),
-      });
-    } else if (sequence.state === "approve-analyst-reward") {
-      const values = sequence.data;
-      approveAnalystRewardTransactor.start({
-        config: () =>
-          configureWrite({
-            address: values.analyst.rewardToken,
-            abi: ERC20_APPROVE_PARTIAL_ABI,
-            functionName: "approve",
-            args: [laborMarketAddress, toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals)],
+            args: [laborMarketAddress, sequence.approveAmount],
           }),
       });
     } else if (sequence.state === "approve-reviewer-reward") {
@@ -122,17 +111,28 @@ export function ServiceRequestCreator({
   }, [sequence]);
 
   const onSubmit = (values: ServiceRequestForm) => {
-    if (values.analyst.rewardToken === values.reviewer.rewardToken) {
-      setSequence({ state: "approve-total-reward", data: values });
+    const isReviewRewardSameAsAnalystReward = values.analyst.rewardToken === values.reviewer.rewardToken;
+    let approveAmount: BigNumber;
+    if (isReviewRewardSameAsAnalystReward) {
+      // in the case where the reward tokens are the same, we need to approve the sum of the two
+      const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
+      const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+      approveAmount = analystReward.add(reviewerReward);
     } else {
-      setSequence({ state: "approve-analyst-reward", data: values });
+      approveAmount = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
     }
+    setSequence({
+      state: "approve-reward",
+      data: values,
+      approveAmount,
+      skipApproveReviewerReward: isReviewRewardSameAsAnalystReward,
+    });
   };
 
   return (
     <>
       <TxModal
-        transactor={approveAnalystRewardTransactor}
+        transactor={approveRewardTransactor}
         title="Approve Analyst Reward"
         confirmationMessage={"Approve the app to transfer the tokens on your behalf"}
       />
