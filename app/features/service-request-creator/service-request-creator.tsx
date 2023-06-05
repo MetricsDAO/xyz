@@ -1,19 +1,17 @@
 import type { Project, Token } from "@prisma/client";
 import { useNavigate } from "@remix-run/react";
-import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import type { DefaultValues } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
+import { postNewEvent } from "~/utils/fetch";
 import { toTokenAmount } from "~/utils/helpers";
 import { OverviewForm } from "./overview-form";
 import type { ServiceRequestForm } from "./schema";
-import e from "express";
 
 type SequenceState =
   | { state: "initial" }
@@ -69,9 +67,12 @@ export function ServiceRequestCreator({
   const submitTransactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        const iface = LaborMarket__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "RequestConfigured", laborMarketAddress);
-        if (event) navigate(`/app/market/${laborMarketAddress}/request/${event.args[1]}`);
+        postNewEvent({
+          eventFilter: "RequestConfiguredEvent",
+          address: laborMarketAddress,
+          blockNumber: receipt.blockNumber,
+          transactionHash: receipt.transactionHash,
+        }).then(() => navigate(`/app/market/${laborMarketAddress}`));
       },
       [laborMarketAddress, navigate]
     ),
@@ -171,7 +172,6 @@ function configureFromValues({
 }) {
   const { form, cid, laborMarketAddress } = inputs;
   const currentDate = new Date();
-  console.log(form.analyst);
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(form.analyst.endDate, form.analyst.endTime)));
 
   console.log("inputs", inputs);
@@ -200,20 +200,6 @@ function configureFromValues({
       cid,
     ],
   });
-}
-
-/**
- * Filters and parses the logs for a specific event.
- */
-function getEventFromLogs(
-  iface: ethers.utils.Interface,
-  logs: ethers.providers.Log[],
-  eventName: string,
-  laborMarketAddress: EvmAddress
-) {
-  const filtered = logs.filter((log) => log.address === laborMarketAddress);
-  const mapped = filtered.map((log) => iface.parseLog(log));
-  return mapped.find((e) => e.name === eventName);
 }
 
 const ERC20_APPROVE_PARTIAL_ABI = [

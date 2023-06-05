@@ -1,7 +1,7 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
 import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { claimDate } from "./date";
 
@@ -76,7 +76,7 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.networkName;
 };
 
-export function claimToReviewDeadline(serviceRequest: ServiceRequestWithIndexData) {
+export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
   return claimDate(serviceRequestCreatedDate(serviceRequest), serviceRequest.configuration.enforcementExp);
 }
 
@@ -119,7 +119,7 @@ export function submissionCreatedDate(s: SubmissionDoc): Date {
   return s.blockTimestamp ?? s.indexedAt;
 }
 
-export function serviceRequestCreatedDate(s: ServiceRequestWithIndexData): Date {
+export function serviceRequestCreatedDate(s: ServiceRequestDoc): Date {
   // Use indexedAt as fallback until the service request is indexed
   return s.blockTimestamp ?? s.indexedAt;
 }

@@ -2,12 +2,12 @@ import { mongo } from "~/services/mongo.server";
 import type { EventDoc, Event } from "./schema";
 import { logger } from "~/services/logger.server";
 
-async function createEvent(eventDoc: EventDoc) {
-  return mongo.events.insertOne(eventDoc);
-}
-
 async function findEvent(event: Event) {
   return mongo.events.findOne(event);
+}
+
+export async function createEvent(eventDoc: EventDoc) {
+  return mongo.events.insertOne(eventDoc);
 }
 
 /**

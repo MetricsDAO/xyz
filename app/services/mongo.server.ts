@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import type { ActivityDoc, EventDoc, ReviewDoc } from "~/domain";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import env from "~/env.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
@@ -23,7 +23,7 @@ const pine = pineConfig();
 const db = client.db(`${pine.namespace}-${pine.subscriber}`);
 
 const laborMarkets = db.collection<LaborMarketDoc>("laborMarkets");
-const serviceRequests = db.collection<ServiceRequestWithIndexData>("serviceRequests");
+const serviceRequests = db.collection<ServiceRequestDoc>("serviceRequests");
 const submissions = db.collection<SubmissionDoc>("submissions");
 const reviews = db.collection<ReviewDoc>("reviews");
 const userActivity = db.collection<ActivityDoc>("userActivity");

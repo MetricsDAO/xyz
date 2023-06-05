@@ -2,7 +2,7 @@ import { z } from "zod";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { EvmAddressSchema } from "../address";
 import { ReviewDocSchema } from "../review/schemas";
-import { ServiceRequestWithIndexDataSchema } from "../service-request/schemas";
+import { ServiceRequestDocSchema } from "../service-request/schemas";
 import { LaborMarketDocSchema } from "../labor-market/schemas";
 
 export const SubmissionSearchSchema = z.object({
@@ -71,11 +71,11 @@ export const SubmissionEventSchema = z.object({
 });
 
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
-  sr: ServiceRequestWithIndexDataSchema,
+  sr: ServiceRequestDocSchema,
 });
 
 export const CombinedSchema = SubmissionDocSchema.extend({
-  sr: ServiceRequestWithIndexDataSchema,
+  sr: ServiceRequestDocSchema,
   lm: LaborMarketDocSchema,
 });
 
