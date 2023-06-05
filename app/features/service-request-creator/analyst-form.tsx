@@ -81,12 +81,12 @@ export function AnalystForm({
         <section className="space-y-3">
           <h2 className="font-bold">Analyst Rewards</h2>
           <p>Reward Pool</p>
-          <div className="flex flex-wrap gap-2 items-center">
-            <Field className="w-20">
+          <div className="flex flex-wrap gap-2 items-start">
+            <Field>
               <Input {...register("submitLimit")} type="text" />
               <Error error={errors.submitLimit?.message} />
             </Field>
-            <p className="text-neutral-600 text-sm">Analysts can earn up to</p>
+            <p className="text-neutral-600 text-sm mt-3">Analysts can earn up to</p>
             <Field>
               <Input {...register("rewardPool")} name="rewardPool" placeholder="Pool amount" />
               <Error error={errors.rewardPool?.message} />
@@ -116,10 +116,12 @@ export function AnalystForm({
               <Error error={errors.rewardToken?.message} />
             </Field>
             <p className="text-neutral-600 text-sm">for a total reward pool of</p>
-            {formData.rewardPool && formData.submitLimit && formData.rewardToken && (
+            {formData.rewardPool && formData.submitLimit && formData.rewardToken ? (
               <p className="text-neutral-600 text-sm font-bold">
                 todo {toTokenAbbreviation(formData.rewardToken, validTokens)}
               </p>
+            ) : (
+              <p className="text-neutral-600 text-sm font-bold">--</p>
             )}
           </div>
           {formData.rewardToken && formData.rewardPool && (
