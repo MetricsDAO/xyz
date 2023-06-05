@@ -12,7 +12,7 @@ import { postNewEvent } from "~/utils/fetch";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
 
-export function LaborMarketCreatorForm({
+export function LaborMarketCreator({
   defaultValues,
   onPrevious,
 }: {

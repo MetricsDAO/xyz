@@ -1,7 +1,7 @@
-import { useOutletContext } from "@remix-run/react";
+import { useNavigate, useOutletContext } from "@remix-run/react";
 import type { OutletContext } from "./market_.$address.request.new";
-import { AppDataFields } from "~/features/service-request-creator/app-data-fields";
-import type { AppDataForm } from "~/features/service-request-creator/schema";
+import { AppDataForm } from "~/features/service-request-creator/app-data-form";
+import type { AppDataForm as AppDataFormType } from "~/features/service-request-creator/schema";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { requireUser } from "~/services/session.server";
@@ -10,6 +10,7 @@ import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { EvmAddressSchema } from "~/domain/address";
 import { findProjectsBySlug } from "~/services/projects.server";
 import { z } from "zod";
+import { FormStepper } from "~/components";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -28,14 +29,20 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 export default function AppDataPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
   const { laborMarketProjects, address } = useTypedLoaderData<typeof loader>();
+
+  const navigate = useNavigate();
+
+  const onNext = (values: AppDataFormType) => {
+    setFormData((prevData) => ({ ...prevData, appData: values }));
+    navigate(`/app/market/${address}/request/new/analyst`);
+  };
+
   return (
-    <AppDataFields
-      currentData={formData.appData}
-      projects={laborMarketProjects}
-      onDataUpdate={(data: AppDataForm) => {
-        setFormData((prevData) => ({ ...prevData, appData: data }));
-      }}
-      address={address}
-    />
+    <div className="flex relative min-h-screen">
+      <AppDataForm defaultValues={formData.appData} projects={laborMarketProjects} onNext={onNext} address={address} />
+      <aside className="absolute w-1/6 py-28 right-0 top-0">
+        <FormStepper step={1} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
+      </aside>
+    </div>
   );
 }

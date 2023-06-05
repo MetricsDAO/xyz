@@ -11,7 +11,7 @@ import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import type { ServiceRequestFormState } from "~/routes/app+/market_.$address.request.new";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
-import { FinalStep } from "./overview-fields";
+import { OverviewForm } from "./overview-form";
 import type { ServiceRequestForm } from "./schema";
 
 type SequenceState =
@@ -126,7 +126,7 @@ export function ServiceRequestCreator({
         confirmationMessage={"Confirm that you would like to launch this challenge and transfer the funds"}
       />
 
-      <FinalStep
+      <OverviewForm
         onSubmit={onSubmit}
         tokens={tokens}
         projects={projects}

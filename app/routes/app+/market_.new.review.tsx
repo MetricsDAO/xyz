@@ -1,5 +1,5 @@
 import { useNavigate, useOutletContext } from "@remix-run/react";
-import { LaborMarketCreatorForm } from "~/features/labor-market-creator/labor-market-creator-form";
+import { LaborMarketCreator } from "~/features/labor-market-creator/labor-market-creator";
 import type { OutletContext } from "./market_.new";
 import { FormStepper } from "~/components";
 import { BadgerLinks } from "~/features/labor-market-creator/badger-links";
@@ -15,7 +15,7 @@ export default function NewMarketplaceReviewPage() {
 
   return (
     <div className="flex relative min-h-screen">
-      <LaborMarketCreatorForm onPrevious={onPrevious} defaultValues={formData} />
+      <LaborMarketCreator onPrevious={onPrevious} defaultValues={formData} />
       <aside className="absolute w-1/6 py-28 right-0 top-0">
         <FormStepper
           step={5}

@@ -1,7 +1,7 @@
-import { useOutletContext } from "@remix-run/react";
+import { useNavigate, useOutletContext } from "@remix-run/react";
 import type { OutletContext } from "./market_.$address.request.new";
-import type { ReviewerForm } from "~/features/service-request-creator/schema";
-import { ReviewerFields } from "~/features/service-request-creator/reviewer-fields";
+import type { ReviewerForm as ReviewerFormType } from "~/features/service-request-creator/schema";
+import { ReviewerForm } from "~/features/service-request-creator/reviewer-form";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { requireUser } from "~/services/session.server";
@@ -10,6 +10,7 @@ import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { EvmAddressSchema } from "~/domain/address";
 import { z } from "zod";
 import { findTokenBySymbol } from "~/services/tokens.server";
+import { FormStepper } from "~/components";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -28,16 +29,31 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
 export default function ReviewerPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
   const { laborMarketTokens, address } = useTypedLoaderData<typeof loader>();
+
+  const navigate = useNavigate();
+
+  const onNext = (values: ReviewerFormType) => {
+    setFormData((prevData) => ({ ...prevData, reviewer: values }));
+    navigate(`/app/market/${address}/request/new/overview`);
+  };
+
+  const onPrevious = (values: ReviewerFormType) => {
+    setFormData((prevData) => ({ ...prevData, reviewer: values }));
+    navigate(`/app/market/${address}/request/new/analyst`);
+  };
+
   return (
-    <div>
-      <ReviewerFields
-        currentData={formData.reviewer}
+    <div className="flex relative min-h-screen">
+      <ReviewerForm
+        defaultValues={formData.reviewer}
         validTokens={laborMarketTokens}
-        onDataUpdate={(data: ReviewerForm) => {
-          setFormData((prevData) => ({ ...prevData, reviewer: data }));
-        }}
+        onNext={onNext}
+        onPrevious={onPrevious}
         address={address}
       />
+      <aside className="absolute w-1/6 py-28 right-0 top-0">
+        <FormStepper step={3} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
+      </aside>
     </div>
   );
 }

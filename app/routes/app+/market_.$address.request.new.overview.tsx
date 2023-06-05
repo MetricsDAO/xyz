@@ -38,7 +38,7 @@ export default function ChallengeOverview() {
       tokens={laborMarketTokens}
       projects={laborMarketProjects}
       laborMarketAddress={address}
-      defaultValues={formData}
+      defaultValues={defaultValues ?? formData}
     />
   );
 }
