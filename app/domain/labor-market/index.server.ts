@@ -72,6 +72,7 @@ async function indexLaborMarketEvent(event: {
   });
   const lm = await getLaborMarket(event.address);
   invariant(lm, "Labor market should exist after creation");
+  console.log("we def have an lm", lm);
 
   //log this event in user activity collection
   await mongo.userActivity.insertOne({

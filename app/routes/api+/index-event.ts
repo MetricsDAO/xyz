@@ -22,7 +22,9 @@ export async function action({ request }: DataFunctionArgs) {
 async function parseEventFilter(event: EventWithFilter) {
   switch (event.eventFilter) {
     case "LaborMarketConfigured":
+      console.log("labor market configured event!");
       await appLaborMarketConfiguredEvent(event);
+      console.log("done with labor market configured event!");
       break;
     default:
       throw new Error(`Unknown event filter: ${event.eventFilter}`);

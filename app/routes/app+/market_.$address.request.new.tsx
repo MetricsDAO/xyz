@@ -13,19 +13,13 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export interface ServiceRequestFormState {
-  appData: AppDataForm | null;
-  analyst: AnalystForm | null;
-  reviewer: ReviewerForm | null;
+  appData?: AppDataForm;
+  analyst?: AnalystForm;
+  reviewer?: ReviewerForm;
 }
 
-const initialFormState: ServiceRequestFormState = {
-  appData: null,
-  analyst: null,
-  reviewer: null,
-};
-
 export default function NewServiceRequestRoute() {
-  const [formData, setFormData] = useState<ServiceRequestFormState>(initialFormState);
+  const [formData, setFormData] = useState<ServiceRequestFormState>({});
 
   return <Outlet context={[formData, setFormData]} />;
 }

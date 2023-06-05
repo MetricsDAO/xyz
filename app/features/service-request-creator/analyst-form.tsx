@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Token } from "@prisma/client";
+import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import { CurveChart, Error, Field, FormProgress, Input, Select } from "~/components";
@@ -16,7 +17,7 @@ export function AnalystForm({
   address,
 }: {
   validTokens: Token[];
-  defaultValues: AnalystFormType | null;
+  defaultValues?: DefaultValues<AnalystFormType>;
   onNext: (data: AnalystFormType) => void;
   onPrevious: (data: AnalystFormType) => void;
   address: `0x${string}`;
@@ -30,7 +31,7 @@ export function AnalystForm({
     formState: { errors },
   } = useForm<AnalystFormType>({
     resolver: zodResolver(AnalystSchema),
-    defaultValues: { ...defaultValues },
+    defaultValues,
   });
 
   const onGoBack = () => {

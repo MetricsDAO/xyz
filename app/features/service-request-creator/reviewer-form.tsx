@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Token } from "@prisma/client";
 import { BigNumber } from "ethers";
+import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import { Error, Field, FormProgress, Input, Select } from "~/components";
@@ -16,7 +17,7 @@ export function ReviewerForm({
   onPrevious,
 }: {
   validTokens: Token[];
-  defaultValues: ReviewerFormType | null;
+  defaultValues?: DefaultValues<ReviewerFormType>;
   onNext: (data: ReviewerFormType) => void;
   onPrevious: (data: ReviewerFormType) => void;
   address: `0x${string}`;
@@ -30,9 +31,7 @@ export function ReviewerForm({
     formState: { errors },
   } = useForm<ReviewerFormType>({
     resolver: zodResolver(ReviewerSchema),
-    defaultValues: {
-      ...defaultValues,
-    },
+    defaultValues,
   });
 
   const selectedReviewDate = watch("reviewEndDate");

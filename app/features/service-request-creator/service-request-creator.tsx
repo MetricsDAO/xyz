@@ -3,12 +3,12 @@ import { useNavigate } from "@remix-run/react";
 import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback, useEffect, useState } from "react";
+import type { DefaultValues } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import type { ServiceRequestFormState } from "~/routes/app+/market_.$address.request.new";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { toTokenAmount } from "~/utils/helpers";
 import { OverviewForm } from "./overview-form";
@@ -23,7 +23,7 @@ type SequenceState =
 interface ServiceRequestFormProps {
   projects: Project[];
   tokens: Token[];
-  defaultValues?: ServiceRequestFormState;
+  defaultValues?: DefaultValues<ServiceRequestForm>;
   laborMarketAddress: EvmAddress;
 }
 

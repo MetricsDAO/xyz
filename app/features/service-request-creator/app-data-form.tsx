@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project } from "@prisma/client";
+import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, FormProgress, Input, Select } from "~/components";
@@ -13,7 +14,7 @@ export function AppDataForm({
   onNext,
   address,
 }: {
-  defaultValues: AppDataFormType | null;
+  defaultValues?: DefaultValues<AppDataFormType>;
   projects: Project[];
   onNext: (data: AppDataFormType) => void;
   address: `0x${string}`;
@@ -27,9 +28,7 @@ export function AppDataForm({
     formState: { errors },
   } = useForm<AppDataFormType>({
     resolver: zodResolver(AppDataSchema),
-    defaultValues: {
-      ...defaultValues,
-    },
+    defaultValues,
   });
 
   return (

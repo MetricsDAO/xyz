@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Project, Token } from "@prisma/client";
 import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
+import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
 import invariant from "tiny-invariant";
@@ -10,7 +11,6 @@ import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import { claimDate, parseDatetime } from "~/utils/date";
 import type { ServiceRequestForm } from "./schema";
 import { ServiceRequestFormSchema } from "./schema";
-import type { ServiceRequestFormState } from "~/routes/app+/market_.$address.request.new";
 
 export function OverviewForm({
   defaultValues,
@@ -19,7 +19,7 @@ export function OverviewForm({
   address,
   onSubmit,
 }: {
-  defaultValues?: ServiceRequestFormState;
+  defaultValues?: DefaultValues<ServiceRequestForm>;
   tokens: Token[];
   projects: Project[];
   address: `0x${string}`;
@@ -33,11 +33,7 @@ export function OverviewForm({
     formState: { errors },
     handleSubmit,
   } = useForm<ServiceRequestForm>({
-    defaultValues: {
-      appData: { ...defaultValues?.appData },
-      analyst: { ...defaultValues?.analyst },
-      reviewer: { ...defaultValues?.reviewer },
-    },
+    defaultValues,
     resolver: zodResolver(ServiceRequestFormSchema),
   });
 
