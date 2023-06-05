@@ -32,7 +32,7 @@ import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { ReviewSearchSchema } from "~/domain/review/schemas";
-import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
+import { getServiceRequest } from "~/domain/service-request/functions.server";
 import { getIndexedSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
@@ -71,7 +71,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const laborMarket = await getLaborMarket(address);
   invariant(laborMarket, "Labor market not found");
 
-  const serviceRequest = await getIndexedServiceRequest(address, submission.serviceRequestId);
+  const serviceRequest = await getServiceRequest(address, submission.serviceRequestId);
   invariant(serviceRequest, "Service request not found");
 
   return typedjson(
@@ -99,7 +99,7 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
   const { data: reward } = useReward({
     laborMarketAddress: submission.laborMarketAddress,
     submissionId: submission.id,

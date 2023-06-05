@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
@@ -15,7 +15,7 @@ import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";
 import { ClaimToReviewFormValuesSchema } from "./claim-to-review-creator-values";
 
 interface ClaimToReviewFormProps {
-  serviceRequest: ServiceRequestWithIndexData;
+  serviceRequest: ServiceRequestDoc;
 }
 
 export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps) {
@@ -81,7 +81,7 @@ function configureFromValues({
   contracts: ReturnType<typeof useContracts>;
   inputs: {
     formValues: ClaimToReviewFormValues;
-    serviceRequest: ServiceRequestWithIndexData;
+    serviceRequest: ServiceRequestDoc;
   };
 }) {
   return configureWrite({

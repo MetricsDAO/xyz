@@ -21,16 +21,29 @@ export type ServiceRequestAppData = z.infer<typeof ServiceRequestAppDataSchema>;
 export const ServiceRequestConfigSchema = z.preprocess(
   arrayToObject,
   z.object({
-    serviceRequester: EvmAddressSchema,
-    pToken: EvmAddressSchema,
-    pTokenQ: z.coerce.string(),
+    requester: EvmAddressSchema,
+    requestId: z.string(),
     signalExp: z.coerce.number().transform((s) => fromUnixTimestamp(s)),
     submissionExp: z.coerce.number().transform((s) => fromUnixTimestamp(s)),
     enforcementExp: z.coerce.number().transform((e) => fromUnixTimestamp(e)),
+    providerLimit: z.coerce.number().int(),
+    reviewerLimit: z.coerce.number().int(),
+    pTokenProviderTotal: z.string(),
+    pTokenReviewerTotal: z.string(),
+    pTokenProvider: EvmAddressSchema,
+    pTokenReviewer: EvmAddressSchema,
     uri: z.string(),
   })
 );
 export type ServiceRequestConfig = z.infer<typeof ServiceRequestConfigSchema>;
+
+export const ServiceRequestBaseSchema = z.object({
+  id: z.string(),
+  laborMarketAddress: EvmAddressSchema,
+  blockTimestamp: z.date(),
+  configuration: ServiceRequestConfigSchema,
+});
+export type ServiceRequestBase = z.infer<typeof ServiceRequestBaseSchema>;
 
 /**
  * Contains all aggregated and index-specific data for a LaborMarket.
@@ -41,27 +54,16 @@ export const ServiceRequestIndexDataSchema = z.object({
   claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
   submissionCount: z.number(),
 });
-
 export type ServiceRequestIndexData = z.infer<typeof ServiceRequestIndexDataSchema>;
 
 /**
  * This is the canonical shape of a ServiceRequest in our system.
- * Data stored both in the database and the contract/ipfs should match this shape.
  */
-export const ServiceRequestSchema = z.object({
-  id: z.string(),
-  laborMarketAddress: EvmAddressSchema,
+export const ServiceRequestDocSchema = ServiceRequestBaseSchema.extend({
   appData: ServiceRequestAppDataSchema,
-  configuration: ServiceRequestConfigSchema,
-  blockTimestamp: z.date().nullable().optional(),
+  indexData: ServiceRequestIndexDataSchema,
 });
-export type ServiceRequest = z.infer<typeof ServiceRequestSchema>;
-
-/**
- * This is the same as the ServiceRequest but with additional index-specific data.
- */
-export const ServiceRequestWithIndexDataSchema = ServiceRequestSchema.merge(ServiceRequestIndexDataSchema);
-export type ServiceRequestWithIndexData = z.infer<typeof ServiceRequestWithIndexDataSchema>;
+export type ServiceRequestDoc = z.infer<typeof ServiceRequestDocSchema>;
 
 /**
  * For filtering labor markets.

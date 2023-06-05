@@ -1,5 +1,11 @@
 import * as pine from "pinekit";
 import { indexerLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
+import {
+  indexerRequestConfiguredEvent,
+  indexerRequestSignalEvent,
+  indexerRequestWithdrawnEvent,
+  indexerReviewSignalEvent,
+} from "~/domain/service-request/index.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { getContracts } from "~/utils/contracts.server";
@@ -32,32 +38,31 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  // console.log("LaborMarketCreated EVENT", event);
   return indexerLaborMarketConfiguredEvent(event);
 });
 
-// worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
-//   return handleRequestConfiguredEvent(event);
-// });
+worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
+  return indexerRequestConfiguredEvent(event);
+});
 
-// worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
-//   return indexClaimToReview(event);
-// });
+worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
+  return indexerReviewSignalEvent(event);
+});
 
 // worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
 //   return handleRequestFulfilledEvent(event);
 // });
 
-// worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
-//   return indexClaimToSubmit(event);
-// });
+worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
+  return indexerRequestSignalEvent(event);
+});
 
 // worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
 //   return indexReview(event);
 // });
 
-// worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
-//   return handleRequestWithdrawnEvent(event);
-// });
+worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
+  return indexerRequestWithdrawnEvent(event);
+});
 
 export { worker };
