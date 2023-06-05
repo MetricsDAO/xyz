@@ -25,7 +25,7 @@ export const GatingSchema = z.object({
 
 export type GatingData = z.infer<typeof GatingSchema>;
 
-export const MarketplaceMetaSchema = z.object({
+export const AppDataSchema = z.object({
   title: z.string().min(1),
   type: LaborMarketTypeSchema.default("analyze"),
   description: z.string().min(1),
@@ -34,10 +34,10 @@ export const MarketplaceMetaSchema = z.object({
   enforcement: EvmAddressSchema,
 });
 
-export type MarketplaceMeta = z.infer<typeof MarketplaceMetaSchema>;
+export type AppData = z.infer<typeof AppDataSchema>;
 
 export const MarketplaceFormSchema = z.object({
-  meta: MarketplaceMetaSchema,
+  appData: AppDataSchema,
   sponsor: GatingSchema,
   analyst: GatingSchema,
   reviewer: GatingSchema,

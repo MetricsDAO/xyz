@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
-import type { MarketplaceMeta, GatingData } from "~/features/labor-market-creator/schema";
+import type { AppData, GatingData } from "~/features/labor-market-creator/schema";
 import { requireUser } from "~/services/session.server";
 
 export type OutletContext = [MarketplaceFormState, React.Dispatch<React.SetStateAction<MarketplaceFormState>>];
@@ -12,7 +12,7 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export interface MarketplaceFormState {
-  meta?: MarketplaceMeta;
+  appData?: AppData;
   sponsor?: GatingData;
   analyst?: GatingData;
   reviewer?: GatingData;

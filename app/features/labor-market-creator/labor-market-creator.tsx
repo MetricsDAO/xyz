@@ -42,7 +42,7 @@ export function LaborMarketCreator({
   const onSubmit = (data: MarketplaceForm) => {
     // write to contract with values
     transactor.start({
-      metadata: data.meta,
+      metadata: data.appData,
       config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values: data }),
     });
   };

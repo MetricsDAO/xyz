@@ -3,16 +3,16 @@ import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
-import type { MarketplaceMeta } from "./schema";
-import { MarketplaceMetaSchema } from "./schema";
+import type { AppData } from "./schema";
+import { AppDataSchema } from "./schema";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 
-export function MarketplaceMetaForm({
+export function MarketplaceAppDataForm({
   defaultValues,
   onNext,
 }: {
-  defaultValues?: DefaultValues<MarketplaceMeta>;
-  onNext: (values: MarketplaceMeta) => void;
+  defaultValues?: DefaultValues<AppData>;
+  onNext: (values: AppData) => void;
 }) {
   const tokens = useTokens();
   const projects = useProjects();
@@ -22,8 +22,8 @@ export function MarketplaceMetaForm({
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<MarketplaceMeta>({
-    resolver: zodResolver(MarketplaceMetaSchema),
+  } = useForm<AppData>({
+    resolver: zodResolver(AppDataSchema),
     defaultValues: {
       ...defaultValues,
     },

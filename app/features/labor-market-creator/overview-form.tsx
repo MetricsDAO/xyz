@@ -103,31 +103,35 @@ export function OverviewForm({
             <input
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
               type="hidden"
-              {...register("meta.type", { value: "analyze" })}
+              {...register("appData.type", { value: "analyze" })}
             />
 
             <Field>
               <Label size="lg">Challenge Marketplace Title</Label>
-              <Input {...register("meta.title")} type="text" placeholder="e.g Solana Breakpoint 2023" />
-              <Error error={errors.meta?.title?.message} />
+              <Input {...register("appData.title")} type="text" placeholder="e.g Solana Breakpoint 2023" />
+              <Error error={errors.appData?.title?.message} />
             </Field>
 
             <Field>
               <Label size="lg">Details*</Label>
-              <Textarea {...register("meta.description")} placeholder="What's the goal of this marketplace?" rows={7} />
-              <Error error={errors.meta?.description?.message} />
+              <Textarea
+                {...register("appData.description")}
+                placeholder="What's the goal of this marketplace?"
+                rows={7}
+              />
+              <Error error={errors.appData?.description?.message} />
             </Field>
 
             <Field>
               <Label size="lg">Blockchain/Project(s)*</Label>
               <Controller
                 control={control}
-                name="meta.projectSlugs"
+                name="appData.projectSlugs"
                 render={({ field }) => (
                   <Combobox {...field} options={projects.map((p) => ({ label: p.name, value: p.slug }))} />
                 )}
               />
-              <Error error={errors.meta?.projectSlugs?.message} />
+              <Error error={errors.appData?.projectSlugs?.message} />
             </Field>
 
             <section>
@@ -137,16 +141,16 @@ export function OverviewForm({
                   <Label>Reward Token Allowlist</Label>
                   <Controller
                     control={control}
-                    name="meta.tokenAllowlist"
+                    name="appData.tokenAllowlist"
                     render={({ field }) => <Combobox {...field} options={tokenAllowlist} />}
                   />
-                  <Error error={errors.meta?.tokenAllowlist?.message} />
+                  <Error error={errors.appData?.tokenAllowlist?.message} />
                 </Field>
                 <Field>
                   <Label>Reward Curve</Label>
                   <Controller
                     control={control}
-                    name="meta.enforcement"
+                    name="appData.enforcement"
                     defaultValue={contracts.BucketEnforcement.address}
                     render={({ field }) => (
                       <Select
@@ -155,7 +159,7 @@ export function OverviewForm({
                       />
                     )}
                   />
-                  <Error error={errors.meta?.enforcement?.message} />
+                  <Error error={errors.appData?.enforcement?.message} />
                 </Field>
               </div>
             </section>
