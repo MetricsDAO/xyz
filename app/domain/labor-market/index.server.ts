@@ -38,13 +38,13 @@ export async function appLaborMarketConfiguredEvent(event: Event) {
 export async function indexerLaborMarketConfiguredEvent(event: TracerEvent) {
   const address = EvmAddressSchema.parse(event.contract.address);
   const inputs = LaborMarketConfigSchema.parse(event.decoded.inputs);
-  // await indexLaborMarketEvent({
-  //   address,
-  //   blockNumber: event.block.number,
-  //   blockTimestamp: new Date(event.block.timestamp),
-  //   transactionHash: event.txHash,
-  //   args: inputs,
-  // });
+  await indexLaborMarketEvent({
+    address,
+    blockNumber: event.block.number,
+    blockTimestamp: new Date(event.block.timestamp),
+    transactionHash: event.txHash,
+    args: inputs,
+  });
 }
 
 /**
@@ -72,7 +72,6 @@ async function indexLaborMarketEvent(event: {
   });
   const lm = await getLaborMarket(event.address);
   invariant(lm, "Labor market should exist after creation");
-  console.log("we def have an lm", lm);
 
   //log this event in user activity collection
   await mongo.userActivity.insertOne({
