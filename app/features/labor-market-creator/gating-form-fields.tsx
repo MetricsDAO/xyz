@@ -59,7 +59,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
       {/* Render sponsorBadges array */}
       {fields.map((field, index) => (
         <div key={field.id}>
-          <section className="grid grid-cols-1 align-center md:grid-cols-6 gap-6 items-center">
+          <section className="grid grid-cols-1 align-center md:grid-cols-6 gap-6 items-start">
             <Field className="col-span-2">
               <Label size="sm">Contract Address</Label>
               <Controller
@@ -107,7 +107,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
               />
               <Error error={errors.badges?.[index]?.maxBadgeBalance?.message} />
             </Field>
-            <button className="mt-8" type="button" onClick={() => remove(index)}>
+            <button className="mt-10" type="button" onClick={() => remove(index)}>
               <img className="h-[24px] w-[24px]" src="/img/remove.svg" alt="" />
             </button>
           </section>

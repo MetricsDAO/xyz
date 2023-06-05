@@ -54,18 +54,21 @@ export function AppDataForm({
         </section>
         <section className="space-y-3">
           <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?*</h2>
-          <ClientOnly>
-            {() => (
-              <div className="container overflow-auto">
-                <MarkdownEditor
-                  value={watch("description")}
-                  onChange={(v) => {
-                    setValue("description", v ?? "");
-                  }}
-                />
-              </div>
-            )}
-          </ClientOnly>
+          <Field>
+            <ClientOnly>
+              {() => (
+                <div className="container overflow-auto">
+                  <MarkdownEditor
+                    value={watch("description")}
+                    onChange={(v) => {
+                      setValue("description", v ?? "");
+                    }}
+                  />
+                </div>
+              )}
+            </ClientOnly>
+            <Error error={errors.description?.message} />
+          </Field>
         </section>
         <section className="space-y-3">
           <div className="flex flex-col md:flex-row gap-6 items-start">
