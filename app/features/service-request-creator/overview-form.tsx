@@ -61,7 +61,7 @@ export function OverviewForm({
   return (
     <div className="flex relative min-h-screen">
       <div className="w-full">
-        <form className="max-w-2xl mx-auto my-16 space-y-10">
+        <form className="max-w-2xl mx-auto px-5 my-16 space-y-10">
           <section className="space-y-3">
             <h2 className="font-bold">Challenge Title*</h2>
             <Field>
@@ -283,7 +283,7 @@ export function OverviewForm({
           onSubmit={handleSubmit(onSubmit)}
         />
       </div>
-      <aside className="absolute w-1/6 py-28 right-0 top-0">
+      <aside className="w-1/4 py-28 ml-2 md:block hidden">
         <FormStepper step={4} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
       </aside>
     </div>

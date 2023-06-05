@@ -97,7 +97,7 @@ export function OverviewForm({
 
   return (
     <div className="w-full justify-between flex flex-col">
-      <div className="max-w-2xl mx-auto my-10 flex-1">
+      <div className="max-w-2xl mx-auto px-5 my-10 flex-1">
         <form className="space-y-10">
           <input
             className="grid grid-cols-1 md:grid-cols-2 gap-6"

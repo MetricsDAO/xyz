@@ -33,7 +33,7 @@ export function AppDataForm({
 
   return (
     <div className="w-full">
-      <div className="max-w-2xl mx-auto my-16 space-y-10">
+      <div className="max-w-2xl mx-auto px-5 my-16 space-y-10">
         <div className="space-y-2">
           <h1 className="font-semibold text-3xl mb-2">Launch an Analytics Challenge</h1>
           <p className="text-lg text-cyan-500">
