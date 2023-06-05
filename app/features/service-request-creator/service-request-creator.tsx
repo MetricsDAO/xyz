@@ -16,6 +16,7 @@ import type { ServiceRequestForm } from "./schema";
 
 type SequenceState =
   | { state: "initial" }
+  | { state: "approve-total-reward"; data: ServiceRequestForm } // in the case where reviewer and analyst token are the same
   | { state: "approve-analyst-reward"; data: ServiceRequestForm }
   | { state: "approve-reviewer-reward"; data: ServiceRequestForm }
   | { state: "create-service-request"; data: ServiceRequestForm };
@@ -42,12 +43,9 @@ export function ServiceRequestCreator({
     onSuccess: useCallback(
       (receipt) => {
         if (sequence.state === "approve-analyst-reward") {
-          if (isReviewerRewardTokenSameAsAnalystRewardToken(sequence.data)) {
-            // only need to approve once if both rewards are the same token, go straight to creation
-            setSequence({ state: "create-service-request", data: sequence.data });
-          } else {
-            setSequence({ state: "approve-reviewer-reward", data: sequence.data });
-          }
+          setSequence({ state: "approve-reviewer-reward", data: sequence.data });
+        } else if (sequence.state === "approve-total-reward") {
+          setSequence({ state: "create-service-request", data: sequence.data });
         }
       },
       [sequence]
@@ -76,22 +74,12 @@ export function ServiceRequestCreator({
     ),
   });
 
-  const isReviewerRewardTokenSameAsAnalystRewardToken = (values: ServiceRequestForm) => {
-    return values.analyst.rewardToken === values.reviewer.rewardToken;
-  };
-
   useEffect(() => {
-    if (sequence.state === "approve-analyst-reward") {
+    if (sequence.state === "approve-total-reward") {
       const values = sequence.data;
-      let approveAmount: BigNumber;
-      if (isReviewerRewardTokenSameAsAnalystRewardToken(values)) {
-        // only need to approve once if both rewards are the same token
-        const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
-        const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
-        approveAmount = analystReward.add(reviewerReward);
-      } else {
-        approveAmount = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
-      }
+      const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
+      const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+      const approveAmount = analystReward.add(reviewerReward);
       approveAnalystRewardTransactor.start({
         config: () =>
           configureWrite({
@@ -99,6 +87,17 @@ export function ServiceRequestCreator({
             abi: ERC20_APPROVE_PARTIAL_ABI,
             functionName: "approve",
             args: [laborMarketAddress, approveAmount],
+          }),
+      });
+    } else if (sequence.state === "approve-analyst-reward") {
+      const values = sequence.data;
+      approveAnalystRewardTransactor.start({
+        config: () =>
+          configureWrite({
+            address: values.analyst.rewardToken,
+            abi: ERC20_APPROVE_PARTIAL_ABI,
+            functionName: "approve",
+            args: [laborMarketAddress, toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals)],
           }),
       });
     } else if (sequence.state === "approve-reviewer-reward") {
@@ -123,7 +122,11 @@ export function ServiceRequestCreator({
   }, [sequence]);
 
   const onSubmit = (values: ServiceRequestForm) => {
-    setSequence({ state: "approve-analyst-reward", data: values });
+    if (values.analyst.rewardToken === values.reviewer.rewardToken) {
+      setSequence({ state: "approve-total-reward", data: values });
+    } else {
+      setSequence({ state: "approve-analyst-reward", data: values });
+    }
   };
 
   return (
