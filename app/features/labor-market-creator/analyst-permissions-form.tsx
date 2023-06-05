@@ -11,7 +11,7 @@ export function AnalystPermissionsForm({
   onNext,
   onPrevious,
 }: {
-  defaultValues: DefaultValues<GatingData>;
+  defaultValues?: DefaultValues<GatingData>;
   onNext: (values: GatingData) => void;
   onPrevious: (values: GatingData) => void;
 }) {

@@ -101,7 +101,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
       title: faker.commerce.productName(),
       description: faker.lorem.paragraphs(2),
       language: "english",
-      projectSlugs: [],
+      projectSlugs: ["polygon"],
     },
     analyst: {
       endDate: dayjs(endDate).format("YYYY-MM-DD"),

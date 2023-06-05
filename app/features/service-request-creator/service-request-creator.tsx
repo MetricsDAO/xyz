@@ -42,7 +42,12 @@ export function ServiceRequestCreator({
     onSuccess: useCallback(
       (receipt) => {
         if (sequence.state === "approve-analyst-reward") {
-          setSequence({ state: "approve-reviewer-reward", data: sequence.data });
+          if (isReviewerRewardTokenSameAsAnalystRewardToken(sequence.data)) {
+            // only need to approve once if both rewards are the same token, go straight to creation
+            setSequence({ state: "create-service-request", data: sequence.data });
+          } else {
+            setSequence({ state: "approve-reviewer-reward", data: sequence.data });
+          }
         }
       },
       [sequence]
@@ -71,16 +76,29 @@ export function ServiceRequestCreator({
     ),
   });
 
+  const isReviewerRewardTokenSameAsAnalystRewardToken = (values: ServiceRequestForm) => {
+    return values.analyst.rewardToken === values.reviewer.rewardToken;
+  };
+
   useEffect(() => {
     if (sequence.state === "approve-analyst-reward") {
       const values = sequence.data;
+      let approveAmount: BigNumber;
+      if (isReviewerRewardTokenSameAsAnalystRewardToken(values)) {
+        // only need to approve once if both rewards are the same token
+        const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
+        const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+        approveAmount = analystReward.add(reviewerReward);
+      } else {
+        approveAmount = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
+      }
       approveAnalystRewardTransactor.start({
         config: () =>
           configureWrite({
             address: values.analyst.rewardToken,
             abi: ERC20_APPROVE_PARTIAL_ABI,
             functionName: "approve",
-            args: [laborMarketAddress, toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals)],
+            args: [laborMarketAddress, approveAmount],
           }),
       });
     } else if (sequence.state === "approve-reviewer-reward") {
