@@ -12,22 +12,15 @@ export const loader = async ({ request }: DataFunctionArgs) => {
 };
 
 export interface MarketplaceFormState {
-  meta: MarketplaceMeta | null;
-  sponsor: GatingData | null;
-  analyst: GatingData | null;
-  reviewer: GatingData | null;
+  meta?: MarketplaceMeta;
+  sponsor?: GatingData;
+  analyst?: GatingData;
+  reviewer?: GatingData;
 }
-
-const initialForm: MarketplaceFormState = {
-  meta: null,
-  sponsor: null,
-  analyst: null,
-  reviewer: null,
-};
 
 // Takes advantage of Outlet to maintain state across pages. If a user refreshes, state will be lost (not persisted on any backend)
 export default function NewMarketRoute() {
-  const [formState, setFormState] = useState<MarketplaceFormState>(initialForm);
+  const [formState, setFormState] = useState<MarketplaceFormState>({});
 
   return (
     <div>

@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { DefaultValues } from "react-hook-form";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts, useProjects, useTokens } from "~/hooks/use-root-data";
-import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
 
@@ -12,7 +12,7 @@ export function OverviewForm({
   onPrevious,
   onSubmit,
 }: {
-  defaultValues: MarketplaceFormState;
+  defaultValues?: DefaultValues<MarketplaceForm>;
   onPrevious: () => void;
   onSubmit: (data: MarketplaceForm) => void;
 }) {
@@ -25,20 +25,7 @@ export function OverviewForm({
     watch,
     formState: { errors },
   } = useForm<MarketplaceForm>({
-    defaultValues: {
-      meta: {
-        ...defaultValues.meta,
-      },
-      sponsor: {
-        ...defaultValues.sponsor,
-      },
-      analyst: {
-        ...defaultValues.analyst,
-      },
-      reviewer: {
-        ...defaultValues.reviewer,
-      },
-    },
+    defaultValues,
     resolver: zodResolver(MarketplaceFormSchema),
   });
 

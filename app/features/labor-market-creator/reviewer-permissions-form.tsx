@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { DefaultValues } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormProgress } from "~/components";
 import { GatingFormFields } from "./gating-form-fields";
@@ -10,14 +11,12 @@ export function ReviewerPermissionsForm({
   onNext,
   onPrevious,
 }: {
-  defaultValues: GatingData | null;
+  defaultValues?: DefaultValues<GatingData>;
   onNext: (values: GatingData) => void;
   onPrevious: (values: GatingData) => void;
 }) {
   const methods = useForm<GatingData>({
-    defaultValues: {
-      ...defaultValues,
-    },
+    defaultValues,
     resolver: zodResolver(GatingSchema),
   });
 

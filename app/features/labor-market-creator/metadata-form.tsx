@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
@@ -10,7 +11,7 @@ export function MarketplaceMetaForm({
   defaultValues,
   onNext,
 }: {
-  defaultValues: MarketplaceMeta | null;
+  defaultValues?: DefaultValues<MarketplaceMeta>;
   onNext: (values: MarketplaceMeta) => void;
 }) {
   const tokens = useTokens();
