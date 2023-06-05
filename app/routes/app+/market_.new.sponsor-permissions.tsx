@@ -22,7 +22,7 @@ export default function SponsorPermissionsPage() {
   return (
     <div className="flex relative min-h-screen">
       <SponsorPermissionsForm defaultValues={formData.sponsor} onNext={onNext} onPrevious={onPrevious} />
-      <aside className="absolute w-1/6 py-28 right-0 top-0">
+      <aside className="w-1/4 py-28 ml-2 md:block hidden">
         <FormStepper
           step={2}
           labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}

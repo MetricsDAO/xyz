@@ -16,7 +16,7 @@ export default function NewMarketplaceReviewPage() {
   return (
     <div className="flex relative min-h-screen">
       <LaborMarketCreator onPrevious={onPrevious} defaultValues={formData} />
-      <aside className="absolute w-1/6 py-28 right-0 top-0">
+      <aside className="w-1/4 py-28 ml-2 md:block hidden">
         <FormStepper
           step={5}
           labels={["Create", "Sponsor Permissions", "Author Permissions", "Reviewer Permissios", "Overview"]}

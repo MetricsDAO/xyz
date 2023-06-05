@@ -33,7 +33,7 @@ export function AppDataForm({
 
   return (
     <div className="w-full">
-      <div className="max-w-2xl mx-auto my-16 space-y-10">
+      <div className="max-w-2xl mx-auto px-5 my-16 space-y-10">
         <div className="space-y-2">
           <h1 className="font-semibold text-3xl mb-2">Launch an Analytics Challenge</h1>
           <p className="text-lg text-cyan-500">
@@ -54,18 +54,21 @@ export function AppDataForm({
         </section>
         <section className="space-y-3">
           <h2 className="font-bold">What question, problem, or tooling need do you want Web3 analysts to address?*</h2>
-          <ClientOnly>
-            {() => (
-              <div className="container overflow-auto">
-                <MarkdownEditor
-                  value={watch("description")}
-                  onChange={(v) => {
-                    setValue("description", v ?? "");
-                  }}
-                />
-              </div>
-            )}
-          </ClientOnly>
+          <Field>
+            <ClientOnly>
+              {() => (
+                <div className="container overflow-auto">
+                  <MarkdownEditor
+                    value={watch("description")}
+                    onChange={(v) => {
+                      setValue("description", v ?? "");
+                    }}
+                  />
+                </div>
+              )}
+            </ClientOnly>
+            <Error error={errors.description?.message} />
+          </Field>
         </section>
         <section className="space-y-3">
           <div className="flex flex-col md:flex-row gap-6 items-start">

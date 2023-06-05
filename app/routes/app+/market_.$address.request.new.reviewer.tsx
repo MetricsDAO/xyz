@@ -51,7 +51,7 @@ export default function ReviewerPage() {
         onPrevious={onPrevious}
         address={address}
       />
-      <aside className="absolute w-1/6 py-28 right-0 top-0">
+      <aside className="w-1/5 py-28 ml-2 md:block hidden">
         <FormStepper step={3} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
       </aside>
     </div>

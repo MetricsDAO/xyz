@@ -40,7 +40,7 @@ export default function AppDataPage() {
   return (
     <div className="flex relative min-h-screen">
       <AppDataForm defaultValues={formData.appData} projects={laborMarketProjects} onNext={onNext} address={address} />
-      <aside className="absolute w-1/6 py-28 right-0 top-0">
+      <aside className="w-1/5 py-28 ml-2 md:block hidden">
         <FormStepper step={1} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
       </aside>
     </div>

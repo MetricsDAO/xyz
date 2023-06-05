@@ -5,7 +5,7 @@ export function FormStepper({ step, labels }: { step: number; labels: string[] }
   return (
     <div className="flex flex-col justify-items-start lg:block">
       {labels.map((label, index) => (
-        <>
+        <div key={index}>
           {index > 0 && (
             <div
               className={clsx("h-10 w-px ml-3", {
@@ -35,7 +35,7 @@ export function FormStepper({ step, labels }: { step: number; labels: string[] }
               className={clsx("text-sm", { "text-stone-500": index >= step, "text-blue-600": index < step })}
             >{`${label}`}</p>
           </div>
-        </>
+        </div>
       ))}
     </div>
   );
