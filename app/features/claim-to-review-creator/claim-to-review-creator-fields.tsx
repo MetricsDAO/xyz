@@ -12,6 +12,31 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
     formState: { errors },
   } = useFormContext<ClaimToReviewFormValues>();
 
+  const claimedReviews =
+    serviceRequest.indexData.claimsToReview.length > 0
+      ? serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0)
+      : 0;
+  const numClaimsRemaining = serviceRequest.configuration.reviewerLimit - claimedReviews;
+  let options = [{ label: "10", value: "10" }];
+
+  if (numClaimsRemaining > 10) {
+    options = [
+      { label: "10", value: "10" },
+      { label: "25", value: "25" },
+      { label: "50", value: "50" },
+      { label: "75", value: "75" },
+      { label: "100", value: "100" },
+    ];
+  } else {
+    options = [
+      { label: "1", value: "1" },
+      { label: "2", value: "2" },
+      { label: "5", value: "5" },
+      { label: "7", value: "7" },
+      { label: "10", value: "10" },
+    ];
+  }
+
   return (
     <>
       <div className="space-y-2">
@@ -53,22 +78,11 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
       <div className="space-y-2">
         <Field>
           <Label size="lg">How many submissions do you commit to reviewing at a minimum?</Label>
+          <p className="text-gray-500 text-sm">There are {numClaimsRemaining} available to claim</p>
           <Controller
             control={control}
             name="quantity"
-            render={({ field }) => (
-              <SegmentedRadio
-                {...field}
-                name="quantity"
-                options={[
-                  { label: "10", value: "10" },
-                  { label: "25", value: "25" },
-                  { label: "50", value: "50" },
-                  { label: "75", value: "75" },
-                  { label: "100", value: "100" },
-                ]}
-              />
-            )}
+            render={({ field }) => <SegmentedRadio {...field} name="quantity" options={options} />}
           />
           <Error error={errors.quantity?.message} />
         </Field>

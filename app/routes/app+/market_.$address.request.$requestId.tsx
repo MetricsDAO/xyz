@@ -80,9 +80,14 @@ export default function ServiceRequest() {
     laborMarketAddress: serviceRequest.laborMarketAddress,
     serviceRequestId: serviceRequest.id,
   });
+  const claimedReviews = serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0);
+
   const showSubmit = performance?.signaled && !performance.submitted;
   const showClaimToSubmit = !performance?.signaled && !performance?.submitted && !claimDeadlinePassed;
-  const showClaimToReview = !performance?.remainingReviews && !claimToReviewDeadlinePassed; //todo - check if not all claimed
+  const showClaimToReview =
+    !performance?.remainingReviews &&
+    !claimToReviewDeadlinePassed &&
+    claimedReviews < serviceRequest.configuration.reviewerLimit;
 
   const { canReview, canSubmit } = usePrereqs({ laborMarket });
 
