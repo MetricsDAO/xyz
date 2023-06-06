@@ -167,7 +167,7 @@ export const indexerReviewSignalEvent = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress, id: inputs.requestId },
-    { $push: { "indexData.claimsToReview": { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
+    { $push: { "indexData.claimsToReview": { signaler: inputs.signaler, quantity: inputs.quantity } } }
   );
 };
 

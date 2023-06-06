@@ -82,7 +82,7 @@ export default function ServiceRequest() {
   });
   const showSubmit = performance?.signaled && !performance.submitted;
   const showClaimToSubmit = !performance?.signaled && !performance?.submitted && !claimDeadlinePassed;
-  const showClaimToReview = performance?.remainingReviews && !claimToReviewDeadlinePassed;
+  const showClaimToReview = !performance?.remainingReviews && !claimToReviewDeadlinePassed; //todo - check if not all claimed
 
   const { canReview, canSubmit } = usePrereqs({ laborMarket });
 
