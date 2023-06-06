@@ -41,6 +41,7 @@ import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
+import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
@@ -86,7 +87,7 @@ export default function ChallengeSubmission() {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const submittedByUser = user && user.address === submission.configuration.serviceProvider;
+  const submittedByUser = user && user.address === submission.configuration.fulfiller;
 
   const handleChange = () => {
     if (formRef.current) {
@@ -100,28 +101,29 @@ export default function ChallengeSubmission() {
   };
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
-  const { data: reward } = useReward({
-    laborMarketAddress: submission.laborMarketAddress,
-    submissionId: submission.id,
-    tokenDecimals: token?.decimals ?? 18,
-  });
+  // TODO: Rewards
+  // const { data: reward } = useReward({
+  //   laborMarketAddress: submission.laborMarketAddress,
+  //   submissionId: submission.id,
+  //   tokenDecimals: token?.decimals ?? 18,
+  // });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const score = submission.score?.avg;
 
-  const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
+  // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 
-  const reviewSignal = useReviewSignals({
-    laborMarketAddress: serviceRequest.laborMarketAddress,
-    serviceRequestId: serviceRequest.id,
+  const performance = useServiceRequestPerformance({
+    laborMarketAddress: submission.laborMarketAddress,
+    serviceRequestId: submission.serviceRequestId,
   });
 
   const { canReview } = usePrereqs({ laborMarket });
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
   const canReviewSubmission =
-    reviewSignal?.remainder.gt(0) && !enforcementExpirationPassed && userReview == null && !submittedByUser;
+    performance?.remainingReviews && !enforcementExpirationPassed && userReview == null && !submittedByUser;
   const canClaimToReview =
-    reviewSignal?.remainder.eq(0) && !claimToReviewDeadlinePassed && userReview == null && !submittedByUser;
+    !performance?.remainingReviews && !claimToReviewDeadlinePassed && userReview == null && !submittedByUser;
 
   return (
     <Container className="pt-7 pb-16 px-10">
@@ -137,7 +139,8 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col md:flex-row gap-5 justify-between pb-10 items-center">
         <div className="flex items-center gap-2 md:basis-3/4">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
-          {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
+          {/* TODO Rewards */}
+          {/* {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />} */}
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
           {canClaimToReview && !canReviewSubmission && (
@@ -158,7 +161,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col space-y-6 pb-24">
         <Detail className="flex flex-wrap gap-x-8 gap-y-4">
           <DetailItem title="Analyst">
-            <UserBadge address={submission.configuration.serviceProvider} />
+            <UserBadge address={submission.configuration.fulfiller} />
           </DetailItem>
           <DetailItem title="Created">
             <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
@@ -178,7 +181,8 @@ export default function ChallengeSubmission() {
               <Badge>{reviews.length}</Badge>
             )}
           </DetailItem>
-          {isWinner && (
+          {/* TODO Rewards */}
+          {/* {isWinner && (
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
@@ -190,7 +194,7 @@ export default function ChallengeSubmission() {
                 reputation={{ amount: reward.reputationTokenAmount.toString() }}
               />
             </DetailItem>
-          )}
+          )} */}
         </Detail>
         <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
           <a

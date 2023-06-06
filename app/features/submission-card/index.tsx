@@ -38,7 +38,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
       </Link>
       <div className="flex flex-wrap items-center text-xs">
         <span className="mr-1">{fromNow(submissionCreatedDate(submission))} by </span>
-        <UserBadge address={submission.configuration.serviceProvider} />
+        <UserBadge address={submission.configuration.fulfiller} />
       </div>
     </Card>
   );
