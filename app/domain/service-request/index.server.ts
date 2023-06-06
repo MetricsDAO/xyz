@@ -208,7 +208,7 @@ export const indexerRequestSignalEvent = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress: laborMarketAddress, id: inputs.requestId },
-    { $push: { "indexData.claimsToSubmit": { signaler: inputs.signaler, signalAmount: +inputs.signalAmount } } }
+    { $push: { "indexData.claimsToSubmit": { signaler: inputs.signaler } } }
   );
 };
 
