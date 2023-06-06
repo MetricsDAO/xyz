@@ -90,5 +90,5 @@ model Reward {
   tokenId                     String?
   token                       Token?   @relation(fields: [tokenId], references: [id])
 
-  @@unique([laborMarketAddress, submissionId])
+  @@unique([laborMarketAddress, submissionId, userId])
 }
