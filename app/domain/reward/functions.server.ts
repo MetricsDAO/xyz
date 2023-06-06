@@ -64,9 +64,10 @@ const updateTreasuryClaimStatus = async (user: User, submissions: SubmissionWith
     const iouHasRedeemed = hasRedeemed(claims, s);
     await prisma.reward.update({
       where: {
-        laborMarketAddress_submissionId: {
+        laborMarketAddress_submissionId_userId: {
           laborMarketAddress: s.laborMarketAddress,
           submissionId: s.id,
+          userId: user.id,
         },
       },
       data: {
@@ -159,9 +160,10 @@ const updateClaimStatus = async (user: User, submissions: SubmissionWithReward[]
       const s = unclaimedRewards[index]!;
       await prisma.reward.update({
         where: {
-          laborMarketAddress_submissionId: {
+          laborMarketAddress_submissionId_userId: {
             laborMarketAddress: s.laborMarketAddress,
             submissionId: s.id,
+            userId: user.id,
           },
         },
         data: {
