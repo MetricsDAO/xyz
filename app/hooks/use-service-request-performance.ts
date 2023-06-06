@@ -5,7 +5,7 @@ import { useContracts } from "./use-root-data";
 
 type Props = {
   laborMarketAddress: EvmAddress;
-  serviceRequestId: number; // Could be a service request id or submissionid
+  serviceRequestId: string;
 };
 
 /**
