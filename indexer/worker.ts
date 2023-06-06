@@ -6,6 +6,7 @@ import {
   indexerRequestWithdrawnEvent,
   indexerReviewSignalEvent,
 } from "~/domain/service-request/index.server";
+import { indexerRequestFulfilledEvent } from "~/domain/submission/index.server";
 import env from "~/env.server";
 import { logger } from "~/services/logger.server";
 import { getContracts } from "~/utils/contracts.server";
@@ -49,9 +50,9 @@ worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
   return indexerReviewSignalEvent(event);
 });
 
-// worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
-//   return handleRequestFulfilledEvent(event);
-// });
+worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
+  return indexerRequestFulfilledEvent(event);
+});
 
 worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
   return indexerRequestSignalEvent(event);

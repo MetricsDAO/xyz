@@ -33,7 +33,7 @@ import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { findUserReview, searchReviews } from "~/domain/review/functions.server";
 import { ReviewSearchSchema } from "~/domain/review/schemas";
 import { getServiceRequest } from "~/domain/service-request/functions.server";
-import { getIndexedSubmission } from "~/domain/submission/functions.server";
+import { getSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
@@ -64,7 +64,7 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const tokens = await listTokens();
 
-  const submission = await getIndexedSubmission(address, submissionId);
+  const submission = await getSubmission(address, submissionId);
   if (!submission) {
     throw notFound({ submissionId });
   }

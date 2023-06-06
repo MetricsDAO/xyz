@@ -34,16 +34,21 @@ export const SubmissionIndexerSchema = z.object({
   description: z.string(),
 });
 
+export const SubmissionConfigSchema = z.object({
+  requestId: z.string(),
+  submissionId: z.string(),
+  uri: z.string(),
+  fulfiller: EvmAddressSchema,
+});
+export type SubmissionConfig = z.infer<typeof SubmissionConfigSchema>;
+
 export const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
-  blockTimestamp: z.date().nullable().optional(),
+  blockTimestamp: z.date(),
   indexedAt: z.date(),
-  configuration: z.object({
-    serviceProvider: EvmAddressSchema,
-    uri: z.string(),
-  }),
+  configuration: SubmissionConfigSchema,
   score: z
     .object({
       reviewCount: z.number(),
@@ -63,11 +68,6 @@ export const SubmissionDocSchema = z.object({
       iouHasRedeemed: z.boolean().optional(),
     })
     .optional(),
-});
-
-export const SubmissionEventSchema = z.object({
-  requestId: z.string(),
-  submissionId: z.string(),
 });
 
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
