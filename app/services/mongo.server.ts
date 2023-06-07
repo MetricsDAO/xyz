@@ -32,6 +32,7 @@ laborMarkets.createIndex({ "appData.title": "text" });
 serviceRequests.createIndex({ "appData.title": "text" });
 userActivity.createIndex({ laborMarketTitle: "text" });
 submissions.createIndex({ "appData.title": "text" });
+submissions.createIndex({ id: 1, laborMarketAddress: 1 }, { unique: true });
 
 export const mongo = {
   db,
