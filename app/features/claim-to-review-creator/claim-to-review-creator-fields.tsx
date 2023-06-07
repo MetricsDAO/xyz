@@ -1,5 +1,5 @@
 import { Controller, useFormContext } from "react-hook-form";
-import { Error, Field, Label, SegmentedRadio } from "~/components";
+import { Error, Field, Input, Label } from "~/components";
 import { CountdownCard } from "~/components/countdown-card";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
@@ -17,25 +17,6 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
       ? serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0)
       : 0;
   const numClaimsRemaining = serviceRequest.configuration.reviewerLimit - claimedReviews;
-  let options = [{ label: "10", value: "10" }];
-
-  if (numClaimsRemaining > 10) {
-    options = [
-      { label: "10", value: "10" },
-      { label: "25", value: "25" },
-      { label: "50", value: "50" },
-      { label: "75", value: "75" },
-      { label: "100", value: "100" },
-    ];
-  } else {
-    options = [
-      { label: "1", value: "1" },
-      { label: "2", value: "2" },
-      { label: "5", value: "5" },
-      { label: "7", value: "7" },
-      { label: "10", value: "10" },
-    ];
-  }
 
   return (
     <>
@@ -82,7 +63,7 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
           <Controller
             control={control}
             name="quantity"
-            render={({ field }) => <SegmentedRadio {...field} name="quantity" options={options} />}
+            render={({ field }) => <Input {...field} type="number" name="quantity" max={numClaimsRemaining} />}
           />
           <Error error={errors.quantity?.message} />
         </Field>

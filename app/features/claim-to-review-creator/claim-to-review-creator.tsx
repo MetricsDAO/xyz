@@ -52,7 +52,7 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
               Please confirm that you would like to claim {methods.getValues("quantity")} submissions to review.
             </p>
             <p>
-              This will lock <b>{Number(methods.getValues("quantity")) * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
+              This will lock <b>{methods.getValues("quantity") * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
             </p>
           </div>
         }
@@ -88,6 +88,6 @@ function configureFromValues({
     abi: contracts.LaborMarket.abi,
     address: inputs.serviceRequest.laborMarketAddress,
     functionName: "signalReview",
-    args: [BigNumber.from(inputs.serviceRequest.id), Number(inputs.formValues.quantity)],
+    args: [BigNumber.from(inputs.serviceRequest.id), inputs.formValues.quantity],
   });
 }
