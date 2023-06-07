@@ -37,7 +37,7 @@ export default function Marketplace() {
   const { canLaunchChallenges } = usePrereqs({ laborMarket });
 
   return (
-    <Container className="pb-16 pt-7 px-10">
+    <Container className="pb-16 pt-24 px-10">
       <section className="flex flex-col md:flex-row gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold md:basis-3/4">{laborMarket?.appData?.title}</h1>
         <div className="flex flex-wrap gap-5 md:basis-1/4 md:justify-end">
@@ -66,8 +66,7 @@ export default function Marketplace() {
         <main className="flex-1">
           <TabNav className="mb-10">
             <TabNavLink to="./#tabNav" end>
-              {/* Challenges ({laborMarket.indexData.serviceRequestCount}) */}
-              Challenges (number will go here )
+              Challenges <span className="text-gray-400">({laborMarket.indexData.serviceRequestCount})</span>
             </TabNavLink>
             <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
             <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>
