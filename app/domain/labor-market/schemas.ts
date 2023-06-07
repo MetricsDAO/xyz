@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
+import { GatingSchema } from "~/features/labor-market-creator/schema";
 
 /**
  * Normalizes the `configuration` method from the LaborMarket contract so both the contract and the index can use the same type.
@@ -32,6 +33,11 @@ export const LaborMarketAppDataSchema = z.object({
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   enforcement: EvmAddressSchema,
+  prerequisites: z.object({
+    sponsor: GatingSchema,
+    analyst: GatingSchema,
+    reviewer: GatingSchema,
+  }),
 });
 export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
 
