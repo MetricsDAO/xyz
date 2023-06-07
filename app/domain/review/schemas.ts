@@ -28,6 +28,8 @@ export const ReviewEventSchema = z.object({
   reviewer: EvmAddressSchema,
   reviewScore: z.string(),
   requestId: z.string(),
+  reviewId: z.string(),
+  uri: z.string(),
 });
 
 export const ReviewDocSchema = z.object({

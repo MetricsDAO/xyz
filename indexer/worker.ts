@@ -1,5 +1,6 @@
 import * as pine from "pinekit";
 import { indexerLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
+import { indexerRequestReviewedEvent } from "~/domain/review/functions.server";
 import {
   indexerRequestConfiguredEvent,
   indexerRequestSignalEvent,
@@ -58,9 +59,9 @@ worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
   return indexerRequestSignalEvent(event);
 });
 
-// worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
-//   return indexReview(event);
-// });
+worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
+  return indexerRequestReviewedEvent(event);
+});
 
 worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
   return indexerRequestWithdrawnEvent(event);
