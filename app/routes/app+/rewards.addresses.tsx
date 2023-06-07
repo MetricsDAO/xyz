@@ -1,4 +1,4 @@
-import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
+import { ClipboardDocumentIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
@@ -87,6 +87,12 @@ export default function PayoutAddresses() {
           <p className="text-gray-500 text-sm">
             Reward tokens will automatically be sent to these wallets when you claim rewards
           </p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2 mt-2 w-fit">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5 hidden md:block" />
+            <p className="text-yellow-700 mr-2">
+              Do not use CEX wallets to claim rewards. Only use self custody wallets.
+            </p>
+          </div>
         </section>
       </div>
       <RewardsTab rewardsNum={submissionCount} addressesNum={wallets.length} />

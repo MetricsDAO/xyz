@@ -36,11 +36,15 @@ export default function IOUCenter() {
           <p className="text-lg text-cyan-500">
             Create iouTokens to facilitate multi-chain payouts in partners’ native tokens
           </p>
-          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
-            <p className="text-yellow-700">
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2 mt-2 w-fit">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5 hidden md:block" />
+            <p className="text-yellow-700 mr-2">
               You must ensure the DAO has enough token liquidity before issuing more iouTokens
             </p>
+          </div>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2 mt-2 w-fit">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5 hidden md:block" />
+            <p className="text-yellow-700 mr-2">iouTokens are not transferable</p>
           </div>
         </section>
       </div>
