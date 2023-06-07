@@ -46,7 +46,7 @@ export function RewardBadge({ payment, reputation, variant = "default" }: Props)
       </div>
       {reputation && (
         <p
-          className={clsx("text-sm px-1", {
+          className={clsx("text-sm pl-1 pr-2", {
             "text-neutral-500": variant === "default",
             "text-white": variant === "winner",
           })}

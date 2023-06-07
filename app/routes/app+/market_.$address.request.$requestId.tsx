@@ -171,7 +171,7 @@ export default function ServiceRequest() {
 
       <TabNav className="mb-10">
         <TabNavLink to="./#tabNav" end>
-          Submissions <span className="text-gray-400">{serviceRequest.indexData.submissionCount}</span>
+          Submissions <span className="text-gray-400">({serviceRequest.indexData.submissionCount})</span>
         </TabNavLink>
         <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>
