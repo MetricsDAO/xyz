@@ -8,6 +8,7 @@ import { claimDate, parseDatetime } from "~/utils/date";
 import { toTokenAbbreviation } from "~/utils/helpers";
 import type { AnalystForm as AnalystFormType } from "./schema";
 import { AnalystSchema } from "./schema";
+import { BigNumber } from "ethers";
 
 export function AnalystForm({
   validTokens,
@@ -118,7 +119,8 @@ export function AnalystForm({
             <p className="text-neutral-600 text-sm">for a total reward pool of</p>
             {formData.rewardPool && formData.submitLimit && formData.rewardToken ? (
               <p className="text-neutral-600 text-sm font-bold">
-                todo {toTokenAbbreviation(formData.rewardToken, validTokens)}
+                {`${BigNumber.from(formData.rewardPool).mul(formData.submitLimit).toString()}
+                ${toTokenAbbreviation(formData.rewardToken, validTokens)}`}
               </p>
             ) : (
               <p className="text-neutral-600 text-sm font-bold">--</p>
