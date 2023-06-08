@@ -43,7 +43,7 @@ export default function ServiceIdPrereqs() {
             <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
           )}
           {laborMarket.appData.prerequisites?.analyst.gatingType === "Anyone" ? (
-            <p>Anyone can!</p>
+            <p className="text-gray-500 text-sm">Anyone can!</p>
           ) : (
             <>
               {laborMarket?.appData.prerequisites?.analyst.badges.map((badge) => (
@@ -69,7 +69,7 @@ export default function ServiceIdPrereqs() {
             <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
           )}
           {laborMarket.appData.prerequisites?.reviewer.gatingType === "Anyone" ? (
-            <p>Anyone can!</p>
+            <p className="text-gray-500 text-sm">Anyone can!</p>
           ) : (
             <>
               {laborMarket.appData.prerequisites?.reviewer.badges.map((badge) => (
