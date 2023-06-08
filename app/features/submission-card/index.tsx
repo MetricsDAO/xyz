@@ -9,7 +9,6 @@ import { submissionCreatedDate } from "~/utils/helpers";
 export function SubmissionCard({ submission }: { submission: SubmissionWithReviewsDoc }) {
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
-  console.log("submission", submission);
 
   const score = submission.score?.avg;
   return (
