@@ -33,11 +33,13 @@ export const LaborMarketAppDataSchema = z.object({
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   enforcement: EvmAddressSchema,
-  prerequisites: z.object({
-    sponsor: GatingSchema,
-    analyst: GatingSchema,
-    reviewer: GatingSchema,
-  }),
+  prerequisites: z
+    .object({
+      sponsor: GatingSchema,
+      analyst: GatingSchema,
+      reviewer: GatingSchema,
+    })
+    .optional(),
 });
 export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
 
