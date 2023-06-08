@@ -32,8 +32,6 @@ export function OverviewForm({
     resolver: zodResolver(MarketplaceFormSchema),
   });
 
-  const contracts = useContracts();
-
   const sponsorBadges = "sponsor.badges";
   const analystBadges = "analyst.badges";
   const reviewerBadges = "reviewer.badges";
@@ -160,11 +158,15 @@ export function OverviewForm({
                 <Controller
                   control={control}
                   name="appData.enforcement"
-                  defaultValue={contracts.BucketEnforcement.address}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      options={[{ label: "Constant Likert", value: contracts.BucketEnforcement.address }]}
+                      options={[
+                        { label: "Constant", value: "Constant" },
+                        { label: "Aggressive", value: "Aggressive" },
+                        { label: "Acceptable", value: "Acceptable" },
+                        { label: "Pass / Fail", value: "Pass / Fail" },
+                      ]}
                     />
                   )}
                 />

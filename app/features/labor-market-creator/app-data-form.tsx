@@ -5,7 +5,7 @@ import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } 
 import { CurveChart } from "~/components/curve-chart";
 import type { AppData } from "./schema";
 import { AppDataSchema } from "./schema";
-import { useProjects, useTokens } from "~/hooks/use-root-data";
+import { useContracts, useProjects, useTokens } from "~/hooks/use-root-data";
 import { ClientOnly } from "remix-utils";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 
@@ -110,10 +110,16 @@ export function MarketplaceAppDataForm({
                   <Controller
                     control={control}
                     name="enforcement"
+                    defaultValue={"Constant"}
                     render={({ field }) => (
                       <Select
                         {...field}
-                        options={[{ label: "Constant Likert", value: "0x0b9CDd330C8FF08D7E3D298dcBc84B3077C33C7C" }]}
+                        options={[
+                          { label: "Constant", value: "Constant" },
+                          { label: "Aggressive", value: "Aggressive" },
+                          { label: "Acceptable", value: "Acceptable" },
+                          { label: "Pass / Fail", value: "Pass / Fail" },
+                        ]}
                       />
                     )}
                   />
@@ -124,7 +130,7 @@ export function MarketplaceAppDataForm({
 
             {enforcement && (
               <>
-                <CurveChart type={"Constant"} />
+                <CurveChart type={enforcement} />
                 <p className="text-gray-400 italic">Ex: 1000 USDC pool with a claim limit of 10</p>
               </>
             )}

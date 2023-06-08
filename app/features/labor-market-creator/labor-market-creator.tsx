@@ -11,6 +11,8 @@ import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import { postNewEvent } from "~/utils/fetch";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
+import { getRewardCurveArgs } from "./reward-curve-constants";
+import { s } from "vitest/dist/index-1e9f7f83";
 
 export function LaborMarketCreator({
   defaultValues,
@@ -78,10 +80,13 @@ function configureFromValues(
   contracts: ReturnType<typeof useContracts>,
   inputs: { owner: EvmAddress; cid: string; values: MarketplaceForm }
 ) {
-  const { owner, cid } = inputs;
-  const auxilaries = [BigNumber.from(100)];
-  const alphas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(90)];
-  const betas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(100)];
+  const { owner, cid, values } = inputs;
+
+  const enforcement = inputs.values.appData.enforcement;
+
+  const curveProperties = getRewardCurveArgs(enforcement);
+  console.log("CURVE PROPERTIES", curveProperties);
+
   const enforcementAddress = contracts.BucketEnforcement.address;
 
   const sigs: EvmAddress[] = [
@@ -145,6 +150,15 @@ function configureFromValues(
     abi: contracts.LaborMarketFactory.abi,
     address: contracts.LaborMarketFactory.address,
     functionName: "createLaborMarket",
-    args: [owner, cid, enforcementAddress, auxilaries, alphas, betas, sigs, nodes],
+    args: [
+      owner,
+      cid,
+      enforcementAddress,
+      curveProperties.auxilaries,
+      curveProperties.alphas,
+      curveProperties.betas,
+      sigs,
+      nodes,
+    ],
   });
 }

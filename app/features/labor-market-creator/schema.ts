@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "~/domain/address";
-import { LaborMarketTypeSchema } from "~/domain/labor-market/schemas";
+import { LaborMarketTypeSchema, RewardCurveTypeSchema } from "~/domain/labor-market/schemas";
 import { arrayToObject } from "~/domain/shared/utils";
 
 export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
@@ -31,7 +31,7 @@ export const AppDataSchema = z.object({
   description: z.string().min(1),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  enforcement: EvmAddressSchema,
+  enforcement: RewardCurveTypeSchema.default("Constant"),
 });
 
 export type AppData = z.infer<typeof AppDataSchema>;

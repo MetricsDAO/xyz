@@ -90,3 +90,9 @@ export const LaborMarketSearchSchema = LaborMarketFilterSchema.extend({
   first: z.coerce.number().min(1).max(100).default(12),
 });
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;
+
+/**
+ * Types of reward curves.
+ */
+export const RewardCurveTypeSchema = z.enum(["Constant", "Aggressive", "Acceptable", "Pass / Fail"]);
+export type RewardCurveType = z.infer<typeof RewardCurveTypeSchema>;
