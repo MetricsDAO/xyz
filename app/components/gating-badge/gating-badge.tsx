@@ -8,9 +8,9 @@ export function GatingBadge({ badge }: { badge: BadgeData }) {
   console.log(extraData);
   return (
     <Detail>
-      <DetailItem title={badge.contractAddress}>
+      <DetailItem title={extraData?.name}>
         <div className="flex gap-2 items-center">
-          <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
+          <img src={extraData?.image} alt="" className="h-4 w-4" />
           <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
         </div>
       </DetailItem>

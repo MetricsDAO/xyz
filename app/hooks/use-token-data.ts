@@ -2,19 +2,39 @@ import { useQuery } from "@tanstack/react-query";
 import { BigNumber } from "ethers";
 import { useContractReads } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
-import { useContracts } from "./use-root-data";
 
 const BADGER_IPFS_GATEWAY = "https://badger.mypinata.cloud";
 
 type Props = { tokenId: string; token: EvmAddress };
 
+const PARTIAL_BADGER_TOKEN_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_id",
+        type: "uint256",
+      },
+    ],
+    name: "uri",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
 export function useTokenData({ token, tokenId }: Props) {
-  const contracts = useContracts();
   const { data } = useContractReads({
     contracts: [
       {
         address: token,
-        abi: contracts.ReputationToken.abi,
+        abi: PARTIAL_BADGER_TOKEN_ABI,
         functionName: "uri",
         args: [BigNumber.from(tokenId)],
       },
