@@ -31,7 +31,8 @@ export async function appRequestConfiguredEvent(event: Event) {
   const events = await contract.queryFilter(eventFilter, BLOCK_LOOK_BACK);
   for (const e of events) {
     if (e.blockNumber === blockNumber && e.transactionHash === transactionHash) {
-      const blockTimestamp = (await e.getBlock()).timestamp;
+      const block = await e.getBlock();
+      console.log("theblock", block);
       const args = ServiceRequestConfigSchema.parse({
         ...e.args,
         pTokenProviderTotal: e.args.pTokenProviderTotal.toString(),
@@ -40,10 +41,11 @@ export async function appRequestConfiguredEvent(event: Event) {
         providerLimit: e.args.providerLimit.toNumber(),
         reviewerLimit: e.args.reviewerLimit.toNumber(),
       });
+      console.log("new Date(block.timestamp)", new Date(block.timestamp));
       await indexServiceRequestEvent({
         address,
         blockNumber,
-        blockTimestamp: new Date(blockTimestamp),
+        blockTimestamp: new Date(block.timestamp),
         transactionHash,
         args,
       });

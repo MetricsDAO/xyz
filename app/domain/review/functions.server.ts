@@ -1,11 +1,11 @@
+import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
+import invariant from "tiny-invariant";
 import type { EvmAddress } from "~/domain/address";
-import type { ReviewContract, ReviewDoc, ReviewForm, ReviewSearch } from "~/domain/review/schemas";
+import type { ReviewContract, ReviewForm, ReviewSearch } from "~/domain/review/schemas";
 import { ReviewEventSchema, ReviewSchema } from "~/domain/review/schemas";
 import { mongo } from "../../services/mongo.server";
-import { nodeProvider } from "../../services/node.server";
-import { ScalableLikertEnforcement__factory } from "~/contracts/factories/ScalableLikertEnforcement__factory";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
@@ -60,30 +60,40 @@ export const findUserReview = async (submissionId: string, laborMarketAddress: E
 /**
  * Create a new ReviewDoc from a TracerEvent.
  */
-export const indexReview = async (event: TracerEvent) => {
+export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
-  const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
-
   const blockTimestamp = new Date(event.block.timestamp);
+  const { submissionId, reviewer, reviewScore, requestId, uri } = ReviewEventSchema.parse(event.decoded.inputs);
 
-  // hardocoding to ScalableLikertEnforcement for now (like it is in the labor market creation hook)
-  const enforceContract = ScalableLikertEnforcement__factory.connect(event.contract.address, nodeProvider);
-  const submissionToScore = await enforceContract.submissionToScore(contractAddress, submissionId, {
-    blockTag: event.block.number,
+  const submission = await mongo.submissions.findOne({
+    laborMarketAddress: contractAddress,
+    id: submissionId,
   });
 
-  const doc: Omit<ReviewDoc, "blockTimestamp"> = {
+  invariant(submission, "Submission not found when indexing review");
+
+  await mongo.submissions.updateOne(
+    { laborMarketAddress: contractAddress, id: submissionId },
+    {
+      $set: {
+        score: {
+          reviewCount: (submission.score?.reviewCount ?? 0) + 1,
+          reviewSum: BigNumber.from(submission.score?.reviewSum ?? 0)
+            .add(reviewScore)
+            .toNumber(),
+        },
+      },
+    }
+  );
+
+  await mongo.reviews.insertOne({
     laborMarketAddress: contractAddress,
-    serviceRequestId: requestId,
     submissionId: submissionId,
+    serviceRequestId: requestId,
     score: reviewScore,
     reviewer: reviewer,
     indexedAt: new Date(),
-  };
-
-  const submission = await mongo.submissions.findOne({
-    laborMarketAddress: doc.laborMarketAddress,
-    id: doc.submissionId,
+    blockTimestamp,
   });
 
   //log this event in user activity collection
@@ -101,29 +111,9 @@ export const indexReview = async (event: TracerEvent) => {
     iconType: "submission",
     actionName: "Submission",
     userAddress: reviewer,
-    blockTimestamp: blockTimestamp,
+    blockTimestamp,
     indexedAt: new Date(),
   });
-
-  await mongo.submissions.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, id: doc.submissionId },
-    {
-      $set: {
-        score: {
-          reviewCount: submissionToScore.reviewCount.toNumber(),
-          reviewSum: submissionToScore.reviewSum.toNumber(),
-          avg: submissionToScore.avg.toNumber(),
-          qualified: submissionToScore.qualified,
-        },
-      },
-    }
-  );
-
-  return mongo.reviews.updateOne(
-    { laborMarketAddress: doc.laborMarketAddress, submissionId: doc.submissionId, reviewer: doc.reviewer },
-    { $set: doc, $setOnInsert: { blockTimestamp } },
-    { upsert: true }
-  );
 };
 
 /**
