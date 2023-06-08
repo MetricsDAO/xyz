@@ -1,3 +1,4 @@
+import { Badge, Detail, DetailItem } from "~/components";
 import { Card } from "~/components/card";
 import { PermissionIcon } from "~/features/permission-icon";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
@@ -22,33 +23,111 @@ export default function MarketplaceIdPrerequesites() {
               </p>
               <Card className="p-4 space-y-2">
                 <div className="flex justify-between">
-                  <h3 className="font-medium mb-4">You must hold this badge enter submissions on challenges</h3>
+                  <h3 className="font-medium mb-4">Make Submissions on Challenges</h3>
                   <PermissionIcon isAllowed={canSubmit} />
                 </div>
+                {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired && (
+                  <p className="text-gray-500 text-sm mb-6">
+                    You must have at least {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired} badge(s)
+                  </p>
+                )}
+                {laborMarket.appData.prerequisites?.analyst.gatingType === "All" && (
+                  <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
+                )}
+                {laborMarket.appData.prerequisites?.analyst.gatingType === "Anyone" ? (
+                  <p>Anyone can!</p>
+                ) : (
+                  <>
+                    {laborMarket.appData.prerequisites?.analyst.badges.map((badge) => (
+                      <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
+                        <DetailItem title={badge.contractAddress}>
+                          <div className="flex gap-2 items-center">
+                            <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
+                            <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
+                          </div>
+                        </DetailItem>
+                        <DetailItem title="Min Balance">
+                          <Badge>{badge.minBadgeBalance}</Badge>
+                        </DetailItem>
+                        <DetailItem title="Max Balance">
+                          {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
+                        </DetailItem>
+                      </Detail>
+                    ))}
+                  </>
+                )}
               </Card>
               <Card className="p-4 space-y-2">
                 <div className="flex justify-between">
-                  <h3 className="font-medium mb-4">
-                    You must hold this badge to review and score submissions on challenges
-                  </h3>
+                  <h3 className="font-medium mb-4">Review and Score Submissions on Challenges</h3>
                   <PermissionIcon isAllowed={canReview} />
                 </div>
-                {/* <div className="text-xs text-gray-500">{maintainerData?.name}</div> */}
-                <div className="flex gap-2 items-center">
-                  {/* <img src={maintainerData?.image} alt="" className="h-4 w-4" /> */}
-                  {/* <p className="text-base text-[#252525]">{`${laborMarket.configuration.maintainerBadge.token} #${laborMarket.configuration.maintainerBadge.tokenId}`}</p> */}
-                </div>
+                {laborMarket.appData.prerequisites?.reviewer.numberBadgesRequired && (
+                  <p className="text-gray-500 text-sm mb-6">
+                    You must have at least {laborMarket.appData.prerequisites?.reviewer.numberBadgesRequired} badge(s)
+                  </p>
+                )}
+                {laborMarket.appData.prerequisites?.reviewer.gatingType === "All" && (
+                  <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
+                )}
+                {laborMarket.appData.prerequisites?.reviewer.gatingType === "Anyone" ? (
+                  <p>Anyone can!</p>
+                ) : (
+                  <>
+                    {laborMarket.appData.prerequisites?.reviewer.badges.map((badge) => (
+                      <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
+                        <DetailItem title={badge.contractAddress}>
+                          <div className="flex gap-2 items-center">
+                            <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
+                            <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
+                          </div>
+                        </DetailItem>
+                        <DetailItem title="Min Balance">
+                          <Badge>{badge.minBadgeBalance}</Badge>
+                        </DetailItem>
+                        <DetailItem title="Max Balance">
+                          {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
+                        </DetailItem>
+                      </Detail>
+                    ))}
+                  </>
+                )}
               </Card>
               <Card className="p-4 space-y-2">
                 <div className="flex justify-between">
                   <h3 className="font-medium mb-4">You must hold this badge to launch new challenges</h3>
                   <PermissionIcon isAllowed={canLaunchChallenges} />
                 </div>
-                {/* <div className="text-xs text-gray-500">{delegateData?.name}</div> */}
-                {/* <div className="flex gap-2 items-center">
-                  <img src={delegateData?.image} alt="" className="h-4 w-4" />
-                  <p className="text-base text-[#252525]">{`${laborMarket.configuration.delegateBadge.token} #${laborMarket.configuration.delegateBadge.tokenId}`}</p>
-                </div> */}
+                {laborMarket.appData.prerequisites?.sponsor.numberBadgesRequired && (
+                  <p className="text-gray-500 text-sm mb-6">
+                    You must have at least {laborMarket.appData.prerequisites?.sponsor.numberBadgesRequired} badge(s)
+                  </p>
+                )}
+                {laborMarket.appData.prerequisites?.sponsor.gatingType === "All" && (
+                  <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
+                )}
+                {laborMarket.appData.prerequisites?.sponsor.gatingType === "Anyone" ? (
+                  <p>Anyone can!</p>
+                ) : (
+                  <>
+                    {laborMarket.appData.prerequisites?.sponsor.badges.map((badge) => (
+                      <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
+                        <DetailItem title={badge.contractAddress}>
+                          <div className="flex gap-2 items-center">
+                            <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
+                            <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
+                          </div>
+                        </DetailItem>
+                        <DetailItem title="Min Balance">
+                          <Badge>{badge.minBadgeBalance}</Badge>
+                        </DetailItem>
+                        <DetailItem title="Max Balance">
+                          {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
+                        </DetailItem>
+                      </Detail>
+                    ))}
+                  </>
+                )}
               </Card>
             </div>
           </div>

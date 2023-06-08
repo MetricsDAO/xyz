@@ -23,7 +23,7 @@ export default function ServiceIdPrereqs() {
 
   invariant(laborMarket, "No labormarket found");
 
-  const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
+  //const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
 
   const { canSubmit, canReview } = usePrereqs({ laborMarket });
 
@@ -36,40 +36,76 @@ export default function ServiceIdPrereqs() {
       <div className="space-y-3">
         <Card className="p-5">
           <div className="flex justify-between">
-            <h3 className="font-medium mb-4">
-              You must hold this much rMETRIC to enter submissions for this challenge
-            </h3>
+            <h3 className="font-medium mb-4">Make Submissions</h3>
             <PermissionIcon isAllowed={canSubmit} />
           </div>
-          <Detail>
-            <DetailItem title="Min Balance">
-              <Badge>{laborMarket.configuration.reputationParams.submitMin} rMETRIC</Badge>
-            </DetailItem>
-            <DetailItem title="Max Balance">
-              {isUnlimitedSubmitRepMax(laborMarket) ? (
-                <Badge>Unlimited</Badge>
-              ) : (
-                <Badge>{laborMarket.configuration.reputationParams.submitMax} rMETRIC</Badge>
-              )}
-            </DetailItem>
-          </Detail>
+          {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired && (
+            <p className="text-gray-500 text-sm mb-6">
+              You must have at least {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired} badge(s)
+            </p>
+          )}
+          {laborMarket.appData.prerequisites?.analyst.gatingType === "All" && (
+            <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
+          )}
+          {laborMarket.appData.prerequisites?.analyst.gatingType === "Anyone" ? (
+            <p>Anyone can!</p>
+          ) : (
+            <>
+              {laborMarket?.appData.prerequisites?.analyst.badges.map((badge) => (
+                <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
+                  <DetailItem title={badge.contractAddress}>
+                    <div className="flex gap-2 items-center">
+                      <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
+                      <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
+                    </div>
+                  </DetailItem>
+                  <DetailItem title="Min Balance">
+                    <Badge>{badge.minBadgeBalance}</Badge>
+                  </DetailItem>
+                  <DetailItem title="Max Balance">
+                    {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
+                  </DetailItem>
+                </Detail>
+              ))}
+            </>
+          )}
         </Card>
 
         <Card className="p-5">
           <div className="flex justify-between">
-            <h3 className="font-medium mb-4">
-              You must hold this badge to review and score submissions on this challenge
-            </h3>
+            <h3 className="font-medium mb-4">Review Submissions</h3>
             <PermissionIcon isAllowed={canReview} />
           </div>
-          <Detail>
-            <DetailItem title={maintainerData?.name}>
-              <div className="flex gap-2 items-center">
-                <img src={maintainerData?.image} alt="" className="h-4 w-4" />
-                <p className="text-base text-[#252525]">{`${laborMarket.configuration.maintainerBadge.token} #${laborMarket.configuration.maintainerBadge.tokenId}`}</p>
-              </div>
-            </DetailItem>
-          </Detail>
+          {laborMarket.appData.prerequisites?.reviewer.numberBadgesRequired && (
+            <p className="text-gray-500 text-sm mb-6">
+              You must have at least {laborMarket.appData.prerequisites?.reviewer.numberBadgesRequired} badge(s)
+            </p>
+          )}
+          {laborMarket.appData.prerequisites?.reviewer.gatingType === "All" && (
+            <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
+          )}
+          {laborMarket.appData.prerequisites?.reviewer.gatingType === "Anyone" ? (
+            <p>Anyone can!</p>
+          ) : (
+            <>
+              {laborMarket.appData.prerequisites?.reviewer.badges.map((badge) => (
+                <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
+                  <DetailItem title={badge.contractAddress}>
+                    <div className="flex gap-2 items-center">
+                      <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
+                      <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
+                    </div>
+                  </DetailItem>
+                  <DetailItem title="Min Balance">
+                    <Badge>{badge.minBadgeBalance}</Badge>
+                  </DetailItem>
+                  <DetailItem title="Max Balance">
+                    {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
+                  </DetailItem>
+                </Detail>
+              ))}
+            </>
+          )}
         </Card>
       </div>
     </section>
