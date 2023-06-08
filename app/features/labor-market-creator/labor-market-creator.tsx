@@ -12,7 +12,7 @@ import { postNewEvent } from "~/utils/fetch";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
 import { getRewardCurveArgs } from "./reward-curve-constants";
-import { s } from "vitest/dist/index-1e9f7f83";
+import { LaborMarketAppDataSchema } from "~/domain/labor-market/schemas";
 
 export function LaborMarketCreator({
   defaultValues,
@@ -42,9 +42,17 @@ export function LaborMarketCreator({
   });
 
   const onSubmit = (data: MarketplaceForm) => {
+    const metadata = LaborMarketAppDataSchema.parse({
+      ...data.appData,
+      prerequisites: {
+        sponsor: data.sponsor,
+        analyst: data.analyst,
+        reviewer: data.reviewer,
+      },
+    });
     // write to contract with values
     transactor.start({
-      metadata: data.appData,
+      metadata: metadata,
       config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values: data }),
     });
   };

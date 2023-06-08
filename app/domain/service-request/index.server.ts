@@ -21,6 +21,7 @@ import { ClaimToReviewEventSchema } from "../claim-to-review";
 import { getAddress } from "ethers/lib/utils.js";
 import { ClaimToSubmitEventSchema } from "../claim-to-submit";
 import { z } from "zod";
+import { fromUnixTimestamp } from "~/utils/date";
 
 const BLOCK_LOOK_BACK = -150; // Look back 150 blocks (~5 minutes on Polygon)
 
@@ -31,7 +32,7 @@ export async function appRequestConfiguredEvent(event: Event) {
   const events = await contract.queryFilter(eventFilter, BLOCK_LOOK_BACK);
   for (const e of events) {
     if (e.blockNumber === blockNumber && e.transactionHash === transactionHash) {
-      const blockTimestamp = (await e.getBlock()).timestamp;
+      const block = await e.getBlock();
       const args = ServiceRequestConfigSchema.parse({
         ...e.args,
         pTokenProviderTotal: e.args.pTokenProviderTotal.toString(),
@@ -43,7 +44,7 @@ export async function appRequestConfiguredEvent(event: Event) {
       await indexServiceRequestEvent({
         address,
         blockNumber,
-        blockTimestamp: new Date(blockTimestamp),
+        blockTimestamp: fromUnixTimestamp(block.timestamp),
         transactionHash,
         args,
       });
