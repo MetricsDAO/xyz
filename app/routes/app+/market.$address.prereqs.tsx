@@ -1,4 +1,4 @@
-import { Badge, Detail, DetailItem } from "~/components";
+import { GatingBadge } from "~/components";
 import { Card } from "~/components/card";
 import { PermissionIcon } from "~/features/permission-icon";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
@@ -6,8 +6,6 @@ import { usePrereqs } from "~/hooks/use-prereqs";
 
 export default function MarketplaceIdPrerequesites() {
   const { laborMarket } = useMarketAddressData();
-
-  // const maintainerData = useTokenData(laborMarket.configuration.deployer);
 
   const { canLaunchChallenges, canSubmit, canReview } = usePrereqs({ laborMarket });
 
@@ -39,20 +37,9 @@ export default function MarketplaceIdPrerequesites() {
                 ) : (
                   <>
                     {laborMarket.appData.prerequisites?.analyst.badges.map((badge) => (
-                      <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
-                        <DetailItem title={badge.contractAddress}>
-                          <div className="flex gap-2 items-center">
-                            <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
-                            <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
-                          </div>
-                        </DetailItem>
-                        <DetailItem title="Min Balance">
-                          <Badge>{badge.minBadgeBalance}</Badge>
-                        </DetailItem>
-                        <DetailItem title="Max Balance">
-                          {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
-                        </DetailItem>
-                      </Detail>
+                      <div key={`${badge.contractAddress}_${badge.tokenId}`}>
+                        <GatingBadge badge={badge} />
+                      </div>
                     ))}
                   </>
                 )}
@@ -75,20 +62,9 @@ export default function MarketplaceIdPrerequesites() {
                 ) : (
                   <>
                     {laborMarket.appData.prerequisites?.reviewer.badges.map((badge) => (
-                      <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
-                        <DetailItem title={badge.contractAddress}>
-                          <div className="flex gap-2 items-center">
-                            <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
-                            <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
-                          </div>
-                        </DetailItem>
-                        <DetailItem title="Min Balance">
-                          <Badge>{badge.minBadgeBalance}</Badge>
-                        </DetailItem>
-                        <DetailItem title="Max Balance">
-                          {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
-                        </DetailItem>
-                      </Detail>
+                      <div key={`${badge.contractAddress}_${badge.tokenId}`}>
+                        <GatingBadge badge={badge} />
+                      </div>
                     ))}
                   </>
                 )}
@@ -111,20 +87,9 @@ export default function MarketplaceIdPrerequesites() {
                 ) : (
                   <>
                     {laborMarket.appData.prerequisites?.sponsor.badges.map((badge) => (
-                      <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
-                        <DetailItem title={badge.contractAddress}>
-                          <div className="flex gap-2 items-center">
-                            <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
-                            <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
-                          </div>
-                        </DetailItem>
-                        <DetailItem title="Min Balance">
-                          <Badge>{badge.minBadgeBalance}</Badge>
-                        </DetailItem>
-                        <DetailItem title="Max Balance">
-                          {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
-                        </DetailItem>
-                      </Detail>
+                      <div key={`${badge.contractAddress}_${badge.tokenId}`}>
+                        <GatingBadge badge={badge} />
+                      </div>
                     ))}
                   </>
                 )}

@@ -1,14 +1,11 @@
 import { useRouteData } from "remix-utils";
 import invariant from "tiny-invariant";
-import { Badge } from "~/components/badge";
 import { Card } from "~/components/card";
-import { Detail, DetailItem } from "~/components/detail";
 import type { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { PermissionIcon } from "~/features/permission-icon";
 import { usePrereqs } from "~/hooks/use-prereqs";
-import { useTokenData } from "~/hooks/use-token-data";
 import type { findServiceRequest } from "~/domain/service-request/functions.server";
-import { isUnlimitedSubmitRepMax } from "~/utils/helpers";
+import { GatingBadge } from "~/components";
 
 export default function ServiceIdPrereqs() {
   const data = useRouteData<{
@@ -22,8 +19,6 @@ export default function ServiceIdPrereqs() {
   const { laborMarket } = data;
 
   invariant(laborMarket, "No labormarket found");
-
-  //const maintainerData = useTokenData(laborMarket.configuration.maintainerBadge);
 
   const { canSubmit, canReview } = usePrereqs({ laborMarket });
 
@@ -52,20 +47,9 @@ export default function ServiceIdPrereqs() {
           ) : (
             <>
               {laborMarket?.appData.prerequisites?.analyst.badges.map((badge) => (
-                <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
-                  <DetailItem title={badge.contractAddress}>
-                    <div className="flex gap-2 items-center">
-                      <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
-                      <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
-                    </div>
-                  </DetailItem>
-                  <DetailItem title="Min Balance">
-                    <Badge>{badge.minBadgeBalance}</Badge>
-                  </DetailItem>
-                  <DetailItem title="Max Balance">
-                    {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
-                  </DetailItem>
-                </Detail>
+                <div key={`${badge.contractAddress}_${badge.tokenId}`}>
+                  <GatingBadge badge={badge} />
+                </div>
               ))}
             </>
           )}
@@ -89,20 +73,9 @@ export default function ServiceIdPrereqs() {
           ) : (
             <>
               {laborMarket.appData.prerequisites?.reviewer.badges.map((badge) => (
-                <Detail key={`${badge.contractAddress}_${badge.tokenId}`}>
-                  <DetailItem title={badge.contractAddress}>
-                    <div className="flex gap-2 items-center">
-                      <img src={"maintainerData?.image"} alt="" className="h-4 w-4" />
-                      <p className="text-base text-[#252525]">{`${badge.contractAddress} #${badge.tokenId}`}</p>
-                    </div>
-                  </DetailItem>
-                  <DetailItem title="Min Balance">
-                    <Badge>{badge.minBadgeBalance}</Badge>
-                  </DetailItem>
-                  <DetailItem title="Max Balance">
-                    {badge.maxBadgeBalance ? <Badge>{badge.maxBadgeBalance}</Badge> : <Badge>Unlimited</Badge>}
-                  </DetailItem>
-                </Detail>
+                <div key={`${badge.contractAddress}_${badge.tokenId}`}>
+                  <GatingBadge badge={badge} />
+                </div>
               ))}
             </>
           )}

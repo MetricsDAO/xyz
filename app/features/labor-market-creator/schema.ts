@@ -17,6 +17,8 @@ export const BadgeSchema = z.preprocess(
   })
 );
 
+export type BadgeData = z.infer<typeof BadgeSchema>;
+
 export const GatingSchema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
   numberBadgesRequired: z.coerce.number().optional(),
