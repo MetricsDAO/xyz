@@ -10,7 +10,7 @@ export const indexerRequestFulfilledEvent = async (event: TracerEvent) => {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
 
   await createSubmission(laborMarketAddress, new Date(event.block.timestamp), config);
-  const submission = await getSubmission(laborMarketAddress, config.submissionId);
+  const submission = await getSubmission(laborMarketAddress, config.requestId, config.submissionId);
   invariant(submission, "Submission should exist after creation");
 
   //log this event in user activity collection

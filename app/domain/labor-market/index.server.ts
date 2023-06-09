@@ -37,6 +37,7 @@ export async function appLaborMarketConfiguredEvent(event: Event) {
 }
 
 export async function indexerLaborMarketConfiguredEvent(event: TracerEvent) {
+  console.log("event", event);
   const address = EvmAddressSchema.parse(event.contract.address);
   const inputs = LaborMarketConfigSchema.parse(event.decoded.inputs);
   await indexLaborMarketEvent({

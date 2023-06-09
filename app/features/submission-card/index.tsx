@@ -14,7 +14,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
-        to={`/app/market/${submission.laborMarketAddress}/submission/${submission.id}`}
+        to={`/app/market/${submission.laborMarketAddress}/request/${submission.serviceRequestId}/submission/${submission.id}`}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
@@ -32,7 +32,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
             ) : (
               <></>
             )}
-            <p>{submission.score?.reviewSum ?? 0} reviews</p>
+            <p>{submission.score?.reviewCount ?? 0} reviews</p>
           </div>
         </div>
       </Link>
