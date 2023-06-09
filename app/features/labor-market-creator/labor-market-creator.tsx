@@ -12,7 +12,6 @@ import { postNewEvent } from "~/utils/fetch";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
 import { getRewardCurveArgs } from "./reward-curve-constants";
-import { s } from "vitest/dist/index-1e9f7f83";
 
 export function LaborMarketCreator({
   defaultValues,
