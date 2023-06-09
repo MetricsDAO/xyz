@@ -206,10 +206,7 @@ const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionW
   return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
 };
 
-type SearchSubmissionsWithReward = Pick<
-  RewardsSearch,
-  "serviceProvider" | "q" | "token" | "isPastEnforcementExpiration"
->;
+type SearchSubmissionsWithReward = Pick<RewardsSearch, "fulfiller" | "q" | "token" | "isPastEnforcementExpiration">;
 export const countSubmissionsWithRewards = async (params: SearchSubmissionsWithReward) => {
   const agg = await mongo.submissions
     .aggregate([
@@ -227,7 +224,7 @@ const searchSubmissionsPipeline = (params: SearchSubmissionsWithReward) => {
     {
       $match: {
         $and: [
-          params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+          params.fulfiller ? { "configuration.fulfiller": params.fulfiller } : {},
           params.q ? { $text: { $search: params.q } } : {},
         ],
       },
