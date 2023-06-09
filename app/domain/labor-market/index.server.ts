@@ -11,6 +11,7 @@ import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import { safeCreateEvent } from "../event/functions.server";
 import type { Event } from "../event/schema";
+import { fromUnixTimestamp } from "~/utils/date";
 
 const BLOCK_LOOK_BACK = -150; // Look back 150 blocks (~5 minutes on Polygon)
 
@@ -21,12 +22,12 @@ export async function appLaborMarketConfiguredEvent(event: Event) {
   const events = await contract.queryFilter(eventFilter, BLOCK_LOOK_BACK);
   for (const e of events) {
     if (e.blockNumber === blockNumber && e.transactionHash === transactionHash) {
-      const blockTimestamp = (await e.getBlock()).timestamp;
+      const block = await e.getBlock();
       const args = LaborMarketConfigSchema.parse(e.args);
       await indexLaborMarketEvent({
         address,
         blockNumber,
-        blockTimestamp: new Date(blockTimestamp),
+        blockTimestamp: fromUnixTimestamp(block.timestamp),
         transactionHash,
         args,
       });
@@ -65,11 +66,19 @@ async function indexLaborMarketEvent(event: {
     logger.info("Already seen a similar event. Skipping indexing.");
     return;
   }
-  await createLaborMarket({
-    address: event.address,
-    blockTimestamp: event.blockTimestamp,
-    configuration: event.args,
-  });
+
+  // Let's not crash the indexer for a bad labor market
+  try {
+    await createLaborMarket({
+      address: event.address,
+      blockTimestamp: event.blockTimestamp,
+      configuration: event.args,
+    });
+  } catch (e) {
+    logger.warn("Failed to index labor market event", e);
+    return;
+  }
+
   const lm = await getLaborMarket(event.address);
   invariant(lm, "Labor market should exist after creation");
 

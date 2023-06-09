@@ -17,6 +17,8 @@ export const BadgeSchema = z.preprocess(
   })
 );
 
+export type BadgeData = z.infer<typeof BadgeSchema>;
+
 export const GatingSchema = z.object({
   gatingType: BadgeGatingType.default("Anyone"),
   numberBadgesRequired: z.coerce.number().optional(),
@@ -27,7 +29,7 @@ export type GatingData = z.infer<typeof GatingSchema>;
 
 export const AppDataSchema = z.object({
   title: z.string().min(1),
-  type: LaborMarketTypeSchema.default("analyze"),
+  type: z.enum(["brainstorm", "analyze"]),
   description: z.string().min(1),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),

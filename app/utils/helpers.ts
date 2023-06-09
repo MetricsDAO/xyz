@@ -1,6 +1,5 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
-import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { claimDate } from "./date";
@@ -95,10 +94,6 @@ export function displayBalance(balance: BigNumber): string {
   }
 }
 
-export function isUnlimitedSubmitRepMax(laborMarket: LaborMarketDoc) {
-  return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
-}
-
 export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam") {
   switch (score) {
     case "stellar":
@@ -121,5 +116,5 @@ export function submissionCreatedDate(s: SubmissionDoc): Date {
 
 export function serviceRequestCreatedDate(s: ServiceRequestDoc): Date {
   // Use indexedAt as fallback until the service request is indexed
-  return s.blockTimestamp ?? s.indexedAt;
+  return s.blockTimestamp ?? s.indexData.indexedAt;
 }

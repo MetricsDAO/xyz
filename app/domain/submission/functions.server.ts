@@ -23,8 +23,8 @@ import { SubmissionContractSchema } from "./schemas";
  * If it doesn't exist, it probably means that it hasn't been indexed yet so we
  * index it eagerly and return the result.
  */
-export async function getSubmission(address: EvmAddress, id: string) {
-  return await mongo.submissions.findOne({ id, laborMarketAddress: address });
+export async function getSubmission(laborMarketAddress: EvmAddress, serviceRequestId: string, submissionId: string) {
+  return await mongo.submissions.findOne({ laborMarketAddress, serviceRequestId, id: submissionId });
 }
 
 /**
