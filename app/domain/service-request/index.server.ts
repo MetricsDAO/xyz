@@ -41,6 +41,7 @@ export async function appRequestConfiguredEvent(event: Event) {
         providerLimit: e.args.providerLimit.toNumber(),
         reviewerLimit: e.args.reviewerLimit.toNumber(),
       });
+      console.log("new Date(block.timestamp)", new Date(block.timestamp));
       await indexServiceRequestEvent({
         address,
         blockNumber,
@@ -168,7 +169,7 @@ export const indexerReviewSignalEvent = async (event: TracerEvent) => {
 
   return mongo.serviceRequests.updateOne(
     { laborMarketAddress, id: inputs.requestId },
-    { $push: { "indexData.claimsToReview": { signaler: inputs.signaler, signalAmount: inputs.quantity } } }
+    { $push: { "indexData.claimsToReview": { signaler: inputs.signaler, signalAmount: Number(inputs.quantity) } } }
   );
 };
 

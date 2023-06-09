@@ -66,11 +66,19 @@ async function indexLaborMarketEvent(event: {
     logger.info("Already seen a similar event. Skipping indexing.");
     return;
   }
-  await createLaborMarket({
-    address: event.address,
-    blockTimestamp: event.blockTimestamp,
-    configuration: event.args,
-  });
+
+  // Let's not crash the indexer for a bad labor market
+  try {
+    await createLaborMarket({
+      address: event.address,
+      blockTimestamp: event.blockTimestamp,
+      configuration: event.args,
+    });
+  } catch (e) {
+    logger.warn("Failed to index labor market event", e);
+    return;
+  }
+
   const lm = await getLaborMarket(event.address);
   invariant(lm, "Labor market should exist after creation");
 

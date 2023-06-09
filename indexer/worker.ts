@@ -1,6 +1,6 @@
 import * as pine from "pinekit";
 import { indexerLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
-import { indexerRequestReviewedEvent } from "~/domain/review/functions.server";
+import { indexerRequestReviewedEvent } from "~/domain/review/index.server";
 import {
   indexerRequestConfiguredEvent,
   indexerRequestSignalEvent,

@@ -50,6 +50,7 @@ import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
+  requestId: z.string(),
   submissionId: z.string(),
 });
 
@@ -57,7 +58,7 @@ const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
-  const { address, submissionId } = paramsSchema.parse(data.params);
+  const { address, submissionId, requestId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
@@ -65,7 +66,7 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const tokens = await listTokens();
 
-  const submission = await getSubmission(address, submissionId);
+  const submission = await getSubmission(address, requestId, submissionId);
   if (!submission) {
     throw notFound({ submissionId });
   }
@@ -109,7 +110,8 @@ export default function ChallengeSubmission() {
   // });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
-  const score = submission.score?.avg;
+  const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
+  console.log("score", submission.score);
 
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 
