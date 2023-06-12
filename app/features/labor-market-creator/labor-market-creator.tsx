@@ -88,12 +88,11 @@ function configureFromValues(
   contracts: ReturnType<typeof useContracts>,
   inputs: { owner: EvmAddress; cid: string; values: MarketplaceForm }
 ) {
-  const { owner, cid, values } = inputs;
+  const { owner, cid } = inputs;
 
   const enforcement = inputs.values.appData.enforcement;
 
   const curveProperties = getRewardCurveArgs(enforcement);
-  console.log("CURVE PROPERTIES", curveProperties);
 
   const enforcementAddress = contracts.BucketEnforcement.address;
 
@@ -104,7 +103,6 @@ function configureFromValues(
     LaborMarket__factory.createInterface().getSighash("signal(uint256)") as EvmAddress,
     LaborMarket__factory.createInterface().getSighash("signalReview(uint256,uint24)") as EvmAddress,
   ];
-  console.log("VALUES", inputs.values);
 
   const sponsorBadges = inputs.values.sponsor.badges.map((badge) => {
     return {

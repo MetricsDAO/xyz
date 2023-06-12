@@ -109,7 +109,6 @@ export default function ChallengeSubmission() {
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
-  console.log("score", submission.score);
 
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 

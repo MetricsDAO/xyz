@@ -182,7 +182,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
         <Header.Column>Submitted</Header.Column>
       </Header>
       {submissions.map((s) => {
-        const averageScore = (s.score?.reviewSum || 0) / (s.score?.reviewCount || 0);
+        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
 
         return (
           <Row asChild columns={12} key={`${s.laborMarketAddress}_${s.id}`}>
@@ -195,7 +195,8 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
               <Row.Column span={3}>
                 <div className="flex flex-wrap gap-1">
                   {s.appData?.title}
-                  <p className="text-neutral-400 font-thin">({averageScore})</p>
+
+                  {score !== undefined && <p className="text-neutral-400 font-thin">({score})</p>}
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />

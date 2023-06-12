@@ -44,7 +44,6 @@ export function AnalystForm({
 
   const formData = watch();
 
-
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(selectedSubmitDate, selectedSubmitTime)));
 

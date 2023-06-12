@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
-import { Combobox, Error, Field, FormProgress, Input, Label, Select, Textarea } from "~/components";
+import { Combobox, Error, Field, FormProgress, Input, Label, Select } from "~/components";
 import { CurveChart } from "~/components/curve-chart";
 import type { AppData } from "./schema";
 import { AppDataSchema } from "./schema";
-import { useContracts, useProjects, useTokens } from "~/hooks/use-root-data";
+import { useProjects, useTokens } from "~/hooks/use-root-data";
 import { ClientOnly } from "remix-utils";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 

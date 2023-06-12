@@ -8,7 +8,7 @@ import { mongo } from "../../services/mongo.server";
 export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
   const blockTimestamp = new Date(event.block.timestamp);
-  const { submissionId, reviewer, reviewScore, requestId, uri } = ReviewEventSchema.parse(event.decoded.inputs);
+  const { submissionId, reviewer, reviewScore, requestId } = ReviewEventSchema.parse(event.decoded.inputs);
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,

@@ -8,7 +8,7 @@ type Props = {
   submissionId: string;
   serviceRequestId: string;
 };
-export type Reward = ReturnType<typeof useReward>["data"];
+// export type Reward = ReturnType<typeof useReward>["data"];
 
 /**
  * Get the user's reward for a submission. The payment token and reputation token.

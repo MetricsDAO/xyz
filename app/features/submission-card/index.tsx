@@ -10,7 +10,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
-  const score = (submission.score?.reviewSum || 0) / (submission.score?.reviewCount || 0);
+  const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
