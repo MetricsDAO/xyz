@@ -190,7 +190,10 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
               </Row.Column>
 
               <Row.Column>
-                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+                <TokenBadgeByAddress
+                  address={sr.configuration.pTokenProvider}
+                  quantity={sr.configuration.pTokenProviderTotal}
+                />
               </Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExp} />
@@ -236,7 +239,10 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
               </div>
 
               <div>Reward Pool</div>
-              <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+              <TokenBadgeByAddress
+                address={sr.configuration.pTokenProvider}
+                quantity={sr.configuration.pTokenProviderTotal}
+              />
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
                 <Countdown date={sr.configuration?.submissionExp} />

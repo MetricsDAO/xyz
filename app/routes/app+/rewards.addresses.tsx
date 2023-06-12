@@ -56,7 +56,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const user = await requireUser(data.request, "/app/login?redirectto=app/rewards/addresses");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissionsWithRewards({
-    serviceProvider: user.address as EvmAddress,
+    fulfiller: user.address as EvmAddress,
     isPastEnforcementExpiration: true,
   });
   const userNetworks = wallets.map((w) => w.chain.name);

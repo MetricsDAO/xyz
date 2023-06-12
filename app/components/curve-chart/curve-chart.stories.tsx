@@ -6,7 +6,7 @@ export const Index = () => {
       <h3>Default - Constant</h3>
       <CurveChart type="Constant" />
       <h3>400 SOL - Aggressive</h3>
-      <CurveChart type="Aggresive" amount={"400"} token="SOL" />
+      <CurveChart type="Aggressive" amount={"400"} token="SOL" />
       <h3>25 SOL - Acceptable</h3>
       <CurveChart type="Acceptable" amount={"25"} token="SOL" />
       <h3>400 SOL - Pass / Fail</h3>

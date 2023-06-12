@@ -9,7 +9,7 @@ export async function fetchSignatures(claimerAddress: EvmAddress, submissions: S
       submissionID: Number(s.id),
       claimerAddress: claimerAddress,
       marketplaceAddress: s.laborMarketAddress,
-      iouAddress: s.sr.configuration.pToken,
+      iouAddress: s.sr.configuration.pTokenProvider,
       type: "submission",
       amount: s.serviceProviderReward.reward.paymentTokenAmount,
     };

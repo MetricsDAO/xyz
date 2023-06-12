@@ -103,11 +103,11 @@ export default function ChallengeSubmission() {
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
   // TODO: Rewards
-  // const { data: reward } = useReward({
-  //   laborMarketAddress: submission.laborMarketAddress,
-  //   submissionId: submission.id,
-  //   tokenDecimals: token?.decimals ?? 18,
-  // });
+  const { data: reward } = useReward({
+    laborMarketAddress: submission.laborMarketAddress,
+    submissionId: submission.id,
+    serviceRequestId: submission.serviceRequestId,
+  });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
