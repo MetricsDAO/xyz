@@ -24,7 +24,6 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
-import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
@@ -39,14 +38,13 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
-import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
 import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
+import { claimToReviewDeadline, submissionCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,

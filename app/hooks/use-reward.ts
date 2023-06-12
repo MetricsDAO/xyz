@@ -14,15 +14,16 @@ export type Reward = ReturnType<typeof useReward>["data"];
  * Get the user's reward for a submission. The payment token and reputation token.
  */
 export function useReward({ laborMarketAddress, submissionId, serviceRequestId }: Props) {
-  const contracts = useContracts();
+  // const contracts = useContracts();
 
-  return useContractRead({
-    address: contracts.BucketEnforcement.address,
-    abi: contracts.BucketEnforcement.abi,
-    functionName: "getRewards",
-    args: [laborMarketAddress, BigNumber.from(serviceRequestId), BigNumber.from(submissionId)],
-    select(data) {
-      return data;
-    },
-  });
+  // return useContractRead({
+  //   address: contracts.BucketEnforcement.address,
+  //   abi: contracts.BucketEnforcement.abi,
+  //   functionName: "getRewards",
+  //   args: [laborMarketAddress, BigNumber.from(serviceRequestId), BigNumber.from(submissionId)],
+  //   select(data) {
+  //     return data;
+  //   },
+  // });
+  return BigNumber.from(2);
 }

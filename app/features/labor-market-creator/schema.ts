@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "~/domain/address";
-import { RewardCurveTypeSchema } from "~/domain/labor-market/schemas";
 import { arrayToObject } from "~/domain/shared/utils";
 
 export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);

@@ -1,13 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { DefaultValues } from "react-hook-form";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { ClientOnly } from "remix-utils";
 import { Combobox, Error, Field, FormProgress, Input, Label, Select } from "~/components";
+import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import type { EvmAddress } from "~/domain/address";
-import { useContracts, useProjects, useTokens } from "~/hooks/use-root-data";
+import { useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
-import { ClientOnly } from "remix-utils";
-import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 
 export function OverviewForm({
   defaultValues,
