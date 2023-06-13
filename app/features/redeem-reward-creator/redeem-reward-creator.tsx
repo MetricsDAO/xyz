@@ -121,7 +121,7 @@ function configureClaim({
     address: inputs.laborMarketAddress,
     abi: contracts.LaborMarket.abi,
     functionName: "claim",
-    args: [BigNumber.from(inputs.submissionId), inputs.payoutAddress],
+    args: [BigNumber.from(inputs.submissionId), BigNumber.from(inputs.payoutAddress)],
   });
 }
 

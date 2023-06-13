@@ -55,7 +55,7 @@ export default function SubmissionCreator({
             `/app/market/${laborMarketAddress}/submission/${serviceRequestId}/${event.args["submissionId"]?.toString()}`
           );
       },
-      [navigate, laborMarketAddress]
+      [laborMarketAddress, navigate, serviceRequestId]
     ),
   });
 

@@ -24,7 +24,6 @@ import type { Project } from "@prisma/client";
 import { ProjectBadges } from "~/features/project-badges";
 import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
-import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { Pagination } from "~/components/pagination";
@@ -178,36 +177,35 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
     <Table>
       <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
         <Header.Column span={3}>Title</Header.Column>
-        <Header.Column span={2}>User rMETRIC</Header.Column>
         <Header.Column span={3}>Challenge</Header.Column>
         <Header.Column span={2}>Chain/Project</Header.Column>
         <Header.Column>Submitted</Header.Column>
       </Header>
       {submissions.map((s) => {
+        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
+
         return (
           <Row asChild columns={12} key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
               to={`/app/market/${s.laborMarketAddress}/submission/${s.serviceRequestId}/${s.id}`}
               className={clsx("text-sm text-stone-500", {
-                "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.serviceProvider,
+                "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.fulfiller,
               })}
             >
               <Row.Column span={3}>
                 <div className="flex flex-wrap gap-1">
                   {s.appData?.title}
-                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
+
+                  {score !== undefined && <p className="text-neutral-400 font-thin">({score})</p>}
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
                   <CopyToClipboard
                     className="text-stone-500"
-                    content={truncateAddress(s.configuration.serviceProvider)}
+                    content={truncateAddress(s.configuration.fulfiller)}
                     iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                   />
                 </div>
-              </Row.Column>
-              <Row.Column span={2}>
-                <RMetricBadge address={s.configuration.serviceProvider} />
               </Row.Column>
               <Row.Column span={3}>{s.sr.appData?.title}</Row.Column>
               <Row.Column span={2}>
@@ -228,30 +226,30 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
   return (
     <div className="space-y-4">
       {submissions.map((s) => {
+        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
+
         return (
           <Card asChild key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
               to={`/app/market/${s.laborMarketAddress}/submission/${s.serviceRequestId}/${s.id}`}
               className={clsx("text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
-                "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.serviceProvider,
+                "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.fulfiller,
               })}
             >
               <div className="col-span-2">
                 <div className="flex gap-1">
                   {s.appData?.title}
-                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
+                  <p className="text-neutral-400 font-thin">({score})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
                   <CopyToClipboard
                     className="text-stone-500"
-                    content={truncateAddress(s.configuration.serviceProvider)}
+                    content={truncateAddress(s.configuration.fulfiller)}
                     iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                   />
                 </div>
               </div>
-              <p>User rMETRIC</p>
-              <RMetricBadge address={s.configuration.serviceProvider} />
               <p>Challenge</p>
               <p>{s.sr.appData?.title}</p>
               <p>Chain/Project</p>

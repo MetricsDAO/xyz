@@ -5,7 +5,7 @@ export function CurveChart({
   token = "USDC",
   amount = "100",
 }: {
-  type: "Constant" | "Aggresive" | "Acceptable" | "Pass / Fail";
+  type: "Constant" | "Aggressive" | "Acceptable" | "Pass / Fail";
   token?: string;
   amount?: string;
 }) {
@@ -16,7 +16,7 @@ export function CurveChart({
         <h3 className="font-semibold text-neutral-400">max earn</h3>
       </div>
       {type === "Constant" && <ConstantCurve token={token} amount={amount} />}
-      {type === "Aggresive" && <AggresiveCurve token={token} amount={amount} />}
+      {type === "Aggressive" && <AggresiveCurve token={token} amount={amount} />}
       {type === "Acceptable" && <AcceptableCurve token={token} amount={amount} />}
       {type === "Pass / Fail" && <PassFailCurve token={token} amount={amount} />}
       <div className="space-y-1">
