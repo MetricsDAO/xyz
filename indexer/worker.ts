@@ -40,7 +40,6 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  console.log("event", event);
   return indexerLaborMarketConfiguredEvent(event);
 });
 
