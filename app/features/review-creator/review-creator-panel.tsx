@@ -1,10 +1,11 @@
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
-import { Button, Error, Field, Label } from "~/components";
-import type { ReviewFormValues } from "./review-creator-values";
+import { Button, Error, Field, Label, scoreToLabel } from "~/components";
 import { useState } from "react";
 import { ClientOnly } from "remix-utils";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { SCORE_COLOR } from "~/utils/constants";
 
 export function ReviewCreatorPanel() {
   const [selectedScore, setValue] = useState(2);
@@ -14,7 +15,7 @@ export function ReviewCreatorPanel() {
       comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
       user: "2323",
       time: Date(),
-      score: 4,
+      score: 1,
     },
     { comment: "lol", user: "2323", time: Date(), score: 4 },
     {
@@ -23,33 +24,52 @@ export function ReviewCreatorPanel() {
       time: Date(),
       score: 4,
     },
-    { comment: "lol", user: "2323", time: Date(), score: 4 },
+    { comment: "lol", user: "2323", time: Date(), score: 0 },
     {
       comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
       user: "2323",
       time: Date(),
-      score: 4,
+      score: 2,
     },
-    { comment: "lol", user: "2323", time: Date(), score: 4 },
+    { comment: "lol", user: "2323", time: Date(), score: 3 },
   ];
 
   return (
-    <div className="mx-auto max-w-2xl border">
+    <div className="mx-auto max-w-2xl border h-screen">
       <div className="flex border justify-between bg-white p-3">
         <div className="flex space-x-4">
-          <p>Arrows</p>
+          <div className="flex gap-2">
+            <div className="bg-gray-100 p-1 rounded-full">
+              <ChevronLeftIcon className="text-black h-4" />
+            </div>
+            <p className="text-sm">4/25</p>
+            <div className="bg-gray-100 p-1 rounded-full">
+              <ChevronRightIcon className="text-black h-4" />
+            </div>
+          </div>
           <p>User</p>
           <p>Time</p>
         </div>
         <p>Close arrow?</p>
       </div>
-      <div className="space-y-4 bg-blue-500 p-10">
+      <div className="space-y-4 bg-blue-300 p-10 overflow-y-auto h-3/5">
         {reviews.map((r) => (
-          <div key={r.time} className="bg-white border rounded-md">
-            <p>User</p>
-            <p>Time</p>
-            <p>Score</p>
-            <p>Comment</p>
+          <div key={r.time} className="bg-white border rounded-md p-6 space-y-3">
+            <div className="flex justify-between">
+              <div className="flex gap-2">
+                <p>User</p>
+                <p className="text-stone-500 text-sm">Time</p>
+              </div>
+              <div
+                className={clsx(
+                  SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
+                  "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
+                )}
+              >
+                <p>{scoreToLabel(Number(r.score) * 25)}</p>
+              </div>
+            </div>
+            <p className="text-stone-500 text-sm">{r.comment}</p>
           </div>
         ))}
       </div>
