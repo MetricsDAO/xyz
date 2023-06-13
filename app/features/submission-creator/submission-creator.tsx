@@ -50,9 +50,12 @@ export default function SubmissionCreator({
       (receipt) => {
         const iface = LaborMarket__factory.createInterface();
         const event = getEventFromLogs(iface, receipt.logs, "RequestFulfilled", laborMarketAddress);
-        if (event) navigate(`/app/market/${laborMarketAddress}/submission/${event.args["submissionId"]?.toString()}`);
+        if (event)
+          navigate(
+            `/app/market/${laborMarketAddress}/submission/${serviceRequestId}/${event.args["submissionId"]?.toString()}`
+          );
       },
-      [navigate, laborMarketAddress]
+      [laborMarketAddress, navigate, serviceRequestId]
     ),
   });
 

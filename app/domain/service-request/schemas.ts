@@ -51,7 +51,7 @@ export type ServiceRequestBase = z.infer<typeof ServiceRequestBaseSchema>;
 export const ServiceRequestIndexDataSchema = z.object({
   indexedAt: z.date().default(() => new Date()),
   claimsToReview: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
-  claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema, signalAmount: z.number() })),
+  claimsToSubmit: z.array(z.object({ signaler: EvmAddressSchema })),
   submissionCount: z.number(),
 });
 export type ServiceRequestIndexData = z.infer<typeof ServiceRequestIndexDataSchema>;

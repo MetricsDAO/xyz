@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 import { EvmAddressSchema } from "../address";
 import { arrayToObject } from "../shared/utils";
+import { GatingSchema } from "~/features/labor-market-creator/schema";
 
 /**
  * Normalizes the `configuration` method from the LaborMarket contract so both the contract and the index can use the same type.
@@ -31,7 +32,14 @@ export const LaborMarketAppDataSchema = z.object({
   description: z.string().min(1),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  enforcement: EvmAddressSchema,
+  enforcement: z.enum(["Constant", "Aggressive", "Acceptable", "Pass / Fail"]),
+  prerequisites: z
+    .object({
+      sponsor: GatingSchema,
+      analyst: GatingSchema,
+      reviewer: GatingSchema,
+    })
+    .optional(),
 });
 export type LaborMarketAppData = z.infer<typeof LaborMarketAppDataSchema>;
 
@@ -90,3 +98,9 @@ export const LaborMarketSearchSchema = LaborMarketFilterSchema.extend({
   first: z.coerce.number().min(1).max(100).default(12),
 });
 export type LaborMarketSearch = z.infer<typeof LaborMarketSearchSchema>;
+
+/**
+ * Types of reward curves.
+ */
+export const RewardCurveTypeSchema = z.enum(["Constant", "Aggressive", "Acceptable", "Pass / Fail"]);
+export type RewardCurveType = z.infer<typeof RewardCurveTypeSchema>;

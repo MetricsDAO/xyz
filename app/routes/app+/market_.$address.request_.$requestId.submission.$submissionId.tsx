@@ -24,7 +24,6 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
-import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
@@ -39,17 +38,17 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
-import { useReviewSignals } from "~/hooks/use-review-signals";
 import { useReward } from "~/hooks/use-reward";
 import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
+import { claimToReviewDeadline, submissionCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
+  requestId: z.string(),
   submissionId: z.string(),
 });
 
@@ -57,7 +56,7 @@ const validator = withZod(ReviewSearchSchema);
 
 export const loader = async (data: DataFunctionArgs) => {
   const user = await getUser(data.request);
-  const { address, submissionId } = paramsSchema.parse(data.params);
+  const { address, submissionId, requestId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
   const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
@@ -65,7 +64,7 @@ export const loader = async (data: DataFunctionArgs) => {
 
   const tokens = await listTokens();
 
-  const submission = await getSubmission(address, submissionId);
+  const submission = await getSubmission(address, requestId, submissionId);
   if (!submission) {
     throw notFound({ submissionId });
   }
@@ -102,14 +101,14 @@ export default function ChallengeSubmission() {
 
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
   // TODO: Rewards
-  // const { data: reward } = useReward({
-  //   laborMarketAddress: submission.laborMarketAddress,
-  //   submissionId: submission.id,
-  //   tokenDecimals: token?.decimals ?? 18,
-  // });
+  const { data: reward } = useReward({
+    laborMarketAddress: submission.laborMarketAddress,
+    submissionId: submission.id,
+    serviceRequestId: submission.serviceRequestId,
+  });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
-  const score = submission.score?.avg;
+  const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
 
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 

@@ -107,19 +107,19 @@ const createRewards = async (user: User, submissions: SubmissionWithServiceReque
   const m = (await multicall({
     contracts: submissions.map((s) => {
       return {
-        address: contracts.ScalableLikertEnforcement.address,
-        abi: contracts.ScalableLikertEnforcement.abi,
+        address: contracts.BucketEnforcement.address,
+        abi: contracts.BucketEnforcement.abi,
         functionName: "getRewards",
-        args: [s.laborMarketAddress, BigNumber.from(s.id)],
+        args: [s.laborMarketAddress, BigNumber.from(s.sr.id), BigNumber.from(s.id)],
       };
     }),
-  })) as [BigNumber, BigNumber][];
+  })) as [BigNumber, BigNumber, BigNumber][];
 
   const tokens = await listTokens();
   await prisma.reward.createMany({
     data: submissions.map((s, index) => {
       const getReward = m[index]!;
-      const token = tokens.find((t) => t.contractAddress === s.sr.configuration.pToken);
+      const token = tokens.find((t) => t.contractAddress === s.sr.configuration.pTokenProvider);
       return {
         userId: user.id,
         submissionId: s.id,
@@ -206,10 +206,7 @@ const searchUserSubmissions = async (params: RewardsSearch): Promise<SubmissionW
   return z.array(SubmissionWithServiceRequestSchema).parse(submissionsDocs);
 };
 
-type SearchSubmissionsWithReward = Pick<
-  RewardsSearch,
-  "serviceProvider" | "q" | "token" | "isPastEnforcementExpiration"
->;
+type SearchSubmissionsWithReward = Pick<RewardsSearch, "fulfiller" | "q" | "token" | "isPastEnforcementExpiration">;
 export const countSubmissionsWithRewards = async (params: SearchSubmissionsWithReward) => {
   const agg = await mongo.submissions
     .aggregate([
@@ -227,7 +224,7 @@ const searchSubmissionsPipeline = (params: SearchSubmissionsWithReward) => {
     {
       $match: {
         $and: [
-          params.serviceProvider ? { "configuration.serviceProvider": params.serviceProvider } : {},
+          params.fulfiller ? { "configuration.fulfiller": params.fulfiller } : {},
           params.q ? { $text: { $search: params.q } } : {},
         ],
       },

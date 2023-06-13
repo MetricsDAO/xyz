@@ -9,7 +9,7 @@ export const RewardsSearchSchema = z.object({
   page: z.number().default(1),
   token: z.array(z.string()).optional(),
   isPastEnforcementExpiration: z.boolean().default(true),
-  serviceProvider: EvmAddressSchema.optional(),
+  fulfiller: EvmAddressSchema.optional(),
 });
 
 export const RewardedSubmissionSchema = z.object({

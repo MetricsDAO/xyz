@@ -23,7 +23,7 @@ export function useServiceRequestPerformance({ laborMarketAddress, serviceReques
     args: [BigNumber.from(serviceRequestId), userAddress!],
   });
 
-  if (!data) return undefined;
+  if (data === undefined) return undefined;
 
   return checkState(data);
 }

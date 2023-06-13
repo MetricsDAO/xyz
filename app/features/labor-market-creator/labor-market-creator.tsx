@@ -11,6 +11,8 @@ import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import { postNewEvent } from "~/utils/fetch";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
+import { getRewardCurveArgs } from "./reward-curve-constants";
+import { LaborMarketAppDataSchema } from "~/domain/labor-market/schemas";
 
 export function LaborMarketCreator({
   defaultValues,
@@ -40,9 +42,17 @@ export function LaborMarketCreator({
   });
 
   const onSubmit = (data: MarketplaceForm) => {
+    const metadata = LaborMarketAppDataSchema.parse({
+      ...data.appData,
+      prerequisites: {
+        sponsor: data.sponsor,
+        analyst: data.analyst,
+        reviewer: data.reviewer,
+      },
+    });
     // write to contract with values
     transactor.start({
-      metadata: data.appData,
+      metadata: metadata,
       config: ({ account, cid }) => configureFromValues(contracts, { owner: account, cid, values: data }),
     });
   };
@@ -79,9 +89,11 @@ function configureFromValues(
   inputs: { owner: EvmAddress; cid: string; values: MarketplaceForm }
 ) {
   const { owner, cid } = inputs;
-  const auxilaries = [BigNumber.from(100)];
-  const alphas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(90)];
-  const betas = [BigNumber.from(0), BigNumber.from(25), BigNumber.from(50), BigNumber.from(75), BigNumber.from(100)];
+
+  const enforcement = inputs.values.appData.enforcement;
+
+  const curveProperties = getRewardCurveArgs(enforcement);
+
   const enforcementAddress = contracts.BucketEnforcement.address;
 
   const sigs: EvmAddress[] = [
@@ -91,7 +103,6 @@ function configureFromValues(
     LaborMarket__factory.createInterface().getSighash("signal(uint256)") as EvmAddress,
     LaborMarket__factory.createInterface().getSighash("signalReview(uint256,uint24)") as EvmAddress,
   ];
-  console.log("VALUES", inputs.values);
 
   const sponsorBadges = inputs.values.sponsor.badges.map((badge) => {
     return {
@@ -145,6 +156,15 @@ function configureFromValues(
     abi: contracts.LaborMarketFactory.abi,
     address: contracts.LaborMarketFactory.address,
     functionName: "createLaborMarket",
-    args: [owner, cid, enforcementAddress, auxilaries, alphas, betas, sigs, nodes],
+    args: [
+      owner,
+      cid,
+      enforcementAddress,
+      curveProperties.auxilaries,
+      curveProperties.alphas,
+      curveProperties.betas,
+      sigs,
+      nodes,
+    ],
   });
 }

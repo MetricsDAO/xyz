@@ -17,8 +17,8 @@ export function useReviewSignals({
     enabled: !!userAddress,
     address: laborMarketAddress,
     abi: contracts.LaborMarket.abi,
-    functionName: "reviewSignals",
-    args: [BigNumber.from(serviceRequestId), userAddress as `0x${string}`],
+    functionName: "requestIdToSignalState",
+    args: [BigNumber.from(serviceRequestId)],
   });
 
   return data;
