@@ -94,7 +94,10 @@ export const handleRequestFulfilledEvent = async (event: TracerEvent) => {
   const submissionId = z.string().parse(event.decoded.inputs.submissionId);
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
   const submission = await upsertSubmission(laborMarketAddress, submissionId, event);
-  invariant(submission, "Submission should exist after upserting");
+  if (!submission) {
+    logger.warn(`Failed to index submission ${submissionId} for ${laborMarketAddress}. Skipping.`);
+    return;
+  }
 
   //log this event in user activity collection
   invariant(submission.blockTimestamp, "Submission should have a block timestamp");
