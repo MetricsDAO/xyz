@@ -4,7 +4,7 @@ import { Button, Error, Field, Label, scoreToLabel } from "~/components";
 import { useState } from "react";
 import { ClientOnly } from "remix-utils";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { SCORE_COLOR } from "~/utils/constants";
 
 export function ReviewCreatorPanel() {
@@ -35,10 +35,10 @@ export function ReviewCreatorPanel() {
   ];
 
   return (
-    <div className="mx-auto max-w-2xl border h-screen">
+    <div className="mx-auto max-w-2xl h-screen">
       <div className="flex border justify-between bg-white p-3">
-        <div className="flex space-x-4">
-          <div className="flex gap-2">
+        <div className="flex space-x-4 items-center">
+          <div className="flex gap-2 items-center">
             <div className="bg-gray-100 p-1 rounded-full">
               <ChevronLeftIcon className="text-black h-4" />
             </div>
@@ -50,7 +50,10 @@ export function ReviewCreatorPanel() {
           <p>User</p>
           <p>Time</p>
         </div>
-        <p>Close arrow?</p>
+        <div className="flex gap-px items-center">
+          <ArrowRightIcon className="text-black h-4" />
+          <div className="bg-black h-4 w-px" />
+        </div>
       </div>
       <div className="space-y-4 bg-blue-300 p-10 overflow-y-auto h-3/5">
         {reviews.map((r) => (
@@ -73,7 +76,7 @@ export function ReviewCreatorPanel() {
           </div>
         ))}
       </div>
-      <div className="border bg-white p-4 space-y-4">
+      <div className="border bg-white p-4 space-y-4 h-1/3 overflow-y-auto">
         <div className="flex flex-row gap-4 justify-between">
           <Button
             fullWidth
@@ -149,7 +152,7 @@ export function ReviewCreatorPanel() {
           {/*<Error error={errors.description?.message} />*/}
         </Field>
         <div className="flex gap-3 justify-end">
-          <Button>Cancel</Button>
+          <Button variant="cancel">Cancel</Button>
           <Button>Submit Score</Button>
         </div>
       </div>
