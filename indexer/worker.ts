@@ -60,9 +60,9 @@ worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
   return indexerRequestSignalEvent(event);
 });
 
-// worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
-//   return indexerRequestReviewedEvent(event);
-// });
+worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
+  return indexerRequestReviewedEvent(event);
+});
 
 worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
   return indexerRequestWithdrawnEvent(event);

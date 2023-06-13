@@ -32,7 +32,7 @@ export const LaborMarketAppDataSchema = z.object({
   description: z.string().min(1),
   projectSlugs: zfd.repeatable(z.array(z.string()).min(1, "Required")),
   tokenAllowlist: zfd.repeatable(z.array(z.string()).min(1, "Required")),
-  enforcement: EvmAddressSchema,
+  enforcement: z.enum(["Constant", "Aggressive", "Acceptable", "Pass / Fail"]),
   prerequisites: z
     .object({
       sponsor: GatingSchema,
