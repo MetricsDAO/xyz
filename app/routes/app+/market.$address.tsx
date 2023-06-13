@@ -16,6 +16,7 @@ import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
+import { findTokenBySymbol } from "~/services/tokens.server";
 
 const paramsSchema = z.object({ address: EvmAddressSchema });
 
@@ -26,7 +27,10 @@ export const loader = async (data: DataFunctionArgs) => {
   if (!laborMarket) throw notFound("Labor market not found");
 
   const laborMarketProjects = await findProjectsBySlug(laborMarket.appData.projectSlugs);
-  return typedjson({ laborMarket, laborMarketProjects });
+
+  const tokens = await findTokenBySymbol(laborMarket.appData.tokenAllowlist);
+
+  return typedjson({ laborMarket, laborMarketProjects, tokens });
 };
 
 export default function Marketplace() {

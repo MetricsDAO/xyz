@@ -20,7 +20,7 @@ export default function ChallengeIdRewards() {
   const { serviceRequest, tokens } = data;
   invariant(serviceRequest, "serviceRequest must be specified");
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
 
   return (
     <section className="space-y-3 w-full border-spacing-4 border-separate md:w-4/5">
@@ -29,7 +29,10 @@ export default function ChallengeIdRewards() {
         <Detail>
           <DetailItem title="Total rewards to be distributed across winners">
             <RewardBadge
-              payment={{ amount: fromTokenAmount(serviceRequest.configuration.pTokenQ, token?.decimals ?? 18), token }}
+              payment={{
+                amount: fromTokenAmount(serviceRequest.configuration.pTokenProviderTotal, token?.decimals ?? 18),
+                token,
+              }}
               reputation={{ amount: REPUTATION_REWARD_POOL.toLocaleString() }}
             />
           </DetailItem>

@@ -53,7 +53,10 @@ function ChallengeTable({ serviceRequests }: { serviceRequests: ServiceRequestDo
                 </div>
               </Row.Column>
               <Row.Column>
-                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+                <TokenBadgeByAddress
+                  address={sr.configuration.pTokenProvider}
+                  quantity={sr.configuration.pTokenProviderTotal}
+                />
               </Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExp} />
@@ -98,7 +101,10 @@ function ChallengeGrid({ serviceRequests }: { serviceRequests: ServiceRequestDoc
 
               <div>Reward Pool</div>
               <div>
-                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+                <TokenBadgeByAddress
+                  address={sr.configuration.pTokenProvider}
+                  quantity={sr.configuration.pTokenProviderTotal}
+                />
               </div>
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">

@@ -31,7 +31,7 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 };
 
 export default function ClaimToSubmit() {
-  const { serviceRequest, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
