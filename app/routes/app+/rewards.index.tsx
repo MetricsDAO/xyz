@@ -1,4 +1,4 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -56,6 +56,12 @@ export default function Rewards() {
           <p className="text-gray-500 text-sm">
             View all your pending and claimed rewards and manage all your payout addresses
           </p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2 mt-2 w-fit">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5 hidden md:block" />
+            <p className="text-yellow-700 mr-2">
+              Non-Polygon rewards need to be claimed within 28 days of being earned
+            </p>
+          </div>
         </div>
       </section>
       <RewardsTab rewardsNum={submissionCount} addressesNum={walletsCount} />
