@@ -86,6 +86,15 @@ async function main() {
         contractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
         symbol: "USDC",
       },
+      {
+        name: "SOL",
+        decimals: 9,
+        networkName: "Solana",
+        isIou: true,
+        contractAddress: "0xe45e0546b83f8a85833a368b7ed49b1b1f9958ea",
+        symbol: "iouSOL",
+        iouSymbol: "SOL",
+      },
       // iou testing in dev
       // {
       //   name: "Goerli ETH IOU",
