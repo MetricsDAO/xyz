@@ -9,14 +9,14 @@ import { useContracts, useTokens, useWallets } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
-import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
 import { RedeemConfirmation } from "./redeem-confirmation";
+import { NoPayoutAddressFoundModalButton } from "./no-payout-address-modal-button";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;
 }
 
-export function RedeemRewardCreator({ submission }: RedeemRewardCreatorProps) {
+export function SubmissionIOURewardCreator({ submission }: RedeemRewardCreatorProps) {
   const wallets = useWallets();
 
   const tokens = useTokens();

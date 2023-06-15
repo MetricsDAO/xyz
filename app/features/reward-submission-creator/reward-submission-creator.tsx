@@ -12,10 +12,9 @@ import { fromTokenAmount } from "~/utils/helpers";
 
 interface ClaimRewardCreatorProps {
   submission: SubmissionWithReward;
-  confirmationMessage?: React.ReactNode;
 }
 
-export function ClaimRewardCreator({ submission, confirmationMessage }: ClaimRewardCreatorProps) {
+export function RewardSubmissionCreator({ submission }: ClaimRewardCreatorProps) {
   const tokens = useTokens();
   const token = tokens.find((t) => t.contractAddress === submission.sr.configuration.pTokenProvider);
   const displayPaymentAmount = fromTokenAmount(submission.reward.tokenAmount, token?.decimals ?? 18, 2);

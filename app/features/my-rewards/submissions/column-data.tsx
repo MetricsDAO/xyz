@@ -3,8 +3,8 @@ import { RewardBadge } from "~/components/reward-badge";
 import type { SubmissionWithReward } from "~/domain/submission/schemas";
 import { useTokens } from "~/hooks/use-root-data";
 import { fromTokenAmount } from "~/utils/helpers";
-import { RedeemRewardCreator } from "../redeem-reward-creator/submission-iou-creator";
-import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
+import { SubmissionIOURewardCreator } from "../../reward-submission-creator/reward-submission-iou-creator";
+import { RewardSubmissionCreator } from "../../reward-submission-creator/reward-submission-creator";
 
 export function RewardDisplay({ submission }: { submission: SubmissionWithReward }) {
   const tokens = useTokens();
@@ -29,7 +29,7 @@ export function Status({ submission }: { submission: SubmissionWithReward }) {
   }
 
   if (isIou) {
-    return <RedeemRewardCreator submission={submission} />;
+    return <SubmissionIOURewardCreator submission={submission} />;
   }
-  return <ClaimRewardCreator submission={submission} />;
+  return <RewardSubmissionCreator submission={submission} />;
 }

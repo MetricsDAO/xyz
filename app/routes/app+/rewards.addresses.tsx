@@ -19,7 +19,7 @@ import type { EvmAddress } from "~/domain/address";
 import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
-import RewardsTab from "~/features/rewards-tab";
+import RewardsTab from "~/features/my-rewards/rewards-tab";
 import { listNetworks } from "~/services/network.server";
 import { requireUser } from "~/services/session.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";

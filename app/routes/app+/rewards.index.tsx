@@ -14,7 +14,7 @@ import type { EvmAddress } from "~/domain/address";
 import { countSubmissionsWithRewards, searchSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward/schema";
 import { RewardsListView } from "~/features/my-rewards/rewards-list-view";
-import RewardsTab from "~/features/rewards-tab";
+import RewardsTab from "~/features/my-rewards/rewards-tab";
 import { requireUser } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
