@@ -41,11 +41,7 @@ export default function Marketplace() {
   const { canLaunchChallenges } = usePrereqs({ laborMarket });
 
   return (
-<<<<<<< HEAD
     <Container className="pb-16 pt-24 px-10">
-=======
-    <Container className="pb-16 pt-7 px-10">
->>>>>>> 4bfad965290a9380aa1b1e5899b966d74e50aabe
       <section className="flex flex-col md:flex-row gap-5 justify-between pb-5">
         <h1 className="text-3xl font-semibold md:basis-3/4">{laborMarket?.appData?.title}</h1>
         <div className="flex flex-wrap gap-5 md:basis-1/4 md:justify-end">
