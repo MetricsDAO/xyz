@@ -26,13 +26,11 @@ export async function indexerRequestPayClaimedEvent(event: TracerEvent) {
       submissionId: args.submissionId,
     },
     {
-      $set: {
-        hasClaimedReward: true,
-        reward: {
-          tokenAmount: args.payAmount,
-          tokenAddress: serviceRequest.configuration.pTokenProvider,
-          isIou: token?.isIou,
-        },
+      hasClaimedReward: true,
+      reward: {
+        tokenAmount: args.payAmount,
+        tokenAddress: serviceRequest.configuration.pTokenProvider,
+        isIou: token?.isIou,
       },
     }
   );

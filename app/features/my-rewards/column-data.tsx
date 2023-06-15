@@ -4,7 +4,7 @@ import type { SubmissionWithReward } from "~/domain/submission/schemas";
 import { useTokens } from "~/hooks/use-root-data";
 import { fromTokenAmount } from "~/utils/helpers";
 import { RedeemRewardCreator } from "../redeem-reward-creator/submission-iou-creator";
-import { ClaimButton } from "./claim-button";
+import { ClaimRewardCreator } from "../claim-reward-creator/claim-reward-creator";
 
 export function RewardDisplay({ submission }: { submission: SubmissionWithReward }) {
   const tokens = useTokens();
@@ -31,5 +31,5 @@ export function Status({ submission }: { submission: SubmissionWithReward }) {
   if (isIou) {
     return <RedeemRewardCreator submission={submission} />;
   }
-  return <ClaimButton submission={submission} />;
+  return <ClaimRewardCreator submission={submission} />;
 }
