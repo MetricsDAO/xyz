@@ -98,6 +98,7 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
+  // TODO: Rewards
   // const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
   // TODO: Rewards
   // const { data: reward } = useReward({
@@ -106,9 +107,8 @@ export default function ChallengeSubmission() {
   //   serviceRequestId: submission.serviceRequestId,
   // });
 
-  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
-  const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
 
+  const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 
   const performance = useServiceRequestPerformance({
@@ -164,9 +164,9 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
           </DetailItem>
-          {score !== undefined && (
+          {submission.score?.avg !== undefined && (
             <DetailItem title="Overall Score">
-              <ScoreBadge score={score} />
+              <ScoreBadge score={submission.score?.avg} />
             </DetailItem>
           )}
           <DetailItem title="Reviews">
