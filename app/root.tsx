@@ -15,6 +15,7 @@ import { withSentry } from "@sentry/remix";
 import { listProjects } from "./services/projects.server";
 import { listTokens } from "./services/tokens.server";
 import { getContracts } from "./utils/contracts.server";
+import { findAllWalletsForUser } from "./services/wallet.server";
 
 // add types for window.ENV
 declare global {
@@ -27,11 +28,13 @@ declare global {
 
 export async function loader({ request }: DataFunctionArgs) {
   const user = await getUser(request);
+  const wallets = user ? await findAllWalletsForUser(user.id) : [];
   const projects = await listProjects();
   const tokens = await listTokens();
   const contracts = getContracts();
   return typedjson({
     user,
+    wallets,
     projects,
     tokens,
     contracts,

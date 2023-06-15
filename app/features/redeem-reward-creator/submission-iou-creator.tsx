@@ -3,20 +3,25 @@ import { useCallback, useState } from "react";
 import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
-import { useContracts } from "~/hooks/use-root-data";
+import { EvmAddressSchema } from "~/domain/address";
+import type { SubmissionWithReward } from "~/domain/submission/schemas";
+import { useContracts, useTokens, useWallets } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
+import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
 import { RedeemConfirmation } from "./redeem-confirmation";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;
-  userAddress: EvmAddress;
 }
 
-export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCreatorProps) {
-  const { token, paymentTokenAmount, iouSignature, hasClaimed } = submission.serviceProviderReward.reward;
+export function RedeemRewardCreator({ submission }: RedeemRewardCreatorProps) {
+  const wallets = useWallets();
+
+  const tokens = useTokens();
+  const token = tokens.find((t) => t.contractAddress === submission.sr.configuration.pTokenProvider);
+
   const [redeemSuccess, setRedeemSuccess] = useState(false);
   const [claimSuccess, setClaimSuccess] = useState(false);
   const contracts = useContracts();
@@ -25,15 +30,17 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
     onSuccess: () => {
       // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
-      fetch(`/api/reward/${submission.serviceProviderReward.reward.id}/mark-as-redeemed`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
+      // TODO
+      // fetch(`/api/reward/${submission.id}/mark-as-redeemed`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      // });
     },
   });
 
   const startRedeem = useCallback(() => {
-    invariant(iouSignature, "Missing signature");
+    const signature = EvmAddressSchema.parse(submission.reward.iouSignature);
+    invariant(signature, "Missing signature");
     invariant(token, "Missing token");
     redeemTransactor.start({
       config: () =>
@@ -42,14 +49,20 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
             iouTokenAddress: token.contractAddress as EvmAddress,
             laborMarketAddress: submission.laborMarketAddress,
             submissionId: submission.id,
-            amount: paymentTokenAmount,
-            signature: iouSignature as `0x${string}`,
+            amount: submission.reward.tokenAmount,
+            signature: signature as `0x${string}`,
           },
         }),
     });
     // We can't have redeemTransactor be part of this list of dependencies because it will cause an infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [iouSignature, paymentTokenAmount, submission.id, submission.laborMarketAddress, token]);
+  }, [
+    submission.reward.iouSignature,
+    submission.reward.tokenAmount,
+    submission.id,
+    submission.laborMarketAddress,
+    token,
+  ]);
 
   const claimTransactor = useTransactor({
     onSuccess: useCallback(
@@ -68,15 +81,15 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
           contracts,
           inputs: {
             laborMarketAddress: submission.laborMarketAddress,
+            serviceRequestId: submission.serviceRequestId,
             submissionId: submission.id,
-            payoutAddress: userAddress,
           },
         }),
     });
   };
 
   const onClick = () => {
-    if (!hasClaimed && !claimSuccess) {
+    if (!submission.rewardClaimed && !claimSuccess) {
       startClaim();
     } else {
       startRedeem();
@@ -85,6 +98,22 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
 
   if (redeemSuccess) {
     return <p>Pending</p>;
+  }
+
+  if (submission.reward.iouHasRedeemed) {
+    // "redeemed"
+    return <p>Claimed</p>;
+  }
+
+  if (submission.reward.iouClientTransactionSuccess) {
+    // waiting on treasury service
+    return <p>Pending</p>;
+  }
+
+  const wallet = wallets.find((w) => w.networkName === token?.networkName);
+  // Treasury service will be looking for this wallet to make the native token payout to
+  if (!wallet) {
+    return <NoPayoutAddressFoundModalButton buttonText="Claim" networkName={token?.networkName} />;
   }
 
   return (
@@ -97,7 +126,9 @@ export function RedeemRewardCreator({ submission, userAddress }: RedeemRewardCre
       <TxModal
         transactor={redeemTransactor}
         title="Claim Reward"
-        confirmationMessage={<RedeemConfirmation submission={submission} />}
+        confirmationMessage={
+          <RedeemConfirmation payoutAmount={submission.reward.tokenAmount} token={token} wallet={wallet} />
+        }
       />
       <ConnectWalletWrapper onClick={onClick}>
         <Button>Claim</Button>
@@ -113,15 +144,15 @@ function configureClaim({
   contracts: ReturnType<typeof useContracts>;
   inputs: {
     laborMarketAddress: EvmAddress;
+    serviceRequestId: string;
     submissionId: string;
-    payoutAddress: EvmAddress;
   };
 }) {
   return configureWrite({
     address: inputs.laborMarketAddress,
     abi: contracts.LaborMarket.abi,
     functionName: "claim",
-    args: [BigNumber.from(inputs.submissionId), BigNumber.from(inputs.payoutAddress)],
+    args: [BigNumber.from(inputs.submissionId), BigNumber.from(inputs.serviceRequestId)],
   });
 }
 

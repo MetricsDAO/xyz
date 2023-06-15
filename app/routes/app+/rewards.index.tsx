@@ -11,12 +11,9 @@ import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import type { EvmAddress } from "~/domain/address";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
-import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
-import { getSubmissionWithRewards } from "~/domain/reward/functions.server";
+import { countSubmissionsWithRewards, searchSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward/schema";
-import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
-import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
+import { RewardsListView } from "~/features/my-rewards/rewards-list-view";
 import RewardsTab from "~/features/rewards-tab";
 import { requireUser } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
@@ -29,10 +26,10 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = {
     ...getParamsOrFail(url.searchParams, RewardsSearchSchema),
-    serviceProvider: user.address as EvmAddress,
+    fulfiller: user.address as EvmAddress,
   };
   const wallets = await findAllWalletsForUser(user.id);
-  const submissionsWithReward = await getSubmissionWithRewards(user, search);
+  const submissionsWithReward = await searchSubmissionsWithRewards(search);
   const submissionCount = await countSubmissionsWithRewards(search);
 
   return typedjson({
@@ -76,29 +73,6 @@ export default function Rewards() {
   );
 }
 
-function RewardsListView({ submissions }: { submissions: SubmissionWithReward[] }) {
-  if (submissions.length === 0) {
-    return (
-      <div className="flex">
-        <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {/* Desktop */}
-      <div className="hidden lg:block">
-        <RewardsTable submissions={submissions} />
-      </div>
-      {/* Mobile */}
-      <div className="block lg:hidden">
-        <RewardsCards submissions={submissions} />
-      </div>
-    </>
-  );
-}
-
 function SearchAndFilter() {
   // const tokens = useTokens();
   const submit = useSubmit();
@@ -137,24 +111,24 @@ function SearchAndFilter() {
       </Field>
       {/* <p className="text-lg font-semibold">Filter:</p> */}
       {/* <Label size="md">Status</Label>
-      <Checkbox value="unclaimed" label="Unclaimed" />
-      <Checkbox value="claimed" label="Claimed" /> */}
+        <Checkbox value="unclaimed" label="Unclaimed" />
+        <Checkbox value="claimed" label="Claimed" /> */}
       {/* <Label>Reward Token</Label>
-      <ValidatedCombobox
-        placeholder="Select option"
-        name="token"
-        onChange={handleChange}
-        size="sm"
-        options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
-      /> */}
+        <ValidatedCombobox
+          placeholder="Select option"
+          name="token"
+          onChange={handleChange}
+          size="sm"
+          options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
+        /> */}
       {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
-      <Combobox
-        placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />*/}
+        <Combobox
+          placeholder="Select option"
+          options={[
+            { label: "Solana", value: "Solana" },
+            { label: "Ethereum", value: "Ethereum" },
+          ]}
+        />*/}
     </ValidatedForm>
   );
 }

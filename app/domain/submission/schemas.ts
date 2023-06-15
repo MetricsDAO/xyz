@@ -4,6 +4,7 @@ import { EvmAddressSchema } from "../address";
 import { ReviewDocSchema } from "../review/schemas";
 import { ServiceRequestDocSchema } from "../service-request/schemas";
 import { LaborMarketDocSchema } from "../labor-market/schemas";
+import { RewardSchema } from "../reward/schema";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -56,20 +57,17 @@ export const SubmissionDocSchema = z.object({
     })
     .optional(),
   appData: SubmissionFormSchema.nullable(),
-  reward: z
-    .object({
-      hasReward: z.boolean(),
-      paymentTokenAmount: z.string(),
-      reputationTokenAmount: z.string(),
-      hasClaimed: z.boolean(),
-      iouSignature: z.string().optional(),
-      iouHasRedeemed: z.boolean().optional(),
-    })
-    .optional(),
+  rewardClaimed: z.boolean().optional(), // TODO: not optional
+  reward: RewardSchema.optional(),
 });
 
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
   sr: ServiceRequestDocSchema,
+});
+
+// Reward is not optional
+export const SubmissionWithRewardSchema = SubmissionWithServiceRequestSchema.extend({
+  reward: RewardSchema,
 });
 
 export const CombinedSchema = SubmissionDocSchema.extend({
@@ -96,6 +94,7 @@ export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
+export type SubmissionWithReward = z.infer<typeof SubmissionWithRewardSchema>;
 export type CombinedDoc = z.infer<typeof CombinedSchema>;
 export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;
 export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

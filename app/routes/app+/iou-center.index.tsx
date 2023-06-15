@@ -13,11 +13,11 @@ import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { getIOUTokenData } from "~/domain/reward/functions.server";
 import type { IOUToken } from "~/domain/reward/schema";
+import { fetchIouTokenMetadata } from "~/services/treasury.server";
 
 export const loader = async ({ params }: DataFunctionArgs) => {
-  const iouTokens = await getIOUTokenData();
+  const iouTokens = await fetchIouTokenMetadata();
 
   return typedjson({ iouTokens }, { status: 200 });
 };

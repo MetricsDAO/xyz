@@ -3,26 +3,18 @@ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
+import type { SubmissionWithReward } from "~/domain/submission/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface ClaimRewardCreatorProps {
-  disabled: boolean;
-  laborMarketAddress: EvmAddress;
-  submissionId: string;
-  payoutAddress: EvmAddress;
+  submission: SubmissionWithReward;
   confirmationMessage?: React.ReactNode;
 }
 
-export function ClaimRewardCreator({
-  disabled,
-  laborMarketAddress,
-  submissionId,
-  payoutAddress,
-  confirmationMessage,
-}: ClaimRewardCreatorProps) {
+export function ClaimRewardCreator({ submission, confirmationMessage }: ClaimRewardCreatorProps) {
   const contracts = useContracts();
   const navigate = useNavigate();
 
@@ -30,6 +22,7 @@ export function ClaimRewardCreator({
     onSuccess: useCallback(
       (receipt) => {
         // reload page
+        // TODO call the index-event API and then reload the page
         navigate(0);
       },
       [navigate]
@@ -38,7 +31,15 @@ export function ClaimRewardCreator({
 
   const onClick = () => {
     transactor.start({
-      config: () => configureFromValues({ contracts, inputs: { laborMarketAddress, submissionId, payoutAddress } }),
+      config: () =>
+        configureFromValues({
+          contracts,
+          inputs: {
+            laborMarketAddress: submission.laborMarketAddress,
+            serviceRequestId: submission.serviceRequestId,
+            submissionId: submission.id,
+          },
+        }),
     });
   };
 
@@ -46,7 +47,7 @@ export function ClaimRewardCreator({
     <>
       <TxModal transactor={transactor} title="Claim your reward!" confirmationMessage={confirmationMessage} />
       <ConnectWalletWrapper onClick={onClick}>
-        <Button disabled={disabled}>Claim</Button>
+        <Button>Claim</Button>
       </ConnectWalletWrapper>
     </>
   );
@@ -59,14 +60,14 @@ function configureFromValues({
   contracts: ReturnType<typeof useContracts>;
   inputs: {
     laborMarketAddress: EvmAddress;
+    serviceRequestId: string;
     submissionId: string;
-    payoutAddress: EvmAddress;
   };
 }) {
   return configureWrite({
     address: inputs.laborMarketAddress,
     abi: contracts.LaborMarket.abi,
     functionName: "claim",
-    args: [BigNumber.from(inputs.submissionId), BigNumber.from(inputs.payoutAddress)],
+    args: [BigNumber.from(inputs.serviceRequestId), BigNumber.from(inputs.submissionId)],
   });
 }

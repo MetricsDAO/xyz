@@ -18,20 +18,22 @@ export const RewardedSubmissionSchema = z.object({
 
 export const RewardedSubmissionsSchema = z.array(RewardedSubmissionSchema);
 
-const IOUTokenSchema = z.object({
-  id: z.string(),
-  tokenName: z.string(),
-  chain: z.string(),
-  fireblocksTokenName: z.string(),
-  decimals: z.number(),
-  balance: z.string(),
+export const RewardSchema = z.object({
+  tokenAmount: z.string(),
+  tokenAddress: EvmAddressSchema,
+  isIou: z.boolean().optional(),
+  iouSignature: z.string().optional(),
+  iouClientTransactionSuccess: z.boolean().optional(), // Not to be trusted as source of truth. Used by front-end to optimistically hide the redeem button and prevent a double redeem
+  iouHasRedeemed: z.boolean().optional(),
 });
 
-export const IOUData = z.object({
-  metadata: z.array(IOUTokenSchema),
-  signature: z.string(),
+export const RequestPayClaimedEventSchema = z.object({
+  claimer: EvmAddressSchema,
+  requestId: z.string(),
+  submissionId: z.string(),
+  payAmount: z.string(),
+  to: EvmAddressSchema,
 });
 
 export type RewardsSearch = z.infer<typeof RewardsSearchSchema>;
 export type RewardedSubmission = z.infer<typeof RewardedSubmissionSchema>;
-export type IOUToken = z.infer<typeof IOUTokenSchema>;
