@@ -23,7 +23,10 @@ export const countReviews = async (params: FilterParams) => {
   return mongo.reviews.countDocuments(searchParams(params));
 };
 
-type FilterParams = Pick<ReviewSearch, "laborMarketAddress" | "serviceRequestId" | "submissionId" | "score">;
+type FilterParams = Pick<
+  ReviewSearch,
+  "laborMarketAddress" | "serviceRequestId" | "submissionId" | "score" | "reviewer"
+>;
 /**
  * Convenience function to share the search parameters between search and count.
  * @param {FilterParams} params - The search parameters.
@@ -35,6 +38,7 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
     ...(params.submissionId ? { submissionId: params.submissionId } : {}),
     ...(params.score ? { score: { $in: params.score } } : {}),
+    ...(params.reviewer ? { reviewer: params.reviewer } : {}),
   };
 };
 

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "../address";
+import { RewardSchema } from "../reward/schema";
 
 export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["blockTimestamp", "score"]).default("blockTimestamp").describe("Sort by column."),
@@ -10,6 +11,7 @@ export const ReviewSearchSchema = z.object({
   serviceRequestId: z.string().optional(),
   submissionId: z.string().optional(),
   laborMarketAddress: EvmAddressSchema.optional(),
+  reviewer: EvmAddressSchema.optional(),
 });
 
 export const ReviewSchema = z.object({
@@ -33,6 +35,7 @@ export const ReviewEventSchema = z.object({
 });
 
 export const ReviewDocSchema = z.object({
+  id: z.string(),
   submissionId: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
@@ -40,6 +43,7 @@ export const ReviewDocSchema = z.object({
   reviewer: EvmAddressSchema,
   blockTimestamp: z.date(),
   indexedAt: z.date(),
+  reward: RewardSchema,
 });
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;

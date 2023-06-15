@@ -6,7 +6,7 @@ import { submissionCreatedDate } from "~/utils/helpers";
 import { RewardDisplay, Status } from "./column-data";
 import type { SubmissionWithReward } from "~/domain/submission/schemas";
 
-export function RewardsListView({ submissions }: { submissions: SubmissionWithReward[] }) {
+export function SubmissionRewardsListView({ submissions }: { submissions: SubmissionWithReward[] }) {
   if (submissions.length === 0) {
     return (
       <div className="flex">

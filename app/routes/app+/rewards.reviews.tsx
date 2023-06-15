@@ -6,13 +6,18 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
 import { Field, Label, ValidatedSelect } from "~/components";
 import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
+import { ReviewSearchSchema } from "~/domain";
 import type { EvmAddress } from "~/domain/address";
+import { EvmAddressSchema } from "~/domain/address";
+import { countReviews, searchReviews } from "~/domain/review/functions.server";
 import { countSubmissionsWithRewards, searchSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward/schema";
+import { ReviewsRewardsListView } from "~/features/my-rewards/reviews/reviews-rewards-list-view";
 import RewardsTab from "~/features/my-rewards/rewards-tab";
 import { SubmissionRewardsListView } from "~/features/my-rewards/submissions/submission-rewards-list-view";
 import { requireUser } from "~/services/session.server";
@@ -20,29 +25,31 @@ import { findAllWalletsForUser } from "~/services/wallet.server";
 
 const validator = withZod(RewardsSearchSchema);
 
-export const loader = async ({ request }: DataFunctionArgs) => {
-  const user = await requireUser(request, "/app/login?redirectto=app/rewards");
+export const loader = async ({ request, params }: DataFunctionArgs) => {
+  const user = await requireUser(request, "/app/login?redirectto=app/rewards/reviews");
 
   const url = new URL(request.url);
   const search = {
-    ...getParamsOrFail(url.searchParams, RewardsSearchSchema),
-    fulfiller: user.address as EvmAddress,
+    ...getParamsOrFail(url.searchParams, ReviewSearchSchema),
+    reviewer: user.address as EvmAddress,
   };
+  const reviews = await searchReviews(search);
+  const reviewCount = await countReviews(search);
+
+  console.log("reviews", reviews);
+
   const wallets = await findAllWalletsForUser(user.id);
-  const submissionsWithReward = await searchSubmissionsWithRewards(search);
-  const submissionCount = await countSubmissionsWithRewards(search);
 
   return typedjson({
-    walletsCount: wallets.length,
-    submissionsWithReward,
-    submissionCount,
-    user,
     search,
+    reviews,
+    reviewCount,
+    walletsCount: wallets.length,
   });
 };
 
 export default function Rewards() {
-  const { walletsCount, submissionsWithReward, submissionCount, search } = useTypedLoaderData<typeof loader>();
+  const { reviews, walletsCount, search, reviewCount } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -55,13 +62,13 @@ export default function Rewards() {
           </p>
         </div>
       </section>
-      <RewardsTab rewardsNum={submissionCount} addressesNum={walletsCount} />
+      <RewardsTab addressesNum={walletsCount} rewardsNum={0} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <SubmissionRewardsListView submissions={submissionsWithReward} />
+            <ReviewsRewardsListView reviews={reviews} />
             <div className="w-fit m-auto">
-              <Pagination page={search.page} totalPages={Math.ceil(submissionCount / search.first)} />
+              <Pagination page={search.page} totalPages={Math.ceil(reviewCount / search.first)} />
             </div>
           </div>
         </main>
@@ -91,11 +98,6 @@ function SearchAndFilter() {
       onChange={handleChange}
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
-      <ValidatedInput
-        placeholder="Search"
-        name="q"
-        iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-      />
       <Field>
         <Label>Sort by</Label>
         <ValidatedSelect
@@ -104,31 +106,11 @@ function SearchAndFilter() {
           size="sm"
           onChange={handleChange}
           options={[
-            { label: "Challenge Title", value: "sr[0].appData.title" },
+            { label: "Score", value: "score" },
             { label: "Submitted", value: "blockTimestamp" },
           ]}
         />
       </Field>
-      {/* <p className="text-lg font-semibold">Filter:</p> */}
-      {/* <Label size="md">Status</Label>
-        <Checkbox value="unclaimed" label="Unclaimed" />
-        <Checkbox value="claimed" label="Claimed" /> */}
-      {/* <Label>Reward Token</Label>
-        <ValidatedCombobox
-          placeholder="Select option"
-          name="token"
-          onChange={handleChange}
-          size="sm"
-          options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
-        /> */}
-      {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
-        <Combobox
-          placeholder="Select option"
-          options={[
-            { label: "Solana", value: "Solana" },
-            { label: "Ethereum", value: "Ethereum" },
-          ]}
-        />*/}
     </ValidatedForm>
   );
 }
