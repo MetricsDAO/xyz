@@ -26,9 +26,10 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
           reviewSum: BigNumber.from(submission.score?.reviewSum ?? 0)
             .add(reviewScore)
             .toNumber(),
-          avg:
+          avg: Math.floor(
             (((submission.score?.reviewSum ?? 0) + parseInt(reviewScore)) * 25) /
-            ((submission.score?.reviewCount ?? 0) + 1),
+              ((submission.score?.reviewCount ?? 0) + 1)
+          ),
         },
       },
     }
