@@ -4,7 +4,7 @@ import { EvmAddressSchema } from "../address";
 import { ReviewDocSchema } from "../review/schemas";
 import { ServiceRequestDocSchema } from "../service-request/schemas";
 import { LaborMarketDocSchema } from "../labor-market/schemas";
-import { RewardSchema } from "../reward/schema";
+import { RewardSchema } from "../reward-submissions/schema";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),

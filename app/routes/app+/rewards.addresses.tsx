@@ -16,7 +16,7 @@ import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
 import type { EvmAddress } from "~/domain/address";
-import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
+import { countSubmissionsWithRewards } from "~/domain/reward-submissions/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
 import RewardsTab from "~/features/my-rewards/rewards-tab";

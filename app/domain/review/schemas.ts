@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "../address";
-import { RewardSchema } from "../reward/schema";
+import { RewardSchema } from "../reward-submissions/schema";
 import { SubmissionDocSchema } from "../submission/schemas";
 
 export const ReviewSearchSchema = z.object({

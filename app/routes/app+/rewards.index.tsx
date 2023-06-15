@@ -11,8 +11,11 @@ import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import type { EvmAddress } from "~/domain/address";
-import { countSubmissionsWithRewards, searchSubmissionsWithRewards } from "~/domain/reward/functions.server";
-import { RewardsSearchSchema } from "~/domain/reward/schema";
+import {
+  countSubmissionsWithRewards,
+  searchSubmissionsWithRewards,
+} from "~/domain/reward-submissions/functions.server";
+import { RewardsSearchSchema } from "~/domain/reward-submissions/schema";
 import RewardsTab from "~/features/my-rewards/rewards-tab";
 import { SubmissionRewardsListView } from "~/features/my-rewards/submissions/submission-rewards-list-view";
 import { requireUser } from "~/services/session.server";
