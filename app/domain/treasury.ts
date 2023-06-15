@@ -13,6 +13,15 @@ export const fetchSignaturesBodySchema = z.array(
 );
 export type FetchSignaturesBody = z.infer<typeof fetchSignaturesBodySchema>;
 
+export const FetchClaimsInputSchema = z.array(
+  z.object({
+    marketplaceAddress: EvmAddressSchema,
+    participationId: z.string(),
+    type: z.enum(["submission", "review"]),
+  })
+);
+export type FetchClaimsInput = z.infer<typeof FetchClaimsInputSchema>;
+
 export const fetchSignaturesResponseSchema = z.array(
   z.object({
     signedBody: z.object({

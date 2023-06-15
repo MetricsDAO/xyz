@@ -1,11 +1,11 @@
 import { Link } from "@remix-run/react";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
-import type { ReviewDoc } from "~/domain";
 import { fromNow } from "~/utils/date";
 import { RewardDisplay, Status } from "./column-data";
+import type { ReviewWithSubmission } from "~/domain/reward-reviews/schema";
 
-export function ReviewsRewardsListView({ reviews }: { reviews: ReviewDoc[] }) {
+export function ReviewsRewardsListView({ reviews }: { reviews: ReviewWithSubmission[] }) {
   if (reviews.length === 0) {
     return (
       <div className="flex">
@@ -28,11 +28,11 @@ export function ReviewsRewardsListView({ reviews }: { reviews: ReviewDoc[] }) {
   );
 }
 
-export function RewardsTable({ reviews }: { reviews: ReviewDoc[] }) {
+export function RewardsTable({ reviews }: { reviews: ReviewWithSubmission[] }) {
   return (
     <Table>
       <Header columns={12} className="mb-2">
-        <Header.Column span={3}>Challenge Title</Header.Column>
+        <Header.Column span={3}>Submission Title</Header.Column>
         <Header.Column span={5}>Reward</Header.Column>
         <Header.Column span={2}>Submitted</Header.Column>
         <Header.Column span={2}>Status</Header.Column>
@@ -45,7 +45,7 @@ export function RewardsTable({ reviews }: { reviews: ReviewDoc[] }) {
   );
 }
 
-function RewardsTableRow({ review }: { review: ReviewDoc }) {
+function RewardsTableRow({ review }: { review: ReviewWithSubmission }) {
   const { laborMarketAddress, serviceRequestId, submissionId } = review;
 
   return (
@@ -55,8 +55,7 @@ function RewardsTableRow({ review }: { review: ReviewDoc }) {
           className="text-blue-600"
           to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}`}
         >
-          {/* // TODO */}
-          {review.submissionId}
+          {review.s.appData?.title}
         </Link>
       </Row.Column>
       <Row.Column span={5}>
@@ -72,7 +71,7 @@ function RewardsTableRow({ review }: { review: ReviewDoc }) {
   );
 }
 
-function RewardsCards({ reviews }: { reviews: ReviewDoc[] }) {
+function RewardsCards({ reviews }: { reviews: ReviewWithSubmission[] }) {
   return (
     <div className="space-y-4">
       {reviews.map((r) => {
@@ -83,16 +82,16 @@ function RewardsCards({ reviews }: { reviews: ReviewDoc[] }) {
   );
 }
 
-function RewardCard({ review }: { review: ReviewDoc }) {
+function RewardCard({ review }: { review: ReviewWithSubmission }) {
   const { laborMarketAddress, serviceRequestId, submissionId } = review;
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
-      <div>Challenge Title</div>
+      <div>Submission Title</div>
       <Link
         className="text-blue-600"
         to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}`}
       >
-        {review.id}
+        {review.s.appData?.title}
       </Link>
       <div>Reward</div>
       <div>

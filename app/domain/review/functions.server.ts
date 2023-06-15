@@ -1,13 +1,14 @@
 import type { EvmAddress } from "~/domain/address";
 import type { ReviewSearch } from "~/domain/review/schemas";
 import { mongo } from "../../services/mongo.server";
+import type { ReviewWithSubmission } from "../reward-reviews/schema";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.
  */
 export const searchReviews = async (params: ReviewSearch) => {
   return mongo.reviews
-    .find(searchParams(params))
+    .aggregate<ReviewWithSubmission>(searchReviewsPipeline(params))
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
@@ -40,6 +41,41 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
     ...(params.score ? { score: { $in: params.score } } : {}),
     ...(params.reviewer ? { reviewer: params.reviewer } : {}),
   };
+};
+
+const searchReviewsPipeline = (params: ReviewSearch) => {
+  return [
+    {
+      $match: searchParams(params),
+    },
+    {
+      $lookup: {
+        from: "submissions",
+        let: {
+          m_addr: "$laborMarketAddress",
+          sr_id: "$serviceRequestId",
+          s_id: "$submissionId",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                  { $eq: ["$serviceRequestId", "$$sr_id"] },
+                  { $eq: ["$id", "$$s_id"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "s",
+      },
+    },
+    {
+      $unwind: "$s",
+    },
+  ];
 };
 
 /**

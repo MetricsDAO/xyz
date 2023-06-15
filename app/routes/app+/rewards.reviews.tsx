@@ -15,6 +15,7 @@ import { ReviewSearchSchema } from "~/domain";
 import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { countReviews, searchReviews } from "~/domain/review/functions.server";
+import { searchReviewsWithRewards } from "~/domain/reward-reviews/functions.server";
 import { countSubmissionsWithRewards, searchSubmissionsWithRewards } from "~/domain/reward/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward/schema";
 import { ReviewsRewardsListView } from "~/features/my-rewards/reviews/reviews-rewards-list-view";
@@ -33,7 +34,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
     ...getParamsOrFail(url.searchParams, ReviewSearchSchema),
     reviewer: user.address as EvmAddress,
   };
-  const reviews = await searchReviews(search);
+  const reviews = await searchReviewsWithRewards(search);
   const reviewCount = await countReviews(search);
 
   console.log("reviews", reviews);

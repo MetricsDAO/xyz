@@ -1,5 +1,4 @@
-import type { SubmissionDoc } from "~/domain/submission/schemas";
-import type { FetchSignaturesBody } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody } from "~/domain/treasury";
 import { IOUTokenMetadataSchema } from "~/domain/treasury";
 import { fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
@@ -16,11 +15,11 @@ export async function fetchSignatures(body: FetchSignaturesBody) {
   return fetchSignaturesResponseSchema.parse(res);
 }
 
-export async function fetchClaims(submissions: SubmissionDoc[]) {
+export async function fetchClaims(input: FetchClaimsInput) {
   return await Promise.all(
-    submissions.map(async (s) => {
-      const { laborMarketAddress, id: submissionId } = s;
-      const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${laborMarketAddress}/${submissionId}/submission`, {
+    input.map(async (i) => {
+      const { marketplaceAddress, participationId, type } = i;
+      const res = await fetch(`${env.TREASURY_URL}/claims/${marketplaceAddress}/${participationId}/${type}`, {
         method: "GET",
         headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
       }).then((res) => res.json());

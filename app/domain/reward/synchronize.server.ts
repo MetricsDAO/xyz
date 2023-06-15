@@ -28,7 +28,15 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
   });
 
   const signatures = await fetchSignatures(fetchSignaturesBodySchema.parse(fetchSignaturesBody));
-  const claims = await fetchClaims(iouSubmissions);
+  const claims = await fetchClaims(
+    iouSubmissions.map((s) => {
+      return {
+        marketplaceAddress: s.laborMarketAddress,
+        participationId: s.id, //TODO,
+        type: "submission",
+      };
+    })
+  );
 
   await Promise.all(
     iouSubmissions.map(async (s) => {
