@@ -91,7 +91,7 @@ async function main() {
         decimals: 9,
         networkName: "Solana",
         isIou: true,
-        contractAddress: "0xe45e0546b83f8a85833a368b7ed49b1b1f9958ea",
+        contractAddress: "0xe45E0546B83f8A85833A368b7Ed49B1B1F9958EA",
         symbol: "iouSOL",
         iouSymbol: "SOL",
       },
