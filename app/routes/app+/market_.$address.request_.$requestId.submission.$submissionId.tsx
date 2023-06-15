@@ -38,7 +38,6 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
-import { useReward } from "~/hooks/use-reward";
 import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { getUser } from "~/services/session.server";
 import { listTokens } from "~/services/tokens.server";
@@ -81,7 +80,7 @@ export const loader = async (data: DataFunctionArgs) => {
 };
 
 export default function ChallengeSubmission() {
-  const { submission, reviews, params, laborMarket, user, userReview, serviceRequest, tokens } =
+  const { submission, reviews, params, laborMarket, user, userReview, serviceRequest } =
     useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -99,17 +98,9 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
   // TODO: Rewards
-  const { data: reward } = useReward({
-    laborMarketAddress: submission.laborMarketAddress,
-    submissionId: submission.id,
-    serviceRequestId: submission.serviceRequestId,
-  });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
-  const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
-
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 
   const performance = useServiceRequestPerformance({
@@ -165,9 +156,9 @@ export default function ChallengeSubmission() {
           <DetailItem title="Created">
             <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
           </DetailItem>
-          {score !== undefined && (
+          {submission.score?.avg !== undefined && (
             <DetailItem title="Overall Score">
-              <ScoreBadge score={score} />
+              <ScoreBadge score={submission.score?.avg} />
             </DetailItem>
           )}
           <DetailItem title="Reviews">
