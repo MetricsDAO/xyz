@@ -1,37 +1,43 @@
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
-import { Button, Error, Field, Label, scoreToLabel } from "~/components";
+import { Button, Error, Field, Label, UserBadge, scoreToLabel } from "~/components";
 import { useState } from "react";
 import { ClientOnly } from "remix-utils";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { SCORE_COLOR } from "~/utils/constants";
+import { formatDate } from "~/utils/date";
 
 export function ReviewCreatorPanel() {
   const [selectedScore, setValue] = useState(2);
 
+  const submission = {
+    configuration: { fulfiller: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06" },
+    blockTimestamp: new Date(),
+  };
+
   const reviews = [
     {
       comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
-      user: "2323",
-      time: Date(),
+      reviewer: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06",
+      blockTimestamp: new Date(),
       score: 1,
     },
-    { comment: "lol", user: "2323", time: Date(), score: 4 },
+    { reviewer: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06", blockTimestamp: new Date(), score: 4 },
     {
       comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
-      user: "2323",
-      time: Date(),
+      reviewer: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06",
+      blockTimestamp: new Date(),
       score: 4,
     },
-    { comment: "lol", user: "2323", time: Date(), score: 0 },
+    { comment: "lol", reviewer: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06", blockTimestamp: new Date(), score: 0 },
     {
       comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
-      user: "2323",
-      time: Date(),
+      reviewer: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06",
+      blockTimestamp: new Date(),
       score: 2,
     },
-    { comment: "lol", user: "2323", time: Date(), score: 3 },
+    { comment: "lol", reviewer: "0x688407D977a6c58fb8c4e431a962cF1EfFbEFA06", blockTimestamp: new Date(), score: 3 },
   ];
 
   return (
@@ -47,8 +53,10 @@ export function ReviewCreatorPanel() {
               <ChevronRightIcon className="text-black h-4" />
             </div>
           </div>
-          <p>User</p>
-          <p>Time</p>
+          <UserBadge address={submission.configuration.fulfiller as `0x${string}`} />
+          <p className="text-xs border rounded-full py-1.5 px-2 text-stone-500">
+            {formatDate(submission.blockTimestamp, "MMM D, h:mm A")}
+          </p>
         </div>
         <div className="flex gap-px items-center">
           <ArrowRightIcon className="text-black h-4" />
@@ -57,11 +65,11 @@ export function ReviewCreatorPanel() {
       </div>
       <div className="space-y-4 bg-blue-300 p-10 overflow-y-auto h-3/5">
         {reviews.map((r) => (
-          <div key={r.time} className="bg-white border rounded-md p-6 space-y-3">
+          <div key={r.blockTimestamp} className="bg-white border rounded-md p-6 space-y-3">
             <div className="flex justify-between">
-              <div className="flex gap-2">
-                <p>User</p>
-                <p className="text-stone-500 text-sm">Time</p>
+              <div className="flex gap-2 items-center">
+                <UserBadge address={submission.configuration.fulfiller as `0x${string}`} />
+                <p className="text-stone-500 text-sm">{formatDate(r.blockTimestamp, "MMM D, h:mm A")}</p>
               </div>
               <div
                 className={clsx(
@@ -72,7 +80,7 @@ export function ReviewCreatorPanel() {
                 <p>{scoreToLabel(Number(r.score) * 25)}</p>
               </div>
             </div>
-            <p className="text-stone-500 text-sm">{r.comment}</p>
+            {r.comment && <p className="text-stone-500 text-sm">{r.comment}</p>}
           </div>
         ))}
       </div>
