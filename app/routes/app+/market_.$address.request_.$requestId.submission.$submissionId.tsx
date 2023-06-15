@@ -107,7 +107,6 @@ export default function ChallengeSubmission() {
   //   serviceRequestId: submission.serviceRequestId,
   // });
 
-
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
 
