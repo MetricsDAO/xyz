@@ -41,7 +41,7 @@ export function ReviewCreatorPanel() {
   ];
 
   return (
-    <div className="mx-auto max-w-2xl h-screen">
+    <div className="mx-auto max-w-2xl h-screen fixed top-0 right-0">
       <div className="flex border justify-between bg-white p-3">
         <div className="flex space-x-4 items-center">
           <div className="flex gap-2 items-center">
