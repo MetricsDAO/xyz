@@ -40,8 +40,15 @@ function App() {
 function Filters() {
   return (
     <aside className="sidebar lg:w-80  md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
-      <div className="sidebar-content px-2 py-6 ml-2 mr-4 mt-14 ">
-        <div className="flex flex-col w-full ">
+      <div className="list-none px-2 py-6 ml-2 mr-4 mt-14 ">
+        <div className="flex flex-col w-full">
+          <style scoped>
+            {`
+          .ais-RefinementList-checkbox {
+            margin-right: 0.5rem;
+          }
+        `}
+          </style>
           <div className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
             <div className="text-xl mb-2">Program</div>
             <RefinementList attribute="program_name" />
@@ -64,7 +71,17 @@ function Content() {
     <main className="main flex flex-col flex-grow -ml-56 md:ml-0 transition-all duration-150 ease-in">
       <div className="main-content flex flex-col flex-grow p-4">
         <h1 className="font-bold text-2xl text-gray-700 mb-4">Submissions</h1>
-        <div className="mb-4 w-f96 flex-1 ">
+        <div className="mb-4">
+          <style scoped>
+            {`
+          .ais-SearchBox-input {
+            color: red;
+            width: 80%;
+            padding: 0.5rem;
+            margin-right: 1rem;
+          }
+        `}
+          </style>
           <SearchBox
             translations={{
               submitTitle: "Submit your search query.",
@@ -74,7 +91,28 @@ function Content() {
           />
         </div>
         <div>
-          <Hits hitComponent={Hit} />
+          <style scoped>
+            {`
+          ul {
+            list-style: none;
+          }
+          .ais-Pagination-list {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5rem;
+            margin-left: 0.5rem;
+          }
+          .ais-Pagination-item {
+            background-color: rgb(203 213 225);
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding-left: 0.75rem; 
+            padding-right: 0.75rem; 
+            border-radius: 0.5rem; 
+          }
+        `}
+          </style>
+          <Hits hitComponent={Hit} className="list-none" />
           <Configure hitsPerPage={7} />
           <Pagination />
         </div>
