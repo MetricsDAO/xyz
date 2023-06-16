@@ -99,6 +99,13 @@ export default function ChallengeSubmission() {
   };
 
   // TODO: Rewards
+  // const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
+  // TODO: Rewards
+  // const { data: reward } = useReward({
+  //   laborMarketAddress: submission.laborMarketAddress,
+  //   submissionId: submission.id,
+  //   serviceRequestId: submission.serviceRequestId,
+  // });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
   // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
