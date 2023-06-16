@@ -26,13 +26,16 @@ export function RewardReviewIOUCreator({ review }: RedeemRewardCreatorProps) {
 
   const redeemTransactor = useTransactor({
     onSuccess: () => {
+      const { laborMarketAddress, serviceRequestId, submissionId, id } = review;
       // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
-      // TODO
-      // fetch(`/api/reward/${submission.id}/mark-as-redeemed`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      // });
+      fetch(
+        `/api/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}/review/${id}/iou-redeemed`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     },
   });
 

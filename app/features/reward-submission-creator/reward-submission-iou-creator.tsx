@@ -28,13 +28,13 @@ export function SubmissionIOURewardCreator({ submission }: RedeemRewardCreatorPr
 
   const redeemTransactor = useTransactor({
     onSuccess: () => {
+      const { laborMarketAddress, serviceRequestId, id } = submission;
       // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
-      // TODO
-      // fetch(`/api/reward/${submission.id}/mark-as-redeemed`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      // });
+      fetch(`/api/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${id}/iou-redeemed`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
     },
   });
 
