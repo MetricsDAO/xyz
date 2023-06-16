@@ -47,9 +47,9 @@ export default function Rewards() {
   return (
     <Container className="py-16 px-10">
       <section className="space-y-2 max-w-3xl mb-16">
-        <h1 className="text-3xl font-semibold">Rewards</h1>
+        <h1 className="text-3xl font-semibold">Review Rewards</h1>
         <div>
-          <p className="text-lg text-cyan-500">Claim reward tokens for all the challenges you’ve won</p>
+          <p className="text-lg text-cyan-500">Claim reward tokens for all the reviews you've completed</p>
           <p className="text-gray-500 text-sm">
             View all your pending and claimed rewards and manage all your payout addresses
           </p>
