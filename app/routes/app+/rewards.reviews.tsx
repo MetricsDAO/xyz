@@ -1,4 +1,3 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -6,24 +5,16 @@ import { useRef } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
-import { z } from "zod";
 import { Field, Label, ValidatedSelect } from "~/components";
 import { Container } from "~/components/container";
-import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import { ReviewSearchSchema } from "~/domain";
 import type { EvmAddress } from "~/domain/address";
-import { EvmAddressSchema } from "~/domain/address";
-import { countReviews, searchReviews } from "~/domain/review/functions.server";
+import { countReviews } from "~/domain/review/functions.server";
 import { searchReviewsWithRewards } from "~/domain/reward-reviews/functions.server";
-import {
-  countSubmissionsWithRewards,
-  searchSubmissionsWithRewards,
-} from "~/domain/reward-submissions/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward-submissions/schema";
 import { ReviewsRewardsListView } from "~/features/my-rewards/reviews/reviews-rewards-list-view";
 import RewardsTab from "~/features/my-rewards/rewards-tab";
-import { SubmissionRewardsListView } from "~/features/my-rewards/submissions/submission-rewards-list-view";
 import { requireUser } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
@@ -39,8 +30,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   };
   const reviews = await searchReviewsWithRewards(search);
   const reviewCount = await countReviews(search);
-
-  console.log("reviews", reviews);
 
   const wallets = await findAllWalletsForUser(user.id);
 

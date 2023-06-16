@@ -3,7 +3,7 @@ import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
 import { fromNow } from "~/utils/date";
 import { RewardDisplay, Status } from "./column-data";
-import type { ReviewWithSubmission } from "~/domain/reward-reviews/schema";
+import type { ReviewWithSubmission } from "~/domain";
 
 export function ReviewsRewardsListView({ reviews }: { reviews: ReviewWithSubmission[] }) {
   if (reviews.length === 0) {

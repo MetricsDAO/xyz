@@ -1,10 +1,9 @@
 import invariant from "tiny-invariant";
 import { mongo } from "~/services/mongo.server";
 import { fetchClaims, fetchSignatures } from "~/services/treasury.server";
-import type { ReviewDoc } from "../review/schemas";
+import type { ReviewDoc, ReviewWithSubmission } from "../review/schemas";
 import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
 import { fetchSignaturesBodySchema } from "../treasury";
-import type { ReviewWithSubmission } from "./schema";
 
 const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
   const iouReviews = reviews.filter((s) => s.reward?.isIou === true && s.reward?.iouHasRedeemed === false);

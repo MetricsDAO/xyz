@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { EvmAddressSchema } from "../address";
-import { ReviewDocSchema } from "../review/schemas";
 import { ServiceRequestDocSchema } from "../service-request/schemas";
 import { LaborMarketDocSchema } from "../labor-market/schemas";
 import { RewardSchema } from "../reward-submissions/schema";
@@ -85,10 +84,6 @@ export const ShowcaseSearchSchema = z.object({
   page: z.number().default(1),
 });
 
-export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
-  reviews: z.array(ReviewDocSchema),
-});
-
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
@@ -97,4 +92,3 @@ export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceR
 export type SubmissionWithReward = z.infer<typeof SubmissionWithRewardSchema>;
 export type CombinedDoc = z.infer<typeof CombinedSchema>;
 export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;
-export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

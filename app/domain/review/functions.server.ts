@@ -1,7 +1,6 @@
 import type { EvmAddress } from "~/domain/address";
-import type { ReviewSearch } from "~/domain/review/schemas";
+import type { ReviewSearch, ReviewWithSubmission } from "~/domain/review/schemas";
 import { mongo } from "../../services/mongo.server";
-import type { ReviewWithSubmission } from "../reward-reviews/schema";
 
 /**
  * Returns an array of ReviewDoc for a given Submission.

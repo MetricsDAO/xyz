@@ -47,7 +47,17 @@ export const ReviewDocSchema = z.object({
   reward: RewardSchema,
 });
 
+export const ReviewWithSubmissionSchema = ReviewDocSchema.extend({
+  s: SubmissionDocSchema,
+});
+
+export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
+  reviews: z.array(ReviewDocSchema),
+});
+
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
 export type ReviewContract = z.infer<typeof ReviewSchema>;
 export type ReviewDoc = z.infer<typeof ReviewDocSchema>;
 export type ReviewForm = z.infer<typeof ReviewFormSchema>;
+export type ReviewWithSubmission = z.infer<typeof ReviewWithSubmissionSchema>;
+export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;
