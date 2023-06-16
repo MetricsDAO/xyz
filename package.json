@@ -86,6 +86,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.2",
     "react-hot-toast": "^2.4.0",
+    "react-instantsearch-dom": "^6.40.0",
     "react-jazzicon": "^1.0.4",
     "react-markdown": "6.0.3",
     "react-spring": "^9.6.0",
