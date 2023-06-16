@@ -1,8 +1,9 @@
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import * as DOMPurify from "dompurify";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
-import { badRequest, ClientOnly, notFound } from "remix-utils";
+import { ClientOnly, notFound } from "remix-utils";
 import { z } from "zod";
 import { UserBadge } from "~/components";
 import { Badge } from "~/components/badge";
@@ -10,48 +11,41 @@ import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
+import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
-import { getIndexedServiceRequest } from "~/domain/service-request/functions.server";
+import { EvmAddressSchema } from "~/domain/address";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
+import { countReviews } from "~/domain/review/functions.server";
+import { getServiceRequest } from "~/domain/service-request/functions.server";
+import { uniqueParticipants } from "~/domain/user-activity/function.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
+import DeleteServiceRequestModal from "~/features/delete-service-request";
 import { ProjectBadges } from "~/features/project-badges";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
-import { useHasPerformed } from "~/hooks/use-has-performed";
-import { useReviewSignals } from "~/hooks/use-review-signals";
+import { usePrereqs } from "~/hooks/use-prereqs";
+import { useTokens } from "~/hooks/use-root-data";
+import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
-import { countReviews } from "~/domain/review/functions.server";
-import { listTokens } from "~/services/tokens.server";
 import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
-import * as DOMPurify from "dompurify";
-import { usePrereqs } from "~/hooks/use-prereqs";
-import { EvmAddressSchema } from "~/domain/address";
-import { uniqueParticipants } from "~/domain/user-activity/function.server";
-import DeleteServiceRequestModal from "~/features/delete-service-request";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params }: DataFunctionArgs) => {
   const { address, requestId } = paramsSchema.parse(params);
 
-  const serviceRequest = await getIndexedServiceRequest(address, requestId);
+  const serviceRequest = await getServiceRequest(address, requestId);
   if (!serviceRequest) {
     throw notFound({ requestId });
   }
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getLaborMarket(address);
   if (!laborMarket) {
     throw notFound({ laborMarket });
   }
 
-  if (!serviceRequest.appData) {
-    throw badRequest("service request app data is missing");
-  }
-
   const serviceRequestProjects = await findProjectsBySlug(serviceRequest.appData.projectSlugs);
-  const tokens = await listTokens();
 
   const numOfReviews = await countReviews({
     laborMarketAddress: address,
@@ -64,55 +58,44 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   });
   const numParticipants = participants.length;
   return typedjson(
-    { serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, tokens, numParticipants },
+    { serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, numParticipants },
     { status: 200 }
   );
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, tokens, numParticipants } =
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, numParticipants } =
     useTypedLoaderData<typeof loader>();
+
+  const user = useOptionalUser();
+  const userSignedIn = !!user;
+  const tokens = useTokens();
 
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pToken);
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
 
-  const description = serviceRequest.appData?.description ? serviceRequest.appData.description : "";
-
-  const hasClaimedToSubmit = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress,
-    id: serviceRequest.id,
-    action: "HAS_SIGNALED",
-  });
-
-  const hasSubmitted = useHasPerformed({
-    laborMarketAddress: serviceRequest.laborMarketAddress,
-    id: serviceRequest.id,
-    action: "HAS_SUBMITTED",
-  });
-
-  const reviewSignal = useReviewSignals({
+  const performance = useServiceRequestPerformance({
     laborMarketAddress: serviceRequest.laborMarketAddress,
     serviceRequestId: serviceRequest.id,
   });
+  const claimedReviews = serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0);
 
-  const user = useOptionalUser();
-  const userSignedIn = !!user;
-
-  const showSubmit = hasClaimedToSubmit && !hasSubmitted;
-  const showClaimToSubmit = !hasClaimedToSubmit && !hasSubmitted && !claimDeadlinePassed;
+  const showSubmit = performance?.signaled && !performance.submitted;
+  const showClaimToSubmit = !performance?.signaled && !performance?.submitted && !claimDeadlinePassed;
   const showClaimToReview =
-    reviewSignal?.remainder.eq(0) && // Must not have any remaining reviews left (or initial of 0)
-    !claimToReviewDeadlinePassed;
+    !performance?.remainingReviews &&
+    !claimToReviewDeadlinePassed &&
+    claimedReviews < serviceRequest.configuration.reviewerLimit;
 
   const { canReview, canSubmit } = usePrereqs({ laborMarket });
 
   const showDelete =
     user &&
-    user.address === serviceRequest.configuration.serviceRequester &&
-    serviceRequest.claimsToReview.length === 0 &&
-    serviceRequest.claimsToSubmit.length === 0;
+    user.address === serviceRequest.configuration.requester &&
+    serviceRequest.indexData.claimsToReview.length === 0 &&
+    serviceRequest.indexData.claimsToSubmit.length === 0;
 
   return (
     <Container className="pt-7 pb-16 px-10">
@@ -154,7 +137,7 @@ export default function ServiceRequest() {
       <section className="flex flex-col space-y-7 pb-12">
         <Detail className="mb-6 flex flex-wrap gap-y-2">
           <DetailItem title="Sponsor">
-            <UserBadge address={laborMarket.configuration.owner} />
+            <UserBadge address={laborMarket.configuration.deployer} />
           </DetailItem>
           <div className="flex space-x-4">
             {serviceRequestProjects && (
@@ -163,12 +146,15 @@ export default function ServiceRequest() {
           </div>
           <DetailItem title="Reward Pool">
             <RewardBadge
-              payment={{ amount: fromTokenAmount(serviceRequest.configuration.pTokenQ, token?.decimals ?? 18), token }}
+              payment={{
+                amount: fromTokenAmount(serviceRequest.configuration.pTokenProviderTotal, token?.decimals ?? 18),
+                token,
+              }}
               reputation={{ amount: REPUTATION_REWARD_POOL.toLocaleString() }}
             />
           </DetailItem>
           <DetailItem title="Submissions">
-            <Badge className="px-4 min-w-full">{serviceRequest.submissionCount}</Badge>
+            <Badge className="px-4 min-w-full">{serviceRequest.indexData.submissionCount}</Badge>
           </DetailItem>
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
@@ -178,12 +164,14 @@ export default function ServiceRequest() {
           </DetailItem>
         </Detail>
 
-        <ClientOnly>{() => <ParsedMarkdown text={DOMPurify.sanitize(description)} />}</ClientOnly>
+        <ClientOnly>
+          {() => <ParsedMarkdown text={DOMPurify.sanitize(serviceRequest.appData.description)} />}
+        </ClientOnly>
       </section>
 
       <TabNav className="mb-10">
         <TabNavLink to="./#tabNav" end>
-          Submissions <span className="text-gray-400">{serviceRequest.submissionCount}</span>
+          Submissions <span className="text-gray-400">({serviceRequest.indexData.submissionCount})</span>
         </TabNavLink>
         <TabNavLink to="./prereqs#tabNav">Prerequisites</TabNavLink>
         <TabNavLink to="./rewards#tabNav">Rewards</TabNavLink>

@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
@@ -15,7 +15,7 @@ import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";
 import { ClaimToReviewFormValuesSchema } from "./claim-to-review-creator-values";
 
 interface ClaimToReviewFormProps {
-  serviceRequest: ServiceRequestWithIndexData;
+  serviceRequest: ServiceRequestDoc;
 }
 
 export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps) {
@@ -52,7 +52,7 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
               Please confirm that you would like to claim {methods.getValues("quantity")} submissions to review.
             </p>
             <p>
-              This will lock <b>{Number(methods.getValues("quantity")) * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
+              This will lock <b>{methods.getValues("quantity") * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
             </p>
           </div>
         }
@@ -81,13 +81,13 @@ function configureFromValues({
   contracts: ReturnType<typeof useContracts>;
   inputs: {
     formValues: ClaimToReviewFormValues;
-    serviceRequest: ServiceRequestWithIndexData;
+    serviceRequest: ServiceRequestDoc;
   };
 }) {
   return configureWrite({
     abi: contracts.LaborMarket.abi,
     address: inputs.serviceRequest.laborMarketAddress,
     functionName: "signalReview",
-    args: [BigNumber.from(inputs.serviceRequest.id), BigNumber.from(inputs.formValues.quantity)],
+    args: [BigNumber.from(inputs.serviceRequest.id), inputs.formValues.quantity],
   });
 }

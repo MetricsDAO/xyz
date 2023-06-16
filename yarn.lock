@@ -9787,15 +9787,15 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
-labor-markets-abi-dev@1.6.0:
+labor-markets-abi-dev@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/labor-markets-abi-dev/-/labor-markets-abi-dev-1.6.0.tgz#e9ba5aa252b2749f72bec538c604e6e363d4f336"
   integrity sha512-N5+tqELb3vwrUfaxETkGlVloAfrb3hy8WSdTgRXX9Ceyr6Wigg5zSsvToY7JGrobLP9PF8KA2anIUtjfTSVupQ==
 
-labor-markets-abi@1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-1.6.0.tgz#39c41c7e76c3e37f9723e1e0705074eefa2b9607"
-  integrity sha512-E3ftsX9zTSSrjAfKniGaEQU+NSi3LsVvHNIGpJskyoFF6XD9qg4MSNIDCDuEF+bdWAajF1dtpcLr+vyPjMs4kg==
+labor-markets-abi@2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-2.0.8.tgz#7ce484b520ab357b78c02e336869bfe2a2b549d6"
+  integrity sha512-bRV9dRcP46z7Bkko5Rq7QkiFDYMUTHyQnAnQdaUYwQHIV1x/Mp43BTBNV+8aLXX7cD+rgK7Q9ywtpzX9S/xRhA==
 
 language-subtag-registry@^0.3.20:
   version "0.3.22"

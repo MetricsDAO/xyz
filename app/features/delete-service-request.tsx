@@ -2,13 +2,13 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import ConnectWalletWrapper from "./connect-wallet-wrapper";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 
-export default function DeleteServiceRequestModal({ serviceRequest }: { serviceRequest: ServiceRequestWithIndexData }) {
+export default function DeleteServiceRequestModal({ serviceRequest }: { serviceRequest: ServiceRequestDoc }) {
   const contracts = useContracts();
   const navigate = useNavigate();
 
@@ -57,7 +57,7 @@ function configureFromValues({
 }: {
   contracts: ReturnType<typeof useContracts>;
   inputs: {
-    serviceRequest: ServiceRequestWithIndexData;
+    serviceRequest: ServiceRequestDoc;
   };
 }) {
   return configureWrite({

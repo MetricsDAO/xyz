@@ -81,6 +81,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
 }
 
 async function uploadMetadata(metadata: JsonObject) {
+  console.log("uploading metadata", metadata);
   const res = await fetch("/api/pin-to-ipfs", {
     body: JSON.stringify(metadata),
     method: "POST",

@@ -86,6 +86,6 @@ function configureFromValues({
     address: laborMarketAddress,
     abi: contracts.LaborMarket.abi,
     functionName: "review",
-    args: [BigNumber.from(requestId), BigNumber.from(submissionId), BigNumber.from(formValues.score)],
+    args: [BigNumber.from(requestId), BigNumber.from(submissionId), BigNumber.from(formValues.score), "cid"], //TODO cid
   });
 }

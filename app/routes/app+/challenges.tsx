@@ -11,7 +11,7 @@ import { countServiceRequests, searchServiceRequests } from "~/domain/service-re
 import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ListChallenges } from "~/features/challenges/list-challenges/list-challenges";
 import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
-import { usePrereqsMulticall } from "~/hooks/use-prereqs";
+import { usePrereqsMulticall } from "~/hooks/use-prereqs-multicall";
 
 export async function loader({ request }: DataFunctionArgs) {
   const searchParams = getSearchParamsOrFail(request, ServiceRequestSearchSchema);

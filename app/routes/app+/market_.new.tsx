@@ -1,21 +1,30 @@
-import type { DataFunctionArgs } from "@remix-run/node";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { listProjects } from "~/services/projects.server";
-import { listTokens } from "~/services/tokens.server";
-import { fakeLaborMarketFormValues, NewMarket } from "~/features/markets/new-market";
+import { Outlet } from "@remix-run/react";
+import type { DataFunctionArgs } from "@remix-run/server-runtime";
+import { useState } from "react";
+import type { AppData, GatingData } from "~/features/labor-market-creator/schema";
 import { requireUser } from "~/services/session.server";
 
-export const loader = async ({ request, params }: DataFunctionArgs) => {
-  const url = new URL(request.url);
-  await requireUser(request, `/app/login?redirectto=app/market/new`);
+export type OutletContext = [MarketplaceFormState, React.Dispatch<React.SetStateAction<MarketplaceFormState>>];
 
-  const projects = await listProjects();
-  const tokens = await listTokens();
-  const defaultValues = url.searchParams.get("fake") ? fakeLaborMarketFormValues() : {};
-  return typedjson({ projects, tokens, defaultValues });
+export const loader = async ({ request }: DataFunctionArgs) => {
+  await requireUser(request, `/app/login?redirectto=app/market`);
+  return null;
 };
 
+export interface MarketplaceFormState {
+  appData?: AppData;
+  sponsor?: GatingData;
+  analyst?: GatingData;
+  reviewer?: GatingData;
+}
+
+// Takes advantage of Outlet to maintain state across pages. If a user refreshes, state will be lost (not persisted on any backend)
 export default function NewMarketRoute() {
-  const { projects, defaultValues, tokens } = useTypedLoaderData<typeof loader>();
-  return <NewMarket defaultValues={defaultValues} projects={projects} tokens={tokens} />;
+  const [formState, setFormState] = useState<MarketplaceFormState>({});
+
+  return (
+    <div>
+      <Outlet context={[formState, setFormState]} />
+    </div>
+  );
 }

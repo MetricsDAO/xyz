@@ -1,16 +1,22 @@
 import { Controller, useFormContext } from "react-hook-form";
-import { Error, Field, Label, SegmentedRadio } from "~/components";
+import { Error, Field, Input, Label } from "~/components";
 import { CountdownCard } from "~/components/countdown-card";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { claimToReviewDeadline, serviceRequestCreatedDate } from "~/utils/helpers";
 import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";
 
-export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest: ServiceRequestWithIndexData }) {
+export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest: ServiceRequestDoc }) {
   const {
     control,
     formState: { errors },
   } = useFormContext<ClaimToReviewFormValues>();
+
+  const claimedReviews =
+    serviceRequest.indexData.claimsToReview.length > 0
+      ? serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0)
+      : 0;
+  const numClaimsRemaining = serviceRequest.configuration.reviewerLimit - claimedReviews;
 
   return (
     <>
@@ -53,22 +59,11 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
       <div className="space-y-2">
         <Field>
           <Label size="lg">How many submissions do you commit to reviewing at a minimum?</Label>
+          <p className="text-gray-500 text-sm">There are {numClaimsRemaining} available to claim</p>
           <Controller
             control={control}
             name="quantity"
-            render={({ field }) => (
-              <SegmentedRadio
-                {...field}
-                name="quantity"
-                options={[
-                  { label: "10", value: "10" },
-                  { label: "25", value: "25" },
-                  { label: "50", value: "50" },
-                  { label: "75", value: "75" },
-                  { label: "100", value: "100" },
-                ]}
-              />
-            )}
+            render={({ field }) => <Input {...field} type="number" name="quantity" max={numClaimsRemaining} />}
           />
           <Error error={errors.quantity?.message} />
         </Field>

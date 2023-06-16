@@ -11,6 +11,16 @@ export const fetchSignaturesBodySchema = z.array(
     amount: z.string(),
   })
 );
+export type FetchSignaturesBody = z.infer<typeof fetchSignaturesBodySchema>;
+
+export const FetchClaimsInputSchema = z.array(
+  z.object({
+    marketplaceAddress: EvmAddressSchema,
+    participationId: z.string(),
+    type: z.enum(["submission", "review"]),
+  })
+);
+export type FetchClaimsInput = z.infer<typeof FetchClaimsInputSchema>;
 
 export const fetchSignaturesResponseSchema = z.array(
   z.object({
@@ -44,3 +54,19 @@ export const fetchClaimsResponseSchema = z.object({
   }),
 });
 export type FetchClaimsResponse = z.infer<typeof fetchClaimsResponseSchema>;
+
+const IOUTokenSchema = z.object({
+  id: z.string(),
+  tokenName: z.string(),
+  chain: z.string(),
+  fireblocksTokenName: z.string(),
+  decimals: z.number(),
+  balance: z.string(),
+});
+
+export type IOUToken = z.infer<typeof IOUTokenSchema>;
+
+export const IOUTokenMetadataSchema = z.object({
+  metadata: z.array(IOUTokenSchema),
+  signature: z.string(),
+});
