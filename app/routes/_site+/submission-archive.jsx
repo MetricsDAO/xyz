@@ -5,10 +5,11 @@ import PropTypes from "prop-types";
 import { InstantSearch, Hits, SearchBox, Pagination, RefinementList, Configure } from "react-instantsearch-dom";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-//import uniswapLogo from "../../../public/img/uniswap-logo.png";
-//import olympusLogo from "../../../public/img/olympusdao-logo.png";
+import uniswapLogo from "../../../public/img/submission-archive/uniswap-logo.png";
+import olympusLogo from "../../../public/img/submission-archive/olympusdao-logo.png";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { ChatBubbleLeftRightIcon } from "@heroicons/react/20/solid";
+import { ChatBubbleLeftRightIcon, ChartBarIcon, CalendarIcon, UserIcon, FlagIcon } from "@heroicons/react/20/solid";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export function loader() {
   return {
@@ -17,10 +18,10 @@ export function loader() {
   };
 }
 
-/*const icons = {
+const icons = {
   OlympusDAO: olympusLogo,
   Uniswap: uniswapLogo,
-};*/
+};
 
 function App() {
   const data = useLoaderData();
@@ -40,20 +41,20 @@ function Filters() {
   return (
     <aside className="sidebar lg:w-80  md:shadow transform -translate-x-full md:translate-x-0 transition-transform duration-150 ease-in">
       <div className="sidebar-content px-2 py-6 ml-2 mr-4 mt-14 ">
-        <ul className="flex flex-col w-full ">
-          <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
+        <div className="flex flex-col w-full ">
+          <div className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
             <div className="text-xl mb-2">Program</div>
             <RefinementList attribute="program_name" />
-          </li>
-          <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
+          </div>
+          <div className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
             <div className="text-xl mb-2">Quality</div>
             <RefinementList attribute="submission_quality" />
-          </li>
-          <li className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
+          </div>
+          <div className="my-px rounded-sm shadow-lg mb-4 p-4 bg-white">
             <div className="text-xl mb-2">Analyst</div>
             <RefinementList attribute="hunter_discord_id" searchable={true} limit={5} />
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
     </aside>
   );
@@ -63,7 +64,7 @@ function Content() {
     <main className="main flex flex-col flex-grow -ml-56 md:ml-0 transition-all duration-150 ease-in">
       <div className="main-content flex flex-col flex-grow p-4">
         <h1 className="font-bold text-2xl text-gray-700 mb-4">Submissions</h1>
-        <div className="max-w-full mb-4">
+        <div className="mb-4 w-f96 flex-1 ">
           <SearchBox
             translations={{
               submitTitle: "Submit your search query.",
@@ -133,16 +134,20 @@ function Hit(props) {
           <a href={hit["public_dashboard"]} target="_blank" rel="noreferrer">
             <div className="text-xl font-medium text-black mb-3 flex items-center justify-between">
               <div className="flex items-center">
-                <div className="program-icon mr-2">
-                  {/*} {icons[hit["program_name"]] ? (
-                    <img alt="MetricsDao" src={icons[hit["program_name"]]} title={hit["program_name"]} />
-                  ) : (
-                    <img alt="MetricsDao" src="../img/black-mark@2x.png" title={hit["program_name"]} />
-                  )}*/}
-                </div>
-                <div className="content-start">
+                {icons[hit["program_name"]] ? (
+                  <img
+                    alt="MetricsDao"
+                    src={icons[hit["program_name"]]}
+                    title={hit["program_name"]}
+                    className="mr-2"
+                    width="22"
+                  />
+                ) : (
+                  <img src="/img/black-mark@2x.png" alt="MetricsDAO" width="22" className="mr-2" />
+                )}
+                <div className="flex">
                   {hit.question_title}
-                  {/*<FontAwesomeIcon className="text-slate-300 align-middle pl-2 text-sm" icon={faExternalLink} />*/}
+                  <ArrowTopRightOnSquareIcon className="text-slate-300 align-middle pl-2 h-7 w-7" />
                 </div>
               </div>
               {is_flagged_by_bounty_ops == "No" && is_flagged_by_reviewers == "No" ? (
@@ -163,7 +168,7 @@ function Hit(props) {
                   <Tooltip.Trigger>
                     <div className="flex justify-center items-end space-x-2 border-none border-x-slate-50:ml-4">
                       <div className="flex space-x-2 items-center">
-                        {/*<FontAwesomeIcon className="text-slate-500 fa-xs" icon={faFlag} />*/}
+                        <FlagIcon className="text-slate-500 h-5 w-5" />
                         {uniqueFlags.map((element, i) => (
                           <div
                             key={i}
@@ -184,16 +189,16 @@ function Hit(props) {
             </div>
 
             <div className="flex flex-row space-x-8 text-sm justify-around md:justify-start">
-              <div className="flex flex-row space-x-2">
-                <div>{/*<FontAwesomeIcon className="text-slate-500" icon={faSignal} />*/}</div>
+              <div className="flex flex-row space-x-1">
+                <ChartBarIcon className="h-5 w-5 text-slate-500" />
                 <div className="text-slate-500">{hit["submission_quality"]}</div>
               </div>
-              <div className="flex flex-row space-x-2">
-                <div>{/*<FontAwesomeIcon className="text-slate-500" icon={faCalendar} />*/}</div>
+              <div className="flex flex-row space-x-1">
+                <CalendarIcon className="h-5 w-5 text-slate-500" />
                 <div className="text-slate-500">{hit["created_at"]}</div>
               </div>
-              <div className="flex flex-row space-x-2 w-min-200">
-                <div>{/*<FontAwesomeIcon className="text-slate-500" icon={faUserGraduate} />*/}</div>
+              <div className="flex flex-row space-x-1 w-min-200">
+                <UserIcon className="h-5 w-5 text-slate-500" />
                 <div className="text-slate-500">{hit["hunter_discord_id"]}</div>
               </div>
             </div>
