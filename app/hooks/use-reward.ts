@@ -1,7 +1,5 @@
 import { BigNumber } from "ethers";
-import { useContractRead } from "wagmi";
 import type { EvmAddress } from "~/domain/address";
-import { useContracts } from "./use-root-data";
 
 type Props = {
   laborMarketAddress: EvmAddress;
@@ -25,5 +23,5 @@ export function useReward({ laborMarketAddress, submissionId, serviceRequestId }
   //     return data;
   //   },
   // });
-  return BigNumber.from(2);
+  return BigNumber.from(1);
 }

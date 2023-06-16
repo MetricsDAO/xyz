@@ -53,6 +53,7 @@ export const SubmissionDocSchema = z.object({
     .object({
       reviewCount: z.number(),
       reviewSum: z.number(),
+      avg: z.number(),
     })
     .optional(),
   appData: SubmissionFormSchema.nullable(),

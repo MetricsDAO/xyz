@@ -176,14 +176,12 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
   return (
     <Table>
       <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
-        <Header.Column span={3}>Title</Header.Column>
-        <Header.Column span={3}>Challenge</Header.Column>
+        <Header.Column span={4}>Title</Header.Column>
+        <Header.Column span={4}>Challenge</Header.Column>
         <Header.Column span={2}>Chain/Project</Header.Column>
         <Header.Column>Submitted</Header.Column>
       </Header>
       {submissions.map((s) => {
-        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
-
         return (
           <Row asChild columns={12} key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
@@ -192,11 +190,11 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
                 "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.fulfiller,
               })}
             >
-              <Row.Column span={3}>
+              <Row.Column span={4}>
                 <div className="flex flex-wrap gap-1">
                   {s.appData?.title}
 
-                  {score !== undefined && <p className="text-neutral-400 font-thin">({score})</p>}
+                  {s.score?.avg !== undefined && <p className="text-neutral-400 font-thin">({s.score?.avg})</p>}
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
@@ -207,7 +205,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
                   />
                 </div>
               </Row.Column>
-              <Row.Column span={3}>{s.sr.appData?.title}</Row.Column>
+              <Row.Column span={4}>{s.sr.appData?.title}</Row.Column>
               <Row.Column span={2}>
                 <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
               </Row.Column>
@@ -226,8 +224,6 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
   return (
     <div className="space-y-4">
       {submissions.map((s) => {
-        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
-
         return (
           <Card asChild key={`${s.laborMarketAddress}_${s.id}`}>
             <Link
@@ -239,7 +235,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
               <div className="col-span-2">
                 <div className="flex gap-1">
                   {s.appData?.title}
-                  <p className="text-neutral-400 font-thin">({score})</p>
+                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
                 </div>
                 <div className="flex flex-row items-center gap-x-2">
                   <img alt="" src="/img/icons/poly.svg" width={15} />
