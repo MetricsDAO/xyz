@@ -64,6 +64,8 @@ const IOUTokenSchema = z.object({
   balance: z.string(),
 });
 
+export type IOUToken = z.infer<typeof IOUTokenSchema>;
+
 export const IOUTokenMetadataSchema = z.object({
   metadata: z.array(IOUTokenSchema),
   signature: z.string(),

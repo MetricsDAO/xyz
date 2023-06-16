@@ -13,8 +13,8 @@ import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import type { IOUToken } from "~/domain/reward-submissions/schema";
 import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import type { IOUToken } from "~/domain/treasury";
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const iouTokens = await fetchIouTokenMetadata();
