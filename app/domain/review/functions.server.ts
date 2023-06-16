@@ -1,5 +1,5 @@
 import type { EvmAddress } from "~/domain/address";
-import type { ReviewSearch } from "~/domain/review/schemas";
+import type { ReviewSearch, ReviewWithSubmission } from "~/domain/review/schemas";
 import { mongo } from "../../services/mongo.server";
 
 /**
@@ -7,7 +7,7 @@ import { mongo } from "../../services/mongo.server";
  */
 export const searchReviews = async (params: ReviewSearch) => {
   return mongo.reviews
-    .find(searchParams(params))
+    .aggregate<ReviewWithSubmission>(searchReviewsPipeline(params))
     .sort({ [params.sortBy]: params.order === "asc" ? 1 : -1 })
     .skip(params.first * (params.page - 1))
     .limit(params.first)
@@ -23,7 +23,10 @@ export const countReviews = async (params: FilterParams) => {
   return mongo.reviews.countDocuments(searchParams(params));
 };
 
-type FilterParams = Pick<ReviewSearch, "laborMarketAddress" | "serviceRequestId" | "submissionId" | "score">;
+type FilterParams = Pick<
+  ReviewSearch,
+  "laborMarketAddress" | "serviceRequestId" | "submissionId" | "score" | "reviewer"
+>;
 /**
  * Convenience function to share the search parameters between search and count.
  * @param {FilterParams} params - The search parameters.
@@ -35,7 +38,43 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.reviews.fin
     ...(params.serviceRequestId ? { serviceRequestId: params.serviceRequestId } : {}),
     ...(params.submissionId ? { submissionId: params.submissionId } : {}),
     ...(params.score ? { score: { $in: params.score } } : {}),
+    ...(params.reviewer ? { reviewer: params.reviewer } : {}),
   };
+};
+
+const searchReviewsPipeline = (params: ReviewSearch) => {
+  return [
+    {
+      $match: searchParams(params),
+    },
+    {
+      $lookup: {
+        from: "submissions",
+        let: {
+          m_addr: "$laborMarketAddress",
+          sr_id: "$serviceRequestId",
+          s_id: "$submissionId",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                  { $eq: ["$serviceRequestId", "$$sr_id"] },
+                  { $eq: ["$id", "$$s_id"] },
+                ],
+              },
+            },
+          },
+        ],
+        as: "s",
+      },
+    },
+    {
+      $unwind: "$s",
+    },
+  ];
 };
 
 /**

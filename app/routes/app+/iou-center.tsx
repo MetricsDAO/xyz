@@ -9,12 +9,12 @@ import { Container } from "~/components/container";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { getIOUTokenData } from "~/domain/reward/functions.server";
 import { requireUser } from "~/services/session.server";
+import { fetchIouTokenMetadata } from "~/services/treasury.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
-  const iouTokens = await getIOUTokenData();
+  const iouTokens = await fetchIouTokenMetadata();
   if (!user.isAdmin) {
     throw forbidden({ error: "User does not have permission" });
   }

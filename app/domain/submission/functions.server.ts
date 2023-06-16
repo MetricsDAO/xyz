@@ -14,9 +14,9 @@ import type {
   SubmissionContract,
   SubmissionDoc,
   SubmissionSearch,
-  SubmissionWithReviewsDoc,
 } from "./schemas";
 import { SubmissionContractSchema } from "./schemas";
+import type { SubmissionWithReviewsDoc } from "../review/schemas";
 
 /**
  * Returns a SubmissionDoc from mongodb, if it exists.

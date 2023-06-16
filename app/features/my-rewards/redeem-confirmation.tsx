@@ -1,14 +1,16 @@
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/20/solid";
-import invariant from "tiny-invariant";
+import type { Token, Wallet } from "@prisma/client";
 import { CopyToClipboard } from "~/components";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
 import { fromTokenAmount, truncateAddress } from "~/utils/helpers";
 
-export function RedeemConfirmation({ submission }: { submission: SubmissionWithReward }) {
-  const { paymentTokenAmount, token } = submission.serviceProviderReward.reward;
-  const displayPaymentAmount = fromTokenAmount(paymentTokenAmount, token?.decimals ?? 18, 2);
-  const { wallet } = submission.serviceProviderReward;
-  invariant(wallet, "Wallet should exist at this point. User may need to enter a proper payout wallet.");
+type RedeemConfirmationType = {
+  payoutAmount: string;
+  token?: Token;
+  wallet: Wallet;
+};
+
+export function RedeemConfirmation({ payoutAmount, token, wallet }: RedeemConfirmationType) {
+  const displayPaymentAmount = fromTokenAmount(payoutAmount, token?.decimals ?? 18, 2);
   return (
     <>
       <div className="space-y-5 mt-5">
