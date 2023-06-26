@@ -40,6 +40,7 @@ export const ReviewDocSchema = z.object({
   reviewer: EvmAddressSchema,
   blockTimestamp: z.date(),
   indexedAt: z.date(),
+  comment: z.string().optional(),
 });
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;

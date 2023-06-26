@@ -1,38 +1,27 @@
-import clsx from "clsx";
-import { useFormContext } from "react-hook-form";
-import { Button, Error, Field, Label, scoreToLabel } from "~/components";
-import { useState } from "react";
-import { ClientOnly } from "remix-utils";
-import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { ClientOnly } from "remix-utils";
+import { Button, Field, UserBadge, scoreToLabel } from "~/components";
+import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
+import type { ReviewDoc } from "~/domain";
+import type { SubmissionWithReviewsDoc } from "~/domain/submission/schemas";
 import { SCORE_COLOR } from "~/utils/constants";
+import { fromNow } from "~/utils/date";
 
-export function ReviewCreatorPanel() {
+export function ReviewCreatorPanel({
+  onStateChange,
+  reviews,
+  submission,
+}: {
+  onStateChange: (state: boolean) => void;
+  reviews: ReviewDoc[];
+  submission?: SubmissionWithReviewsDoc;
+}) {
   const [selectedScore, setValue] = useState(2);
 
-  const reviews = [
-    {
-      comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
-      user: "2323",
-      time: Date(),
-      score: 1,
-    },
-    { comment: "lol", user: "2323", time: Date(), score: 4 },
-    {
-      comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
-      user: "2323",
-      time: Date(),
-      score: 4,
-    },
-    { comment: "lol", user: "2323", time: Date(), score: 0 },
-    {
-      comment: "Comments are optional but highly encouraged to help people better understand your evaluation. ",
-      user: "2323",
-      time: Date(),
-      score: 2,
-    },
-    { comment: "lol", user: "2323", time: Date(), score: 3 },
-  ];
+  const { register, watch } = useForm();
 
   return (
     <div className="mx-auto max-w-2xl h-screen">
@@ -47,21 +36,28 @@ export function ReviewCreatorPanel() {
               <ChevronRightIcon className="text-black h-4" />
             </div>
           </div>
-          <p>User</p>
-          <p>Time</p>
+          <p>
+            {submission?.configuration.fulfiller ? <UserBadge address={submission?.configuration.fulfiller} /> : null}
+          </p>
+          {submission?.blockTimestamp ? <p> {fromNow(submission?.blockTimestamp)}</p> : null}
         </div>
-        <div className="flex gap-px items-center">
-          <ArrowRightIcon className="text-black h-4" />
+        <div onClick={() => onStateChange(false)} className="flex gap-px items-center">
+          <ArrowRightIcon onClick={() => onStateChange(false)} className="text-black h-4" />
           <div className="bg-black h-4 w-px" />
         </div>
       </div>
       <div className="space-y-4 bg-blue-300 p-10 overflow-y-auto h-3/5">
         {reviews.map((r) => (
-          <div key={r.time} className="bg-white border rounded-md p-6 space-y-3">
+          <div
+            key={fromNow(r.blockTimestamp) ?? fromNow(r.indexedAt)}
+            className="bg-white border rounded-md p-6 space-y-3"
+          >
             <div className="flex justify-between">
               <div className="flex gap-2">
-                <p>User</p>
-                <p className="text-stone-500 text-sm">Time</p>
+                <p>
+                  <UserBadge address={r.reviewer} />
+                </p>
+                <p className="text-stone-500 text-sm">{}</p>
               </div>
               <div
                 className={clsx(
@@ -141,7 +137,8 @@ export function ReviewCreatorPanel() {
             {() => (
               <div className="container overflow-auto">
                 <MarkdownEditor
-                  value={"watch(description)"}
+                  {...register("description")}
+                  value={watch("description")}
                   onChange={(v) => {
                     setValue("description", v ?? "");
                   }}

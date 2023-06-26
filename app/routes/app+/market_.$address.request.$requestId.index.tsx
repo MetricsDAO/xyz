@@ -2,7 +2,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { getParamsOrFail } from "remix-params-helper";
 import { typedjson } from "remix-typedjson";
 import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
@@ -18,6 +18,7 @@ import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
 import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 import { Pagination } from "~/components/pagination";
+import { ReviewCreatorPanel } from "~/features/review-creator/review-creator-panel";
 
 const validator = withZod(SubmissionSearchSchema);
 
@@ -28,6 +29,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const searchParams = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const filterAndSearchParams = { ...searchParams, laborMarketAddress: address, serviceRequestId: requestId };
   const submissions = await searchSubmissionsWithReviews(filterAndSearchParams);
+  console.log("submissionswithreviews", submissions);
   const totalSubmissions = await countSubmissions(filterAndSearchParams);
   return typedjson({ submissions, searchParams, totalSubmissions });
 };
@@ -38,8 +40,11 @@ export type ChallengeSubmissonProps = {
 
 export default function ChallengeIdSubmissions() {
   const { submissions, searchParams, totalSubmissions } = useTypedLoaderData<typeof loader>();
+  console.log("submissions", submissions);
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string>("");
 
   const handleChange = () => {
     if (formRef.current) {
@@ -47,53 +52,73 @@ export default function ChallengeIdSubmissions() {
     }
   };
 
-  return (
-    <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
-      <main className="min-w-[300px] w-full space-y-4">
-        {submissions?.map((s) => (
-          <SubmissionCard key={s.id} submission={s} />
-        ))}
-        <div className="w-fit m-auto">
-          <Pagination page={searchParams.page} totalPages={Math.ceil(totalSubmissions / searchParams.first)} />
-        </div>
-      </main>
+  const handleOpenSidePanel = (newState: boolean, submissionId?: string) => {
+    console.log("newState", newState);
+    if (submissionId) {
+      console.log("submissionId", submissionId);
+      setSubmissionId(submissionId);
+    }
+    setSidePanelOpen(newState);
+  };
 
-      <aside className="md:w-1/4 text-sm">
-        <ValidatedForm
-          formRef={formRef}
-          method="get"
-          validator={validator}
-          onChange={handleChange}
-          preventScrollReset={true}
-          className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4"
-        >
-          <ValidatedInput
-            placeholder="Search"
-            size="sm"
-            name="q"
-            iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
-          />
-          <Field>
-            <Label>Sort:</Label>
-            <ValidatedSelect
-              name="sortBy"
-              size="sm"
+  return (
+    <div className="">
+      <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
+        <main className="min-w-[300px] w-full space-y-4">
+          {submissions?.map((s) => (
+            <SubmissionCard onStateChange={handleOpenSidePanel} key={s.id} submission={s} />
+          ))}
+          <div className="w-fit m-auto">
+            <Pagination page={searchParams.page} totalPages={Math.ceil(totalSubmissions / searchParams.first)} />
+          </div>
+        </main>
+
+        {!sidePanelOpen && (
+          <aside className="md:w-1/4 text-sm">
+            <ValidatedForm
+              formRef={formRef}
+              method="get"
+              validator={validator}
               onChange={handleChange}
-              options={[
-                { label: "Title", value: "appData.title" },
-                { label: "Created At", value: "blockTimestamp" },
-              ]}
-            />
-          </Field>
-          <Label>Filter:</Label>
-          <p>Overall Score</p>
-          <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="stellar" label="Stellar" />
-          <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
-          <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
-          <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
-          <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
-        </ValidatedForm>
-      </aside>
-    </section>
+              preventScrollReset={true}
+              className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4"
+            >
+              <ValidatedInput
+                placeholder="Search"
+                size="sm"
+                name="q"
+                iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+              />
+              <Field>
+                <Label>Sort:</Label>
+                <ValidatedSelect
+                  name="sortBy"
+                  size="sm"
+                  onChange={handleChange}
+                  options={[
+                    { label: "Title", value: "appData.title" },
+                    { label: "Created At", value: "blockTimestamp" },
+                  ]}
+                />
+              </Field>
+              <Label>Filter:</Label>
+              <p>Overall Score</p>
+              <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="stellar" label="Stellar" />
+              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
+              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
+              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
+              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
+            </ValidatedForm>
+          </aside>
+        )}
+      </section>
+      {sidePanelOpen && (
+        <ReviewCreatorPanel
+          reviews={submissions?.find((s) => s.id === submissionId)?.reviews ?? []}
+          onStateChange={handleOpenSidePanel}
+          submission={submissions?.find((s) => s.id === submissionId)}
+        />
+      )}
+    </div>
   );
 }

@@ -124,6 +124,13 @@ export const prepareSubmission = async (
 };
 
 /**
+ * Returns a submission from a submissionId.
+ */
+export const findSubmissionById = async (submissionId: string) => {
+  return mongo.submissions.findOne({ id: submissionId });
+};
+
+/**
  * Returns an array of Submissions with their Reviews for a given Service Request.
  */
 export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {
@@ -144,11 +151,7 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
             {
               $match: {
                 $expr: {
-                  $and: [
-                    { $eq: ["$submissionId", "$$s_id"] },
-                    { $eq: ["$id", "$$sr_id"] },
-                    { $eq: ["$laborMarketAddress", "$$m_addr"] },
-                  ],
+                  $and: [{ $eq: ["$submissionId", "$$s_id"] }, { $eq: ["$laborMarketAddress", "$$m_addr"] }],
                 },
               },
             },
