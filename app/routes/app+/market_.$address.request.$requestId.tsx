@@ -70,8 +70,6 @@ export default function ServiceRequest() {
 
   const [sidePanelOpen, setSidePanelOpen] = useState<boolean>(false);
 
-  console.log("IS SIDE PANEL OPEN", sidePanelOpen);
-
   const user = useOptionalUser();
   const userSignedIn = !!user;
   const tokens = useTokens();

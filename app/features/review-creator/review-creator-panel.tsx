@@ -95,7 +95,7 @@ export function ReviewCreatorPanel({
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="mx-auto max-w-4xl space-y-7 mt-16 fixed top-0 right-0 w-1/2"
+        className="mx-auto max-w-4xl space-y-7 mt-16 fixed bottom-0 top-0 right-0 w-1/2"
       >
         <TxModal
           transactor={transactor}
