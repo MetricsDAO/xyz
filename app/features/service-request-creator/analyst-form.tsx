@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import { CurveChart, Error, Field, FormProgress, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { toTokenAbbreviation } from "~/utils/helpers";
+import { toTokenAbbreviation, toTokenAmount } from "~/utils/helpers";
 import type { AnalystForm as AnalystFormType } from "./schema";
 import { AnalystSchema } from "./schema";
 import { BigNumber } from "ethers";
@@ -119,7 +119,9 @@ export function AnalystForm({
             <p className="text-neutral-600 text-sm">for a total reward pool of</p>
             {formData.rewardPool && formData.submitLimit && formData.rewardToken ? (
               <p className="text-neutral-600 text-sm font-bold">
-                {`${BigNumber.from(formData.rewardPool).mul(formData.submitLimit).toString()}
+                {`${toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals)
+                  .mul(formData.submitLimit)
+                  .toString()}
                 ${toTokenAbbreviation(formData.rewardToken, validTokens)}`}
               </p>
             ) : (
@@ -131,7 +133,7 @@ export function AnalystForm({
               <CurveChart
                 type={"Constant"}
                 token={toTokenAbbreviation(formData.rewardToken, validTokens)}
-                amount={formData.rewardPool}
+                amount={toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals).toString()}
               />
               <p className="text-gray-400 italic">Unused funds can be reclaimed after the the Review Deadline.</p>
             </>
