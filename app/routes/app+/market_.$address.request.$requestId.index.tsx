@@ -13,6 +13,7 @@ import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
 import { ValidatedSelect } from "~/components/select";
+import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
 import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { SubmissionCard } from "~/features/submission-card";
@@ -45,6 +46,8 @@ export default function ChallengeIdSubmissions() {
   const formRef = useRef<HTMLFormElement>(null);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [submissionId, setSubmissionId] = useState<string>("");
+
+  const submission = submissions?.find((s) => s.id === submissionId);
 
   const handleChange = () => {
     if (formRef.current) {
@@ -114,9 +117,13 @@ export default function ChallengeIdSubmissions() {
       </section>
       {sidePanelOpen && (
         <ReviewCreatorPanel
-          reviews={submissions?.find((s) => s.id === submissionId)?.reviews ?? []}
+          reviews={submission?.reviews ?? []}
           onStateChange={handleOpenSidePanel}
-          submission={submissions?.find((s) => s.id === submissionId)}
+          submission={submission}
+          onCancel={() => handleOpenSidePanel(false)}
+          laborMarketAddress={submission?.laborMarketAddress as EvmAddress}
+          submissionId={submissionId}
+          requestId={submission?.serviceRequestId as string}
         />
       )}
     </div>

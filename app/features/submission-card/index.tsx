@@ -18,7 +18,7 @@ export function SubmissionCard({
 
   const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
   return (
-    <Card className="text-sm p-6 space-y-4">
+    <Card className="text-sm p-6 space-y-4 hover:cursor-pointer">
       <div
         onClick={() => onStateChange(true, submission.id)}
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
