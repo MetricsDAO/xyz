@@ -9799,10 +9799,10 @@ labor-markets-abi-dev@^1.6.0:
   resolved "https://registry.yarnpkg.com/labor-markets-abi-dev/-/labor-markets-abi-dev-1.6.0.tgz#e9ba5aa252b2749f72bec538c604e6e363d4f336"
   integrity sha512-N5+tqELb3vwrUfaxETkGlVloAfrb3hy8WSdTgRXX9Ceyr6Wigg5zSsvToY7JGrobLP9PF8KA2anIUtjfTSVupQ==
 
-labor-markets-abi@2.0.8:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-2.0.8.tgz#7ce484b520ab357b78c02e336869bfe2a2b549d6"
-  integrity sha512-bRV9dRcP46z7Bkko5Rq7QkiFDYMUTHyQnAnQdaUYwQHIV1x/Mp43BTBNV+8aLXX7cD+rgK7Q9ywtpzX9S/xRhA==
+labor-markets-abi@2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-2.0.9.tgz#1649f59f73d2533f533a8ee4cccefc0d35bb21ff"
+  integrity sha512-ep4/tIWK+GRNNYIenzG0HFXax1GDJqIT0z6DhVsQAZX933ro2rZ43xvho2bB7QzLcIXt3I0yXrPS6AIn7eAGIQ==
 
 language-subtag-registry@^0.3.20:
   version "0.3.22"
@@ -12314,7 +12314,7 @@ promise-inflight@^1.0.1:
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha512-6zWPyEOFaQBJYcGMHBKTKJ3u6TBsnMFOIZSa6ce1e/ZrrsOlnHRHbabMjLiBYKp+n44X9eUI6VUPaukCXHuG4g==
 
-prop-types@^15.0.0, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.0.0, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
