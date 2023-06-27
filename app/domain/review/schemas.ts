@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "../address";
+import { RewardSchema } from "../reward-submissions/schema";
+import { SubmissionDocSchema } from "../submission/schemas";
 
 export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["blockTimestamp", "score"]).default("blockTimestamp").describe("Sort by column."),
@@ -10,6 +12,7 @@ export const ReviewSearchSchema = z.object({
   serviceRequestId: z.string().optional(),
   submissionId: z.string().optional(),
   laborMarketAddress: EvmAddressSchema.optional(),
+  reviewer: EvmAddressSchema.optional(),
 });
 
 export const ReviewSchema = z.object({
@@ -33,6 +36,7 @@ export const ReviewEventSchema = z.object({
 });
 
 export const ReviewDocSchema = z.object({
+  id: z.string(),
   submissionId: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
@@ -40,10 +44,20 @@ export const ReviewDocSchema = z.object({
   reviewer: EvmAddressSchema,
   blockTimestamp: z.date(),
   indexedAt: z.date(),
-  comment: z.string().optional(),
+  reward: RewardSchema,
+});
+
+export const ReviewWithSubmissionSchema = ReviewDocSchema.extend({
+  s: SubmissionDocSchema,
+});
+
+export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
+  reviews: z.array(ReviewDocSchema),
 });
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
 export type ReviewContract = z.infer<typeof ReviewSchema>;
 export type ReviewDoc = z.infer<typeof ReviewDocSchema>;
 export type ReviewForm = z.infer<typeof ReviewFormSchema>;
+export type ReviewWithSubmission = z.infer<typeof ReviewWithSubmissionSchema>;
+export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

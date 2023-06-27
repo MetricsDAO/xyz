@@ -19,3 +19,9 @@ export function useContracts() {
   invariant(data, "No data found for root route");
   return data.contracts;
 }
+
+export function useWallets() {
+  const data = useTypedRouteLoaderData<typeof rootLoader>("root");
+  invariant(data, "No data found for root route");
+  return data.wallets;
+}
