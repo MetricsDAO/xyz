@@ -41,6 +41,7 @@ export const ReviewDocSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   score: z.string(),
+  comment: z.string().optional(),
   reviewer: EvmAddressSchema,
   blockTimestamp: z.date(),
   indexedAt: z.date(),

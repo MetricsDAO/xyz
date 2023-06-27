@@ -1,22 +1,21 @@
-import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { BigNumber } from "ethers";
+import { FormProvider, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { ClientOnly } from "remix-utils";
 import { Button, Field, UserBadge, scoreToLabel } from "~/components";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
-import type { ReviewDoc } from "~/domain";
-import type { SubmissionWithReviewsDoc } from "~/domain/submission/schemas";
+import { TxModal } from "~/components/tx-modal/tx-modal";
+import type { ReviewDoc, SubmissionWithReviewsDoc } from "~/domain";
+import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "~/hooks/use-root-data";
+import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import type { ReviewFormValues } from "./review-creator-values";
 import { ReviewFormValuesSchema } from "./review-creator-values";
-import { useContracts } from "~/hooks/use-root-data";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import type { EvmAddress } from "~/domain/address";
-import toast from "react-hot-toast";
-import { BigNumber } from "ethers";
-import { TxModal } from "~/components/tx-modal/tx-modal";
 
 export function ReviewCreatorPanel({
   onStateChange,
@@ -48,7 +47,6 @@ export function ReviewCreatorPanel({
     watch,
     register,
     setValue,
-    handleSubmit,
     formState: { errors },
   } = useForm<ReviewFormValues>();
 
@@ -95,7 +93,10 @@ export function ReviewCreatorPanel({
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="mx-auto px-10 max-w-4xl space-y-7 mb-12">
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className="mx-auto max-w-4xl space-y-7 mt-16 fixed top-0 right-0 w-1/2"
+      >
         <TxModal
           transactor={transactor}
           title="Review & Score"

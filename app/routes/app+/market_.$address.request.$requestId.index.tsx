@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { useSubmit } from "@remix-run/react";
+import { useOutletContext, useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef, useState } from "react";
@@ -22,6 +22,7 @@ import { Pagination } from "~/components/pagination";
 import { ReviewCreatorPanel } from "~/features/review-creator/review-creator-panel";
 
 const validator = withZod(SubmissionSearchSchema);
+export type OutletContext = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 
 const paramSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ request, params }: DataFunctionArgs) => {
@@ -44,7 +45,9 @@ export default function ChallengeIdSubmissions() {
   console.log("submissions", submissions);
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
-  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+
+  const [sidePanelOpen, setSidePanelOpen] = useOutletContext<OutletContext>();
+
   const [submissionId, setSubmissionId] = useState<string>("");
 
   const submission = submissions?.find((s) => s.id === submissionId);
@@ -56,16 +59,14 @@ export default function ChallengeIdSubmissions() {
   };
 
   const handleOpenSidePanel = (newState: boolean, submissionId?: string) => {
-    console.log("newState", newState);
     if (submissionId) {
-      console.log("submissionId", submissionId);
       setSubmissionId(submissionId);
     }
     setSidePanelOpen(newState);
   };
 
   return (
-    <div className="">
+    <div>
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="min-w-[300px] w-full space-y-4">
           {submissions?.map((s) => (
@@ -84,7 +85,7 @@ export default function ChallengeIdSubmissions() {
               validator={validator}
               onChange={handleChange}
               preventScrollReset={true}
-              className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-300 bg-opacity-5 rounded-lg p-4"
+              className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-50 bg-opacity-5 rounded-lg p-4"
             >
               <ValidatedInput
                 placeholder="Search"

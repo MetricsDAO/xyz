@@ -1,6 +1,7 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet, useMatches } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import * as DOMPurify from "dompurify";
+import { useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ClientOnly, notFound } from "remix-utils";
@@ -67,6 +68,10 @@ export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, numParticipants } =
     useTypedLoaderData<typeof loader>();
 
+  const [sidePanelOpen, setSidePanelOpen] = useState<boolean>(false);
+
+  console.log("IS SIDE PANEL OPEN", sidePanelOpen);
+
   const user = useOptionalUser();
   const userSignedIn = !!user;
   const tokens = useTokens();
@@ -98,7 +103,7 @@ export default function ServiceRequest() {
     serviceRequest.indexData.claimsToSubmit.length === 0;
 
   return (
-    <Container className="pt-7 pb-16 px-10">
+    <Container className={`h-full w-full pt-7 pb-16 px-10 ${sidePanelOpen ? "w-1/2 absolute left-0" : ""}`}>
       <Breadcrumbs crumbs={[{ link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" }]} />
       <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
@@ -178,8 +183,7 @@ export default function ServiceRequest() {
         <TabNavLink to="./timeline#tabNav">Timeline &amp; Deadlines</TabNavLink>
         <TabNavLink to="./participants#tabNav">Participants</TabNavLink>
       </TabNav>
-
-      <Outlet />
+      <Outlet context={[sidePanelOpen, setSidePanelOpen]} />
     </Container>
   );
 }

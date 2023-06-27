@@ -9,7 +9,9 @@ import { listTokens } from "~/services/tokens.server";
 export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
   const blockTimestamp = new Date(event.block.timestamp);
-  const { submissionId, reviewer, reviewScore, requestId, reviewId } = ReviewEventSchema.parse(event.decoded.inputs);
+  const { submissionId, reviewer, reviewScore, requestId, reviewId, uri } = ReviewEventSchema.parse(
+    event.decoded.inputs
+  );
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,

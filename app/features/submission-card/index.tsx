@@ -16,18 +16,10 @@ export function SubmissionCard({
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
-<<<<<<< HEAD
-  const score = submission.score ? Math.floor(submission.score.reviewSum / submission.score.reviewCount) : undefined; // TODO average?
   return (
     <Card className="text-sm p-6 space-y-4 hover:cursor-pointer">
       <div
         onClick={() => onStateChange(true, submission.id)}
-=======
-  return (
-    <Card className="text-sm p-6 space-y-4">
-      <Link
-        to={`/app/market/${submission.laborMarketAddress}/request/${submission.serviceRequestId}/submission/${submission.id}`}
->>>>>>> 5fa5e0d290ac29a4d5fc6a4ec2102a656cd2828c
         className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
       >
         <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
