@@ -26,7 +26,8 @@ export default function ChallengeIdRewards() {
   invariant(laborMarket, "laborMarket must be specified");
 
   const tokens = useTokens();
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
+  const providerToken = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
+  const reviewerToken = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
 
   return (
     <section className="space-y-3 w-full border-spacing-4 border-separate md:w-4/5">
@@ -36,8 +37,11 @@ export default function ChallengeIdRewards() {
           <DetailItem title="Total rewards to be distributed across analysts">
             <RewardBadge
               payment={{
-                amount: fromTokenAmount(serviceRequest.configuration.pTokenProviderTotal, token?.decimals ?? 18),
-                token,
+                amount: fromTokenAmount(
+                  serviceRequest.configuration.pTokenProviderTotal,
+                  providerToken?.decimals ?? 18
+                ),
+                token: providerToken,
               }}
               reputation={{ amount: REPUTATION_REWARD_POOL.toLocaleString() }}
             />
@@ -52,6 +56,7 @@ export default function ChallengeIdRewards() {
               token={toTokenAbbreviation(serviceRequest.configuration.pTokenProvider, tokens) ?? ""}
               amount={serviceRequest.configuration.pTokenProviderTotal}
               type={laborMarket.appData.enforcement}
+              decimals={providerToken?.decimals}
             />
           </DetailItem>
         </Detail>
@@ -60,10 +65,10 @@ export default function ChallengeIdRewards() {
         <h3 className="font-medium mb-4">Reviewer Rewards</h3>
         <Detail>
           <DetailItem title="Total rewards to be distributed across reviewers">
-            <Badge>{`${serviceRequest.configuration.pTokenReviewerTotal} ${toTokenAbbreviation(
-              serviceRequest.configuration.pTokenReviewer,
-              tokens
-            )}`}</Badge>
+            <Badge>{`${fromTokenAmount(
+              serviceRequest.configuration.pTokenReviewerTotal,
+              reviewerToken?.decimals ?? 18
+            )} ${toTokenAbbreviation(serviceRequest.configuration.pTokenReviewer, tokens)}`}</Badge>
           </DetailItem>
         </Detail>
       </Card>

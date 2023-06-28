@@ -5,10 +5,9 @@ import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import { CurveChart, Error, Field, FormProgress, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { toTokenAbbreviation, toTokenAmount } from "~/utils/helpers";
+import { fromTokenAmount, toTokenAbbreviation, toTokenAmount } from "~/utils/helpers";
 import type { AnalystForm as AnalystFormType } from "./schema";
 import { AnalystSchema } from "./schema";
-import { BigNumber } from "ethers";
 
 export function AnalystForm({
   validTokens,
@@ -116,16 +115,17 @@ export function AnalystForm({
               />
               <Error error={errors.rewardToken?.message} />
             </Field>
-            <p className="text-neutral-600 text-sm">for a total reward pool of</p>
+            <p className="text-neutral-600 text-sm mt-3">for a total reward pool of</p>
             {formData.rewardPool && formData.submitLimit && formData.rewardToken ? (
-              <p className="text-neutral-600 text-sm font-bold">
-                {`${toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals)
-                  .mul(formData.submitLimit)
-                  .toString()}
+              <p className="text-neutral-600 text-sm font-bold mt-3">
+                {`${fromTokenAmount(
+                  toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals).mul(formData.submitLimit).toString(),
+                  formData.rewardTokenDecimals
+                )}
                 ${toTokenAbbreviation(formData.rewardToken, validTokens)}`}
               </p>
             ) : (
-              <p className="text-neutral-600 text-sm font-bold">--</p>
+              <p className="text-neutral-600 text-sm font-bold mt-3">--</p>
             )}
           </div>
           {formData.rewardToken && formData.rewardPool && (
@@ -134,6 +134,7 @@ export function AnalystForm({
                 type={"Constant"}
                 token={toTokenAbbreviation(formData.rewardToken, validTokens)}
                 amount={toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals).toString()}
+                decimals={formData.rewardTokenDecimals}
               />
               <p className="text-gray-400 italic">Unused funds can be reclaimed after the the Review Deadline.</p>
             </>
