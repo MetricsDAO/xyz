@@ -38,7 +38,9 @@ export default function SubmissionCreator({
         const event = getEventFromLogs(laborMarketAddress, iface, receipt.logs, "RequestFulfilled");
         if (event)
           navigate(
-            `/app/market/${laborMarketAddress}/submission/${serviceRequestId}/${event.args["submissionId"]?.toString()}`
+            `/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${event.args[
+              "submissionId"
+            ]?.toString()}`
           );
       },
       [laborMarketAddress, navigate, serviceRequestId]
