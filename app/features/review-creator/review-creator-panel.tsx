@@ -93,10 +93,7 @@ export function ReviewCreatorPanel({
 
   return (
     <FormProvider {...methods}>
-      <form
-        onSubmit={methods.handleSubmit(onSubmit)}
-        className="mx-auto max-w-4xl space-y-7 fixed h-full bottom-0 top-0 right-0 w-1/2"
-      >
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="h-full bottom-0 top-0 absolute right-0 w-1/2 z-50">
         <TxModal
           transactor={transactor}
           title="Review & Score"
@@ -107,7 +104,7 @@ export function ReviewCreatorPanel({
             </p>
           }
         />
-        <div className="mx-auto max-w-2xl h-screen">
+        <div className="h-screen">
           <div className="flex border justify-between bg-white p-3">
             <div className="flex space-x-4 items-center">
               <div className="flex gap-2 items-center">
