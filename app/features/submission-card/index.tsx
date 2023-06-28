@@ -10,6 +10,7 @@ export function SubmissionCard({ submission }: { submission: SubmissionWithRevie
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
+  console.log("submission", submission);
   return (
     <Card className="text-sm p-6 space-y-4">
       <Link
