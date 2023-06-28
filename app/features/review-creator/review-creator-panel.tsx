@@ -63,7 +63,7 @@ export function ReviewCreatorPanel({
     const metadata = { comment: formValues.comment };
     transactor.start({
       metadata: metadata,
-      config: ({ account, cid }) =>
+      config: ({ cid }) =>
         configureFromValues({ contracts, inputs: { laborMarketAddress, submissionId, requestId, formValues, cid } }),
     });
   };
@@ -95,7 +95,7 @@ export function ReviewCreatorPanel({
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="mx-auto max-w-4xl space-y-7 mt-16 absolute bottom-0 top-0 right-0 w-1/2"
+        className="mx-auto max-w-4xl space-y-7 fixed h-full bottom-0 top-0 right-0 w-1/2"
       >
         <TxModal
           transactor={transactor}

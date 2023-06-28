@@ -54,6 +54,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     }
     try {
       const prepared = await prepareWriteContract(config);
+      console.log("prepared", prepared);
       setState({ state: "prepared", prepared });
     } catch (e) {
       setState({ state: "failure", error: (e as EthersError)?.reason ?? "error preparing transaction" });
