@@ -13,6 +13,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,
+    serviceRequestId: requestId,
     id: submissionId,
   });
 
@@ -26,7 +27,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   invariant(serviceRequest, "Service request not found when indexing review");
 
   await mongo.submissions.updateOne(
-    { laborMarketAddress: contractAddress, id: submissionId },
+    { laborMarketAddress: contractAddress, serviceRequestId: requestId, id: submissionId },
     {
       $set: {
         score: {
@@ -35,8 +36,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
             .add(reviewScore)
             .toNumber(),
           avg: Math.floor(
-            (((submission.score?.reviewSum ?? 0) + parseInt(reviewScore)) * 25) /
-              ((submission.score?.reviewCount ?? 0) + 1)
+            ((submission.score?.reviewSum ?? 0) + parseInt(reviewScore)) / ((submission.score?.reviewCount ?? 0) + 1)
           ),
         },
       },

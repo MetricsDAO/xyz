@@ -36,7 +36,7 @@ export const indexerRequestFulfilledEvent = async (event: TracerEvent) => {
     { laborMarketAddress: submission.laborMarketAddress, id: submission.serviceRequestId },
     {
       $inc: {
-        submissionCount: 1,
+        "indexData.submissionCount": 1,
       },
     }
   );

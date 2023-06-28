@@ -6,13 +6,12 @@ import { listTokens } from "~/services/tokens.server";
 import { RequestPayClaimedEventSchema } from "./schema";
 
 export async function indexerRequestPayClaimedEvent(event: TracerEvent) {
-  console.log("indexerRequestPayClaimedEvent", event);
   const laborMarketAddress = getAddress(event.contract.address);
   const args = RequestPayClaimedEventSchema.parse(event.decoded.inputs);
 
   const serviceRequest = await mongo.serviceRequests.findOne({
     laborMarketAddress,
-    requestId: args.requestId,
+    id: args.requestId,
   });
   invariant(serviceRequest, "Service request should exist");
 
@@ -23,14 +22,16 @@ export async function indexerRequestPayClaimedEvent(event: TracerEvent) {
     {
       laborMarketAddress,
       serviceRequestId: args.requestId,
-      submissionId: args.submissionId,
+      id: args.submissionId,
     },
     {
-      hasClaimedReward: true,
-      reward: {
-        tokenAmount: args.payAmount,
-        tokenAddress: serviceRequest.configuration.pTokenProvider,
-        isIou: token?.isIou,
+      $set: {
+        rewardClaimed: true,
+        reward: {
+          tokenAmount: args.payAmount,
+          tokenAddress: serviceRequest.configuration.pTokenProvider,
+          isIou: token?.isIou,
+        },
       },
     }
   );
