@@ -41,7 +41,6 @@ export async function appRequestConfiguredEvent(event: Event) {
         providerLimit: e.args.providerLimit.toNumber(),
         reviewerLimit: e.args.reviewerLimit.toNumber(),
       });
-      console.log("new Date(block.timestamp)", new Date(block.timestamp));
       await indexServiceRequestEvent({
         address,
         blockNumber,

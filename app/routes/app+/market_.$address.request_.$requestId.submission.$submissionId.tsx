@@ -58,8 +58,13 @@ export const loader = async (data: DataFunctionArgs) => {
   const { address, submissionId, requestId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const userReview = user ? await findUserReview(submissionId, address, user.address as EvmAddress) : null;
+  const reviews = await searchReviews({
+    ...params,
+    serviceRequestId: requestId,
+    submissionId,
+    laborMarketAddress: address,
+  });
+  const userReview = user ? await findUserReview(address, requestId, submissionId, user.address as EvmAddress) : null;
 
   const tokens = await listTokens();
 
@@ -217,11 +222,11 @@ export default function ChallengeSubmission() {
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-x-8 gap-y-2">
                         <div
                           className={clsx(
-                            SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
+                            SCORE_COLOR[scoreToLabel(Number(r.score))],
                             "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                           )}
                         >
-                          <p>{scoreToLabel(Number(r.score) * 25)}</p>
+                          <p>{scoreToLabel(Number(r.score))}</p>
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>
