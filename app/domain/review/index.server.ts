@@ -46,8 +46,6 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const tokens = await listTokens();
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenReviewer);
 
-  // TODO: get signature and figure out if redeemed yet
-
   await mongo.reviews.insertOne({
     id: reviewId,
     laborMarketAddress: contractAddress,
@@ -58,7 +56,9 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     indexedAt: new Date(),
     blockTimestamp,
     reward: {
-      tokenAmount: "10000", //TODO amount should come from event
+      tokenAmount: BigNumber.from(serviceRequest.configuration.pTokenReviewerTotal)
+        .div(serviceRequest.configuration.reviewerLimit)
+        .toString(),
       tokenAddress: serviceRequest.configuration.pTokenReviewer,
       isIou: token?.isIou,
     },
