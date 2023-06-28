@@ -2,9 +2,11 @@ import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
-import { ReviewEventSchema } from "~/domain/review/schemas";
+import type { ReviewAppData } from "~/domain/review/schemas";
+import { ReviewAppDataSchema, ReviewEventSchema } from "~/domain/review/schemas";
 import { mongo } from "../../services/mongo.server";
 import { listTokens } from "~/services/tokens.server";
+import { fetchIpfsJson } from "~/services/ipfs.server";
 
 export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
@@ -12,6 +14,9 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const { submissionId, reviewer, reviewScore, requestId, reviewId, uri } = ReviewEventSchema.parse(
     event.decoded.inputs
   );
+  console.log("URI", uri);
+
+  const appData = await getIndexedReviewAppData(uri);
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,
@@ -56,6 +61,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     submissionId: submissionId,
     serviceRequestId: requestId,
     score: reviewScore,
+    appData,
     reviewer: reviewer,
     indexedAt: new Date(),
     blockTimestamp,
@@ -85,3 +91,8 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     indexedAt: new Date(),
   });
 };
+
+async function getIndexedReviewAppData(marketUri: string): Promise<ReviewAppData> {
+  const data = await fetchIpfsJson(marketUri);
+  return ReviewAppDataSchema.parse(data);
+}

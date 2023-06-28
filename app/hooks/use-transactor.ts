@@ -43,6 +43,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     if (params.metadata) {
       try {
         const uploaded = await uploadMetadata(params.metadata);
+        console.log("uploaded URI", uploaded.cid);
         config = params.config({ account: account.address, cid: uploaded.cid });
       } catch (e) {
         setState({ state: "failure", error: (e as Error)?.message ?? "error uploading metadata" });

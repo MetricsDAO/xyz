@@ -53,7 +53,7 @@ const searchReviewsPipeline = (params: ReviewSearch) => {
         let: {
           m_addr: "$laborMarketAddress",
           sr_id: "$serviceRequestId",
-          s_id: "$submissionId",
+          s_id: "$id",
         },
         pipeline: [
           {
@@ -62,7 +62,7 @@ const searchReviewsPipeline = (params: ReviewSearch) => {
                 $and: [
                   { $eq: ["$laborMarketAddress", "$$m_addr"] },
                   { $eq: ["$serviceRequestId", "$$sr_id"] },
-                  { $eq: ["$id", "$$s_id"] },
+                  { $eq: ["$submissionId", "$$s_id"] },
                 ],
               },
             },
