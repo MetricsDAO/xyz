@@ -24,6 +24,7 @@ import {
   ValidatedSelect,
 } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
+import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
 import type { EvmAddress } from "~/domain/address";
 import { EvmAddressSchema } from "~/domain/address";
@@ -38,12 +39,13 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { ReviewCreator } from "~/features/review-creator";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
+import { useReward } from "~/hooks/use-reward";
+import { useTokens } from "~/hooks/use-root-data";
 import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { getUser } from "~/services/session.server";
-import { listTokens } from "~/services/tokens.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { claimToReviewDeadline, submissionCreatedDate } from "~/utils/helpers";
+import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -58,10 +60,13 @@ export const loader = async (data: DataFunctionArgs) => {
   const { address, submissionId, requestId } = paramsSchema.parse(data.params);
   const url = new URL(data.request.url);
   const params = getParamsOrFail(url.searchParams, ReviewSearchSchema);
-  const reviews = await searchReviews({ ...params, submissionId, laborMarketAddress: address });
-  const userReview = user ? await findUserReview(submissionId, address, user.address as EvmAddress) : null;
-
-  const tokens = await listTokens();
+  const reviews = await searchReviews({
+    ...params,
+    serviceRequestId: requestId,
+    submissionId,
+    laborMarketAddress: address,
+  });
+  const userReview = user ? await findUserReview(address, requestId, submissionId, user.address as EvmAddress) : null;
 
   const submission = await getSubmission(address, requestId, submissionId);
   if (!submission) {
@@ -73,10 +78,7 @@ export const loader = async (data: DataFunctionArgs) => {
   const serviceRequest = await getServiceRequest(address, submission.serviceRequestId);
   invariant(serviceRequest, "Service request not found");
 
-  return typedjson(
-    { submission, reviews, params, laborMarket, user, userReview, serviceRequest, tokens },
-    { status: 200 }
-  );
+  return typedjson({ submission, reviews, params, laborMarket, user, userReview, serviceRequest }, { status: 200 });
 };
 
 export default function ChallengeSubmission() {
@@ -98,17 +100,16 @@ export default function ChallengeSubmission() {
     setSearchParams(searchParams);
   };
 
-  // TODO: Rewards
-  // const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
-  // TODO: Rewards
-  // const { data: reward } = useReward({
-  //   laborMarketAddress: submission.laborMarketAddress,
-  //   submissionId: submission.id,
-  //   serviceRequestId: submission.serviceRequestId,
-  // });
+  const tokens = useTokens();
+  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
+  const { data: reward } = useReward({
+    laborMarketAddress: submission.laborMarketAddress,
+    submissionId: submission.id,
+    serviceRequestId: submission.serviceRequestId,
+  });
 
   const enforcementExpirationPassed = dateHasPassed(serviceRequest.configuration.enforcementExp);
-  // const isWinner = enforcementExpirationPassed && reward !== undefined && reward.hasReward && score && score > 24;
+  const isWinner = false; // TODO
 
   const performance = useServiceRequestPerformance({
     laborMarketAddress: submission.laborMarketAddress,
@@ -136,8 +137,7 @@ export default function ChallengeSubmission() {
       <section className="flex flex-col md:flex-row gap-5 justify-between pb-10 items-center">
         <div className="flex items-center gap-2 md:basis-3/4">
           <h1 className="text-3xl font-semibold">{submission.appData?.title}</h1>
-          {/* TODO Rewards */}
-          {/* {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />} */}
+          {isWinner && <img className="w-12 h-12" src="/img/trophy.svg" alt="trophy" />}
         </div>
         <div className="flex md:basis-1/4 md:justify-end">
           {canClaimToReview && !canReviewSubmission && (
@@ -178,20 +178,18 @@ export default function ChallengeSubmission() {
               <Badge>{reviews.length}</Badge>
             )}
           </DetailItem>
-          {/* TODO Rewards */}
-          {/* {isWinner && (
+          {reward && reward.gt(0) && (
             <DetailItem title="Reward">
               <RewardBadge
                 variant="winner"
                 payment={{
-                  amount: fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18, 2), // rounded
+                  amount: fromTokenAmount(reward.toString(), token?.decimals ?? 18, 2), // rounded
                   token: token,
-                  tooltipAmount: fromTokenAmount(reward.paymentTokenAmount.toString(), token?.decimals ?? 18),
+                  tooltipAmount: fromTokenAmount(reward.toString(), token?.decimals ?? 18),
                 }}
-                reputation={{ amount: reward.reputationTokenAmount.toString() }}
               />
             </DetailItem>
-          )} */}
+          )}
         </Detail>
         <div className="bg-sky-500 bg-opacity-10 p-1 w-fit rounded">
           <a
@@ -217,11 +215,11 @@ export default function ChallengeSubmission() {
                       <div className="flex flex-col md:flex-row items-center flex-1 gap-x-8 gap-y-2">
                         <div
                           className={clsx(
-                            SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
+                            SCORE_COLOR[scoreToLabel(Number(r.score))],
                             "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                           )}
                         >
-                          <p>{scoreToLabel(Number(r.score) * 25)}</p>
+                          <p>{scoreToLabel(Number(r.score))}</p>
                         </div>
                         <UserBadge address={r.reviewer as `0x${string}`} variant="separate" />
                       </div>

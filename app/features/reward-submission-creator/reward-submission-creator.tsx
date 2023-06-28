@@ -46,6 +46,10 @@ export function RewardSubmissionCreator({ submission }: ClaimRewardCreatorProps)
     });
   };
 
+  if (submission.rewardClaimed) {
+    return <p>Claimed</p>;
+  }
+
   return (
     <>
       <TxModal

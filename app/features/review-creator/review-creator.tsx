@@ -50,7 +50,7 @@ export function ReviewCreator({ laborMarketAddress, submissionId, requestId, onC
         confirmationMessage={
           <p>
             Please confirm that you would like to give this submission a score of
-            <b>{` ${scoreToLabel(methods.getValues("score") * 25)}`}</b>.
+            <b>{` ${scoreToLabel(methods.getValues("score"))}`}</b>.
           </p>
         }
       />

@@ -25,6 +25,7 @@ export function LaborMarketCreator({
   const navigate = useNavigate();
 
   const transactor = useTransactor({
+    closeOnResolve: false,
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarketFactoryInterface__factory.createInterface();

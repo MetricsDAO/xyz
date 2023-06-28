@@ -1,11 +1,11 @@
 import env from "~/env.server";
 
-const SUBSCRIBER = "20230616";
+const SUBSCRIBER = "20230628";
 
 export function pineConfig() {
   return {
     namespace: env.ENVIRONMENT === "development" ? "mdao-development" : "mdao-prod",
     subscriber: env.PINE_SUBSCRIBER_OVERRIDE ?? SUBSCRIBER,
-    version: "2.0.4",
+    version: "2.0.9",
   };
 }

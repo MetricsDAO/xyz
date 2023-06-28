@@ -26,11 +26,18 @@ type State =
   | { state: "writing" }
   | { state: "written"; result: WriteContractResult }
   | { state: "waiting"; transactionHash: `0x${string}` }
+  | { state: "redirect"; receipt: TransactionReceipt }
   | { state: "success"; receipt: TransactionReceipt };
 
 export type Transactor = ReturnType<typeof useTransactor>;
 
-export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionReceipt) => void }) {
+export function useTransactor({
+  onSuccess,
+  closeOnResolve = true,
+}: {
+  onSuccess: (receipt: TransactionReceipt) => void;
+  closeOnResolve?: boolean;
+}) {
   const account = useAccount();
 
   const [state, setState] = useState<State>({ state: "idle" });
@@ -65,7 +72,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     const result = await writeContract(state.prepared!);
     setState({ state: "waiting", transactionHash: result.hash });
     const receipt = await result.wait(1);
-    setState({ state: "success", receipt });
+    setState({ state: closeOnResolve ? "success" : "redirect", receipt });
   };
 
   const cancel = () => {
@@ -73,7 +80,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
   };
 
   useEffect(() => {
-    if (state.state !== "success") return;
+    if (state.state !== "success" && state.state !== "redirect") return;
     onSuccess(state.receipt);
   }, [state, onSuccess]);
 
