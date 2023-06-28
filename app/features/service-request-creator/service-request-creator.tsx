@@ -65,6 +65,7 @@ export function ServiceRequestCreator({
   });
 
   const submitTransactor = useTransactor({
+    closeOnResolve: false,
     onSuccess: useCallback(
       (receipt) => {
         postNewEvent({

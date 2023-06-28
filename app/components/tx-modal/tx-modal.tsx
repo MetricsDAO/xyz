@@ -47,6 +47,20 @@ export function TxModal({ transactor, title, confirmationMessage, variant = "pri
             </a>
           </div>
         ) : null}
+
+        {transactor.state === "redirect" ? (
+          <div className="space-y-2">
+            <p>Transaction confirmed! Redirecting...</p>
+            <a
+              className="text-blue-600"
+              target="_blank"
+              href={`https://polygonscan.com/tx/${transactor.receipt.transactionHash}`}
+              rel="noreferrer"
+            >
+              View on polygonscan
+            </a>
+          </div>
+        ) : null}
       </div>
 
       {transactor.state === "prepared" ? (
