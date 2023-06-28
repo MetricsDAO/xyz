@@ -1,27 +1,25 @@
-import { BigNumber } from "ethers";
+import { useQuery } from "@tanstack/react-query";
+import { useProvider } from "wagmi";
+import { BucketEnforcement__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
+import { useContracts } from "./use-root-data";
 
 type Props = {
   laborMarketAddress: EvmAddress;
   submissionId: string;
   serviceRequestId: string;
 };
-// export type Reward = ReturnType<typeof useReward>["data"];
+export type Reward = ReturnType<typeof useReward>["data"];
 
 /**
  * Get the user's reward for a submission. The payment token and reputation token.
  */
 export function useReward({ laborMarketAddress, submissionId, serviceRequestId }: Props) {
-  // const contracts = useContracts();
+  const contracts = useContracts();
+  const provider = useProvider();
 
-  // return useContractRead({
-  //   address: contracts.BucketEnforcement.address,
-  //   abi: contracts.BucketEnforcement.abi,
-  //   functionName: "getRewards",
-  //   args: [laborMarketAddress, BigNumber.from(serviceRequestId), BigNumber.from(submissionId)],
-  //   select(data) {
-  //     return data;
-  //   },
-  // });
-  return BigNumber.from(1);
+  return useQuery(["reward", laborMarketAddress, submissionId, serviceRequestId], async () => {
+    const contract = BucketEnforcement__factory.connect(contracts.BucketEnforcement.address, provider);
+    return contract.callStatic.getRewards(laborMarketAddress, serviceRequestId, submissionId);
+  });
 }

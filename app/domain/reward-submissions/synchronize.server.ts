@@ -1,5 +1,3 @@
-import { multicall } from "@wagmi/core";
-import { BigNumber } from "ethers";
 import invariant from "tiny-invariant";
 import { mongo } from "~/services/mongo.server";
 import { listTokens } from "~/services/tokens.server";
@@ -8,6 +6,8 @@ import { getContracts } from "~/utils/contracts.server";
 import type { SubmissionDoc, SubmissionWithServiceRequest } from "../submission/schemas";
 import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
 import { fetchSignaturesBodySchema } from "../treasury";
+import { BucketEnforcement__factory } from "~/contracts";
+import { nodeProvider } from "~/services/node.server";
 
 const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) => {
   const iouSubmissions = submissions.filter((s) => s.reward?.isIou === true && s.reward?.iouHasRedeemed === false);
@@ -81,33 +81,22 @@ const hasRedeemed = (claims: FetchClaimsResponse[], submission: SubmissionDoc) =
 };
 
 const updateRewards = async (submissions: SubmissionWithServiceRequest[]) => {
+  const contracts = getContracts();
+  const contract = BucketEnforcement__factory.connect(contracts.BucketEnforcement.address, nodeProvider);
+
   const sumissionsMissingRewards = submissions.filter((s) => !s.reward);
 
   if (sumissionsMissingRewards.length === 0) return;
 
-  const contracts = getContracts();
-  // TODO getRewards is not readable yet
-  // multicall that returns all the reward amounts in format BigNumber[] which is an array of the payout amount
-  // const m = (await multicall({
-  //   contracts: sumissionsMissingRewards.map((s) => {
-  //     return {
-  //       address: contracts.BucketEnforcement.address,
-  //       abi: contracts.BucketEnforcement.abi,
-  //       functionName: "getRewards",
-  //       args: [s.laborMarketAddress, BigNumber.from(s.id)],
-  //     };
-  //   }),
-  // })) as BigNumber[];
-
-  const m = submissions.map((s) => BigNumber.from("1000000000"));
-
-  console.log("m", m);
+  const rewards = await Promise.all(
+    sumissionsMissingRewards.map((s) => contract.callStatic.getRewards(s.laborMarketAddress, s.serviceRequestId, s.id))
+  );
 
   const tokens = await listTokens();
 
   await Promise.all(
     sumissionsMissingRewards.map(async (s, index) => {
-      const getReward = m[index]!;
+      const getReward = rewards[index]!;
       const token = tokens.find((t) => t.contractAddress === s.sr.configuration.pTokenProvider);
       await mongo.submissions.updateOne(
         {
