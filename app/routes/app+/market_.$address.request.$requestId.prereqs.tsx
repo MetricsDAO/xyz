@@ -34,11 +34,12 @@ export default function ServiceIdPrereqs() {
             <h3 className="font-medium mb-4">Make Submissions</h3>
             <PermissionIcon isAllowed={canSubmit} />
           </div>
-          {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired && (
-            <p className="text-gray-500 text-sm mb-6">
-              You must have at least {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired} badge(s)
-            </p>
-          )}
+          {laborMarket.appData.prerequisites?.analyst.gatingType === "Any" &&
+            laborMarket.appData.prerequisites?.analyst.numberBadgesRequired && (
+              <p className="text-gray-500 text-sm mb-6">
+                You must have at least {laborMarket.appData.prerequisites?.analyst.numberBadgesRequired} badge(s)
+              </p>
+            )}
           {laborMarket.appData.prerequisites?.analyst.gatingType === "All" && (
             <p className="text-gray-500 text-sm mb-6">You must have all the following badges</p>
           )}
