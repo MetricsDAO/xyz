@@ -14,7 +14,6 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const { submissionId, reviewer, reviewScore, requestId, reviewId, uri } = ReviewEventSchema.parse(
     event.decoded.inputs
   );
-  console.log("URI", uri);
 
   const appData = await getIndexedReviewAppData(uri);
 

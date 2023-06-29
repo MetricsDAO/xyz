@@ -41,6 +41,7 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     setState({ state: "preparing" });
     let config: PrepareWriteContractConfig;
     if (params.metadata) {
+      console.log("params.metadata", params.metadata);
       try {
         const uploaded = await uploadMetadata(params.metadata);
         console.log("uploaded URI", uploaded.cid);
