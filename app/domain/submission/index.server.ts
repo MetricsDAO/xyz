@@ -25,7 +25,11 @@ export async function appRequestFulfilledEvent(event: Event) {
 
   if (eventToIndex) {
     const block = await eventToIndex.getBlock();
-    const args = SubmissionConfigSchema.parse(eventToIndex.args);
+    const args = SubmissionConfigSchema.parse({
+      ...eventToIndex.args,
+      requestId: eventToIndex.args.requestId.toString(),
+      submissionId: eventToIndex.args.submissionId.toString(),
+    });
     await indexRequestFulfilledEvent({
       address,
       blockNumber,
