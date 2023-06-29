@@ -124,13 +124,6 @@ export const prepareSubmission = async (
 };
 
 /**
- * Returns a submission from a submissionId.
- */
-export const findSubmissionById = async (submissionId: string) => {
-  return mongo.submissions.findOne({ id: submissionId });
-};
-
-/**
  * Returns an array of Submissions with their Reviews for a given Service Request.
  */
 export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => {

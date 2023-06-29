@@ -7,6 +7,7 @@ import { ReviewAppDataSchema, ReviewEventSchema } from "~/domain/review/schemas"
 import { mongo } from "../../services/mongo.server";
 import { listTokens } from "~/services/tokens.server";
 import { fetchIpfsJson } from "~/services/ipfs.server";
+import { logger } from "~/services/logger.server";
 
 export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
@@ -15,7 +16,13 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     event.decoded.inputs
   );
 
-  const appData = await getIndexedReviewAppData(uri);
+  let appData;
+  try {
+    appData = await getIndexedReviewAppData(uri);
+  } catch (e) {
+    logger.warn("Failed to parse review app data. Skipping indexing", e);
+    return;
+  }
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,
