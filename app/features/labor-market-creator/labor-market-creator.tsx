@@ -63,6 +63,7 @@ export function LaborMarketCreator({
         transactor={transactor}
         title="Create Marketplace"
         confirmationMessage="Confirm that you would like to create a new marketplace."
+        redirectStep={true}
       />
       <OverviewForm defaultValues={defaultValues} onPrevious={onPrevious} onSubmit={onSubmit} />
     </>
