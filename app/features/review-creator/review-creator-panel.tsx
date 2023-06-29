@@ -106,7 +106,7 @@ export function ReviewCreatorPanel({
         confirmationMessage={
           <p>
             Please confirm that you would like to give this submission a score of
-            <b>{` ${scoreToLabel(methods.getValues("score") * 25)}`}</b>.
+            <b>{` ${scoreToLabel(methods.getValues("score"))}`}</b>.
           </p>
         }
       />
@@ -155,9 +155,9 @@ export function ReviewCreatorPanel({
               fullWidth
               variant="gray"
               type="button"
-              onClick={() => setValue("score", 4)}
+              onClick={() => setValue("score", 100)}
               className={clsx("hover:bg-lime-100", {
-                "bg-lime-100": selectedScore === 4,
+                "bg-lime-100": selectedScore === 100,
               })}
             >
               Stellar
@@ -166,9 +166,9 @@ export function ReviewCreatorPanel({
               fullWidth
               variant="gray"
               type="button"
-              onClick={() => setValue("score", 3)}
+              onClick={() => setValue("score", 75)}
               className={clsx("hover:bg-blue-200", {
-                "bg-blue-200": selectedScore === 3,
+                "bg-blue-200": selectedScore === 75,
               })}
             >
               Good
@@ -177,9 +177,9 @@ export function ReviewCreatorPanel({
               fullWidth
               variant="gray"
               type="button"
-              onClick={() => setValue("score", 2)}
+              onClick={() => setValue("score", 50)}
               className={clsx("hover:bg-neutral-200", {
-                "bg-neutral-200": selectedScore === 2,
+                "bg-neutral-200": selectedScore === 50,
               })}
             >
               Average
@@ -188,9 +188,9 @@ export function ReviewCreatorPanel({
               fullWidth
               variant="gray"
               type="button"
-              onClick={() => setValue("score", 1)}
+              onClick={() => setValue("score", 25)}
               className={clsx("hover:bg-orange-200", {
-                "bg-orange-200": selectedScore === 1,
+                "bg-orange-200": selectedScore === 25,
               })}
             >
               Bad
