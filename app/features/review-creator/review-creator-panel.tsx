@@ -138,11 +138,11 @@ export function ReviewCreatorPanel({
                 </div>
                 <div
                   className={clsx(
-                    SCORE_COLOR[scoreToLabel(Number(r.score) * 25)],
+                    SCORE_COLOR[scoreToLabel(Number(r.score))],
                     "flex w-24 h-9 justify-center items-center rounded-lg text-sm"
                   )}
                 >
-                  <p>{scoreToLabel(Number(r.score) * 25)}</p>
+                  <p>{scoreToLabel(Number(r.score))}</p>
                 </div>
               </div>
               <p className="text-stone-500 text-sm">{r.comment}</p>
