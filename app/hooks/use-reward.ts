@@ -1,9 +1,5 @@
 import { BigNumber } from "ethers";
 import type { EvmAddress } from "~/domain/address";
-<<<<<<< HEAD
-import { useContracts } from "./use-root-data";
-=======
->>>>>>> 5fa5e0d290ac29a4d5fc6a4ec2102a656cd2828c
 
 type Props = {
   laborMarketAddress: EvmAddress;
@@ -27,9 +23,5 @@ export function useReward({ laborMarketAddress, submissionId, serviceRequestId }
   //     return data;
   //   },
   // });
-<<<<<<< HEAD
-  return BigNumber.from(2);
-=======
   return BigNumber.from(1);
->>>>>>> 5fa5e0d290ac29a4d5fc6a4ec2102a656cd2828c
 }
