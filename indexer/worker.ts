@@ -69,7 +69,6 @@ worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestPayClaimed", async (event) => {
-  console.log("event", event);
   return indexerRequestPayClaimedEvent(event);
 });
 
