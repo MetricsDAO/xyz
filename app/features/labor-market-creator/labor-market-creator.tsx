@@ -25,7 +25,6 @@ export function LaborMarketCreator({
   const navigate = useNavigate();
 
   const transactor = useTransactor({
-    closeOnResolve: false,
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarketFactoryInterface__factory.createInterface();
@@ -64,6 +63,7 @@ export function LaborMarketCreator({
         transactor={transactor}
         title="Create Marketplace"
         confirmationMessage="Confirm that you would like to create a new marketplace."
+        redirectStep={true}
       />
       <OverviewForm defaultValues={defaultValues} onPrevious={onPrevious} onSubmit={onSubmit} />
     </>

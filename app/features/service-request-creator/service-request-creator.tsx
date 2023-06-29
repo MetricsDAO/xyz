@@ -66,7 +66,6 @@ export function ServiceRequestCreator({
   });
 
   const submitTransactor = useTransactor({
-    closeOnResolve: false,
     onSuccess: useCallback(
       (receipt) => {
         // Parse the requestId from the event logs.
@@ -156,6 +155,7 @@ export function ServiceRequestCreator({
         transactor={submitTransactor}
         title="Launch Challenge"
         confirmationMessage={"Confirm that you would like to launch this challenge and transfer the funds"}
+        redirectStep={true}
       />
 
       <OverviewForm

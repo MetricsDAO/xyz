@@ -62,7 +62,7 @@ export default function SubmissionCreator({
 
   return (
     <>
-      <TxModal transactor={transactor} />
+      <TxModal transactor={transactor} redirectStep={true} />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10 py-5">
         <div className="space-y-10">
           <section className="space-y-3">
