@@ -83,9 +83,15 @@ const searchReviewsPipeline = (params: ReviewSearch) => {
  * @param {String} userAddress - The address of the user
  * @returns - the users submission or null if not found.
  */
-export const findUserReview = async (submissionId: string, laborMarketAddress: EvmAddress, userAddress: EvmAddress) => {
+export const findUserReview = async (
+  laborMarketAddress: EvmAddress,
+  serviceRequestId: string,
+  submissionId: string,
+  userAddress: EvmAddress
+) => {
   return mongo.reviews.findOne({
     laborMarketAddress,
+    serviceRequestId,
     submissionId,
     reviewer: userAddress,
   });

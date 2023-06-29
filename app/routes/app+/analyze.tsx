@@ -134,7 +134,7 @@ export default function Marketplaces() {
                 size="sm"
                 onChange={handleChange}
                 options={[
-                  { label: "Active Challenges", value: "indexData.serviceRequestCount" },
+                  { label: "# Challenges", value: "indexData.serviceRequestCount" },
                   { label: "New", value: "blockTimestamp" },
                 ]}
               />

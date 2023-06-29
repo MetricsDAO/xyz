@@ -19,6 +19,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,
+    serviceRequestId: requestId,
     id: submissionId,
   });
 
@@ -32,7 +33,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   invariant(serviceRequest, "Service request not found when indexing review");
 
   await mongo.submissions.updateOne(
-    { laborMarketAddress: contractAddress, id: submissionId },
+    { laborMarketAddress: contractAddress, serviceRequestId: requestId, id: submissionId },
     {
       $set: {
         score: {
@@ -41,8 +42,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
             .add(reviewScore)
             .toNumber(),
           avg: Math.floor(
-            (((submission.score?.reviewSum ?? 0) + parseInt(reviewScore)) * 25) /
-              ((submission.score?.reviewCount ?? 0) + 1)
+            ((submission.score?.reviewSum ?? 0) + parseInt(reviewScore)) / ((submission.score?.reviewCount ?? 0) + 1)
           ),
         },
       },
@@ -51,8 +51,6 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
 
   const tokens = await listTokens();
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenReviewer);
-
-  // TODO: get signature and figure out if redeemed yet
 
   await mongo.reviews.insertOne({
     id: reviewId,
@@ -65,7 +63,9 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     indexedAt: new Date(),
     blockTimestamp,
     reward: {
-      tokenAmount: "10000", //TODO amount should come from event
+      tokenAmount: BigNumber.from(serviceRequest.configuration.pTokenReviewerTotal)
+        .div(serviceRequest.configuration.reviewerLimit)
+        .toString(),
       tokenAddress: serviceRequest.configuration.pTokenReviewer,
       isIou: token?.isIou,
     },
