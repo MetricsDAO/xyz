@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { ClientOnly } from "remix-utils";
 import { Button, Field, UserBadge, scoreToLabel } from "~/components";
-import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
+import { MarkdownEditor, ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { ReviewDoc, SubmissionWithReviewsDoc } from "~/domain";
 import { ReviewAppDataSchema } from "~/domain";
@@ -18,6 +18,7 @@ import { fromNow } from "~/utils/date";
 import type { ReviewFormValues } from "./review-creator-values";
 import { ReviewFormValuesSchema } from "./review-creator-values";
 import { useNavigate } from "@remix-run/react";
+import DOMPurify from "dompurify";
 
 export function ReviewCreatorPanel({
   onStateChange,
@@ -145,7 +146,9 @@ export function ReviewCreatorPanel({
                   <p>{scoreToLabel(Number(r.score))}</p>
                 </div>
               </div>
-              <p className="text-stone-500 text-sm">{r.comment}</p>
+              <p className="text-sm">
+                <ClientOnly>{() => <ParsedMarkdown text={DOMPurify.sanitize(r.appData.comment ?? "")} />}</ClientOnly>
+              </p>
             </div>
           ))}
         </div>
