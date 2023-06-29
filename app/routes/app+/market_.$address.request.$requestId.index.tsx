@@ -31,7 +31,6 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const searchParams = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const filterAndSearchParams = { ...searchParams, laborMarketAddress: address, serviceRequestId: requestId };
   const submissions = await searchSubmissionsWithReviews(filterAndSearchParams);
-  console.log("submissionswithreviews", submissions);
   const totalSubmissions = await countSubmissions(filterAndSearchParams);
   return typedjson({ submissions, searchParams, totalSubmissions });
 };
@@ -42,7 +41,6 @@ export type ChallengeSubmissonProps = {
 
 export default function ChallengeIdSubmissions() {
   const { submissions, searchParams, totalSubmissions } = useTypedLoaderData<typeof loader>();
-  console.log("submissions", submissions);
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 

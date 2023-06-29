@@ -1,4 +1,4 @@
-import { Link, Outlet, useMatches } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import * as DOMPurify from "dompurify";
 import { useState } from "react";

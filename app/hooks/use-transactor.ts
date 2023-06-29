@@ -41,10 +41,8 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     setState({ state: "preparing" });
     let config: PrepareWriteContractConfig;
     if (params.metadata) {
-      console.log("params.metadata", params.metadata);
       try {
         const uploaded = await uploadMetadata(params.metadata);
-        console.log("uploaded URI", uploaded.cid);
         config = params.config({ account: account.address, cid: uploaded.cid });
       } catch (e) {
         setState({ state: "failure", error: (e as Error)?.message ?? "error uploading metadata" });
@@ -55,7 +53,6 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
     }
     try {
       const prepared = await prepareWriteContract(config);
-      console.log("prepared", prepared);
       setState({ state: "prepared", prepared });
     } catch (e) {
       setState({ state: "failure", error: (e as EthersError)?.reason ?? "error preparing transaction" });
@@ -84,7 +81,6 @@ export function useTransactor({ onSuccess }: { onSuccess: (receipt: TransactionR
 }
 
 async function uploadMetadata(metadata: JsonObject) {
-  console.log("uploading metadata", metadata);
   const res = await fetch("/api/pin-to-ipfs", {
     body: JSON.stringify(metadata),
     method: "POST",
