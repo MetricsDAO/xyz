@@ -182,8 +182,6 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
         <Header.Column>Submitted</Header.Column>
       </Header>
       {submissions.map((s) => {
-        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
-
         return (
           <Row
             columns={12}
@@ -233,8 +231,6 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
   return (
     <div className="space-y-4">
       {submissions.map((s) => {
-        const score = s.score ? Math.floor(s.score.reviewSum / s.score.reviewCount) : undefined; // TODO average?
-
         return (
           <Card
             key={`${s.laborMarketAddress}_${s.id}`}
