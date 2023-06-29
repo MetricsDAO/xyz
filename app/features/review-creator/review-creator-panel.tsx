@@ -124,7 +124,7 @@ export function ReviewCreatorPanel({
             <div className="bg-black h-4 w-px" />
           </div>
         </div>
-        <div className="space-y-4 bg-blue-300 p-10 overflow-y-auto h-3/5">
+        <div className="space-y-4 bg-blue-300 bg-opacity-10 p-10 overflow-y-auto h-3/5">
           {reviews.map((r) => (
             <div
               key={fromNow(r.blockTimestamp) ?? fromNow(r.indexedAt)}
