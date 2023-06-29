@@ -9,6 +9,7 @@ import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { postNewEvent } from "~/utils/fetch";
 import { getEventFromLogs } from "~/utils/helpers";
 import type { SubmissionForm } from "./schema";
 import { SubmissionFormSchema } from "./schema";
@@ -36,12 +37,17 @@ export default function SubmissionCreator({
       (receipt) => {
         const iface = LaborMarket__factory.createInterface();
         const event = getEventFromLogs(laborMarketAddress, iface, receipt.logs, "RequestFulfilled");
-        if (event)
-          navigate(
-            `/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${event.args[
-              "submissionId"
-            ]?.toString()}`
+        if (event) {
+          const submissionId = event.args["submissionId"]?.toString();
+          postNewEvent({
+            eventFilter: "RequestFulfilled",
+            address: laborMarketAddress,
+            blockNumber: receipt.blockNumber,
+            transactionHash: receipt.transactionHash,
+          }).then(() =>
+            navigate(`/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}`)
           );
+        }
       },
       [laborMarketAddress, navigate, serviceRequestId]
     ),
