@@ -15,12 +15,14 @@ export function AnalystForm({
   onNext,
   onPrevious,
   address,
+  curveType,
 }: {
   validTokens: Token[];
   defaultValues?: DefaultValues<AnalystFormType>;
   onNext: (data: AnalystFormType) => void;
   onPrevious: (data: AnalystFormType) => void;
   address: `0x${string}`;
+  curveType: "Constant" | "Aggressive" | "Acceptable" | "Pass / Fail";
 }) {
   const {
     register,
@@ -131,7 +133,7 @@ export function AnalystForm({
           {formData.rewardToken && formData.rewardPool && (
             <>
               <CurveChart
-                type={"Constant"}
+                type={curveType}
                 token={toTokenAbbreviation(formData.rewardToken, validTokens)}
                 amount={toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals).toString()}
                 decimals={formData.rewardTokenDecimals}
