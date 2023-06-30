@@ -12,6 +12,7 @@ import { postNewEvent } from "~/utils/fetch";
 import { toTokenAmount } from "~/utils/helpers";
 import { OverviewForm } from "./overview-form";
 import type { ServiceRequestForm } from "./schema";
+import { useAllowlistAllowances } from "~/hooks/use-allowlist-allowances";
 
 type SequenceState =
   | { state: "initial" }
@@ -36,6 +37,8 @@ export function ServiceRequestCreator({
   const [sequence, setSequence] = useState<SequenceState>({ state: "initial" });
 
   const navigate = useNavigate();
+
+  const { data: allowances } = useAllowlistAllowances({ laborMarketAddress });
 
   const approveRewardTransactor = useTransactor({
     onSuccess: useCallback(
@@ -92,13 +95,20 @@ export function ServiceRequestCreator({
       });
     } else if (sequence.state === "approve-reviewer-reward") {
       const values = sequence.data;
+
+      // Only approve the necessary amount of tokens
+      const reviewerTokenAllowance =
+        allowances?.find((a) => a.contractAddress === values.reviewer.rewardToken)?.allowance ?? BigNumber.from(0);
+      const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+      const approvalAmount = reviewerReward.sub(reviewerTokenAllowance);
+
       approveReviewerRewardTransactor.start({
         config: () =>
           configureWrite({
             address: values.reviewer.rewardToken,
             abi: ERC20_APPROVE_PARTIAL_ABI,
             functionName: "approve",
-            args: [laborMarketAddress, toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals)],
+            args: [laborMarketAddress, approvalAmount],
           }),
       });
     } else if (sequence.state === "create-service-request") {
@@ -112,22 +122,42 @@ export function ServiceRequestCreator({
   }, [sequence]);
 
   const onSubmit = (values: ServiceRequestForm) => {
+    const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
+    const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+
+    // Get the allowances or default to 0
+    const analystTokenAllowance =
+      allowances?.find((a) => a.contractAddress === values.analyst.rewardToken)?.allowance ?? BigNumber.from(0);
+    const reviewerTokenAllowance =
+      allowances?.find((a) => a.contractAddress === values.reviewer.rewardToken)?.allowance ?? BigNumber.from(0);
+
     const isReviewRewardSameAsAnalystReward = values.analyst.rewardToken === values.reviewer.rewardToken;
-    let approveAmount: BigNumber;
-    if (isReviewRewardSameAsAnalystReward) {
-      // in the case where the reward tokens are the same, we need to approve the sum of the two
-      const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
-      const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
-      approveAmount = analystReward.add(reviewerReward);
-    } else {
-      approveAmount = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
-    }
-    setSequence({
-      state: "approve-reward",
-      data: values,
-      approveAmount,
-      skipApproveReviewerReward: isReviewRewardSameAsAnalystReward,
-    });
+    // Skip approving review if the tokens are the same or if approvals are greater than the reward
+    const skipApproveReviewerReward = isReviewRewardSameAsAnalystReward || reviewerTokenAllowance.gte(reviewerReward);
+
+    // initialize the approve amount to include the uni-token flow.
+    let approveAmount = isReviewRewardSameAsAnalystReward ? analystReward.add(reviewerReward) : analystReward;
+
+    // // If we do not have enough allowance for the analyst reward, start the flow to approve the token(s).
+    if (analystTokenAllowance.lt(approveAmount))
+      setSequence({
+        state: "approve-reward",
+        data: values,
+        approveAmount,
+        skipApproveReviewerReward,
+      });
+    // If we have enough allowance for the analyst reward but cannot skip the reviewer approval.
+    else if (!skipApproveReviewerReward)
+      setSequence({
+        state: "approve-reviewer-reward",
+        data: values,
+      });
+    // Otherwise, we can skip the approvals and go straight to submitting the transaction.
+    else
+      setSequence({
+        state: "create-service-request",
+        data: values,
+      });
   };
 
   return (
