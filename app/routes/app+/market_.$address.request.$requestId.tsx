@@ -1,7 +1,6 @@
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import * as DOMPurify from "dompurify";
-import { useState } from "react";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ClientOnly, notFound } from "remix-utils";
@@ -67,8 +66,6 @@ export const loader = async ({ params }: DataFunctionArgs) => {
 export default function ServiceRequest() {
   const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, numParticipants } =
     useTypedLoaderData<typeof loader>();
-
-  const [sidePanelOpen, setSidePanelOpen] = useState<boolean>(false);
 
   const user = useOptionalUser();
   const userSignedIn = !!user;
@@ -181,7 +178,7 @@ export default function ServiceRequest() {
         <TabNavLink to="./timeline#tabNav">Timeline &amp; Deadlines</TabNavLink>
         <TabNavLink to="./participants#tabNav">Participants</TabNavLink>
       </TabNav>
-      <Outlet context={[sidePanelOpen, setSidePanelOpen]} />
+      <Outlet />
     </Container>
   );
 }

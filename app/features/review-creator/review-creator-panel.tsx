@@ -1,4 +1,3 @@
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@remix-run/react";
 import clsx from "clsx";
@@ -10,7 +9,7 @@ import { ClientOnly } from "remix-utils";
 import { Button, Field, UserBadge, scoreToLabel } from "~/components";
 import { MarkdownEditor, ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import type { ReviewDoc, SubmissionWithReviewsDoc } from "~/domain";
+import type { SubmissionWithReviewsDoc } from "~/domain";
 import { ReviewAppDataSchema } from "~/domain";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
@@ -22,22 +21,13 @@ import { ReviewFormValuesSchema } from "./review-creator-values";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 export function ReviewCreatorPanel({
-  onStateChange,
-  reviews,
   submission,
   onCancel,
-  laborMarketAddress,
-  submissionId,
-  requestId,
 }: {
-  onStateChange: (state: boolean) => void;
-  reviews: ReviewDoc[];
-  laborMarketAddress: EvmAddress;
-  submissionId: string;
-  requestId: string;
-  submission?: SubmissionWithReviewsDoc;
+  submission: SubmissionWithReviewsDoc;
   onCancel: () => void;
 }) {
+  const { laborMarketAddress, reviews, serviceRequestId, id } = submission;
   const contracts = useContracts();
 
   const navigate = useNavigate();
@@ -55,7 +45,7 @@ export function ReviewCreatorPanel({
   const transactor = useTransactor({
     onSuccess: (receipt) => {
       toast.success("Successfully reviewed submission. Please check back in a few moments.");
-      navigate(`/app/market/${laborMarketAddress}/request/${requestId}`);
+      navigate(`/app/market/${laborMarketAddress}/request/${serviceRequestId}`);
     },
   });
 
@@ -64,7 +54,10 @@ export function ReviewCreatorPanel({
     transactor.start({
       metadata: metadata,
       config: ({ cid }) =>
-        configureFromValues({ contracts, inputs: { laborMarketAddress, submissionId, requestId, formValues, cid } }),
+        configureFromValues({
+          contracts,
+          inputs: { laborMarketAddress, submissionId: id, serviceRequestId, formValues, cid },
+        }),
     });
   };
 
@@ -76,17 +69,17 @@ export function ReviewCreatorPanel({
     inputs: {
       laborMarketAddress: EvmAddress;
       submissionId: string;
-      requestId: string;
+      serviceRequestId: string;
       formValues: ReviewFormValues;
       cid: string;
     };
   }) {
-    const { laborMarketAddress, submissionId, requestId, formValues, cid } = inputs;
+    const { laborMarketAddress, submissionId, serviceRequestId, formValues, cid } = inputs;
     return configureWrite({
       address: laborMarketAddress,
       abi: contracts.LaborMarket.abi,
       functionName: "review",
-      args: [BigNumber.from(requestId), BigNumber.from(submissionId), BigNumber.from(formValues.score), cid], //TODO cid
+      args: [BigNumber.from(serviceRequestId), BigNumber.from(submissionId), BigNumber.from(formValues.score), cid], //TODO cid
     });
   }
 
@@ -109,10 +102,6 @@ export function ReviewCreatorPanel({
               {submission?.configuration.fulfiller ? <UserBadge address={submission?.configuration.fulfiller} /> : null}
             </p>
             {submission?.blockTimestamp ? <p> {fromNow(submission?.blockTimestamp)}</p> : null}
-          </div>
-          <div onClick={() => onStateChange(false)} className="flex gap-px items-center hover:cursor-pointer">
-            <ArrowRightIcon onClick={() => onStateChange(false)} className="text-black h-4" />
-            <div className="bg-black h-4 w-px" />
           </div>
         </div>
         <div className="space-y-4 bg-blue-300 bg-opacity-10 p-10 overflow-y-auto h-3/5">

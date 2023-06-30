@@ -9,28 +9,23 @@ import { submissionCreatedDate } from "~/utils/helpers";
 
 export function SubmissionCard({
   submission,
-  onStateChange,
+  selected,
+  setSelected,
 }: {
   submission: SubmissionWithReviewsDoc;
-  onStateChange: (state: boolean, submissionId: string) => void;
+  selected: boolean;
+  setSelected: (submission: SubmissionWithReviewsDoc) => void;
 }) {
-  const [selected, setSelected] = useState(false);
   const user = useOptionalUser();
   const reviewedByUser = user && submission.reviews.find((review) => review.reviewer === user.address);
 
   const handleClick = () => {
-    onStateChange(true, submission.id);
+    setSelected(submission);
   };
 
   return (
     <Card className={`text-sm p-6 space-y-4 hover:cursor-pointer ${selected ? "border border-blue-600" : ""}`}>
-      <div
-        tabIndex={0}
-        onBlur={() => setSelected(false)}
-        onFocus={() => setSelected(true)}
-        onClick={handleClick}
-        className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4"
-      >
+      <div tabIndex={0} onClick={handleClick} className="flex flex-col-reverse md:flex-row space-y-reverse space-y-4">
         <main className="text-blue-600 text-sm flex flex-row items-center flex-1">
           <Link className="flex flex-row" target="_blank" to={submission.appData?.submissionUrl ?? ""}>
             {submission.appData?.title} <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-1" />{" "}

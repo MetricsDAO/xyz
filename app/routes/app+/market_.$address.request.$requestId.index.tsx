@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { useOutletContext, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import { useRef, useState } from "react";
@@ -9,18 +9,18 @@ import type { UseDataFunctionReturn } from "remix-typedjson/dist/remix";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ValidatedForm } from "remix-validated-form";
 import { z } from "zod";
+import { Drawer } from "~/components";
 import { Checkbox } from "~/components/checkbox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input/input";
-import { ValidatedSelect } from "~/components/select";
-import type { EvmAddress } from "~/domain/address";
-import { EvmAddressSchema } from "~/domain/address";
-import { SubmissionSearchSchema } from "~/domain/submission/schemas";
-import { SubmissionCard } from "~/features/submission-card";
-import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 import { Pagination } from "~/components/pagination";
+import { ValidatedSelect } from "~/components/select";
+import type { SubmissionWithReviewsDoc } from "~/domain";
+import { EvmAddressSchema } from "~/domain/address";
+import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
+import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { ReviewCreatorPanel } from "~/features/review-creator/review-creator-panel";
-import { Drawer } from "~/components";
+import { SubmissionCard } from "~/features/submission-card";
 
 const validator = withZod(SubmissionSearchSchema);
 export type OutletContext = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
@@ -45,11 +45,7 @@ export default function ChallengeIdSubmissions() {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [sidePanelOpen, setSidePanelOpen] = useOutletContext<OutletContext>();
-
-  const [submissionId, setSubmissionId] = useState<string>("");
-
-  const submission = submissions?.find((s) => s.id === submissionId);
+  const [selectedSubmission, setSelectedSubmission] = useState<SubmissionWithReviewsDoc | null>(null);
 
   const handleChange = () => {
     if (formRef.current) {
@@ -57,19 +53,21 @@ export default function ChallengeIdSubmissions() {
     }
   };
 
-  const handleOpenSidePanel = (newState: boolean, submissionId?: string) => {
-    if (submissionId) {
-      setSubmissionId(submissionId);
-    }
-    setSidePanelOpen(newState);
-  };
-
   return (
     <div>
       <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
         <main className="min-w-[300px] w-full space-y-4">
           {submissions?.map((s) => (
-            <SubmissionCard onStateChange={handleOpenSidePanel} key={s.id} submission={s} />
+            <SubmissionCard
+              setSelected={() => setSelectedSubmission(s)}
+              selected={
+                s.laborMarketAddress === selectedSubmission?.laborMarketAddress &&
+                s.serviceRequestId === selectedSubmission?.serviceRequestId &&
+                s.id === selectedSubmission?.id
+              }
+              key={s.id}
+              submission={s}
+            />
           ))}
           <div className="w-fit m-auto">
             <Pagination page={searchParams.page} totalPages={Math.ceil(totalSubmissions / searchParams.first)} />
@@ -113,16 +111,10 @@ export default function ChallengeIdSubmissions() {
           </ValidatedForm>
         </aside>
       </section>
-      <Drawer open={sidePanelOpen} onClose={() => setSidePanelOpen(false)}>
-        <ReviewCreatorPanel
-          reviews={submission?.reviews ?? []}
-          onStateChange={handleOpenSidePanel}
-          submission={submission}
-          onCancel={() => handleOpenSidePanel(false)}
-          laborMarketAddress={submission?.laborMarketAddress as EvmAddress}
-          submissionId={submissionId}
-          requestId={submission?.serviceRequestId as string}
-        />
+      <Drawer open={selectedSubmission !== null} onClose={() => setSelectedSubmission(null)}>
+        {selectedSubmission && (
+          <ReviewCreatorPanel onCancel={() => setSelectedSubmission(null)} submission={selectedSubmission} />
+        )}
       </Drawer>
     </div>
   );
