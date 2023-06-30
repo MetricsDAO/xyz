@@ -36,7 +36,6 @@ import { getServiceRequest } from "~/domain/service-request/functions.server";
 import { getSubmission } from "~/domain/submission/functions.server";
 import type { SubmissionDoc } from "~/domain/submission/schemas";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
-import { ReviewCreator } from "~/features/review-creator";
 import { WalletGuardedButtonLink } from "~/features/wallet-guarded-button-link";
 import { usePrereqs } from "~/hooks/use-prereqs";
 import { useReward } from "~/hooks/use-reward";
@@ -299,7 +298,8 @@ function ReviewQuestionDrawerButton({
           </Button>
         </ConnectWalletWrapper>
       )}
-      <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
+      {/* TODO: Review panel here? */}
+      {/* <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
         {isDrawerOpen && (
           <ReviewCreator
             laborMarketAddress={submission.laborMarketAddress}
@@ -308,7 +308,7 @@ function ReviewQuestionDrawerButton({
             onCancel={() => setDrawerOpen(false)}
           />
         )}
-      </Drawer>
+      </Drawer> */}
     </>
   );
 }

@@ -98,7 +98,7 @@ export default function ServiceRequest() {
     serviceRequest.indexData.claimsToSubmit.length === 0;
 
   return (
-    <Container className="pt-7 pb-16 px-10">
+    <Container className={`h-full pt-7 pb-16`}>
       <Breadcrumbs crumbs={[{ link: `/app/market/${laborMarket.address}`, name: laborMarket.appData?.title ?? "" }]} />
       <header className="flex flex-col md:flex-row gap-5 justify-between pb-16">
         <h1 className="text-3xl font-semibold md:basis-2/3">{serviceRequest.appData?.title}</h1>
@@ -178,7 +178,6 @@ export default function ServiceRequest() {
         <TabNavLink to="./timeline#tabNav">Timeline &amp; Deadlines</TabNavLink>
         <TabNavLink to="./participants#tabNav">Participants</TabNavLink>
       </TabNav>
-
       <Outlet />
     </Container>
   );

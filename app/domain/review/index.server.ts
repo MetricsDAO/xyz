@@ -2,14 +2,27 @@ import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils.js";
 import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
-import { ReviewEventSchema } from "~/domain/review/schemas";
+import type { ReviewAppData } from "~/domain/review/schemas";
+import { ReviewAppDataSchema, ReviewEventSchema } from "~/domain/review/schemas";
 import { mongo } from "../../services/mongo.server";
 import { listTokens } from "~/services/tokens.server";
+import { fetchIpfsJson } from "~/services/ipfs.server";
+import { logger } from "~/services/logger.server";
 
 export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
   const blockTimestamp = new Date(event.block.timestamp);
-  const { submissionId, reviewer, reviewScore, requestId, reviewId } = ReviewEventSchema.parse(event.decoded.inputs);
+  const { submissionId, reviewer, reviewScore, requestId, reviewId, uri } = ReviewEventSchema.parse(
+    event.decoded.inputs
+  );
+
+  let appData;
+  try {
+    appData = await getIndexedReviewAppData(uri);
+  } catch (e) {
+    logger.warn("Failed to parse review app data. Skipping indexing", e);
+    return;
+  }
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: contractAddress,
@@ -52,6 +65,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     submissionId: submissionId,
     serviceRequestId: requestId,
     score: reviewScore,
+    appData,
     reviewer: reviewer,
     indexedAt: new Date(),
     blockTimestamp,
@@ -83,3 +97,8 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     indexedAt: new Date(),
   });
 };
+
+async function getIndexedReviewAppData(marketUri: string): Promise<ReviewAppData> {
+  const data = await fetchIpfsJson(marketUri);
+  return ReviewAppDataSchema.parse(data);
+}

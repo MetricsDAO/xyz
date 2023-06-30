@@ -1,6 +1,5 @@
 import type { FetchClaimsInput, FetchSignaturesBody } from "~/domain/treasury";
-import { IOUTokenMetadataSchema } from "~/domain/treasury";
-import { fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
+import { IOUTokenMetadataSchema, fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
 export async function fetchSignatures(body: FetchSignaturesBody) {
