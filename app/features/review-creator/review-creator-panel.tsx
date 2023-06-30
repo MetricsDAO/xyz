@@ -38,23 +38,16 @@ export function ReviewCreatorPanel({
   onCancel: () => void;
 }) {
   const contracts = useContracts();
-  const methods = useForm<ReviewFormValues>({
-    resolver: zodResolver(ReviewFormValuesSchema),
-    defaultValues: {
-      score: 2, // default to an average score
-      comment: "",
-    },
-  });
 
   const navigate = useNavigate();
 
-  const {
-    watch,
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ReviewFormValues>();
+  const { watch, register, setValue, getValues, handleSubmit } = useForm<ReviewFormValues>({
+    defaultValues: {
+      score: 50, // default to average
+      comment: "",
+    },
+    resolver: zodResolver(ReviewFormValuesSchema),
+  });
 
   const selectedScore = watch("score");
 
@@ -97,15 +90,14 @@ export function ReviewCreatorPanel({
   }
 
   return (
-    // <FormProvider {...methods}>
-    <form onSubmit={handleSubmit(onSubmit)} className="h-full bottom-0 top-0 absolute right-0 w-1/2">
+    <form onSubmit={handleSubmit(onSubmit)}>
       <TxModal
         transactor={transactor}
         title="Review & Score"
         confirmationMessage={
           <p>
             Please confirm that you would like to give this submission a score of
-            <b>{` ${scoreToLabel(methods.getValues("score"))}`}</b>.
+            <b>{` ${scoreToLabel(getValues("score"))}`}</b>.
           </p>
         }
       />
@@ -233,6 +225,5 @@ export function ReviewCreatorPanel({
         </div>
       </div>
     </form>
-    // </FormProvider>
   );
 }

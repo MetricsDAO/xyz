@@ -20,6 +20,7 @@ import { SubmissionCard } from "~/features/submission-card";
 import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 import { Pagination } from "~/components/pagination";
 import { ReviewCreatorPanel } from "~/features/review-creator/review-creator-panel";
+import { Drawer } from "~/components";
 
 const validator = withZod(SubmissionSearchSchema);
 export type OutletContext = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
@@ -75,46 +76,44 @@ export default function ChallengeIdSubmissions() {
           </div>
         </main>
 
-        {!sidePanelOpen && (
-          <aside className="md:w-1/4 text-sm">
-            <ValidatedForm
-              formRef={formRef}
-              method="get"
-              validator={validator}
-              onChange={handleChange}
-              preventScrollReset={true}
-              className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-50 bg-opacity-5 rounded-lg p-4"
-            >
-              <ValidatedInput
-                placeholder="Search"
+        <aside className="md:w-1/4 text-sm">
+          <ValidatedForm
+            formRef={formRef}
+            method="get"
+            validator={validator}
+            onChange={handleChange}
+            preventScrollReset={true}
+            className="space-y-3 border-[1px] border-solid border-[#EDEDED] bg-blue-50 bg-opacity-5 rounded-lg p-4"
+          >
+            <ValidatedInput
+              placeholder="Search"
+              size="sm"
+              name="q"
+              iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+            />
+            <Field>
+              <Label>Sort:</Label>
+              <ValidatedSelect
+                name="sortBy"
                 size="sm"
-                name="q"
-                iconRight={<MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />}
+                onChange={handleChange}
+                options={[
+                  { label: "Title", value: "appData.title" },
+                  { label: "Created At", value: "blockTimestamp" },
+                ]}
               />
-              <Field>
-                <Label>Sort:</Label>
-                <ValidatedSelect
-                  name="sortBy"
-                  size="sm"
-                  onChange={handleChange}
-                  options={[
-                    { label: "Title", value: "appData.title" },
-                    { label: "Created At", value: "blockTimestamp" },
-                  ]}
-                />
-              </Field>
-              <Label>Filter:</Label>
-              <p>Overall Score</p>
-              <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="stellar" label="Stellar" />
-              <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
-              <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
-              <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
-              <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
-            </ValidatedForm>
-          </aside>
-        )}
+            </Field>
+            <Label>Filter:</Label>
+            <p>Overall Score</p>
+            <Checkbox onChange={handleChange} id="stellar_checkbox" name="score" value="stellar" label="Stellar" />
+            <Checkbox onChange={handleChange} id="good_checkbox" name="score" value="good" label="Good" />
+            <Checkbox onChange={handleChange} id="average_checkbox" name="score" value="average" label="Average" />
+            <Checkbox onChange={handleChange} id="bad_checkbox" name="score" value="bad" label="Bad" />
+            <Checkbox onChange={handleChange} id="spam_checkbox" name="score" value="spam" label="Spam" />
+          </ValidatedForm>
+        </aside>
       </section>
-      {sidePanelOpen && (
+      <Drawer open={sidePanelOpen} onClose={() => setSidePanelOpen(false)}>
         <ReviewCreatorPanel
           reviews={submission?.reviews ?? []}
           onStateChange={handleOpenSidePanel}
@@ -124,7 +123,7 @@ export default function ChallengeIdSubmissions() {
           submissionId={submissionId}
           requestId={submission?.serviceRequestId as string}
         />
-      )}
+      </Drawer>
     </div>
   );
 }
