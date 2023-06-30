@@ -12,14 +12,14 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
   }
 
   const fetchSignaturesBody = iouReviews.map((r) => {
-    invariant(r.reward?.tokenAmount, `submission ${r.id} has no tokenAmount`);
-    invariant(r.reward?.tokenAddress, `submission ${r.id} has no tokenAddress`);
+    invariant(r.reward?.tokenAmount, `review ${r.id} has no tokenAmount`);
+    invariant(r.reward?.tokenAddress, `review ${r.id} has no tokenAddress`);
     return {
       submissionID: Number(r.id),
       claimerAddress: r.reviewer,
       marketplaceAddress: r.laborMarketAddress,
       iouAddress: r.reward.tokenAddress,
-      type: "submission",
+      type: "review",
       amount: r.reward.tokenAmount,
     };
   });
