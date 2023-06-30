@@ -5,48 +5,25 @@ import { getSearchParamsOrFail } from "remix-params-helper";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Container } from "~/components";
 import { Pagination } from "~/components/pagination";
-import type { EvmAddress } from "~/domain/address";
-import { findLaborMarkets } from "~/domain/labor-market/functions.server";
 import { countServiceRequests, searchServiceRequests } from "~/domain/service-request/functions.server";
 import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ListChallenges } from "~/features/challenges/list-challenges/list-challenges";
 import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
-import { usePrereqsMulticall } from "~/hooks/use-prereqs-multicall";
 
 export async function loader({ request }: DataFunctionArgs) {
   const searchParams = getSearchParamsOrFail(request, ServiceRequestSearchSchema);
   const serviceRequests = await searchServiceRequests(searchParams);
-  const uniqueLaborMarketAddresses = Object.keys(
-    serviceRequests.reduce((acc, sr) => {
-      acc[sr.laborMarketAddress] = true;
-      return acc;
-    }, {} as Record<EvmAddress, boolean>)
-  );
-  const laborMarkets = await findLaborMarkets({ addresses: uniqueLaborMarketAddresses as EvmAddress[] });
   const totalResults = await countServiceRequests(searchParams);
-  return typedjson({ serviceRequests, searchParams, totalResults, laborMarkets });
+  return typedjson({ serviceRequests, searchParams, totalResults });
 }
 
 export default function Challenges() {
-  const { serviceRequests, totalResults, searchParams, laborMarkets } = useTypedLoaderData<typeof loader>();
+  const { serviceRequests, totalResults, searchParams } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const searchRef = useRef<HTMLFormElement>(null);
   const onSearch = () => {
     submit(searchRef.current);
   };
-
-  // This breaks server-side pagination so that we can filter by badges which we look up on the client-side.
-  // One day we might use a data provider to a look up a user's badges and filter on the server-side.
-  const q = usePrereqsMulticall({ laborMarkets });
-  let filteredServiceRequests = serviceRequests;
-  if (q.data) {
-    filteredServiceRequests = serviceRequests.filter((s) => {
-      return (
-        (!searchParams.permissions?.includes("review") || q.data[s.laborMarketAddress]?.canReview) &&
-        (!searchParams.permissions?.includes("submit") || q.data[s.laborMarketAddress]?.canSubmit)
-      );
-    });
-  }
 
   return (
     <Container className="py-16 px-10">
@@ -66,7 +43,7 @@ export default function Challenges() {
 
       <div className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 md:space-y-0 space-x-0 md:space-x-5">
         <div className="flex-1">
-          <ListChallenges serviceRequests={filteredServiceRequests} />
+          <ListChallenges serviceRequests={serviceRequests} />
           <div className="w-fit m-auto">
             {/* Not really getting used since page size is large */}
             <Pagination page={searchParams.page} totalPages={Math.ceil(totalResults / searchParams.first)} />
