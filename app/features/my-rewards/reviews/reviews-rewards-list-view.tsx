@@ -46,15 +46,12 @@ export function RewardsTable({ reviews }: { reviews: ReviewWithSubmission[] }) {
 }
 
 function RewardsTableRow({ review }: { review: ReviewWithSubmission }) {
-  const { laborMarketAddress, serviceRequestId, submissionId } = review;
+  const { laborMarketAddress, serviceRequestId } = review;
 
   return (
     <Row columns={12}>
       <Row.Column span={3}>
-        <Link
-          className="text-blue-600"
-          to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}`}
-        >
+        <Link className="text-blue-600" to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}`}>
           {review.s.appData?.title}
         </Link>
       </Row.Column>
@@ -83,14 +80,11 @@ function RewardsCards({ reviews }: { reviews: ReviewWithSubmission[] }) {
 }
 
 function RewardCard({ review }: { review: ReviewWithSubmission }) {
-  const { laborMarketAddress, serviceRequestId, submissionId } = review;
+  const { laborMarketAddress, serviceRequestId } = review;
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Submission Title</div>
-      <Link
-        className="text-blue-600"
-        to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}`}
-      >
+      <Link className="text-blue-600" to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}`}>
         {review.s.appData?.title}
       </Link>
       <div>Reward</div>
