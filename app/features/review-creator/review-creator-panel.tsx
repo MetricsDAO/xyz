@@ -207,7 +207,7 @@ export function ReviewCreatorPanel({
             </ClientOnly>
           </Field>
           <div className="flex gap-3 justify-end">
-            <Button type="button" variant="cancel" fullWidth onClick={onCancel}>
+            <Button className="max-w-fit" type="button" variant="cancel" fullWidth onClick={onCancel}>
               Cancel
             </Button>
             <ConnectWalletWrapper>
