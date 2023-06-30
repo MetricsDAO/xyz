@@ -19,6 +19,7 @@ import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import type { ReviewFormValues } from "./review-creator-values";
 import { ReviewFormValuesSchema } from "./review-creator-values";
+import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 export function ReviewCreatorPanel({
   onStateChange,
@@ -220,7 +221,9 @@ export function ReviewCreatorPanel({
             <Button type="button" variant="cancel" fullWidth onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit">Submit Score</Button>
+            <ConnectWalletWrapper>
+              <Button type="submit">Submit Score</Button>
+            </ConnectWalletWrapper>
           </div>
         </div>
       </div>
