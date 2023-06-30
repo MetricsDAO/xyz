@@ -23,12 +23,12 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
     throw notFound("Labor market not found");
   }
   const laborMarketTokens = await findTokenBySymbol(laborMarket.appData.tokenAllowlist);
-  return typedjson({ address, laborMarketTokens });
+  return typedjson({ address, laborMarketTokens, laborMarket });
 };
 
 export default function AnalystPage() {
   const [formData, setFormData] = useOutletContext<OutletContext>();
-  const { laborMarketTokens, address } = useTypedLoaderData<typeof loader>();
+  const { laborMarketTokens, address, laborMarket } = useTypedLoaderData<typeof loader>();
 
   const navigate = useNavigate();
 
@@ -50,6 +50,7 @@ export default function AnalystPage() {
         onNext={onNext}
         onPrevious={onPrevious}
         address={address}
+        curveType={laborMarket.appData.enforcement}
       />
       <aside className="w-1/5 py-28 ml-2 md:block hidden">
         <FormStepper step={2} labels={["Create", "Analysts", "Reviewers", "Overview"]} />
