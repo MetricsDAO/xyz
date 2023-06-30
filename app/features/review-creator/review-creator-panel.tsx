@@ -1,8 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@remix-run/react";
 import clsx from "clsx";
+import DOMPurify from "dompurify";
 import { BigNumber } from "ethers";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { ClientOnly } from "remix-utils";
 import { Button, Field, UserBadge, scoreToLabel } from "~/components";
@@ -17,8 +19,6 @@ import { SCORE_COLOR } from "~/utils/constants";
 import { fromNow } from "~/utils/date";
 import type { ReviewFormValues } from "./review-creator-values";
 import { ReviewFormValuesSchema } from "./review-creator-values";
-import { useNavigate } from "@remix-run/react";
-import DOMPurify from "dompurify";
 
 export function ReviewCreatorPanel({
   onStateChange,
@@ -67,7 +67,6 @@ export function ReviewCreatorPanel({
 
   const onSubmit = (formValues: ReviewFormValues) => {
     const metadata = ReviewAppDataSchema.parse(formValues);
-    console.log("METADATA", metadata);
     transactor.start({
       metadata: metadata,
       config: ({ cid }) =>
@@ -89,7 +88,6 @@ export function ReviewCreatorPanel({
     };
   }) {
     const { laborMarketAddress, submissionId, requestId, formValues, cid } = inputs;
-    console.log("INPUTS", inputs);
     return configureWrite({
       address: laborMarketAddress,
       abi: contracts.LaborMarket.abi,
