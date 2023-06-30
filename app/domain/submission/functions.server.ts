@@ -146,8 +146,8 @@ export const searchSubmissionsWithReviews = async (params: SubmissionSearch) => 
                 $expr: {
                   $and: [
                     { $eq: ["$submissionId", "$$s_id"] },
-                    { $eq: ["$id", "$$sr_id"] },
                     { $eq: ["$laborMarketAddress", "$$m_addr"] },
+                    { $eq: ["$serviceRequestId", "$$sr_id"] },
                   ],
                 },
               },

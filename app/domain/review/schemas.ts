@@ -35,12 +35,21 @@ export const ReviewEventSchema = z.object({
   uri: z.string(),
 });
 
+/**
+ * AppData is any data that isn't stored by the contract directly but is stored in IPFS instead.
+ */
+export const ReviewAppDataSchema = z.object({
+  comment: z.string().optional(),
+});
+
 export const ReviewDocSchema = z.object({
   id: z.string(),
   submissionId: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
   score: z.string(),
+  appData: ReviewAppDataSchema,
+  comment: z.string().optional(),
   reviewer: EvmAddressSchema,
   blockTimestamp: z.date(),
   indexedAt: z.date(),
@@ -54,6 +63,8 @@ export const ReviewWithSubmissionSchema = ReviewDocSchema.extend({
 export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
   reviews: z.array(ReviewDocSchema),
 });
+
+export type ReviewAppData = z.infer<typeof ReviewAppDataSchema>;
 
 export type ReviewSearch = z.infer<typeof ReviewSearchSchema>;
 export type ReviewContract = z.infer<typeof ReviewSchema>;

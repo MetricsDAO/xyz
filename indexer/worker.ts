@@ -61,7 +61,6 @@ worker.onEvent(LaborMarket, "RequestSignal", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestReviewed", async (event) => {
-  console.log("event", event);
   return indexerRequestReviewedEvent(event);
 });
 
@@ -70,7 +69,6 @@ worker.onEvent(LaborMarket, "RequestWithdrawn", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestPayClaimed", async (event) => {
-  console.log("event", event);
   return indexerRequestPayClaimedEvent(event);
 });
 
