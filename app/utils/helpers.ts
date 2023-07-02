@@ -118,18 +118,3 @@ export function serviceRequestCreatedDate(s: ServiceRequestDoc): Date {
   // Use indexedAt as fallback until the service request is indexed
   return s.blockTimestamp ?? s.indexData.indexedAt;
 }
-
-/**
- * Filters and parses the logs for a specific event.
- */
-export function getEventFromLogs(
-  contractAddress: string,
-  iface: ethers.utils.Interface,
-  logs: ethers.providers.Log[],
-  eventName: string
-) {
-  return logs
-    .filter((log) => log.address === contractAddress)
-    .map((log) => iface.parseLog(log))
-    .find((e) => e.name === eventName);
-}

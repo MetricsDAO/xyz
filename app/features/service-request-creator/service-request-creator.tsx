@@ -9,10 +9,9 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { claimDate, parseDatetime, unixTimestamp } from "~/utils/date";
 import { postNewEvent } from "~/utils/fetch";
-import { toTokenAmount, getEventFromLogs } from "~/utils/helpers";
+import { toTokenAmount } from "~/utils/helpers";
 import { OverviewForm } from "./overview-form";
 import type { ServiceRequestForm } from "./schema";
-import { LaborMarket__factory } from "~/contracts";
 import { useAllowlistAllowances } from "~/hooks/use-allowlist-allowances";
 
 type SequenceState =
@@ -71,20 +70,12 @@ export function ServiceRequestCreator({
   const submitTransactor = useTransactor({
     onSuccess: useCallback(
       (receipt) => {
-        // Parse the requestId from the event logs.
-        const iface = LaborMarket__factory.createInterface();
-        const event = getEventFromLogs(laborMarketAddress, iface, receipt.logs, "RequestConfigured");
-        const requestId = event?.args["requestId"];
-        // Navigate back to the market if we were unable to parse the log.
-        const redirect = requestId
-          ? `/app/market/${laborMarketAddress}/request/${requestId}`
-          : `/app/market/${laborMarketAddress}`;
         postNewEvent({
           eventFilter: "RequestConfiguredEvent",
           address: laborMarketAddress,
           blockNumber: receipt.blockNumber,
           transactionHash: receipt.transactionHash,
-        }).then(() => navigate(redirect));
+        }).then(() => navigate(`/app/market/${laborMarketAddress}`));
       },
       [laborMarketAddress, navigate]
     ),
