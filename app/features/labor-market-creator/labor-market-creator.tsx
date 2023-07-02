@@ -1,5 +1,4 @@
 import { useNavigate } from "@remix-run/react";
-import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
@@ -9,6 +8,7 @@ import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import type { MarketplaceFormState } from "~/routes/app+/market_.new";
 import { postNewEvent } from "~/utils/fetch";
+import { getEventFromLogs } from "~/utils/helpers";
 import { OverviewForm } from "./overview-form";
 import type { MarketplaceForm } from "./schema";
 import { getRewardCurveArgs } from "./reward-curve-constants";
@@ -68,21 +68,6 @@ export function LaborMarketCreator({
       <OverviewForm defaultValues={defaultValues} onPrevious={onPrevious} onSubmit={onSubmit} />
     </>
   );
-}
-
-/**
- * Filters and parses the logs for a specific event.
- */
-function getEventFromLogs(
-  address: string,
-  iface: ethers.utils.Interface,
-  logs: ethers.providers.Log[],
-  eventName: string
-) {
-  return logs
-    .filter((log) => log.address === address)
-    .map((log) => iface.parseLog(log))
-    .find((e) => e.name === eventName);
 }
 
 function configureFromValues(
