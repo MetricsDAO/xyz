@@ -11,18 +11,7 @@ import { notFound } from "remix-utils";
 import { ValidatedForm } from "remix-validated-form";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Container,
-  Detail,
-  DetailItem,
-  Drawer,
-  UserBadge,
-  ValidatedSelect,
-} from "~/components";
+import { Badge, Button, Card, Checkbox, Container, Detail, DetailItem, UserBadge, ValidatedSelect } from "~/components";
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { RewardBadge } from "~/components/reward-badge";
 import { ScoreBadge, scoreToLabel } from "~/components/score";
@@ -282,7 +271,7 @@ function ReviewQuestionDrawerButton({
   submission: SubmissionDoc;
   laborMarket: LaborMarketDoc;
 }) {
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [, setDrawerOpen] = useState(false);
   const { canReview } = usePrereqs({ laborMarket });
 
   return (

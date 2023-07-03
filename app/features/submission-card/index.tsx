@@ -1,6 +1,5 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link } from "@remix-run/react";
-import { useState } from "react";
 import { Card, Score, UserBadge } from "~/components";
 import type { SubmissionWithReviewsDoc } from "~/domain";
 import { useOptionalUser } from "~/hooks/use-user";

@@ -3,15 +3,13 @@ import { useCallback, useState } from "react";
 import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
-import { EvmAddressSchema } from "~/domain/address";
 import type { SubmissionWithReward } from "~/domain/submission/schemas";
 import { useContracts, useTokens, useWallets } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
-import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
 import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
-import { z } from "zod";
+import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;

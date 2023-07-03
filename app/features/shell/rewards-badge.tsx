@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { useOptionalUser } from "~/hooks/use-user";
+// import { useQuery } from "@tanstack/react-query";
+// import { useOptionalUser } from "~/hooks/use-user";
 
 export function RewardsBadge() {
   // TODO: Reward badge count

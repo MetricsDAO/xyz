@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
-import { Link, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { CombinedDoc } from "~/domain/submission/schemas";
 import { ShowcaseSearchSchema } from "~/domain/submission/schemas";
