@@ -10,15 +10,14 @@ import { BucketEnforcement__factory } from "~/contracts";
 import { nodeProvider } from "~/services/node.server";
 
 const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) => {
-  const iouSubmissions = submissions.filter((s) => s.reward?.isIou === true && s.reward?.iouHasRedeemed === false);
+  const iouSubmissions = submissions.filter((s) => s.reward?.isIou === true && !s.reward?.iouHasRedeemed);
   if (iouSubmissions.length === 0) {
     return;
   }
-
   const fetchSignaturesBody = iouSubmissions.map((s) => {
     invariant(s.reward?.tokenAmount, `submission ${s.id} has no tokenAmount`);
     return {
-      submissionID: Number(s.id),
+      participationID: s.id,
       claimerAddress: s.configuration.fulfiller,
       marketplaceAddress: s.laborMarketAddress,
       iouAddress: s.sr.configuration.pTokenProvider,
@@ -32,7 +31,7 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
     iouSubmissions.map((s) => {
       return {
         marketplaceAddress: s.laborMarketAddress,
-        participationId: s.id, //TODO,
+        participationId: s.id,
         type: "submission",
       };
     })
@@ -42,16 +41,20 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
     iouSubmissions.map(async (s) => {
       const iouSignature = getSignature(signatures, s)?.signature;
       const iouHasRedeemed = hasRedeemed(claims, s);
+      invariant(s.reward, `submission ${s.id} has no reward`);
       await mongo.submissions.updateOne(
         {
-          id: s.id,
-          serviceRequestId: s.serviceRequestId,
           laborMarketAddress: s.laborMarketAddress,
+          serviceRequestId: s.serviceRequestId,
+          id: s.id,
         },
         {
-          reward: {
-            iouSignature,
-            iouHasRedeemed,
+          $set: {
+            reward: {
+              ...s.reward,
+              iouSignature,
+              iouHasRedeemed,
+            },
           },
         }
       );
@@ -63,7 +66,7 @@ const getSignature = (signatures: FetchSignaturesResponse, submission: Submissio
   return signatures.find(
     (c) =>
       c.signedBody.marketplaceAddress === submission.laborMarketAddress &&
-      c.signedBody.submissionID === Number(submission.id)
+      c.signedBody.participationID === submission.id
   );
 };
 
@@ -72,7 +75,7 @@ const hasRedeemed = (claims: FetchClaimsResponse[], submission: SubmissionDoc) =
     return c.claims.val.find(
       (v) =>
         v.marketplaceAddress === submission.laborMarketAddress &&
-        v.submissionID === Number(submission.id) &&
+        v.participationID === submission.id &&
         v.redeemTx !== null
     );
   });

@@ -1,6 +1,7 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
 import { forbidden, notFound } from "remix-utils";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 import { EvmAddressSchema } from "~/domain/address";
 import { mongo } from "~/services/mongo.server";
@@ -19,8 +20,8 @@ export async function action({ request, params }: DataFunctionArgs) {
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: address,
-    requestId: requestId,
-    submissionId: submissionId,
+    serviceRequestId: requestId,
+    id: submissionId,
   });
 
   if (!submission) {
@@ -31,15 +32,19 @@ export async function action({ request, params }: DataFunctionArgs) {
     throw forbidden("You do not have permission to mark this submission as IOU redeemed");
   }
 
+  invariant(submission.reward, "Submission reward must be defined");
   return await mongo.submissions.updateOne(
     {
       laborMarketAddress: address,
-      requestId: requestId,
-      submissionId: submissionId,
+      serviceRequestId: requestId,
+      id: submissionId,
     },
     {
-      reward: {
-        iouClientTransactionSuccess: true,
+      $set: {
+        reward: {
+          ...submission.reward,
+          iouClientTransactionSuccess: true,
+        },
       },
     }
   );

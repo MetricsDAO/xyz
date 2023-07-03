@@ -1,13 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
-import { useOptionalUser } from "~/hooks/use-user";
+// import { useQuery } from "@tanstack/react-query";
+// import { useOptionalUser } from "~/hooks/use-user";
 
 export function RewardsBadge() {
-  const user = useOptionalUser();
-  const { data } = useQuery({
-    enabled: !!user,
-    queryKey: ["rewardBadge", user?.id],
-    queryFn: () => fetch("/api/rewards/count").then((res) => res.json()),
-  });
+  // TODO: Reward badge count
+  // const user = useOptionalUser();
+  // const { data } = useQuery({
+  //   enabled: !!user,
+  //   queryKey: ["rewardBadge", user?.id],
+  //   queryFn: () => fetch("/api/rewards/count").then((res) => res.json()),
+  // });
+  const data = 0;
 
   return (
     <span>
