@@ -4,7 +4,6 @@ import { Card, Score, UserBadge } from "~/components";
 import type { SubmissionWithReviewsDoc } from "~/domain";
 import { useOptionalUser } from "~/hooks/use-user";
 import { fromNow } from "~/utils/date";
-import { submissionCreatedDate } from "~/utils/helpers";
 
 export function SubmissionCard({
   submission,
@@ -47,7 +46,7 @@ export function SubmissionCard({
         </div>
       </div>
       <div className="flex flex-wrap items-center text-xs">
-        <span className="mr-1">{fromNow(submissionCreatedDate(submission))} by </span>
+        <span className="mr-1">{fromNow(submission.blockTimestamp)} by </span>
         <UserBadge address={submission.configuration.fulfiller} />
       </div>
     </Card>

@@ -73,14 +73,16 @@ export async function getActiveRewardPools(address: EvmAddress) {
   });
 
   let rewardPools: RewardPool[] = [];
-
-  activeServiceRequests.forEach((sr) => {
-    rewardPools = calculateRewardPools(
-      rewardPools,
-      sr.configuration.pTokenProvider,
-      sr.configuration.pTokenProviderTotal
-    );
-  });
+  while (await activeServiceRequests.hasNext()) {
+    const sr = await activeServiceRequests.next();
+    if (sr) {
+      rewardPools = calculateRewardPools(
+        rewardPools,
+        sr.configuration.pTokenProvider,
+        sr.configuration.pTokenProviderTotal
+      );
+    }
+  }
 
   return rewardPools;
 }

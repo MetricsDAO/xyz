@@ -33,7 +33,7 @@ import { useServiceRequestPerformance } from "~/hooks/use-service-request-perfor
 import { getUser } from "~/services/session.server";
 import { SCORE_COLOR } from "~/utils/constants";
 import { dateHasPassed, fromNow } from "~/utils/date";
-import { claimToReviewDeadline, fromTokenAmount, submissionCreatedDate } from "~/utils/helpers";
+import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 
 const paramsSchema = z.object({
   address: EvmAddressSchema,
@@ -149,7 +149,7 @@ export default function ChallengeSubmission() {
             <UserBadge address={submission.configuration.fulfiller} />
           </DetailItem>
           <DetailItem title="Created">
-            <Badge>{fromNow(submissionCreatedDate(submission))}</Badge>
+            <Badge>{fromNow(submission.blockTimestamp)}</Badge>
           </DetailItem>
           {submission.score?.avg !== undefined && (
             <DetailItem title="Overall Score">

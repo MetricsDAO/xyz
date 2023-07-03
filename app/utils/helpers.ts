@@ -1,7 +1,6 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
-import type { SubmissionDoc } from "~/domain/submission/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -76,7 +75,7 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
 };
 
 export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
-  return claimDate(serviceRequestCreatedDate(serviceRequest), serviceRequest.configuration.enforcementExp);
+  return claimDate(serviceRequest.blockTimestamp, serviceRequest.configuration.enforcementExp);
 }
 
 /**
@@ -107,16 +106,6 @@ export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam
     case "spam":
       return { $lt: 25 };
   }
-}
-
-export function submissionCreatedDate(s: SubmissionDoc): Date {
-  // Use indexedAt as fallback until the submission is indexed
-  return s.blockTimestamp ?? s.indexedAt;
-}
-
-export function serviceRequestCreatedDate(s: ServiceRequestDoc): Date {
-  // Use indexedAt as fallback until the service request is indexed
-  return s.blockTimestamp ?? s.indexData.indexedAt;
 }
 
 /**
