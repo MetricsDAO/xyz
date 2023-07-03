@@ -49,8 +49,6 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
     return newContract;
   }
 
-  // Hack to do a "fromBlock" type functionality until Pine supports it.
-  const FROM_BLOCK = 40607827;
   /**
    * Registers an event handler for a contract event
    *
@@ -67,13 +65,7 @@ export function createWorker({ tracer, client, subscriber, logger = console }: W
   ) {
     const key = `${contract.name}.${event}`;
     const handlers = handlerRegistry.get(key) || new Set();
-    handlers.add(async (event) => {
-      if (event.block.number <= FROM_BLOCK) {
-        logger.info(`Event happened before FROM_BLOCK ${FROM_BLOCK}. Skipping`);
-      } else {
-        return fn(event);
-      }
-    });
+    handlers.add(fn);
     handlerRegistry.set(key, handlers);
   }
 

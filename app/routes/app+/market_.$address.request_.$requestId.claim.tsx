@@ -10,7 +10,6 @@ import { EvmAddressSchema } from "~/domain/address";
 import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
-import { serviceRequestCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
@@ -56,17 +55,11 @@ export default function ClaimToSubmit() {
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
-            <CountdownCard
-              start={serviceRequestCreatedDate(serviceRequest)}
-              end={serviceRequest.configuration?.signalExp}
-            />
+            <CountdownCard start={serviceRequest.blockTimestamp} end={serviceRequest.configuration?.signalExp} />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
-            <CountdownCard
-              start={serviceRequestCreatedDate(serviceRequest)}
-              end={serviceRequest.configuration?.submissionExp}
-            />
+            <CountdownCard start={serviceRequest.blockTimestamp} end={serviceRequest.configuration?.submissionExp} />
           </div>
         </div>
       </div>
