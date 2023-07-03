@@ -1,6 +1,7 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { getParamsOrFail } from "remix-params-helper";
 import { forbidden, notFound } from "remix-utils";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 import { EvmAddressSchema } from "~/domain/address";
 import { mongo } from "~/services/mongo.server";

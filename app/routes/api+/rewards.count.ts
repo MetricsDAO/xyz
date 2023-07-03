@@ -5,5 +5,5 @@ import { requireUser } from "~/services/session.server";
 export async function loader({ request }: DataFunctionArgs) {
   const user = await requireUser(request);
 
-  return 5;
+  return null;
 }

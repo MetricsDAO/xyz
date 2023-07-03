@@ -33,7 +33,6 @@ export async function action({ request, params }: DataFunctionArgs) {
     throw forbidden("You do not have permission to mark this review as IOU redeemed");
   }
 
-  console.log("review", review);
   return await mongo.reviews.updateOne(
     {
       laborMarketAddress: address,

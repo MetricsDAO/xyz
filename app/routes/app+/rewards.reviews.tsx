@@ -1,3 +1,4 @@
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { useSubmit } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
@@ -12,6 +13,7 @@ import { ReviewSearchSchema } from "~/domain";
 import type { EvmAddress } from "~/domain/address";
 import { countReviews } from "~/domain/review/functions.server";
 import { searchReviewsWithRewards } from "~/domain/reward-reviews/functions.server";
+import { countSubmissionsWithRewards } from "~/domain/reward-submissions/functions.server";
 import { RewardsSearchSchema } from "~/domain/reward-submissions/schema";
 import { ReviewsRewardsListView } from "~/features/my-rewards/reviews/reviews-rewards-list-view";
 import RewardsTab from "~/features/my-rewards/rewards-tab";
@@ -30,6 +32,10 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   };
   const reviews = await searchReviewsWithRewards(search);
   const reviewCount = await countReviews(search);
+  const submissionCount = await countSubmissionsWithRewards({
+    fulfiller: user.address as EvmAddress,
+    isPastEnforcementExpiration: true,
+  });
 
   const wallets = await findAllWalletsForUser(user.id);
 
@@ -37,12 +43,13 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
     search,
     reviews,
     reviewCount,
+    submissionCount,
     walletsCount: wallets.length,
   });
 };
 
 export default function Rewards() {
-  const { reviews, walletsCount, search, reviewCount } = useTypedLoaderData<typeof loader>();
+  const { reviews, walletsCount, search, reviewCount, submissionCount } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -53,9 +60,15 @@ export default function Rewards() {
           <p className="text-gray-500 text-sm">
             View all your pending and claimed rewards and manage all your payout addresses
           </p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2 mt-2 w-fit">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5 hidden md:block" />
+            <p className="text-yellow-700 mr-2">
+              Non-Polygon rewards need to be claimed within 28 days of being earned
+            </p>
+          </div>
         </div>
       </section>
-      <RewardsTab addressesNum={walletsCount} rewardsNum={0} />
+      <RewardsTab addressesNum={walletsCount} reviewCount={reviewCount} submissionCount={submissionCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">

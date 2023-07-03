@@ -16,6 +16,7 @@ import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
 import type { EvmAddress } from "~/domain/address";
+import { countReviews } from "~/domain/review/functions.server";
 import { countSubmissionsWithRewards } from "~/domain/reward-submissions/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
@@ -62,16 +63,18 @@ export const loader = async (data: DataFunctionArgs) => {
   const userNetworks = wallets.map((w) => w.chain.name);
   const networks = await listNetworks();
   const newNetworks = networks.filter((n) => !userNetworks.includes(n.name));
+  const reviewCount = await countReviews({ reviewer: user.address as EvmAddress });
   return typedjson({
     newNetworks,
     wallets,
     submissionCount,
+    reviewCount,
     user,
   });
 };
 
 export default function PayoutAddresses() {
-  const { wallets, submissionCount } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissionCount, reviewCount } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -95,7 +98,7 @@ export default function PayoutAddresses() {
           </div>
         </section>
       </div>
-      <RewardsTab rewardsNum={submissionCount} addressesNum={wallets.length} />
+      <RewardsTab submissionCount={submissionCount} reviewCount={reviewCount} addressesNum={wallets.length} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>

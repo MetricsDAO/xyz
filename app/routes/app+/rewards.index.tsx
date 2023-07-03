@@ -11,6 +11,7 @@ import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import type { EvmAddress } from "~/domain/address";
+import { countReviews } from "~/domain/review/functions.server";
 import {
   countSubmissionsWithRewards,
   searchSubmissionsWithRewards,
@@ -34,18 +35,21 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const wallets = await findAllWalletsForUser(user.id);
   const submissionsWithReward = await searchSubmissionsWithRewards(search);
   const submissionCount = await countSubmissionsWithRewards(search);
+  const reviewCount = await countReviews({ reviewer: user.address as EvmAddress });
 
   return typedjson({
     walletsCount: wallets.length,
     submissionsWithReward,
     submissionCount,
+    reviewCount,
     user,
     search,
   });
 };
 
 export default function Rewards() {
-  const { walletsCount, submissionsWithReward, submissionCount, search } = useTypedLoaderData<typeof loader>();
+  const { walletsCount, submissionsWithReward, submissionCount, search, reviewCount } =
+    useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -64,7 +68,7 @@ export default function Rewards() {
           </div>
         </div>
       </section>
-      <RewardsTab rewardsNum={submissionCount} addressesNum={walletsCount} />
+      <RewardsTab submissionCount={submissionCount} reviewCount={reviewCount} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">

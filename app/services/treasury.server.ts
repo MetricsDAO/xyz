@@ -18,10 +18,12 @@ export async function fetchClaims(input: FetchClaimsInput) {
   return await Promise.all(
     input.map(async (i) => {
       const { marketplaceAddress, participationId, type } = i;
-      const res = await fetch(`${env.TREASURY_URL}/claims/${marketplaceAddress}/${participationId}/${type}`, {
+      const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${marketplaceAddress}/${participationId}/${type}`, {
         method: "GET",
         headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
-      }).then((res) => res.json());
+      }).then((res) => {
+        return res.json();
+      });
       return fetchClaimsResponseSchema.parse(res);
     })
   );

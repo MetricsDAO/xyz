@@ -47,12 +47,12 @@ export function RewardsTable({ submissions }: { submissions: SubmissionWithRewar
 }
 
 function RewardsTableRow({ submission }: { submission: SubmissionWithReward }) {
-  const { laborMarketAddress, id } = submission;
+  const { laborMarketAddress, serviceRequestId } = submission;
 
   return (
     <Row columns={12}>
       <Row.Column span={3}>
-        <Link className="text-blue-600" to={`/app/market/${laborMarketAddress}/submission/${id}`}>
+        <Link className="text-blue-600" to={`/app/market/${laborMarketAddress}/request/${serviceRequestId}`}>
           {submission.sr.appData.title}
         </Link>
       </Row.Column>
@@ -83,7 +83,10 @@ function RewardCard({ submission }: { submission: SubmissionWithReward }) {
   return (
     <Card className="grid grid-cols-2 gap-y-3 gap-x-1 items-center px-2 py-5">
       <div>Challenge Title</div>
-      <Link className="text-blue-600" to={`/app/market/${submission.laborMarketAddress}/submission/${submission.id}`}>
+      <Link
+        className="text-blue-600"
+        to={`/app/market/${submission.laborMarketAddress}/request/${submission.serviceRequestId}`}
+      >
         {submission.sr.appData.title}
       </Link>
       <div>Reward</div>

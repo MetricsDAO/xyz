@@ -11,6 +11,7 @@ import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
 import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
+import { z } from "zod";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;
@@ -39,7 +40,7 @@ export function SubmissionIOURewardCreator({ submission }: RedeemRewardCreatorPr
   });
 
   const startRedeem = useCallback(() => {
-    const signature = EvmAddressSchema.parse(submission.reward.iouSignature);
+    const signature = submission.reward.iouSignature;
     invariant(signature, "Missing signature");
     invariant(token, "Missing token");
     redeemTransactor.start({

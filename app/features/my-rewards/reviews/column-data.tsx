@@ -31,5 +31,5 @@ export function Status({ review }: { review: ReviewDoc }) {
     return <RewardReviewIOUCreator review={review} />;
   }
 
-  return <p>Paid</p>;
+  return <p>Transferred</p>;
 }
