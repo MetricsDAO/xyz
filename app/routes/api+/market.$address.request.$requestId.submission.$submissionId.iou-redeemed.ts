@@ -19,8 +19,8 @@ export async function action({ request, params }: DataFunctionArgs) {
 
   const submission = await mongo.submissions.findOne({
     laborMarketAddress: address,
-    requestId: requestId,
-    submissionId: submissionId,
+    serviceRequestId: requestId,
+    id: submissionId,
   });
 
   if (!submission) {
@@ -31,15 +31,19 @@ export async function action({ request, params }: DataFunctionArgs) {
     throw forbidden("You do not have permission to mark this submission as IOU redeemed");
   }
 
+  invariant(submission.reward, "Submission reward must be defined");
   return await mongo.submissions.updateOne(
     {
       laborMarketAddress: address,
-      requestId: requestId,
-      submissionId: submissionId,
+      serviceRequestId: requestId,
+      id: submissionId,
     },
     {
-      reward: {
-        iouClientTransactionSuccess: true,
+      $set: {
+        reward: {
+          ...submission.reward,
+          iouClientTransactionSuccess: true,
+        },
       },
     }
   );

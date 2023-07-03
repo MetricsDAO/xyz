@@ -20,7 +20,7 @@ export async function action({ request, params }: DataFunctionArgs) {
 
   const review = await mongo.reviews.findOne({
     laborMarketAddress: address,
-    requestId: requestId,
+    serviceRequestId: requestId,
     submissionId: submissionId,
     id: reviewId,
   });
@@ -33,16 +33,20 @@ export async function action({ request, params }: DataFunctionArgs) {
     throw forbidden("You do not have permission to mark this review as IOU redeemed");
   }
 
+  console.log("review", review);
   return await mongo.reviews.updateOne(
     {
       laborMarketAddress: address,
-      requestId: requestId,
+      serviceRequestId: requestId,
       submissionId: submissionId,
       id: reviewId,
     },
     {
-      reward: {
-        iouClientTransactionSuccess: true,
+      $set: {
+        reward: {
+          ...review.reward,
+          iouClientTransactionSuccess: true,
+        },
       },
     }
   );
