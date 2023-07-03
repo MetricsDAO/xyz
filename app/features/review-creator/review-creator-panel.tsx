@@ -45,7 +45,6 @@ export function ReviewCreatorPanel({
   const transactor = useTransactor({
     onSuccess: (receipt) => {
       toast.success("Successfully reviewed submission. Please check back in a few moments.");
-      navigate(`/app/market/${laborMarketAddress}/request/${serviceRequestId}`);
     },
   });
 

@@ -3,9 +3,10 @@ import { z } from "zod";
 import { EventSchema } from "~/domain";
 import { appLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
 import { appRequestConfiguredEvent } from "~/domain/service-request/index.server";
+import { appRequestFulfilledEvent } from "~/domain/submission/index.server";
 
 const EventWithFilterSchema = EventSchema.extend({
-  eventFilter: z.enum(["LaborMarketConfigured", "RequestConfiguredEvent"]),
+  eventFilter: z.enum(["LaborMarketConfigured", "RequestConfiguredEvent", "RequestFulfilled"]),
 });
 export type EventWithFilter = z.infer<typeof EventWithFilterSchema>;
 export type IndexEventResponse = Awaited<ReturnType<typeof action>>;
@@ -26,6 +27,9 @@ async function parseEventFilter(event: EventWithFilter) {
       break;
     case "RequestConfiguredEvent":
       await appRequestConfiguredEvent(event);
+      break;
+    case "RequestFulfilled":
+      await appRequestFulfilledEvent(event);
       break;
     default:
       throw new Error(`Unknown event filter: ${event.eventFilter}`);
