@@ -1,4 +1,5 @@
 import { Card } from "~/components/card";
+import { CurveChart } from "~/components/curve-chart";
 import { ChallengePoolBadges } from "~/features/challenge-pool-badges";
 import { useMarketAddressData } from "~/hooks/use-market-address-data";
 
@@ -27,6 +28,7 @@ export default function MarketplaceIdRewards() {
                   {laborMarket.appData.enforcement} Reward Curve
                 </span>
               </div>
+              <CurveChart type={laborMarket.appData.enforcement} />
             </Card>
           </div>
         </div>

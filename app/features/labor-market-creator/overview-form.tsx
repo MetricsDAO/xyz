@@ -2,12 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { DefaultValues } from "react-hook-form";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ClientOnly } from "remix-utils";
-import { Combobox, Error, Field, FormProgress, Input, Label, Select } from "~/components";
+import { Combobox, CurveChart, Error, Field, FormProgress, Input, Label, Select } from "~/components";
 import { MarkdownEditor } from "~/components/markdown-editor/markdown.client";
 import type { EvmAddress } from "~/domain/address";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
+import { formData } from "zod-form-data";
 
 export function OverviewForm({
   defaultValues,
@@ -143,35 +144,38 @@ export function OverviewForm({
 
           <section>
             <h4 className="font-semibold mb-4">Challenge Rewards</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field>
-                <Label>Reward Token Allowlist</Label>
-                <Controller
-                  control={control}
-                  name="appData.tokenAllowlist"
-                  render={({ field }) => <Combobox {...field} options={tokenAllowlist} />}
-                />
-                <Error error={errors.appData?.tokenAllowlist?.message} />
-              </Field>
-              <Field>
-                <Label>Reward Curve</Label>
-                <Controller
-                  control={control}
-                  name="appData.enforcement"
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      options={[
-                        { label: "Constant", value: "Constant" },
-                        { label: "Aggressive", value: "Aggressive" },
-                        { label: "Acceptable", value: "Acceptable" },
-                        { label: "Pass / Fail", value: "Pass / Fail" },
-                      ]}
-                    />
-                  )}
-                />
-                <Error error={errors.appData?.enforcement?.message} />
-              </Field>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Field>
+                  <Label>Reward Token Allowlist</Label>
+                  <Controller
+                    control={control}
+                    name="appData.tokenAllowlist"
+                    render={({ field }) => <Combobox {...field} options={tokenAllowlist} />}
+                  />
+                  <Error error={errors.appData?.tokenAllowlist?.message} />
+                </Field>
+                <Field>
+                  <Label>Reward Curve</Label>
+                  <Controller
+                    control={control}
+                    name="appData.enforcement"
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={[
+                          { label: "Constant", value: "Constant" },
+                          { label: "Aggressive", value: "Aggressive" },
+                          { label: "Acceptable", value: "Acceptable" },
+                          { label: "Pass / Fail", value: "Pass / Fail" },
+                        ]}
+                      />
+                    )}
+                  />
+                  <Error error={errors.appData?.enforcement?.message} />
+                </Field>
+              </div>
+              <CurveChart type={watch("appData.enforcement")} />
             </div>
           </section>
 
