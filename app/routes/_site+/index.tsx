@@ -69,7 +69,7 @@ export default function Index() {
             <MarketingButton label="Explore the Ecosystem" link="/app/analyze" variant="outline" />
           </div>
           <InfoSection id="partner">
-            <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:order-2 w-full max-w-fit" />
+            <img src="/img/marketing/home-checkmark.png" alt="" className="mx-auto md:m-0 w-full max-w-fit" />
             <div className="max-w-lg space-y-10 mx-auto md:m-0">
               <h2 className="text-4xl md:text-5xl font-bold">Providing on-demand data to power your organization</h2>
               <p className="text-stone-500 text-lg">
@@ -78,21 +78,6 @@ export default function Index() {
                 and streamline access to expert analytics work.
               </p>
               <MarketingButton label="Partner with us" link="/partner" />
-            </div>
-          </InfoSection>
-          <InfoSection id="learn">
-            <img src="/img/marketing/home-results.png" alt="" className="mx-auto md:m-0 w-full max-w-fit" />
-            <div className="max-w-lg space-y-10 mx-auto">
-              <h2 className="text-4xl md:text-5xl font-bold">Rewarding the best analysts in Web3</h2>
-              <p className="text-stone-500 text-lg">
-                Analysts participate in challenges to earn partner reward tokens and rMETRIC while increasing their
-                reputation in the ecosystem. Ongoing engagements that support partners’ goals also increase analysts’
-                access to future earning opportunities.
-              </p>
-              <MarketingButton
-                label="Learn about reputation & rMETRIC"
-                link="https://metricsdao.gitbook.io/metrics-app/rewards/rmetric"
-              />
             </div>
           </InfoSection>
           <InfoSection id="scaling">
