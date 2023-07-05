@@ -1,5 +1,5 @@
 import { useNavigate } from "@remix-run/react";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useCallback } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { LaborMarketFactoryInterface__factory, LaborMarket__factory } from "~/contracts";
@@ -96,7 +96,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 1),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : ethers.constants.MaxUint256),
       points: BigNumber.from(1),
     };
   });
@@ -106,7 +106,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 1),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : ethers.constants.MaxUint256),
       points: BigNumber.from(1),
     };
   });
@@ -116,7 +116,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 1),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : ethers.constants.MaxUint256),
       points: BigNumber.from(1),
     };
   });

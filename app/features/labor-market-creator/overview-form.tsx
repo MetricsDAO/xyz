@@ -8,7 +8,7 @@ import type { EvmAddress } from "~/domain/address";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
-import { formData } from "zod-form-data";
+import { ethers } from "ethers";
 
 export function OverviewForm({
   defaultValues,
@@ -69,7 +69,7 @@ export function OverviewForm({
       contractAddress: "" as EvmAddress,
       tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 1,
+      maxBadgeBalance: Number(ethers.constants.MaxUint256),
     });
   };
 
@@ -78,7 +78,7 @@ export function OverviewForm({
       contractAddress: "" as EvmAddress,
       tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 1,
+      maxBadgeBalance: Number(ethers.constants.MaxUint256),
     });
   };
 
@@ -87,7 +87,7 @@ export function OverviewForm({
       contractAddress: "" as EvmAddress,
       tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 1,
+      maxBadgeBalance: Number(ethers.constants.MaxUint256),
     });
   };
 

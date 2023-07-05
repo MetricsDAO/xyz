@@ -2,6 +2,7 @@ import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { Error, Field, Input, Label, Select } from "~/components";
 import type { EvmAddress } from "~/domain/address";
 import type { GatingData } from "./schema";
+import { ethers } from "ethers";
 
 // Must be used underneath a FormProvider
 export function GatingFormFields({ hint }: { hint?: string }) {
@@ -124,7 +125,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
                 contractAddress: "" as EvmAddress,
                 tokenId: 0,
                 minBadgeBalance: 1,
-                maxBadgeBalance: undefined,
+                maxBadgeBalance: Number(ethers.constants.MaxUint256),
               })
             }
           >
