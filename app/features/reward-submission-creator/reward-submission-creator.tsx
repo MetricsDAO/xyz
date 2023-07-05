@@ -21,6 +21,7 @@ export function RewardSubmissionCreator({ submission }: ClaimRewardCreatorProps)
   const displayPaymentAmount = fromTokenAmount(submission.reward.tokenAmount, token?.decimals ?? 18, 2);
   const contracts = useContracts();
   const navigate = useNavigate();
+  // Get the "real time" reward and if its 0 its already been claimed
   const { data: reward } = useReward({
     laborMarketAddress: submission.laborMarketAddress,
     serviceRequestId: submission.serviceRequestId,
@@ -52,7 +53,11 @@ export function RewardSubmissionCreator({ submission }: ClaimRewardCreatorProps)
     });
   };
 
-  if (submission.rewardClaimed || reward?.eq(0)) {
+  if (!reward) {
+    return <p>-</p>;
+  }
+
+  if (submission.rewardClaimed || reward.eq(0)) {
     return <p>Claimed</p>;
   }
 
