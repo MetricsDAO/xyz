@@ -21,7 +21,7 @@ export const Drawer = ({ open, onClose, children }: DrawerProps) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-10 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -36,7 +36,7 @@ export const Drawer = ({ open, onClose, children }: DrawerProps) => {
                 leaveFrom="translate-x-0"
                 leaveTo="translate-x-full"
               >
-                <Dialog.Panel className="pointer-events-auto relative w-screen max-w-md">
+                <Dialog.Panel className="pointer-events-auto relative w-screen max-w-2xl">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-in-out duration-500"

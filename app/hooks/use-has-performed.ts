@@ -28,8 +28,8 @@ export function useHasPerformed({ laborMarketAddress, id, action }: Props) {
     enabled: !!userAddress,
     address: laborMarketAddress,
     abi: contracts.LaborMarket.abi,
-    functionName: "hasPerformed",
-    args: [BigNumber.from(id), userAddress as `0x${string}`, ACTIONS[action] as `0x${string}`],
+    functionName: "requestIdToAddressToPerformance",
+    args: [BigNumber.from(id), userAddress as `0x${string}`],
   });
 
   return data;

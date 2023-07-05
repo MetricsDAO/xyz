@@ -1,4 +1,4 @@
-import { ClipboardDocumentIcon } from "@heroicons/react/20/solid";
+import { ClipboardDocumentIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import type { Network, Wallet } from "@prisma/client";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
@@ -16,10 +16,11 @@ import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Modal } from "~/components/modal";
 import { Header, Row, Table } from "~/components/table";
 import type { EvmAddress } from "~/domain/address";
-import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
+import { countReviews } from "~/domain/review/functions.server";
+import { countSubmissionsWithRewards } from "~/domain/reward-submissions/functions.server";
 import { WalletAddSchema, WalletDeleteSchema } from "~/domain/wallet";
 import { AddPaymentAddressForm } from "~/features/add-payment-address-form";
-import RewardsTab from "~/features/rewards-tab";
+import RewardsTab from "~/features/my-rewards/rewards-tab";
 import { listNetworks } from "~/services/network.server";
 import { requireUser } from "~/services/session.server";
 import { addWalletAddress, deleteWalletAddress, findAllWalletsForUser } from "~/services/wallet.server";
@@ -56,22 +57,24 @@ export const loader = async (data: DataFunctionArgs) => {
   const user = await requireUser(data.request, "/app/login?redirectto=app/rewards/addresses");
   const wallets = await findAllWalletsForUser(user.id);
   const submissionCount = await countSubmissionsWithRewards({
-    serviceProvider: user.address as EvmAddress,
+    fulfiller: user.address as EvmAddress,
     isPastEnforcementExpiration: true,
   });
   const userNetworks = wallets.map((w) => w.chain.name);
   const networks = await listNetworks();
   const newNetworks = networks.filter((n) => !userNetworks.includes(n.name));
+  const reviewCount = await countReviews({ reviewer: user.address as EvmAddress });
   return typedjson({
     newNetworks,
     wallets,
     submissionCount,
+    reviewCount,
     user,
   });
 };
 
 export default function PayoutAddresses() {
-  const { wallets, submissionCount } = useTypedLoaderData<typeof loader>();
+  const { wallets, submissionCount, reviewCount } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -87,9 +90,15 @@ export default function PayoutAddresses() {
           <p className="text-gray-500 text-sm">
             Reward tokens will automatically be sent to these wallets when you claim rewards
           </p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2 mt-2 w-fit">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5 hidden md:block" />
+            <p className="text-yellow-700 mr-2">
+              Do not use CEX wallets to claim rewards. Only use self custody wallets.
+            </p>
+          </div>
         </section>
       </div>
-      <RewardsTab rewardsNum={submissionCount} addressesNum={wallets.length} />
+      <RewardsTab submissionCount={submissionCount} reviewCount={reviewCount} addressesNum={wallets.length} />
       {wallets.length === 0 ? (
         <div className="flex">
           <p className="text-gray-500 mx-auto py-12">Add payout addresses and begin earning!</p>

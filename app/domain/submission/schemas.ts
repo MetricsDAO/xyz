@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { EvmAddressSchema } from "../address";
-import { LaborMarketWithIndexDataSchema } from "../labor-market/schemas";
-import { ReviewDocSchema } from "../review/schemas";
-import { ServiceRequestWithIndexDataSchema } from "../service-request/schemas";
+import { ServiceRequestDocSchema } from "../service-request/schemas";
+import { LaborMarketDocSchema } from "../labor-market/schemas";
+import { RewardSchema } from "../reward-submissions/schema";
 
 export const SubmissionSearchSchema = z.object({
   q: z.string().optional().describe("Search query."),
@@ -34,49 +34,45 @@ export const SubmissionIndexerSchema = z.object({
   description: z.string(),
 });
 
+export const SubmissionConfigSchema = z.object({
+  requestId: z.string(),
+  submissionId: z.string(),
+  uri: z.string(),
+  fulfiller: EvmAddressSchema,
+});
+export type SubmissionConfig = z.infer<typeof SubmissionConfigSchema>;
+
 export const SubmissionDocSchema = z.object({
   id: z.string(),
   laborMarketAddress: EvmAddressSchema,
   serviceRequestId: z.string(),
-  blockTimestamp: z.date().nullable().optional(),
+  blockTimestamp: z.date(),
   indexedAt: z.date(),
-  configuration: z.object({
-    serviceProvider: EvmAddressSchema,
-    uri: z.string(),
-  }),
+  configuration: SubmissionConfigSchema,
   score: z
     .object({
       reviewCount: z.number(),
       reviewSum: z.number(),
       avg: z.number(),
-      qualified: z.boolean(),
     })
     .optional(),
   appData: SubmissionFormSchema.nullable(),
-  reward: z
-    .object({
-      hasReward: z.boolean(),
-      paymentTokenAmount: z.string(),
-      reputationTokenAmount: z.string(),
-      hasClaimed: z.boolean(),
-      iouSignature: z.string().optional(),
-      iouHasRedeemed: z.boolean().optional(),
-    })
-    .optional(),
-});
-
-export const SubmissionEventSchema = z.object({
-  requestId: z.string(),
-  submissionId: z.string(),
+  rewardClaimed: z.boolean().optional(), // TODO: not optional
+  reward: RewardSchema.optional(),
 });
 
 export const SubmissionWithServiceRequestSchema = SubmissionDocSchema.extend({
-  sr: ServiceRequestWithIndexDataSchema,
+  sr: ServiceRequestDocSchema,
+});
+
+// Reward is not optional
+export const SubmissionWithRewardSchema = SubmissionWithServiceRequestSchema.extend({
+  reward: RewardSchema,
 });
 
 export const CombinedSchema = SubmissionDocSchema.extend({
-  sr: ServiceRequestWithIndexDataSchema,
-  lm: LaborMarketWithIndexDataSchema,
+  sr: ServiceRequestDocSchema,
+  lm: LaborMarketDocSchema,
 });
 
 export const ShowcaseSearchSchema = z.object({
@@ -89,15 +85,11 @@ export const ShowcaseSearchSchema = z.object({
   page: z.number().default(1),
 });
 
-export const SubmissionWithReviewsDocSchema = SubmissionDocSchema.extend({
-  reviews: z.array(ReviewDocSchema),
-});
-
 export type SubmissionSearch = z.infer<typeof SubmissionSearchSchema>;
 export type SubmissionContract = z.infer<typeof SubmissionContractSchema>;
 export type SubmissionIndexer = z.infer<typeof SubmissionIndexerSchema>;
 export type SubmissionDoc = z.infer<typeof SubmissionDocSchema>;
 export type SubmissionWithServiceRequest = z.infer<typeof SubmissionWithServiceRequestSchema>;
+export type SubmissionWithReward = z.infer<typeof SubmissionWithRewardSchema>;
 export type CombinedDoc = z.infer<typeof CombinedSchema>;
 export type ShowcaseSearch = z.infer<typeof ShowcaseSearchSchema>;
-export type SubmissionWithReviewsDoc = z.infer<typeof SubmissionWithReviewsDocSchema>;

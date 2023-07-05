@@ -8,7 +8,6 @@ export const ClaimToSubmitContractSchema = z.object({
 
 export const ClaimToSubmitEventSchema = z.object({
   requestId: z.string(),
-  signalAmount: z.string(),
   signaler: EvmAddressSchema,
 });
 

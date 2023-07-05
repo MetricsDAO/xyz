@@ -29,13 +29,13 @@ program
       },
       contracts: [
         {
-          name: "LaborMarketNetwork",
-          addresses: [contracts.LaborMarketNetwork.address],
-          schema: contracts.LaborMarketNetwork.abi,
+          name: "LaborMarketFactory",
+          addresses: [contracts.LaborMarketFactory.address],
+          schema: contracts.LaborMarketFactory.abi,
         },
         {
           name: "LaborMarket",
-          addresses: ["LaborMarketCreated.marketAddress@LaborMarketNetwork"],
+          addresses: ["LaborMarketCreated.marketAddress@LaborMarketFactory"],
           schema: contracts.LaborMarket.abi,
         },
       ],

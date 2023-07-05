@@ -108,10 +108,6 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
-      {/* MVP Hide */}
-      {/* <p>I am able to:</p>
-      <Checkbox id="submit_checkbox" name="permission" value="submit" label="Submit" />
-      <Checkbox id="review_checkbox" name="permission" value="review" label="Review" /> */}
       <Field>
         <Label>Reward Token</Label>
         <ValidatedCombobox
@@ -190,7 +186,10 @@ function MarketplacesChallengesTable({ serviceRequests, projects, tokens }: Mark
               </Row.Column>
 
               <Row.Column>
-                <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+                <TokenBadgeByAddress
+                  address={sr.configuration.pTokenProvider}
+                  quantity={sr.configuration.pTokenProviderTotal}
+                />
               </Row.Column>
               <Row.Column>
                 <Countdown date={sr.configuration?.submissionExp} />
@@ -236,7 +235,10 @@ function MarketplacesChallengesCard({ serviceRequests, projects, tokens }: Marke
               </div>
 
               <div>Reward Pool</div>
-              <TokenBadgeByAddress address={sr.configuration.pToken} quantity={sr.configuration.pTokenQ} />
+              <TokenBadgeByAddress
+                address={sr.configuration.pTokenProvider}
+                quantity={sr.configuration.pTokenProviderTotal}
+              />
               <div>Submit Deadline</div>
               <div className="text-gray-500 text-sm">
                 <Countdown date={sr.configuration?.submissionExp} />

@@ -11,13 +11,14 @@ import { Container } from "~/components/container";
 import { ValidatedInput } from "~/components/input";
 import { Pagination } from "~/components/pagination/pagination";
 import type { EvmAddress } from "~/domain/address";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
-import { countSubmissionsWithRewards } from "~/domain/reward/functions.server";
-import { getSubmissionWithRewards } from "~/domain/reward/functions.server";
-import { RewardsSearchSchema } from "~/domain/reward/schema";
-import { RewardsCards } from "~/features/my-rewards/rewards-card-mobile";
-import { RewardsTable } from "~/features/my-rewards/rewards-table-desktop";
-import RewardsTab from "~/features/rewards-tab";
+import { countReviews } from "~/domain/review/functions.server";
+import {
+  countSubmissionsWithRewards,
+  searchSubmissionsWithRewards,
+} from "~/domain/reward-submissions/functions.server";
+import { RewardsSearchSchema } from "~/domain/reward-submissions/schema";
+import RewardsTab from "~/features/my-rewards/rewards-tab";
+import { SubmissionRewardsListView } from "~/features/my-rewards/submissions/submission-rewards-list-view";
 import { requireUser } from "~/services/session.server";
 import { findAllWalletsForUser } from "~/services/wallet.server";
 
@@ -29,28 +30,31 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const url = new URL(request.url);
   const search = {
     ...getParamsOrFail(url.searchParams, RewardsSearchSchema),
-    serviceProvider: user.address as EvmAddress,
+    fulfiller: user.address as EvmAddress,
   };
   const wallets = await findAllWalletsForUser(user.id);
-  const submissionsWithReward = await getSubmissionWithRewards(user, search);
+  const submissionsWithReward = await searchSubmissionsWithRewards(search);
   const submissionCount = await countSubmissionsWithRewards(search);
+  const reviewCount = await countReviews({ reviewer: user.address as EvmAddress });
 
   return typedjson({
     walletsCount: wallets.length,
     submissionsWithReward,
     submissionCount,
+    reviewCount,
     user,
     search,
   });
 };
 
 export default function Rewards() {
-  const { walletsCount, submissionsWithReward, submissionCount, search } = useTypedLoaderData<typeof loader>();
+  const { walletsCount, submissionsWithReward, submissionCount, search, reviewCount } =
+    useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
       <section className="space-y-2 max-w-3xl mb-16">
-        <h1 className="text-3xl font-semibold">Rewards</h1>
+        <h1 className="text-3xl font-semibold">Submission Rewards</h1>
         <div>
           <p className="text-lg text-cyan-500">Claim reward tokens for all the challenges you’ve won</p>
           <p className="text-gray-500 text-sm">
@@ -64,11 +68,11 @@ export default function Rewards() {
           </div>
         </div>
       </section>
-      <RewardsTab rewardsNum={submissionCount} addressesNum={walletsCount} />
+      <RewardsTab submissionCount={submissionCount} reviewCount={reviewCount} addressesNum={walletsCount} />
       <section className="flex flex-col-reverse md:flex-row space-y-reverse gap-y-7 gap-x-5">
         <main className="flex-1">
           <div className="space-y-5">
-            <RewardsListView submissions={submissionsWithReward} />
+            <SubmissionRewardsListView submissions={submissionsWithReward} />
             <div className="w-fit m-auto">
               <Pagination page={search.page} totalPages={Math.ceil(submissionCount / search.first)} />
             </div>
@@ -79,29 +83,6 @@ export default function Rewards() {
         </aside>
       </section>
     </Container>
-  );
-}
-
-function RewardsListView({ submissions }: { submissions: SubmissionWithReward[] }) {
-  if (submissions.length === 0) {
-    return (
-      <div className="flex">
-        <p className="text-gray-500 mx-auto py-12">Participate in Challenges and start earning!</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {/* Desktop */}
-      <div className="hidden lg:block">
-        <RewardsTable submissions={submissions} />
-      </div>
-      {/* Mobile */}
-      <div className="block lg:hidden">
-        <RewardsCards submissions={submissions} />
-      </div>
-    </>
   );
 }
 
@@ -143,24 +124,24 @@ function SearchAndFilter() {
       </Field>
       {/* <p className="text-lg font-semibold">Filter:</p> */}
       {/* <Label size="md">Status</Label>
-      <Checkbox value="unclaimed" label="Unclaimed" />
-      <Checkbox value="claimed" label="Claimed" /> */}
+        <Checkbox value="unclaimed" label="Unclaimed" />
+        <Checkbox value="claimed" label="Claimed" /> */}
       {/* <Label>Reward Token</Label>
-      <ValidatedCombobox
-        placeholder="Select option"
-        name="token"
-        onChange={handleChange}
-        size="sm"
-        options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
-      /> */}
+        <ValidatedCombobox
+          placeholder="Select option"
+          name="token"
+          onChange={handleChange}
+          size="sm"
+          options={tokens.map((t) => ({ label: t.name, value: t.contractAddress }))}
+        /> */}
       {/* TODO: Hidden until joins <Label>Challenge Marketplace</Label>
-      <Combobox
-        placeholder="Select option"
-        options={[
-          { label: "Solana", value: "Solana" },
-          { label: "Ethereum", value: "Ethereum" },
-        ]}
-      />*/}
+        <Combobox
+          placeholder="Select option"
+          options={[
+            { label: "Solana", value: "Solana" },
+            { label: "Ethereum", value: "Ethereum" },
+          ]}
+        />*/}
     </ValidatedForm>
   );
 }

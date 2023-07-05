@@ -1,10 +1,10 @@
-import { DocumentDuplicateIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon, DocumentDuplicateIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ValidatedForm } from "remix-validated-form";
 import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
-import { Link, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { CombinedDoc } from "~/domain/submission/schemas";
 import { ShowcaseSearchSchema } from "~/domain/submission/schemas";
@@ -13,7 +13,7 @@ import { Header, Row, Table } from "~/components/table";
 import { fromNow } from "~/utils/date";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Card } from "~/components/card";
-import { findProjectsBySlug, submissionCreatedDate, truncateAddress } from "~/utils/helpers";
+import { findProjectsBySlug, truncateAddress } from "~/utils/helpers";
 import { Container } from "~/components";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getParamsOrFail } from "remix-params-helper";
@@ -24,9 +24,8 @@ import type { Project } from "@prisma/client";
 import { ProjectBadges } from "~/features/project-badges";
 import clsx from "clsx";
 import { useOptionalUser } from "~/hooks/use-user";
-import { RMetricBadge } from "~/features/rmetric-badge";
 import { findLaborMarkets } from "~/domain/labor-market/functions.server";
-import type { LaborMarketWithIndexData } from "~/domain/labor-market/schemas";
+import type { LaborMarketDoc } from "~/domain/labor-market/schemas";
 import { Pagination } from "~/components/pagination";
 
 const validator = withZod(ShowcaseSearchSchema);
@@ -76,13 +75,7 @@ export default function Showcase() {
   );
 }
 
-function SearchAndFilter({
-  projects,
-  laborMarkets,
-}: {
-  projects: Project[];
-  laborMarkets: LaborMarketWithIndexData[];
-}) {
+function SearchAndFilter({ projects, laborMarkets }: { projects: Project[]; laborMarkets: LaborMarketDoc[] }) {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -183,44 +176,48 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
   return (
     <Table>
       <Header columns={12} className="mb-2 pt-2 text-sm text-stone-500">
-        <Header.Column span={3}>Title</Header.Column>
-        <Header.Column span={2}>User rMETRIC</Header.Column>
-        <Header.Column span={3}>Challenge</Header.Column>
+        <Header.Column span={4}>Title</Header.Column>
+        <Header.Column span={4}>Challenge</Header.Column>
         <Header.Column span={2}>Chain/Project</Header.Column>
         <Header.Column>Submitted</Header.Column>
       </Header>
       {submissions.map((s) => {
         return (
-          <Row asChild columns={12} key={`${s.laborMarketAddress}_${s.id}`}>
-            <Link
-              to={`/app/market/${s.laborMarketAddress}/submission/${s.id}`}
-              className={clsx("text-sm text-stone-500", {
-                "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.serviceProvider,
-              })}
-            >
-              <Row.Column span={3}>
-                <div className="flex flex-wrap gap-1">
-                  {s.appData?.title}
-                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
-                </div>
-                <div className="flex flex-row items-center gap-x-2">
-                  <img alt="" src="/img/icons/poly.svg" width={15} />
-                  <CopyToClipboard
-                    className="text-stone-500"
-                    content={truncateAddress(s.configuration.serviceProvider)}
-                    iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
-                  />
-                </div>
-              </Row.Column>
-              <Row.Column span={2}>
-                <RMetricBadge address={s.configuration.serviceProvider} />
-              </Row.Column>
-              <Row.Column span={3}>{s.sr.appData?.title}</Row.Column>
-              <Row.Column span={2}>
-                <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
-              </Row.Column>
-              <Row.Column span={2}>{fromNow(submissionCreatedDate(s))}</Row.Column>
-            </Link>
+          <Row
+            columns={12}
+            key={`${s.laborMarketAddress}_${s.id}`}
+            className={clsx("text-sm text-stone-500", {
+              "border-solid border-4 border-sky-500/20": user && user.address === s.configuration.fulfiller,
+            })}
+          >
+            <Row.Column span={4}>
+              <div className="flex flex-wrap gap-1">
+                <a
+                  href={s.appData?.submissionUrl ?? ""}
+                  target="_blank"
+                  className="text-blue-500 flex gap-1 items-center"
+                  rel="noreferrer"
+                >
+                  <p>{s.appData?.title}</p>
+                  <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+                </a>
+
+                {s.score?.avg !== undefined && <p className="text-neutral-400 font-thin">({s.score?.avg})</p>}
+              </div>
+              <div className="flex flex-row items-center gap-x-2">
+                <img alt="" src="/img/icons/poly.svg" width={15} />
+                <CopyToClipboard
+                  className="text-stone-500"
+                  content={truncateAddress(s.configuration.fulfiller)}
+                  iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
+                />
+              </div>
+            </Row.Column>
+            <Row.Column span={4}>{s.sr.appData?.title}</Row.Column>
+            <Row.Column span={2}>
+              <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
+            </Row.Column>
+            <Row.Column span={2}>{fromNow(s.blockTimestamp)}</Row.Column>
           </Row>
         );
       })}
@@ -235,36 +232,40 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
     <div className="space-y-4">
       {submissions.map((s) => {
         return (
-          <Card asChild key={`${s.laborMarketAddress}_${s.id}`}>
-            <Link
-              to={`/app/market/${s.laborMarketAddress}/submission/${s.id}`}
-              className={clsx("text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
-                "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.serviceProvider,
-              })}
-            >
-              <div className="col-span-2">
-                <div className="flex gap-1">
-                  {s.appData?.title}
-                  <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
-                </div>
-                <div className="flex flex-row items-center gap-x-2">
-                  <img alt="" src="/img/icons/poly.svg" width={15} />
-                  <CopyToClipboard
-                    className="text-stone-500"
-                    content={truncateAddress(s.configuration.serviceProvider)}
-                    iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
-                  />
-                </div>
+          <Card
+            key={`${s.laborMarketAddress}_${s.id}`}
+            className={clsx("text-sm text-stone-500 grid grid-cols-2 gap-y-3 gap-x-1 items-center px-4 py-5", {
+              "border-solid border-4 border-sky-500/50": user && user.address === s.configuration.fulfiller,
+            })}
+          >
+            <div className="col-span-2">
+              <div className="flex gap-1">
+                <a
+                  href={s.appData?.submissionUrl ?? ""}
+                  target="_blank"
+                  className="text-blue-500 flex gap-1 items-center"
+                  rel="noreferrer"
+                >
+                  <p>{s.appData?.title}</p>
+                  <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+                </a>
+                <p className="text-neutral-400 font-thin">({s.score?.avg})</p>
               </div>
-              <p>User rMETRIC</p>
-              <RMetricBadge address={s.configuration.serviceProvider} />
-              <p>Challenge</p>
-              <p>{s.sr.appData?.title}</p>
-              <p>Chain/Project</p>
-              <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
-              <p>Submitted</p>
-              {fromNow(submissionCreatedDate(s))}
-            </Link>
+              <div className="flex flex-row items-center gap-x-2">
+                <img alt="" src="/img/icons/poly.svg" width={15} />
+                <CopyToClipboard
+                  className="text-stone-500"
+                  content={truncateAddress(s.configuration.fulfiller)}
+                  iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
+                />
+              </div>
+            </div>
+            <p>Challenge</p>
+            <p>{s.sr.appData?.title}</p>
+            <p>Chain/Project</p>
+            <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
+            <p>Submitted</p>
+            {fromNow(s.blockTimestamp)}
           </Card>
         );
       })}

@@ -2,14 +2,14 @@ import { useNavigate } from "@remix-run/react";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 
 interface ClaimToSubmitCreatorProps {
-  serviceRequest: ServiceRequestWithIndexData;
+  serviceRequest: ServiceRequestDoc;
   confirmationMessage: React.ReactNode;
 }
 
@@ -48,7 +48,7 @@ function configureFromValues({
 }: {
   contracts: ReturnType<typeof useContracts>;
   inputs: {
-    serviceRequest: ServiceRequestWithIndexData;
+    serviceRequest: ServiceRequestDoc;
   };
 }) {
   return configureWrite({

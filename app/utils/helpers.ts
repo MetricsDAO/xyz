@@ -1,8 +1,6 @@
 import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
-import type { LaborMarket } from "~/domain/labor-market/schemas";
-import type { ServiceRequestWithIndexData } from "~/domain/service-request/schemas";
-import type { SubmissionDoc } from "~/domain/submission/schemas";
+import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { claimDate } from "./date";
 
 export const truncateAddress = (address: string) => {
@@ -48,6 +46,14 @@ export function findProjectsBySlug(projects: Project[], slugs: string[]) {
     .filter((p): p is Project => !!p);
 }
 
+export function findTokensBySymbolHelper(tokens: Token[], symbols: string[]) {
+  return symbols
+    .map((symbol) => {
+      return tokens.find((t) => t.symbol === symbol);
+    })
+    .filter((t): t is Token => !!t);
+}
+
 /**
  * Take a contract address and return the corresponing token abbreviation
  * @param address Contract address of the token
@@ -68,8 +74,8 @@ export const toNetworkName = (address: string, tokens: Token[]) => {
   return tokens.find((t) => t.contractAddress === address)?.networkName;
 };
 
-export function claimToReviewDeadline(serviceRequest: ServiceRequestWithIndexData) {
-  return claimDate(serviceRequestCreatedDate(serviceRequest), serviceRequest.configuration.enforcementExp);
+export function claimToReviewDeadline(serviceRequest: ServiceRequestDoc) {
+  return claimDate(serviceRequest.blockTimestamp, serviceRequest.configuration.enforcementExp);
 }
 
 /**
@@ -87,10 +93,6 @@ export function displayBalance(balance: BigNumber): string {
   }
 }
 
-export function isUnlimitedSubmitRepMax(laborMarket: LaborMarket) {
-  return ethers.constants.MaxUint256.eq(laborMarket.configuration.reputationParams.submitMax);
-}
-
 export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam") {
   switch (score) {
     case "stellar":
@@ -106,12 +108,17 @@ export function scoreRange(score: "stellar" | "good" | "average" | "bad" | "spam
   }
 }
 
-export function submissionCreatedDate(s: SubmissionDoc): Date {
-  // Use indexedAt as fallback until the submission is indexed
-  return s.blockTimestamp ?? s.indexedAt;
-}
-
-export function serviceRequestCreatedDate(s: ServiceRequestWithIndexData): Date {
-  // Use indexedAt as fallback until the service request is indexed
-  return s.blockTimestamp ?? s.indexedAt;
+/**
+ * Filters and parses the logs for a specific event.
+ */
+export function getEventFromLogs(
+  contractAddress: string,
+  iface: ethers.utils.Interface,
+  logs: ethers.providers.Log[],
+  eventName: string
+) {
+  return logs
+    .filter((log) => log.address === contractAddress)
+    .map((log) => iface.parseLog(log))
+    .find((e) => e.name === eventName);
 }

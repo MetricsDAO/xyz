@@ -1,25 +1,11 @@
-import type { EvmAddress } from "~/domain/address";
-import type { SubmissionWithReward } from "~/domain/reward/functions.server";
-import { fetchClaimsResponseSchema, fetchSignaturesBodySchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody } from "~/domain/treasury";
+import { IOUTokenMetadataSchema, fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
-export async function fetchSignatures(claimerAddress: EvmAddress, submissions: SubmissionWithReward[]) {
-  const body = submissions.map((s) => {
-    return {
-      submissionID: Number(s.id),
-      claimerAddress: claimerAddress,
-      marketplaceAddress: s.laborMarketAddress,
-      iouAddress: s.sr.configuration.pToken,
-      type: "submission",
-      amount: s.serviceProviderReward.reward.paymentTokenAmount,
-    };
-  });
-
-  const parsedBody = fetchSignaturesBodySchema.parse(body);
-
+export async function fetchSignatures(body: FetchSignaturesBody) {
   const res = await fetch(`${env.TREASURY_URL}/ioutoken/sign-claim/`, {
     method: "POST",
-    body: JSON.stringify(parsedBody),
+    body: JSON.stringify(body),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
   }).then((res) => {
     return res.json();
@@ -28,14 +14,16 @@ export async function fetchSignatures(claimerAddress: EvmAddress, submissions: S
   return fetchSignaturesResponseSchema.parse(res);
 }
 
-export async function fetchClaims(submissions: SubmissionWithReward[]) {
+export async function fetchClaims(input: FetchClaimsInput) {
   return await Promise.all(
-    submissions.map(async (s) => {
-      const { laborMarketAddress, id: submissionId } = s;
-      const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${laborMarketAddress}/${submissionId}/submission`, {
+    input.map(async (i) => {
+      const { marketplaceAddress, participationId, type } = i;
+      const res = await fetch(`${env.TREASURY_URL}/ioutoken/claims/${marketplaceAddress}/${participationId}/${type}`, {
         method: "GET",
         headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
-      }).then((res) => res.json());
+      }).then((res) => {
+        return res.json();
+      });
       return fetchClaimsResponseSchema.parse(res);
     })
   );
@@ -49,5 +37,5 @@ export async function fetchIouTokenMetadata() {
     return res.json();
   });
 
-  return res;
+  return IOUTokenMetadataSchema.parse(res);
 }

@@ -7,16 +7,18 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { CountdownCard } from "~/components/countdown-card";
 import { EvmAddressSchema } from "~/domain/address";
-import { getIndexedLaborMarket } from "~/domain/labor-market/functions.server";
+import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { findServiceRequest } from "~/domain/service-request/functions.server";
 import { ClaimToSubmitCreator } from "~/features/claim-to-submit-creator/claim-to-submit-creator";
-import { serviceRequestCreatedDate } from "~/utils/helpers";
 
 const paramsSchema = z.object({ address: EvmAddressSchema, requestId: z.string() });
 export const loader = async ({ params, request }: DataFunctionArgs) => {
   const { requestId, address } = paramsSchema.parse(params);
   const serviceRequest = await findServiceRequest(requestId, address);
-  const laborMarket = await getIndexedLaborMarket(address);
+  const laborMarket = await getLaborMarket(address);
+  if (!laborMarket) {
+    throw notFound({ address });
+  }
   if (!serviceRequest) {
     throw notFound({ id: requestId });
   }
@@ -28,7 +30,7 @@ export const loader = async ({ params, request }: DataFunctionArgs) => {
 };
 
 export default function ClaimToSubmit() {
-  const { serviceRequest, laborMarket } = useTypedLoaderData<typeof loader>();
+  const { serviceRequest } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="max-w-4xl space-y-7 py-16">
@@ -53,37 +55,29 @@ export default function ClaimToSubmit() {
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">
           <div className="space-y-2">
             <h2 className="font-semibold pr-10">Claim to Submit Deadline</h2>
-            <CountdownCard
-              start={serviceRequestCreatedDate(serviceRequest)}
-              end={serviceRequest.configuration?.signalExp}
-            />
+            <CountdownCard start={serviceRequest.blockTimestamp} end={serviceRequest.configuration?.signalExp} />
           </div>
           <div className="space-y-2">
             <h2 className="font-semibold pr-16">Submission Deadline</h2>
-            <CountdownCard
-              start={serviceRequestCreatedDate(serviceRequest)}
-              end={serviceRequest.configuration?.submissionExp}
-            />
+            <CountdownCard start={serviceRequest.blockTimestamp} end={serviceRequest.configuration?.submissionExp} />
           </div>
         </div>
       </div>
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <h2 className="font-semibold">Lock rMETRIC</h2>
         <p className="mt-2 text-gray-500 italic text-sm">
           Important: You must lock {laborMarket.configuration.reputationParams.submitMin} rMETRIC as defined by the
           Marketplace. If you don’t submit before the deadline, all{" "}
           {laborMarket.configuration.reputationParams.submitMin} of your locked rMETRIC will be slashed.
         </p>
-      </div>
+      </div> */}
       <div className="flex flex-wrap gap-5">
         <ClaimToSubmitCreator
           serviceRequest={serviceRequest}
           confirmationMessage={
             <div className="space-y-8">
               <p className="mt-2">Please confirm that you would like to claim a submission.</p>
-              <p>
-                This will lock <b>{laborMarket.configuration.reputationParams.submitMin} rMETRIC.</b>
-              </p>
+              <p>{/* This will lock <b>{laborMarket.configuration.reputationParams.submitMin} rMETRIC.</b> */}</p>
             </div>
           }
         />

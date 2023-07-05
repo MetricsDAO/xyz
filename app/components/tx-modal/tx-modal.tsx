@@ -7,12 +7,17 @@ type Props = {
   transactor: Transactor;
   title?: string;
   confirmationMessage?: React.ReactNode;
+  redirectStep?: boolean;
   variant?: "primary" | "danger";
 };
 
-export function TxModal({ transactor, title, confirmationMessage, variant = "primary" }: Props) {
+export function TxModal({ transactor, title, confirmationMessage, redirectStep, variant = "primary" }: Props) {
+  const isRedirecting = transactor.state === "success" && redirectStep;
   return (
-    <Modal isOpen={transactor.state !== "idle" && transactor.state !== "success"} onClose={transactor.cancel}>
+    <Modal
+      isOpen={isRedirecting || (transactor.state !== "idle" && transactor.state !== "success")}
+      onClose={transactor.cancel}
+    >
       <div className="px-8 text-center mb-8 space-y-4">
         {variant === "danger" && <ExclamationTriangleIcon className="h-8 w-8 text-red-500 mx-auto my-4" />}
         <h1 className="text-base font-medium">{title ?? "Execute transaction"}</h1>
@@ -41,6 +46,20 @@ export function TxModal({ transactor, title, confirmationMessage, variant = "pri
               className="text-blue-600"
               target="_blank"
               href={`https://polygonscan.com/tx/${transactor.transactionHash}`}
+              rel="noreferrer"
+            >
+              View on polygonscan
+            </a>
+          </div>
+        ) : null}
+
+        {transactor.state === "success" ? (
+          <div className="space-y-2">
+            <p>Transaction confirmed! Redirecting...</p>
+            <a
+              className="text-blue-600"
+              target="_blank"
+              href={`https://polygonscan.com/tx/${transactor.receipt.transactionHash}`}
               rel="noreferrer"
             >
               View on polygonscan
