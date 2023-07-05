@@ -63,21 +63,12 @@ export default function ClaimToSubmit() {
           </div>
         </div>
       </div>
-      {/* <div className="space-y-2">
-        <h2 className="font-semibold">Lock rMETRIC</h2>
-        <p className="mt-2 text-gray-500 italic text-sm">
-          Important: You must lock {laborMarket.configuration.reputationParams.submitMin} rMETRIC as defined by the
-          Marketplace. If you don’t submit before the deadline, all{" "}
-          {laborMarket.configuration.reputationParams.submitMin} of your locked rMETRIC will be slashed.
-        </p>
-      </div> */}
       <div className="flex flex-wrap gap-5">
         <ClaimToSubmitCreator
           serviceRequest={serviceRequest}
           confirmationMessage={
             <div className="space-y-8">
               <p className="mt-2">Please confirm that you would like to claim a submission.</p>
-              <p>{/* This will lock <b>{laborMarket.configuration.reputationParams.submitMin} rMETRIC.</b> */}</p>
             </div>
           }
         />

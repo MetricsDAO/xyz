@@ -51,9 +51,6 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
             <p className="mt-2">
               Please confirm that you would like to claim {methods.getValues("quantity")} submissions to review.
             </p>
-            <p>
-              This will lock <b>{methods.getValues("quantity") * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
-            </p>
           </div>
         }
       />

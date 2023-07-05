@@ -78,7 +78,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
                 control={control}
                 // defaultValue={field.tokenId}
                 render={({ field: { onChange, onBlur, value, ref } }) => (
-                  <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min="1" />
+                  <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min="0" />
                 )}
               />
               <Error error={errors.badges?.[index]?.tokenId?.message} />
@@ -122,7 +122,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
             onClick={() =>
               append({
                 contractAddress: "" as EvmAddress,
-                tokenId: 1,
+                tokenId: 0,
                 minBadgeBalance: 1,
                 maxBadgeBalance: undefined,
               })

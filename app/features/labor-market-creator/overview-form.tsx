@@ -66,27 +66,27 @@ export function OverviewForm({
   const handleAddSponsorBadge = () => {
     appendSponsorBadge({
       contractAddress: "" as EvmAddress,
-      tokenId: 1,
+      tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 0,
+      maxBadgeBalance: 1,
     });
   };
 
   const handleAddAnalystBadge = () => {
     appendAnalystBadge({
       contractAddress: "" as EvmAddress,
-      tokenId: 1,
+      tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 0,
+      maxBadgeBalance: 1,
     });
   };
 
   const handleAddReviewerBadge = () => {
     appendReviewerBadge({
       contractAddress: "" as EvmAddress,
-      tokenId: 1,
+      tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 0,
+      maxBadgeBalance: 1,
     });
   };
 
@@ -237,7 +237,7 @@ export function OverviewForm({
                       control={control}
                       defaultValue={field.tokenId}
                       render={({ field: { onChange, onBlur, value, ref } }) => (
-                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={0} />
                       )}
                     />
                     <Error error={errors.sponsor?.badges?.[index]?.tokenId?.message} />
@@ -343,7 +343,7 @@ export function OverviewForm({
                     control={control}
                     defaultValue={field.tokenId}
                     render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={0} />
                     )}
                   />
                   <Error error={errors.analyst?.badges?.[index]?.tokenId?.message} />
@@ -448,7 +448,7 @@ export function OverviewForm({
                     control={control}
                     defaultValue={field.tokenId}
                     render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={0} />
                     )}
                   />
                   <Error error={errors.reviewer?.badges?.[index]?.tokenId?.message} />

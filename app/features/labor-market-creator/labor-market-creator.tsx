@@ -42,6 +42,7 @@ export function LaborMarketCreator({
   });
 
   const onSubmit = (data: MarketplaceForm) => {
+    console.log("DATA", data);
     const metadata = LaborMarketAppDataSchema.parse({
       ...data.appData,
       prerequisites: {
@@ -95,7 +96,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 0),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 1),
       points: BigNumber.from(1),
     };
   });
@@ -105,7 +106,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 0),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 1),
       points: BigNumber.from(1),
     };
   });
@@ -115,7 +116,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 0),
+      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : 1),
       points: BigNumber.from(1),
     };
   });
