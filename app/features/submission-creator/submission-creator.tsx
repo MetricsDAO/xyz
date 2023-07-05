@@ -39,7 +39,7 @@ export default function SubmissionCreator({
         const event = getEventFromLogs(laborMarketAddress, iface, receipt.logs, "RequestFulfilled");
         if (event) {
           postNewEvent({
-            eventFilter: "RequestFulfilled",
+            name: "RequestFulfilled",
             address: laborMarketAddress,
             blockNumber: receipt.blockNumber,
             transactionHash: receipt.transactionHash,
