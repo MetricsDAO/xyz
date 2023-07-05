@@ -28,7 +28,6 @@ import { useTokens } from "~/hooks/use-root-data";
 import { useServiceRequestPerformance } from "~/hooks/use-service-request-performance";
 import { useOptionalUser } from "~/hooks/use-user";
 import { findProjectsBySlug } from "~/services/projects.server";
-import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { dateHasPassed } from "~/utils/date";
 import { claimToReviewDeadline, fromTokenAmount } from "~/utils/helpers";
 
@@ -150,7 +149,6 @@ export default function ServiceRequest() {
                 amount: fromTokenAmount(serviceRequest.configuration.pTokenProviderTotal, token?.decimals ?? 18),
                 token,
               }}
-              reputation={{ amount: REPUTATION_REWARD_POOL.toLocaleString() }}
             />
           </DetailItem>
           <DetailItem title="Submissions">
