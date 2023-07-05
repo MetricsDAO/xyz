@@ -6,7 +6,7 @@ import { mongo } from "~/services/mongo.server";
 import { nodeProvider } from "~/services/node.server";
 import type { EvmAddress } from "../address";
 import { EvmAddressSchema } from "../address";
-import { createEvent, safeCreateEvent } from "../event/functions.server";
+import { safeCreateEvent } from "../event/functions.server";
 import type { Event } from "../event/schema";
 import {
   calculateRewardPools,
@@ -42,6 +42,7 @@ export async function appRequestConfiguredEvent(event: Event) {
         reviewerLimit: e.args.reviewerLimit.toNumber(),
       });
       await indexServiceRequestEvent({
+        name: "RequestConfigured",
         address,
         blockNumber,
         blockTimestamp: fromUnixTimestamp(block.timestamp),
@@ -57,6 +58,7 @@ export async function indexerRequestConfiguredEvent(event: TracerEvent) {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
   const config = ServiceRequestConfigSchema.parse(event.decoded.inputs);
   await indexServiceRequestEvent({
+    name: "RequestConfigured",
     address: laborMarketAddress,
     blockNumber: event.block.number,
     blockTimestamp: new Date(event.block.timestamp),
@@ -72,6 +74,7 @@ export async function indexerRequestConfiguredEvent(event: TracerEvent) {
  * @returns
  */
 async function indexServiceRequestEvent(event: {
+  name: string;
   address: EvmAddress;
   blockNumber: number;
   blockTimestamp: Date;
@@ -136,7 +139,8 @@ export const indexerReviewSignalEvent = async (event: TracerEvent) => {
   const laborMarketAddress = getAddress(event.contract.address);
 
   // log the event
-  createEvent({
+  safeCreateEvent({
+    name: "ReviewSignal",
     address: laborMarketAddress,
     blockNumber: event.block.number,
     transactionHash: event.txHash,
@@ -177,7 +181,8 @@ export const indexerRequestSignalEvent = async (event: TracerEvent) => {
   const laborMarketAddress = getAddress(event.contract.address);
 
   // log the event
-  createEvent({
+  safeCreateEvent({
+    name: "RequestSignal",
     address: laborMarketAddress,
     blockNumber: event.block.number,
     transactionHash: event.txHash,
@@ -218,7 +223,8 @@ export async function indexerRequestWithdrawnEvent(event: TracerEvent) {
   const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
 
   // log the event
-  createEvent({
+  safeCreateEvent({
+    name: "RequestWithdrawn",
     address: laborMarketAddress,
     blockNumber: event.block.number,
     transactionHash: event.txHash,

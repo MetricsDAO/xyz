@@ -3,20 +3,13 @@ import type { Filter, WithId } from "mongodb";
 import type { EvmAddress } from "~/domain/address";
 import type { SubmissionForm } from "~/features/submission-creator/schema";
 import { SubmissionFormSchema } from "~/features/submission-creator/schema";
-import { fetchIpfsJson, uploadJsonToIpfs } from "~/services/ipfs.server";
+import { uploadJsonToIpfs } from "~/services/ipfs.server";
 import { mongo } from "~/services/mongo.server";
 import { oneUnitAgo, utcDate } from "~/utils/date";
 import { scoreRange } from "~/utils/helpers";
-import type {
-  CombinedDoc,
-  ShowcaseSearch,
-  SubmissionConfig,
-  SubmissionContract,
-  SubmissionDoc,
-  SubmissionSearch,
-} from "./schemas";
-import { SubmissionContractSchema } from "./schemas";
 import type { SubmissionWithReviewsDoc } from "../review/schemas";
+import type { CombinedDoc, ShowcaseSearch, SubmissionContract, SubmissionDoc, SubmissionSearch } from "./schemas";
+import { SubmissionContractSchema } from "./schemas";
 
 /**
  * Returns a SubmissionDoc from mongodb, if it exists.
@@ -76,27 +69,6 @@ const searchParams = (params: FilterParams): Parameters<typeof mongo.submissions
         }
       : {}),
   };
-};
-
-/**
- * Create a new SubmissionDoc from a TracerEvent.
- */
-export const createSubmission = async (
-  laborMarketAddress: EvmAddress,
-  blockTimestamp: Date,
-  configuration: SubmissionConfig
-) => {
-  const appData = await fetchIpfsJson(configuration.uri);
-
-  return await mongo.submissions.insertOne({
-    id: configuration.submissionId,
-    laborMarketAddress,
-    serviceRequestId: configuration.requestId,
-    indexedAt: new Date(),
-    configuration,
-    appData,
-    blockTimestamp,
-  });
 };
 
 /**

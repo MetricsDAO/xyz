@@ -25,6 +25,7 @@ export async function appLaborMarketConfiguredEvent(event: Event) {
       const block = await e.getBlock();
       const args = LaborMarketConfigSchema.parse(e.args);
       await indexLaborMarketEvent({
+        name: "LaborMarketConfigured",
         address,
         blockNumber,
         blockTimestamp: fromUnixTimestamp(block.timestamp),
@@ -40,6 +41,7 @@ export async function indexerLaborMarketConfiguredEvent(event: TracerEvent) {
   const address = EvmAddressSchema.parse(event.contract.address);
   const inputs = LaborMarketConfigSchema.parse(event.decoded.inputs);
   await indexLaborMarketEvent({
+    name: "LaborMarketConfigured",
     address,
     blockNumber: event.block.number,
     blockTimestamp: new Date(event.block.timestamp),
@@ -55,6 +57,7 @@ export async function indexerLaborMarketConfiguredEvent(event: TracerEvent) {
  * @returns
  */
 async function indexLaborMarketEvent(event: {
+  name: string;
   address: EvmAddress;
   blockNumber: number;
   blockTimestamp: Date;
