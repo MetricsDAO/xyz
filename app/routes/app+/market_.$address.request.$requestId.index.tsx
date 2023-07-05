@@ -17,6 +17,7 @@ import { Pagination } from "~/components/pagination";
 import { ValidatedSelect } from "~/components/select";
 import type { SubmissionWithReviewsDoc } from "~/domain";
 import { EvmAddressSchema } from "~/domain/address";
+import { getServiceRequest } from "~/domain/service-request/functions.server";
 import { countSubmissions, searchSubmissionsWithReviews } from "~/domain/submission/functions.server";
 import { SubmissionSearchSchema } from "~/domain/submission/schemas";
 import { ReviewCreatorPanel } from "~/features/review-creator/review-creator-panel";
@@ -32,8 +33,9 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const searchParams = getParamsOrFail(url.searchParams, SubmissionSearchSchema);
   const filterAndSearchParams = { ...searchParams, laborMarketAddress: address, serviceRequestId: requestId };
   const submissions = await searchSubmissionsWithReviews(filterAndSearchParams);
+  const serviceRequest = await getServiceRequest(address, requestId);
   const totalSubmissions = await countSubmissions(filterAndSearchParams);
-  return typedjson({ submissions, searchParams, totalSubmissions });
+  return typedjson({ submissions, searchParams, totalSubmissions, serviceRequest });
 };
 
 export type ChallengeSubmissonProps = {
@@ -41,7 +43,7 @@ export type ChallengeSubmissonProps = {
 };
 
 export default function ChallengeIdSubmissions() {
-  const { submissions, searchParams, totalSubmissions } = useTypedLoaderData<typeof loader>();
+  const { submissions, searchParams, totalSubmissions, serviceRequest } = useTypedLoaderData<typeof loader>();
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -113,7 +115,11 @@ export default function ChallengeIdSubmissions() {
       </section>
       <Drawer open={selectedSubmission !== null} onClose={() => setSelectedSubmission(null)}>
         {selectedSubmission && (
-          <ReviewCreatorPanel onCancel={() => setSelectedSubmission(null)} submission={selectedSubmission} />
+          <ReviewCreatorPanel
+            onCancel={() => setSelectedSubmission(null)}
+            submission={selectedSubmission}
+            serviceRequest={serviceRequest}
+          />
         )}
       </Drawer>
     </div>

@@ -66,13 +66,6 @@ async function main() {
   await prisma.token.createMany({
     data: [
       {
-        name: "Metrics Beta",
-        networkName: "Polygon",
-        decimals: 18,
-        contractAddress: "0xe1805534B191029731907737042623e1bc6b87D8",
-        symbol: "MBETA",
-      },
-      {
         name: "Metrics Beta 2",
         decimals: 18,
         networkName: "Polygon",
@@ -85,6 +78,15 @@ async function main() {
         networkName: "Polygon",
         contractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
         symbol: "USDC",
+      },
+      {
+        name: "SOL",
+        decimals: 9,
+        networkName: "Solana",
+        isIou: true,
+        contractAddress: "0xe45E0546B83f8A85833A368b7Ed49B1B1F9958EA",
+        symbol: "iouSOL",
+        iouSymbol: "SOL",
       },
       // iou testing in dev
       // {

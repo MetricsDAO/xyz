@@ -6,7 +6,7 @@ async function findEvent(event: Event) {
   return mongo.events.findOne(event);
 }
 
-export async function createEvent(eventDoc: EventDoc) {
+async function createEvent(eventDoc: EventDoc) {
   return mongo.events.insertOne(eventDoc);
 }
 

@@ -1,6 +1,7 @@
-import type { EventWithFilter, IndexEventResponse } from "~/routes/api+/index-event";
+import type { IndexEventResponse } from "~/routes/api+/index-event";
+import type { Event } from "~/domain";
 
-export async function postNewEvent(event: EventWithFilter) {
+export async function postNewEvent(event: Event) {
   return fetch("/api/index-event", {
     method: "POST",
     body: JSON.stringify(event),

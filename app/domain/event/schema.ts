@@ -2,6 +2,7 @@ import { z } from "zod";
 import { EvmAddressSchema } from "../address";
 
 export const EventSchema = z.object({
+  name: z.string(),
   address: EvmAddressSchema,
   blockNumber: z.number(),
   transactionHash: z.string(),

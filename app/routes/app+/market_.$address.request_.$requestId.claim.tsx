@@ -37,19 +37,6 @@ export default function ClaimToSubmit() {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Claim to Submit on {serviceRequest.appData?.title}</h1>
         <h2 className="text-lg text-cyan-500">Claiming is an up front commitment to submit at least one dashboard</h2>
-        <p className="text-gray-500 text-sm">
-          You must temporarily lock rMETRIC to claim. If you claim and don't submit before the deadline, all your locked
-          rMETRIC will be slashed.
-        </p>
-      </div>
-      <div className="space-y-2">
-        <h3 className="font-semibold">How Claiming to Submit Works</h3>
-        <ul className="list-disc list-inside text-gray-500 space-y-1 text-sm">
-          <li>Commit to entering at least one submission by locking rMETRIC against this challenge</li>
-          <li>Enter at least one submission before the submission deadline</li>
-          <li>If you submit before the deadline, your rMETRIC will be unlocked</li>
-          <li>If you don't submit before the deadline, all your locked rMETRIC will be slashed</li>
-        </ul>
       </div>
       <div className="flex">
         <div className="grid grid-cols-1 md:grid-cols-2 items-end gap-5">

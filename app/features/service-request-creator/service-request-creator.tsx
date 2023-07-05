@@ -80,7 +80,7 @@ export function ServiceRequestCreator({
           ? `/app/market/${laborMarketAddress}/request/${requestId}`
           : `/app/market/${laborMarketAddress}`;
         postNewEvent({
-          eventFilter: "RequestConfiguredEvent",
+          name: "RequestConfigured",
           address: laborMarketAddress,
           blockNumber: receipt.blockNumber,
           transactionHash: receipt.transactionHash,

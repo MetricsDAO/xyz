@@ -1,6 +1,8 @@
+import type { Token } from "@prisma/client";
 import { Link, Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import * as DOMPurify from "dompurify";
+import { BigNumber } from "ethers";
 import { typedjson } from "remix-typedjson";
 import { useTypedLoaderData } from "remix-typedjson/dist/remix";
 import { ClientOnly, notFound } from "remix-utils";
@@ -12,13 +14,11 @@ import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Detail, DetailItem } from "~/components/detail";
 import { ParsedMarkdown } from "~/components/markdown-editor/markdown.client";
-import { RewardBadge } from "~/components/reward-badge";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { EvmAddressSchema } from "~/domain/address";
 import { getLaborMarket } from "~/domain/labor-market/functions.server";
 import { countReviews } from "~/domain/review/functions.server";
 import { getServiceRequest } from "~/domain/service-request/functions.server";
-import { uniqueParticipants } from "~/domain/user-activity/function.server";
 import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import DeleteServiceRequestModal from "~/features/delete-service-request";
 import { ProjectBadges } from "~/features/project-badges";
@@ -51,20 +51,11 @@ export const loader = async ({ params }: DataFunctionArgs) => {
     serviceRequestId: requestId,
   });
 
-  const participants = await uniqueParticipants({
-    requestId: serviceRequest.id,
-    laborMarketAddress: laborMarket.address,
-  });
-  const numParticipants = participants.length;
-  return typedjson(
-    { serviceRequest, numOfReviews, laborMarket, serviceRequestProjects, numParticipants },
-    { status: 200 }
-  );
+  return typedjson({ serviceRequest, numOfReviews, laborMarket, serviceRequestProjects }, { status: 200 });
 };
 
 export default function ServiceRequest() {
-  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket, numParticipants } =
-    useTypedLoaderData<typeof loader>();
+  const { serviceRequest, numOfReviews, serviceRequestProjects, laborMarket } = useTypedLoaderData<typeof loader>();
 
   const user = useOptionalUser();
   const userSignedIn = !!user;
@@ -73,13 +64,15 @@ export default function ServiceRequest() {
   const claimDeadlinePassed = dateHasPassed(serviceRequest.configuration.signalExp);
   const claimToReviewDeadlinePassed = dateHasPassed(claimToReviewDeadline(serviceRequest));
 
-  const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
+  const providerToken = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
+  const reviewerToken = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenReviewer);
 
   const performance = useServiceRequestPerformance({
     laborMarketAddress: serviceRequest.laborMarketAddress,
     serviceRequestId: serviceRequest.id,
   });
   const claimedReviews = serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0);
+  const claimedSubmissions = serviceRequest.indexData.claimsToSubmit.length;
 
   const showSubmit = performance?.signaled && !performance.submitted;
   const showClaimToSubmit = !performance?.signaled && !performance?.submitted && !claimDeadlinePassed;
@@ -134,7 +127,7 @@ export default function ServiceRequest() {
         </div>
       </header>
       <section className="flex flex-col space-y-7 pb-12">
-        <Detail className="mb-6 flex flex-wrap gap-y-2">
+        <Detail className="flex flex-wrap gap-y-2">
           <DetailItem title="Sponsor">
             <UserBadge address={laborMarket.configuration.deployer} />
           </DetailItem>
@@ -143,22 +136,58 @@ export default function ServiceRequest() {
               <DetailItem title="Chain/Project">{<ProjectBadges projects={serviceRequestProjects} />}</DetailItem>
             )}
           </div>
-          <DetailItem title="Reward Pool">
-            <RewardBadge
+        </Detail>
+        <Detail className="mb-6 flex flex-wrap gap-y-2">
+          <DetailItem title="Analyst Pool">
+            <RewardClaimBadge
               payment={{
-                amount: fromTokenAmount(serviceRequest.configuration.pTokenProviderTotal, token?.decimals ?? 18),
-                token,
+                amount: fromTokenAmount(
+                  serviceRequest.configuration.pTokenProviderTotal,
+                  providerToken?.decimals ?? 18
+                ),
+                token: providerToken,
               }}
+              text={`${fromTokenAmount(
+                BigNumber.from(serviceRequest.configuration.pTokenProviderTotal)
+                  .div(serviceRequest.configuration.providerLimit)
+                  .toString(),
+                providerToken?.decimals ?? 18
+              )} per analyst`}
             />
           </DetailItem>
-          <DetailItem title="Submissions">
+          <DetailItem title="Claims">
+            <Badge className="px-4 min-w-full">
+              {claimedSubmissions} / {serviceRequest.configuration.providerLimit}
+            </Badge>
+          </DetailItem>
+          <DetailItem title="Submits">
             <Badge className="px-4 min-w-full">{serviceRequest.indexData.submissionCount}</Badge>
+          </DetailItem>
+          <div className="w-1 h-16 bg-gray-300 rounded-full mx-2" />
+          <DetailItem title="Review Pool">
+            <RewardClaimBadge
+              payment={{
+                amount: fromTokenAmount(
+                  serviceRequest.configuration.pTokenReviewerTotal,
+                  reviewerToken?.decimals ?? 18
+                ),
+                token: reviewerToken,
+              }}
+              text={`${fromTokenAmount(
+                BigNumber.from(serviceRequest.configuration.pTokenReviewerTotal)
+                  .div(serviceRequest.configuration.reviewerLimit)
+                  .toString(),
+                reviewerToken?.decimals ?? 18
+              )} per review`}
+            />
+          </DetailItem>
+          <DetailItem title="Claims">
+            <Badge className="px-4 min-w-full">
+              {claimedReviews} / {serviceRequest.configuration.reviewerLimit}
+            </Badge>
           </DetailItem>
           <DetailItem title="Reviews">
             <Badge className="px-4 min-w-full">{numOfReviews}</Badge>
-          </DetailItem>
-          <DetailItem title="Participants">
-            <Badge className="px-4 min-w-full">{numParticipants}</Badge>
           </DetailItem>
         </Detail>
 
@@ -178,5 +207,30 @@ export default function ServiceRequest() {
       </TabNav>
       <Outlet />
     </Container>
+  );
+}
+
+type BadgeProps = {
+  payment: {
+    amount: string;
+    token?: Token;
+  };
+  text: string;
+};
+
+function RewardClaimBadge({ payment, text }: BadgeProps) {
+  return (
+    <div className="flex rounded-full items-center h-8 w-fit bg-gray-200">
+      <div className="flex rounded-full px-2 gap-x-1 items-center py-1 h-8 bg-gray-100">
+        <p className="text-sm text-black">
+          <span className="inline-flex items-center justify-center h-8 whitespace-nowrap">
+            <span className="mx-1">
+              {payment.amount} {payment.token?.symbol ?? ""}
+            </span>
+          </span>
+        </p>
+      </div>
+      <p className="text-sm pl-1 pr-2 text-neutral-500">{text}</p>
+    </div>
   );
 }

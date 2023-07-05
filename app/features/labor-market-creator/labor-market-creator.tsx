@@ -31,7 +31,7 @@ export function LaborMarketCreator({
         const event = getEventFromLogs(contracts.LaborMarketFactory.address, iface, receipt.logs, "LaborMarketCreated");
         const newLaborMarketAddress = event?.args["marketAddress"];
         postNewEvent({
-          eventFilter: "LaborMarketConfigured",
+          name: "LaborMarketConfigured",
           address: newLaborMarketAddress,
           blockNumber: receipt.blockNumber,
           transactionHash: receipt.transactionHash,

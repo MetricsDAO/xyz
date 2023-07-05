@@ -1,4 +1,4 @@
-app = "mdao-indexer"
+app = "mdao-indexer-v2"
 
 [experimental]
 cmd = ["yarn", "start:indexer"]
