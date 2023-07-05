@@ -1,17 +1,18 @@
-import invariant from "tiny-invariant";
-import { EvmAddressSchema } from "~/domain/address";
-import { mongo } from "~/services/mongo.server";
-import { createSubmission, getSubmission } from "./functions.server";
-import { SubmissionConfigSchema } from "./schemas";
-import { logger } from "~/services/logger.server";
-import { nodeProvider } from "~/services/node.server";
-import { LaborMarket__factory } from "~/contracts";
-import { safeCreateEvent } from "../event/functions.server";
-import { fromUnixTimestamp } from "~/utils/date";
 import type { TracerEvent } from "pinekit/types";
-import type { Event } from "../event/schema";
-import type { SubmissionConfig } from "./schemas";
+import invariant from "tiny-invariant";
+import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
+import { EvmAddressSchema } from "~/domain/address";
+import { fetchIpfsJson } from "~/services/ipfs.server";
+import { logger } from "~/services/logger.server";
+import { mongo } from "~/services/mongo.server";
+import { nodeProvider } from "~/services/node.server";
+import { fromUnixTimestamp } from "~/utils/date";
+import { safeCreateEvent } from "../event/functions.server";
+import type { Event } from "../event/schema";
+import { getSubmission } from "./functions.server";
+import type { SubmissionConfig } from "./schemas";
+import { SubmissionConfigSchema } from "./schemas";
 
 const BLOCK_LOOK_BACK = -150; // Look back 150 blocks (~5 minutes on Polygon)
 
@@ -31,6 +32,7 @@ export async function appRequestFulfilledEvent(event: Event) {
       submissionId: eventToIndex.args.submissionId.toString(),
     });
     await indexRequestFulfilledEvent({
+      name: "RequestFulfilled",
       address,
       blockNumber,
       blockTimestamp: fromUnixTimestamp(block.timestamp),
@@ -42,6 +44,7 @@ export async function appRequestFulfilledEvent(event: Event) {
 }
 
 async function indexRequestFulfilledEvent(event: {
+  name: string;
   address: EvmAddress;
   blockNumber: number;
   blockTimestamp: Date;
@@ -54,7 +57,23 @@ async function indexRequestFulfilledEvent(event: {
     return;
   }
 
-  await createSubmission(event.address, event.blockTimestamp, event.args);
+  let appData;
+  try {
+    appData = await fetchIpfsJson(event.args.uri);
+  } catch (e) {
+    logger.warn(`Failed to fetch app data for submission ${event.args.submissionId}. Skipping indexing.`, e);
+  }
+
+  await mongo.submissions.insertOne({
+    id: event.args.submissionId,
+    laborMarketAddress: event.address,
+    serviceRequestId: event.args.requestId,
+    indexedAt: new Date(),
+    configuration: event.args,
+    appData,
+    blockTimestamp: event.blockTimestamp,
+  });
+
   const submission = await getSubmission(event.address, event.args.requestId, event.args.submissionId);
   invariant(submission, "Submission should exist after creation");
 
@@ -93,6 +112,7 @@ export const indexerRequestFulfilledEvent = async (event: TracerEvent) => {
 
   // create submission
   await indexRequestFulfilledEvent({
+    name: "RequestFulfilled",
     address: laborMarketAddress,
     blockNumber: event.block.number,
     blockTimestamp: new Date(event.block.timestamp),

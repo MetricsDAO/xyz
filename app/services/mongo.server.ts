@@ -36,7 +36,7 @@ serviceRequests.createIndex({ laborMarketAddress: 1, id: 1 }, { unique: true });
 submissions.createIndex({ "appData.title": "text" });
 submissions.createIndex({ laborMarketAddress: 1, serviceRequestId: 1, id: 1 }, { unique: true });
 userActivity.createIndex({ laborMarketTitle: "text" });
-events.createIndex({ address: 1, blockNumber: 1, transactionHash: 1 }, { unique: true });
+events.createIndex({ name: 1, address: 1, blockNumber: 1, transactionHash: 1 }, { unique: true });
 
 export const mongo = {
   db,
