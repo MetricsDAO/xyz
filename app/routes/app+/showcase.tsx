@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { ValidatedCombobox } from "~/components/combobox";
 import { Field, Label } from "~/components/field";
 import { ValidatedInput } from "~/components/input";
-import { Link, useSubmit } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { CombinedDoc } from "~/domain/submission/schemas";
 import { ShowcaseSearchSchema } from "~/domain/submission/schemas";
@@ -13,7 +13,7 @@ import { Header, Row, Table } from "~/components/table";
 import { fromNow } from "~/utils/date";
 import { CopyToClipboard } from "~/components/copy-to-clipboard";
 import { Card } from "~/components/card";
-import { findProjectsBySlug, submissionCreatedDate, truncateAddress } from "~/utils/helpers";
+import { findProjectsBySlug, truncateAddress } from "~/utils/helpers";
 import { Container } from "~/components";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { getParamsOrFail } from "remix-params-helper";
@@ -217,7 +217,7 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
             <Row.Column span={2}>
               <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
             </Row.Column>
-            <Row.Column span={2}>{fromNow(submissionCreatedDate(s))}</Row.Column>
+            <Row.Column span={2}>{fromNow(s.blockTimestamp)}</Row.Column>
           </Row>
         );
       })}
@@ -265,7 +265,7 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
             <p>Chain/Project</p>
             <ProjectBadges projects={findProjectsBySlug(projects, s.sr.appData?.projectSlugs ?? [])} />
             <p>Submitted</p>
-            {fromNow(submissionCreatedDate(s))}
+            {fromNow(s.blockTimestamp)}
           </Card>
         );
       })}

@@ -6,20 +6,20 @@ import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
 import { fetchSignaturesBodySchema } from "../treasury";
 
 const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
-  const iouReviews = reviews.filter((s) => s.reward?.isIou === true && s.reward?.iouHasRedeemed === false);
+  const iouReviews = reviews.filter((s) => s.reward?.isIou === true && !s.reward?.iouHasRedeemed);
   if (iouReviews.length === 0) {
     return;
   }
 
   const fetchSignaturesBody = iouReviews.map((r) => {
-    invariant(r.reward?.tokenAmount, `submission ${r.id} has no tokenAmount`);
-    invariant(r.reward?.tokenAddress, `submission ${r.id} has no tokenAddress`);
+    invariant(r.reward?.tokenAmount, `review ${r.id} has no tokenAmount`);
+    invariant(r.reward?.tokenAddress, `review ${r.id} has no tokenAddress`);
     return {
-      submissionID: Number(r.id),
+      participationID: r.id,
       claimerAddress: r.reviewer,
       marketplaceAddress: r.laborMarketAddress,
       iouAddress: r.reward.tokenAddress,
-      type: "submission",
+      type: "review",
       amount: r.reward.tokenAmount,
     };
   });
@@ -29,7 +29,7 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
     iouReviews.map((r) => {
       return {
         marketplaceAddress: r.laborMarketAddress,
-        participationId: r.id, //TODO,
+        participationId: r.id,
         type: "review",
       };
     })
@@ -47,9 +47,12 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
           id: r.id,
         },
         {
-          reward: {
-            iouSignature,
-            iouHasRedeemed,
+          $set: {
+            reward: {
+              ...r.reward,
+              iouSignature,
+              iouHasRedeemed,
+            },
           },
         }
       );
@@ -59,8 +62,7 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
 
 const getSignature = (signatures: FetchSignaturesResponse, review: ReviewDoc) => {
   return signatures.find(
-    (c) =>
-      c.signedBody.marketplaceAddress === review.laborMarketAddress && c.signedBody.submissionID === Number(review.id)
+    (c) => c.signedBody.marketplaceAddress === review.laborMarketAddress && c.signedBody.participationID === review.id
   );
 };
 
@@ -68,9 +70,7 @@ const hasRedeemed = (claims: FetchClaimsResponse[], review: ReviewDoc) => {
   const redemptedClaim = claims.find((c) => {
     return c.claims.val.find(
       (v) =>
-        v.marketplaceAddress === review.laborMarketAddress &&
-        v.submissionID === Number(review.id) &&
-        v.redeemTx !== null
+        v.marketplaceAddress === review.laborMarketAddress && v.participationID === review.id && v.redeemTx !== null
     );
   });
 

@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Token } from "@prisma/client";
-import { BigNumber } from "ethers";
 import type { DefaultValues } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import { Error, Field, FormProgress, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
+import { fromTokenAmount, toTokenAmount } from "~/utils/helpers";
 import type { ReviewerForm as ReviewerFormType } from "./schema";
 import { ReviewerSchema } from "./schema";
 
@@ -130,9 +130,11 @@ export function ReviewerForm({
             <p>Reviewers will be able to review this Challenge.</p>
           </div>
           {rewardPool && rewardToken && reviewLimit && reviewLimit != 0 && (
-            <p className="text-neutral-600 text-sm">{`Ensures a minimum reward of ${BigNumber.from(rewardPool)
-              .div(reviewLimit)
-              .toString()} ${rewardToken.symbol} per review`}</p>
+            <p className="text-neutral-600 text-sm">{`Ensures a minimum reward of ${fromTokenAmount(
+              toTokenAmount(rewardPool, rewardToken.decimals).div(reviewLimit).toString(),
+              rewardToken.decimals,
+              2
+            )} ${rewardToken.symbol} per review`}</p>
           )}
         </section>
       </div>

@@ -3,11 +3,11 @@ import { EvmAddressSchema } from "./address";
 
 export const fetchSignaturesBodySchema = z.array(
   z.object({
-    submissionID: z.number(),
+    participationID: z.string(),
     claimerAddress: EvmAddressSchema,
     marketplaceAddress: EvmAddressSchema,
     iouAddress: EvmAddressSchema,
-    type: z.literal("submission"),
+    type: z.enum(["submission", "review"]),
     amount: z.string(),
   })
 );
@@ -25,7 +25,7 @@ export type FetchClaimsInput = z.infer<typeof FetchClaimsInputSchema>;
 export const fetchSignaturesResponseSchema = z.array(
   z.object({
     signedBody: z.object({
-      submissionID: z.number(),
+      participationID: z.string(),
       claimerAddress: EvmAddressSchema,
       marketplaceAddress: EvmAddressSchema,
     }),
@@ -44,7 +44,7 @@ export const fetchClaimsResponseSchema = z.object({
         iouAddress: EvmAddressSchema,
         claimerAddress: EvmAddressSchema,
         marketplaceAddress: EvmAddressSchema,
-        submissionID: z.number(),
+        participationID: z.string(),
         type: z.string(),
         amount: z.string(),
         redeemTx: z.string().nullable(),

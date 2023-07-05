@@ -3,14 +3,13 @@ import { useCallback, useState } from "react";
 import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
-import { EvmAddressSchema } from "~/domain/address";
 import type { SubmissionWithReward } from "~/domain/submission/schemas";
 import { useContracts, useTokens, useWallets } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
-import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
 import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
+import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;
@@ -28,18 +27,18 @@ export function SubmissionIOURewardCreator({ submission }: RedeemRewardCreatorPr
 
   const redeemTransactor = useTransactor({
     onSuccess: () => {
+      const { laborMarketAddress, serviceRequestId, id } = submission;
       // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
-      // TODO
-      // fetch(`/api/reward/${submission.id}/mark-as-redeemed`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      // });
+      fetch(`/api/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${id}/iou-redeemed`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
     },
   });
 
   const startRedeem = useCallback(() => {
-    const signature = EvmAddressSchema.parse(submission.reward.iouSignature);
+    const signature = submission.reward.iouSignature;
     invariant(signature, "Missing signature");
     invariant(token, "Missing token");
     redeemTransactor.start({

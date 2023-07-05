@@ -4,7 +4,6 @@ import invariant from "tiny-invariant";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { ReviewDoc } from "~/domain";
 import type { EvmAddress } from "~/domain/address";
-import { EvmAddressSchema } from "~/domain/address";
 import { useTokens, useWallets } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
@@ -26,18 +25,21 @@ export function RewardReviewIOUCreator({ review }: RedeemRewardCreatorProps) {
 
   const redeemTransactor = useTransactor({
     onSuccess: () => {
+      const { laborMarketAddress, serviceRequestId, submissionId, id } = review;
       // we want to hide the redeem button to prevent a user from doing a "double redeem" while the transaction is pending in the treasury service
       setRedeemSuccess(true);
-      // TODO
-      // fetch(`/api/reward/${submission.id}/mark-as-redeemed`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      // });
+      fetch(
+        `/api/market/${laborMarketAddress}/request/${serviceRequestId}/submission/${submissionId}/review/${id}/iou-redeemed`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     },
   });
 
   const startRedeem = useCallback(() => {
-    const signature = EvmAddressSchema.parse(review.reward.iouSignature);
+    const signature = review.reward.iouSignature;
     invariant(signature, "Missing signature");
     invariant(token, "Missing token");
     redeemTransactor.start({
@@ -112,7 +114,7 @@ function configureRedeem({
     address: iouTokenAddress,
     abi: PARTIAL_IOU_TOKEN_ABI,
     functionName: "redeem",
-    args: [laborMarketAddress, BigNumber.from(submissionId), "submission", BigNumber.from(amount), signature],
+    args: [laborMarketAddress, BigNumber.from(submissionId), "review", BigNumber.from(amount), signature],
   });
 }
 

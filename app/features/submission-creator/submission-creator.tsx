@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@remix-run/react";
-import type { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -10,22 +9,10 @@ import { LaborMarket__factory } from "~/contracts";
 import type { EvmAddress } from "~/domain/address";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { postNewEvent } from "~/utils/fetch";
+import { getEventFromLogs } from "~/utils/helpers";
 import type { SubmissionForm } from "./schema";
 import { SubmissionFormSchema } from "./schema";
-
-/**
- * Filters and parses the logs for a specific event.
- */
-function getEventFromLogs(
-  iface: ethers.utils.Interface,
-  logs: ethers.providers.Log[],
-  eventName: string,
-  laborMarketAddress: EvmAddress
-) {
-  const filtered = logs.filter((log) => log.address === laborMarketAddress);
-  const mapped = filtered.map((log) => iface.parseLog(log));
-  return mapped.find((e) => e.name === eventName);
-}
 
 export default function SubmissionCreator({
   laborMarketAddress,
@@ -49,8 +36,15 @@ export default function SubmissionCreator({
     onSuccess: useCallback(
       (receipt) => {
         const iface = LaborMarket__factory.createInterface();
-        const event = getEventFromLogs(iface, receipt.logs, "RequestFulfilled", laborMarketAddress);
-        if (event) navigate(`/app/market/${laborMarketAddress}/request/${serviceRequestId}`);
+        const event = getEventFromLogs(laborMarketAddress, iface, receipt.logs, "RequestFulfilled");
+        if (event) {
+          postNewEvent({
+            eventFilter: "RequestFulfilled",
+            address: laborMarketAddress,
+            blockNumber: receipt.blockNumber,
+            transactionHash: receipt.transactionHash,
+          }).then(() => navigate(`/app/market/${laborMarketAddress}/request/${serviceRequestId}`));
+        }
       },
       [laborMarketAddress, navigate, serviceRequestId]
     ),

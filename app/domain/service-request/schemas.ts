@@ -82,7 +82,6 @@ export const ServiceRequestSearchSchema = ServiceRequestFilterSchema.extend({
     .enum(["blockTimestamp", "appData.title", "configuration.submissionExp", "configuration.enforcementExp"])
     .default("configuration.submissionExp"),
   order: z.enum(["asc", "desc"]).default("desc"),
-  permissions: z.array(z.enum(["submit", "review"])).optional(),
   page: z.coerce.number().min(1).default(1),
   first: z.coerce.number().min(1).max(100).default(100),
 });

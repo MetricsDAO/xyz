@@ -2,7 +2,6 @@ import { Link } from "@remix-run/react";
 import { Card } from "~/components/card";
 import { Header, Row, Table } from "~/components/table";
 import { fromNow } from "~/utils/date";
-import { submissionCreatedDate } from "~/utils/helpers";
 import { RewardDisplay, Status } from "./column-data";
 import type { SubmissionWithReward } from "~/domain/submission/schemas";
 
@@ -60,7 +59,7 @@ function RewardsTableRow({ submission }: { submission: SubmissionWithReward }) {
         <RewardDisplay submission={submission} />
       </Row.Column>
       <Row.Column span={2} className="text-black">
-        {fromNow(submissionCreatedDate(submission))}{" "}
+        {fromNow(submission.blockTimestamp)}{" "}
       </Row.Column>
       <Row.Column span={2}>
         <Status submission={submission} />
@@ -94,7 +93,7 @@ function RewardCard({ submission }: { submission: SubmissionWithReward }) {
         <RewardDisplay submission={submission} />
       </div>
       <div>Submitted</div>
-      <p className="text-black">{fromNow(submissionCreatedDate(submission))} </p>
+      <p className="text-black">{fromNow(submission.blockTimestamp)} </p>
       <div>Status</div>
       <Status submission={submission} />
     </Card>

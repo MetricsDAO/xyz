@@ -108,10 +108,6 @@ function SearchAndFilter({ tokens, projects }: { tokens: Token[]; projects: Proj
         ]}
       />
       <h3 className="font-semibold">Filter:</h3>
-      {/* MVP Hide */}
-      {/* <p>I am able to:</p>
-      <Checkbox id="submit_checkbox" name="permission" value="submit" label="Submit" />
-      <Checkbox id="review_checkbox" name="permission" value="review" label="Review" /> */}
       <Field>
         <Label>Reward Token</Label>
         <ValidatedCombobox
