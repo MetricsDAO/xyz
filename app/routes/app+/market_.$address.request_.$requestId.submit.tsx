@@ -29,8 +29,8 @@ export default function SubmitQuestion() {
             <h1 className="text-3xl font-semibold">Submit Your Work</h1>
             <h2 className="text-lg text-cyan-500">Provide a public link to your work.</h2>
             <p className="text-gray-500 text-sm">
-              Submit your work. Peers will review and score your submission. If you’re a winner, you’ll earn tokens and
-              rMETRIC from the challenge reward pool!
+              Submit your work. Peers will review and score your submission. If you’re a winner, you’ll earn tokens from
+              the challenge reward pool!
             </p>
           </div>
           <SubmissionCreator laborMarketAddress={laborMarket.address} serviceRequestId={requestId} />
