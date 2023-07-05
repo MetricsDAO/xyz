@@ -125,7 +125,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
                 contractAddress: "" as EvmAddress,
                 tokenId: 0,
                 minBadgeBalance: 1,
-                maxBadgeBalance: Number(ethers.constants.MaxUint256),
+                maxBadgeBalance: Number(ethers.constants.MaxInt256),
               })
             }
           >

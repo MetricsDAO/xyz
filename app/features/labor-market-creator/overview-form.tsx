@@ -69,7 +69,7 @@ export function OverviewForm({
       contractAddress: "" as EvmAddress,
       tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: Number(ethers.constants.MaxUint256),
+      maxBadgeBalance: undefined,
     });
   };
 
@@ -78,7 +78,7 @@ export function OverviewForm({
       contractAddress: "" as EvmAddress,
       tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: Number(ethers.constants.MaxUint256),
+      maxBadgeBalance: undefined,
     });
   };
 
@@ -87,7 +87,7 @@ export function OverviewForm({
       contractAddress: "" as EvmAddress,
       tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: Number(ethers.constants.MaxUint256),
+      maxBadgeBalance: undefined,
     });
   };
 

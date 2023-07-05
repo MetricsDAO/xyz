@@ -42,7 +42,6 @@ export function LaborMarketCreator({
   });
 
   const onSubmit = (data: MarketplaceForm) => {
-    console.log("DATA", data);
     const metadata = LaborMarketAppDataSchema.parse({
       ...data.appData,
       prerequisites: {
@@ -96,7 +95,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : ethers.constants.MaxUint256),
+      max: badge.maxBadgeBalance != undefined ? BigNumber.from(badge.maxBadgeBalance) : ethers.constants.MaxUint256,
       points: BigNumber.from(1),
     };
   });
@@ -106,7 +105,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : ethers.constants.MaxUint256),
+      max: badge.maxBadgeBalance != undefined ? BigNumber.from(badge.maxBadgeBalance) : ethers.constants.MaxUint256,
       points: BigNumber.from(1),
     };
   });
@@ -116,7 +115,7 @@ function configureFromValues(
       badge: badge.contractAddress,
       id: BigNumber.from(badge.tokenId),
       min: BigNumber.from(badge.minBadgeBalance),
-      max: BigNumber.from(badge.maxBadgeBalance ? badge.maxBadgeBalance : ethers.constants.MaxUint256),
+      max: badge.maxBadgeBalance != undefined ? BigNumber.from(badge.maxBadgeBalance) : ethers.constants.MaxUint256,
       points: BigNumber.from(1),
     };
   });
@@ -124,17 +123,17 @@ function configureFromValues(
   const nodes = [
     {
       deployerAllowed: true,
-      required: BigNumber.from(inputs.values.sponsor.numberBadgesRequired || 0),
+      required: BigNumber.from(inputs.values.sponsor.numberBadgesRequired || 1),
       badges: sponsorBadges,
     },
     {
       deployerAllowed: true,
-      required: BigNumber.from(inputs.values.analyst.numberBadgesRequired || 0),
+      required: BigNumber.from(inputs.values.analyst.numberBadgesRequired || 1),
       badges: analystBadges,
     },
     {
       deployerAllowed: true,
-      required: BigNumber.from(inputs.values.reviewer.numberBadgesRequired || 0),
+      required: BigNumber.from(inputs.values.reviewer.numberBadgesRequired || 1),
       badges: reviewerBadges,
     },
   ];
