@@ -122,7 +122,7 @@ jobs:
           context: .
           push: true
           file: Dockerfile.app
-          tags: registry.fly.io/mdao-www:${{ github.ref_name }}-${{ github.sha }}
+          tags: registry.fly.io/mdao-www-v2:${{ github.ref_name }}-${{ github.sha }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -134,7 +134,7 @@ jobs:
           context: .
           push: true
           file: Dockerfile.indexer
-          tags: registry.fly.io/mdao-indexer:${{ github.ref_name }}-${{ github.sha }}
+          tags: registry.fly.io/mdao-indexer-v2:${{ github.ref_name }}-${{ github.sha }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
