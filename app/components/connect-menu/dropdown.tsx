@@ -21,16 +21,6 @@ export const ProfileMenu = () => {
     chainId: 1,
   });
 
-  //TODO: get reputation balance and xmetric balance
-  //   invariant(address, "Must be connected to view profile");
-
-  //   const { data: reputationBalance } = useContractRead({
-  //     address: ReputationToken.address,
-  //     abi: ReputationToken.abi,
-  //     functionName: "balanceOf",
-  //     args: [address, BigNumber.from(REPUTATION_TOKEN_ID)],
-  //   });
-
   return (
     <DropdownMenu.Portal className="mt-5 border-[1px]">
       <DropdownMenu.Content

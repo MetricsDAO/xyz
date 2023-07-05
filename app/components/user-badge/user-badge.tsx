@@ -4,7 +4,7 @@ import type { EvmAddress } from "~/domain/address";
 import { truncateAddress } from "~/utils/helpers";
 import { Avatar } from "../avatar";
 
-/** Renders a wallet's avatar and address or ENS name, along with their rMETRIC balance, and UserCard on hover. */
+/** Renders a wallet's avatar and address or ENS name and UserCard on hover. */
 export function UserBadge({ address, variant }: { address: EvmAddress; variant?: "default" | "separate" }) {
   // const contracts = useContracts();
   const { data: ensName } = useEnsName({
