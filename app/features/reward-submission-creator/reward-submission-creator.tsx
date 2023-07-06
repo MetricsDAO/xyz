@@ -9,6 +9,7 @@ import { configureWrite, useTransactor } from "~/hooks/use-transactor";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import { fromTokenAmount } from "~/utils/helpers";
+import { useReward } from "~/hooks/use-reward";
 
 interface ClaimRewardCreatorProps {
   submission: SubmissionWithReward;
@@ -20,6 +21,12 @@ export function RewardSubmissionCreator({ submission }: ClaimRewardCreatorProps)
   const displayPaymentAmount = fromTokenAmount(submission.reward.tokenAmount, token?.decimals ?? 18, 2);
   const contracts = useContracts();
   const navigate = useNavigate();
+  // Get the "real time" reward and if its 0 its already been claimed
+  const { data: reward } = useReward({
+    laborMarketAddress: submission.laborMarketAddress,
+    serviceRequestId: submission.serviceRequestId,
+    submissionId: submission.id,
+  });
 
   const transactor = useTransactor({
     onSuccess: useCallback(
@@ -46,7 +53,11 @@ export function RewardSubmissionCreator({ submission }: ClaimRewardCreatorProps)
     });
   };
 
-  if (submission.rewardClaimed) {
+  if (!reward) {
+    return <p>-</p>;
+  }
+
+  if (submission.rewardClaimed || reward.eq(0)) {
     return <p>Claimed</p>;
   }
 
