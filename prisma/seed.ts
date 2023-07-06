@@ -100,7 +100,7 @@ async function main() {
       {
         name: "NEAR",
         decimals: 24,
-        networkName: "Near",
+        networkName: "NEAR",
         isIou: true,
         contractAddress: "0x9e2909c3ea1c6eade2bb44430c1e7443fa49e891",
         symbol: "iouNEAR",
