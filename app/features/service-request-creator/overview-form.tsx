@@ -165,7 +165,7 @@ export function OverviewForm({
               </Field>
               <p className="text-neutral-600 text-sm mt-3">Analysts can earn up to</p>
               <Field>
-                <Input {...register("analyst.maxReward")} name="rewardPool" placeholder="max earn" />
+                <Input {...register("analyst.maxReward")} name="maxReward" placeholder="max earn" />
                 <Error error={errors.analyst?.maxReward?.message} />
               </Field>
               <Field>
