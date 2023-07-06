@@ -122,17 +122,17 @@ function configureFromValues(
 
   const nodes = [
     {
-      deployerAllowed: true,
+      deployerAllowed: false,
       required: BigNumber.from(inputs.values.sponsor.numberBadgesRequired || 1),
       badges: sponsorBadges,
     },
     {
-      deployerAllowed: true,
+      deployerAllowed: false,
       required: BigNumber.from(inputs.values.analyst.numberBadgesRequired || 1),
       badges: analystBadges,
     },
     {
-      deployerAllowed: true,
+      deployerAllowed: false,
       required: BigNumber.from(inputs.values.reviewer.numberBadgesRequired || 1),
       badges: reviewerBadges,
     },

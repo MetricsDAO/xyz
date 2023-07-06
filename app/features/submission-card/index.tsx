@@ -21,6 +21,7 @@ export function SubmissionCard({
     setSelected(submission);
   };
 
+  const reviewCount = submission.score?.reviewCount ? submission.score.reviewCount - (reviewedByUser ? 1 : 0) : 0;
   return (
     <div onClick={handleClick}>
       <Card className={`text-sm p-6 space-y-4 hover:cursor-pointer ${selected ? "border border-blue-600" : ""}`}>
@@ -42,7 +43,9 @@ export function SubmissionCard({
               ) : (
                 <></>
               )}
-              <p>{submission.score?.reviewCount ?? 0} reviews</p>
+              <p>
+                {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+              </p>
             </div>
           </div>
         </div>

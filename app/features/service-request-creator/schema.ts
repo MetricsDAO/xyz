@@ -42,12 +42,12 @@ export const AnalystSchema = z
     endTime: InputTimeSchema,
     rewardToken: EvmAddressSchema,
     rewardTokenDecimals: z.coerce.number().int().positive(),
-    rewardPool: z.string(),
+    maxReward: z.string(),
     submitLimit: z.coerce.number().positive().int(),
   })
-  .refine((data) => validTokenAmount(data.rewardPool, data.rewardTokenDecimals), {
+  .refine((data) => validTokenAmount(data.maxReward, data.rewardTokenDecimals), {
     message: "Token amount is invalid.",
-    path: ["rewardPool"],
+    path: ["maxReward"],
   });
 
 export type AnalystForm = z.infer<typeof AnalystSchema>;
@@ -58,12 +58,12 @@ export const ReviewerSchema = z
     reviewEndTime: InputTimeSchema,
     rewardToken: EvmAddressSchema,
     rewardTokenDecimals: z.coerce.number().int().positive(),
-    rewardPool: z.string(),
+    maxReward: z.string(),
     reviewLimit: z.coerce.number().positive().int(),
   })
-  .refine((data) => validTokenAmount(data.rewardPool, data.rewardTokenDecimals), {
+  .refine((data) => validTokenAmount(data.maxReward, data.rewardTokenDecimals), {
     message: "Token amount is invalid.",
-    path: ["rewardPool"],
+    path: ["maxReward"],
   });
 
 export type ReviewerForm = z.infer<typeof ReviewerSchema>;
@@ -108,7 +108,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
       endTime: dayjs(endDate).format("HH:mm"),
       rewardToken: "0xCce422781e1818821f50226C14E6289a7144a898",
       rewardTokenDecimals: 18,
-      rewardPool: "1",
+      maxReward: "1",
       submitLimit: 10,
     },
     reviewer: {
@@ -116,7 +116,7 @@ export function fakeServiceRequestFormData(): ServiceRequestForm {
       reviewEndTime: dayjs(reviewDate).format("HH:mm"),
       rewardToken: "0xCce422781e1818821f50226C14E6289a7144a898",
       rewardTokenDecimals: 18,
-      rewardPool: "2",
+      maxReward: "2",
       reviewLimit: 10,
     },
   };

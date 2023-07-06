@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
 import { Error, Field, FormProgress, Input, Select } from "~/components";
 import { claimDate, parseDatetime } from "~/utils/date";
-import { fromTokenAmount, toTokenAmount } from "~/utils/helpers";
+import { fromTokenAmount, toTokenAbbreviation, toTokenAmount } from "~/utils/helpers";
 import type { ReviewerForm as ReviewerFormType } from "./schema";
 import { ReviewerSchema } from "./schema";
 
@@ -36,11 +36,6 @@ export function ReviewerForm({
 
   const selectedReviewDate = watch("reviewEndDate");
   const selectedReviewTime = watch("reviewEndTime");
-
-  const rewardPool = watch("rewardPool");
-  const reviewLimit = watch("reviewLimit");
-  const rewardTokenAddress = watch("rewardToken");
-  const rewardToken = validTokens.find((t) => t.contractAddress === rewardTokenAddress);
 
   const formData = watch();
   const onGoBack = () => {
@@ -85,57 +80,54 @@ export function ReviewerForm({
         </section>
         <section className="space-y-3">
           <h2 className="font-bold">Reviewer Rewards</h2>
-          <div className="flex flex-col md:flex-row gap-6 items-start">
-            <div className="flex-grow w-full">
-              <Field>
-                <h3 className="text-sm">Reward Token*</h3>
-                <Controller
-                  name="rewardToken"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <Select
-                        {...field}
-                        placeholder="Token"
-                        onChange={(v) => {
-                          const token = validTokens.find((t) => t.contractAddress === v);
-                          invariant(token, "Token not found");
-                          setValue("rewardTokenDecimals", token.decimals);
-                          field.onChange(v);
-                        }}
-                        options={validTokens.map((t) => {
-                          return { label: t.symbol, value: t.contractAddress };
-                        })}
-                      />
-                    );
-                  }}
-                />
-                <Error error={errors.rewardToken?.message} />
-              </Field>
-            </div>
-            <div className="flex-grow w-full">
-              <Field>
-                <h3 className="text-sm">Reward Pool*</h3>
-                <Input {...register("rewardPool")} name="rewardPool" placeholder="Pool amount" />
-                <Error error={errors.rewardPool?.message} />
-              </Field>
-            </div>
-          </div>
-          <h3 className="text-sm">Total Review Limit*</h3>
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-wrap gap-2 items-start">
             <Field>
               <Input {...register("reviewLimit")} type="text" />
               <Error error={errors.reviewLimit?.message} />
             </Field>
-            <p>Reviewers will be able to review this Challenge.</p>
+            <p className="text-neutral-600 text-sm mt-3">Reviews will be paid</p>
+            <Field>
+              <Input {...register("maxReward")} name="maxReward" placeholder="max earn" />
+              <Error error={errors.maxReward?.message} />
+            </Field>
+            <Field>
+              <Controller
+                name="rewardToken"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <Select
+                      {...field}
+                      placeholder="Token"
+                      onChange={(v) => {
+                        const token = validTokens.find((t) => t.contractAddress === v);
+                        invariant(token, "Token not found");
+                        setValue("rewardTokenDecimals", token.decimals);
+                        field.onChange(v);
+                      }}
+                      options={validTokens.map((t) => {
+                        return { label: t.symbol, value: t.contractAddress };
+                      })}
+                    />
+                  );
+                }}
+              />
+              <Error error={errors.rewardToken?.message} />
+            </Field>
+            <p className="text-neutral-600 text-sm mt-3">for a total reward pool of</p>
+            {formData.maxReward && formData.reviewLimit && formData.rewardToken ? (
+              <p className="text-neutral-600 text-sm font-bold mt-3">
+                {`${fromTokenAmount(
+                  toTokenAmount(formData.maxReward, formData.rewardTokenDecimals).mul(formData.reviewLimit).toString(),
+                  formData.rewardTokenDecimals
+                )}
+                ${toTokenAbbreviation(formData.rewardToken, validTokens)}`}
+              </p>
+            ) : (
+              <p className="text-neutral-600 text-sm font-bold mt-3">--</p>
+            )}
           </div>
-          {rewardPool && rewardToken && reviewLimit && reviewLimit != 0 && (
-            <p className="text-neutral-600 text-sm">{`Ensures a minimum reward of ${fromTokenAmount(
-              toTokenAmount(rewardPool, rewardToken.decimals).div(reviewLimit).toString(),
-              rewardToken.decimals,
-              2
-            )} ${rewardToken.symbol} per review`}</p>
-          )}
+          <p className="text-gray-400 italic">Unused funds can be reclaimed after the the Review Deadline.</p>
         </section>
       </div>
       <FormProgress

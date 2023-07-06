@@ -90,8 +90,8 @@ export function AnalystForm({
             </Field>
             <p className="text-neutral-600 text-sm mt-3">Analysts can earn up to</p>
             <Field>
-              <Input {...register("rewardPool")} name="rewardPool" placeholder="Pool amount" />
-              <Error error={errors.rewardPool?.message} />
+              <Input {...register("maxReward")} name="maxReward" placeholder="max earn" />
+              <Error error={errors.maxReward?.message} />
             </Field>
             <Field>
               <Controller
@@ -118,10 +118,10 @@ export function AnalystForm({
               <Error error={errors.rewardToken?.message} />
             </Field>
             <p className="text-neutral-600 text-sm mt-3">for a total reward pool of</p>
-            {formData.rewardPool && formData.submitLimit && formData.rewardToken ? (
+            {formData.maxReward && formData.submitLimit && formData.rewardToken ? (
               <p className="text-neutral-600 text-sm font-bold mt-3">
                 {`${fromTokenAmount(
-                  toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals).mul(formData.submitLimit).toString(),
+                  toTokenAmount(formData.maxReward, formData.rewardTokenDecimals).mul(formData.submitLimit).toString(),
                   formData.rewardTokenDecimals
                 )}
                 ${toTokenAbbreviation(formData.rewardToken, validTokens)}`}
@@ -130,12 +130,12 @@ export function AnalystForm({
               <p className="text-neutral-600 text-sm font-bold mt-3">--</p>
             )}
           </div>
-          {formData.rewardToken && formData.rewardPool && (
+          {formData.rewardToken && formData.maxReward && (
             <>
               <CurveChart
                 type={curveType}
                 token={toTokenAbbreviation(formData.rewardToken, validTokens)}
-                amount={toTokenAmount(formData.rewardPool, formData.rewardTokenDecimals).toString()}
+                amount={toTokenAmount(formData.maxReward, formData.rewardTokenDecimals).toString()}
                 decimals={formData.rewardTokenDecimals}
               />
               <p className="text-gray-400 italic">Unused funds can be reclaimed after the the Review Deadline.</p>

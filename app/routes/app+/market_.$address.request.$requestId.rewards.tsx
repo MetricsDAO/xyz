@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { useRouteData } from "remix-utils";
 import invariant from "tiny-invariant";
 import { Badge, CurveChart } from "~/components";
@@ -52,8 +53,10 @@ export default function ChallengeIdRewards() {
           <DetailItem title="How the reward pool is distributed">
             <CurveChart
               token={toTokenAbbreviation(serviceRequest.configuration.pTokenProvider, tokens) ?? ""}
-              amount={serviceRequest.configuration.pTokenProviderTotal}
               type={laborMarket.appData.enforcement}
+              amount={BigNumber.from(serviceRequest.configuration.pTokenProviderTotal)
+                .div(serviceRequest.configuration.providerLimit)
+                .toString()}
               decimals={providerToken?.decimals}
             />
           </DetailItem>

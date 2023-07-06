@@ -14,7 +14,7 @@ describe("ServiceRequestFormSchema", () => {
         endTime: "12:00",
         rewardToken: faker.finance.ethereumAddress(),
         rewardTokenDecimals: 18,
-        rewardPool: "0.005",
+        maxReward: "0.005",
         submitLimit: 10,
       },
       reviewer: {
@@ -22,7 +22,7 @@ describe("ServiceRequestFormSchema", () => {
         reviewEndTime: "12:00",
         rewardToken: faker.finance.ethereumAddress(),
         rewardTokenDecimals: 18,
-        rewardPool: "0.005",
+        maxReward: "0.005",
         reviewLimit: 10,
       },
     };
