@@ -72,7 +72,7 @@ function RewardsCards({ submissions }: { submissions: SubmissionWithReward[] }) 
   return (
     <div className="space-y-4">
       {submissions.map((s) => {
-        return <RewardCard key={`${s.laborMarketAddress}_${s.id}`} submission={s} />;
+        return <RewardCard key={`${s.laborMarketAddress}_${s.serviceRequestId}_${s.id}`} submission={s} />;
       })}
     </div>
   );
