@@ -88,6 +88,24 @@ async function main() {
         symbol: "iouSOL",
         iouSymbol: "SOL",
       },
+      {
+        name: "AVAX",
+        decimals: 18,
+        networkName: "Avalanche",
+        isIou: true,
+        contractAddress: "0x6b1411a332890874ea219ab824853c01a8a8fde0",
+        symbol: "iouAVAX",
+        iouSymbol: "AVAX",
+      },
+      {
+        name: "NEAR",
+        decimals: 24,
+        networkName: "Near",
+        isIou: true,
+        contractAddress: "0x9e2909c3ea1c6eade2bb44430c1e7443fa49e891",
+        symbol: "iouNEAR",
+        iouSymbol: "NEAR",
+      },
       // iou testing in dev
       // {
       //   name: "Goerli ETH IOU",
