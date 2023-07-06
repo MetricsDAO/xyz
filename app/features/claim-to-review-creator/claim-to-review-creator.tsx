@@ -7,7 +7,6 @@ import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { useContracts } from "~/hooks/use-root-data";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import { REPUTATION_REVIEW_SIGNAL_STAKE } from "~/utils/constants";
 import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import { ClaimToReviewCreatorFields } from "./claim-to-review-creator-fields";
@@ -50,9 +49,6 @@ export function ClaimToReviewCreator({ serviceRequest }: ClaimToReviewFormProps)
           <div className="space-y-8">
             <p className="mt-2">
               Please confirm that you would like to claim {methods.getValues("quantity")} submissions to review.
-            </p>
-            <p>
-              This will lock <b>{methods.getValues("quantity") * REPUTATION_REVIEW_SIGNAL_STAKE} rMETRIC.</b>
             </p>
           </div>
         }

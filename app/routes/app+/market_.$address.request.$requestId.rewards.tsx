@@ -8,7 +8,6 @@ import type { getLaborMarket } from "~/domain/labor-market/functions.server";
 import type { findServiceRequest } from "~/domain/service-request/functions.server";
 import { useTokens } from "~/hooks/use-root-data";
 import type { listTokens } from "~/services/tokens.server";
-import { REPUTATION_REWARD_POOL } from "~/utils/constants";
 import { fromTokenAmount, toTokenAbbreviation } from "~/utils/helpers";
 
 export default function ChallengeIdRewards() {
@@ -43,7 +42,6 @@ export default function ChallengeIdRewards() {
                 ),
                 token: providerToken,
               }}
-              reputation={{ amount: REPUTATION_REWARD_POOL.toLocaleString() }}
             />
           </DetailItem>
         </Detail>

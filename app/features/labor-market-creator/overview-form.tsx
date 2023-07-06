@@ -8,7 +8,7 @@ import type { EvmAddress } from "~/domain/address";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
-import { formData } from "zod-form-data";
+import { ethers } from "ethers";
 
 export function OverviewForm({
   defaultValues,
@@ -67,27 +67,27 @@ export function OverviewForm({
   const handleAddSponsorBadge = () => {
     appendSponsorBadge({
       contractAddress: "" as EvmAddress,
-      tokenId: 1,
+      tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 0,
+      maxBadgeBalance: undefined,
     });
   };
 
   const handleAddAnalystBadge = () => {
     appendAnalystBadge({
       contractAddress: "" as EvmAddress,
-      tokenId: 1,
+      tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 0,
+      maxBadgeBalance: undefined,
     });
   };
 
   const handleAddReviewerBadge = () => {
     appendReviewerBadge({
       contractAddress: "" as EvmAddress,
-      tokenId: 1,
+      tokenId: 0,
       minBadgeBalance: 1,
-      maxBadgeBalance: 0,
+      maxBadgeBalance: undefined,
     });
   };
 
@@ -241,7 +241,7 @@ export function OverviewForm({
                       control={control}
                       defaultValue={field.tokenId}
                       render={({ field: { onChange, onBlur, value, ref } }) => (
-                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                        <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={0} />
                       )}
                     />
                     <Error error={errors.sponsor?.badges?.[index]?.tokenId?.message} />
@@ -347,7 +347,7 @@ export function OverviewForm({
                     control={control}
                     defaultValue={field.tokenId}
                     render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={0} />
                     )}
                   />
                   <Error error={errors.analyst?.badges?.[index]?.tokenId?.message} />
@@ -452,7 +452,7 @@ export function OverviewForm({
                     control={control}
                     defaultValue={field.tokenId}
                     render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={1} />
+                      <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min={0} />
                     )}
                   />
                   <Error error={errors.reviewer?.badges?.[index]?.tokenId?.message} />
