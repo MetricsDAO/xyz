@@ -108,7 +108,9 @@ export function ServiceRequestCreator({
       // Only approve the necessary amount of tokens
       const reviewerTokenAllowance =
         allowances?.find((a) => a.contractAddress === values.reviewer.rewardToken)?.allowance ?? BigNumber.from(0);
-      const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+      const reviewerReward = toTokenAmount(values.reviewer.maxReward, values.reviewer.rewardTokenDecimals).mul(
+        values.reviewer.reviewLimit
+      );
       const approvalAmount = reviewerReward.sub(reviewerTokenAllowance);
 
       approveReviewerRewardTransactor.start({
@@ -131,8 +133,12 @@ export function ServiceRequestCreator({
   }, [sequence]);
 
   const onSubmit = (values: ServiceRequestForm) => {
-    const analystReward = toTokenAmount(values.analyst.rewardPool, values.analyst.rewardTokenDecimals);
-    const reviewerReward = toTokenAmount(values.reviewer.rewardPool, values.reviewer.rewardTokenDecimals);
+    const analystReward = toTokenAmount(values.analyst.maxReward, values.analyst.rewardTokenDecimals).mul(
+      values.analyst.submitLimit
+    );
+    const reviewerReward = toTokenAmount(values.reviewer.maxReward, values.reviewer.rewardTokenDecimals).mul(
+      values.reviewer.reviewLimit
+    );
 
     // Get the allowances or default to 0
     const analystTokenAllowance =
@@ -218,9 +224,13 @@ function configureFromValues({
 
   const obj = {
     pTokenProvider: form.analyst.rewardToken,
-    pTokenProviderTotal: toTokenAmount(form.analyst.rewardPool, form.analyst.rewardTokenDecimals),
+    pTokenProviderTotal: toTokenAmount(form.analyst.maxReward, form.analyst.rewardTokenDecimals).mul(
+      form.analyst.submitLimit
+    ),
     pTokenReviewer: form.reviewer.rewardToken,
-    pTokenReviewerTotal: toTokenAmount(form.reviewer.rewardPool, form.reviewer.rewardTokenDecimals),
+    pTokenReviewerTotal: toTokenAmount(form.reviewer.maxReward, form.reviewer.rewardTokenDecimals).mul(
+      form.reviewer.reviewLimit
+    ),
     providerLimit: BigNumber.from(form.analyst.submitLimit),
     reviewerLimit: BigNumber.from(form.reviewer.reviewLimit),
     enforcementExp: unixTimestamp(new Date(parseDatetime(form.reviewer.reviewEndDate, form.reviewer.reviewEndTime))),
