@@ -10,7 +10,7 @@ export const BadgeSchema = z.preprocess(
   arrayToObject,
   z.object({
     contractAddress: EvmAddressSchema,
-    tokenId: z.coerce.number(),
+    tokenId: z.coerce.number().min(0).default(0),
     minBadgeBalance: z.coerce.number().min(1).default(1),
     maxBadgeBalance: z.coerce.number().optional(),
   })

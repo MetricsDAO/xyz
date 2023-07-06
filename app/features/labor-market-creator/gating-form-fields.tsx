@@ -2,6 +2,7 @@ import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { Error, Field, Input, Label, Select } from "~/components";
 import type { EvmAddress } from "~/domain/address";
 import type { GatingData } from "./schema";
+import { ethers } from "ethers";
 
 // Must be used underneath a FormProvider
 export function GatingFormFields({ hint }: { hint?: string }) {
@@ -78,7 +79,7 @@ export function GatingFormFields({ hint }: { hint?: string }) {
                 control={control}
                 // defaultValue={field.tokenId}
                 render={({ field: { onChange, onBlur, value, ref } }) => (
-                  <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min="1" />
+                  <Input onChange={onChange} value={value} onBlur={onBlur} ref={ref} type="number" min="0" />
                 )}
               />
               <Error error={errors.badges?.[index]?.tokenId?.message} />
@@ -122,9 +123,9 @@ export function GatingFormFields({ hint }: { hint?: string }) {
             onClick={() =>
               append({
                 contractAddress: "" as EvmAddress,
-                tokenId: 1,
+                tokenId: 0,
                 minBadgeBalance: 1,
-                maxBadgeBalance: undefined,
+                maxBadgeBalance: Number(ethers.constants.MaxInt256),
               })
             }
           >
