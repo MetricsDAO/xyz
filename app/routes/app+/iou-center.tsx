@@ -111,16 +111,6 @@ function AddTokenButton({ disabled, networks }: { disabled: boolean; networks: N
             <p className="text-yellow-700 text-sm">For tokens on polygon only</p>
           </div>
           <Field>
-            <Label>Target Chain</Label>
-            <Select
-              placeholder="Select a target chain"
-              onChange={(v) => {}}
-              options={networks.map((n) => {
-                return { label: n.name, value: n.name };
-              })}
-            />
-          </Field>
-          <Field>
             <Label>Token Name</Label>
             <Input label="Token Name" placeholder="Token name" />
           </Field>
