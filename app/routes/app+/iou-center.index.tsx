@@ -1,13 +1,18 @@
 import { ExclamationTriangleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useActionData, useSubmit, useTransition } from "@remix-run/react";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
-import { useRef, useState } from "react";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
+import { useAccount } from "wagmi";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { Error } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
@@ -15,15 +20,16 @@ import { Combobox } from "~/components/combobox";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { Select } from "~/components/select";
-import { Error } from "~/components";
 import { Header, Row, Table } from "~/components/table";
+import { EvmAddressSchema } from "~/domain/address";
 import type { IOUToken } from "~/domain/treasury";
+import { nodeProvider } from "~/services/node.server";
 import { fetchIouTokenMetadata } from "~/services/treasury.server";
-import { useSubmit } from "@remix-run/react";
 
 const IssueFormSchema = z.object({
   amount: zfd.numeric(z.number().positive()),
-  recipient: z.string(),
+  recipient: EvmAddressSchema,
+  iouContractAddress: EvmAddressSchema,
 });
 
 const IssueFormValidator = withZod(IssueFormSchema);
@@ -36,9 +42,18 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   return typedjson({ iouTokens }, { status: 200 });
 };
 
+type ActionResponse = Awaited<ReturnType<typeof action>>;
 export async function action({ request }: ActionArgs) {
   const formData = await IssueFormValidator.validate(await request.formData());
   console.log("formData", formData);
+  if (formData.data) {
+    const { iouContractAddress, recipient } = formData.data;
+    const contract = new ethers.Contract(iouContractAddress, PARTIAL_IOU_CONTRACT_ABI, nodeProvider);
+    const nonce: BigNumber = await contract.nonces(recipient);
+    console.log("nonce", nonce.toString());
+    // TODO await treasury({ source: iouContractAddress, to: recipient, amount, nonce });
+    return { ok: true };
+  }
   return null;
 }
 
@@ -134,7 +149,7 @@ function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
             <Row.Column span={2}>{t.balance}</Row.Column>
             <Row.Column span={2} className="flex flex-wrap gap-2 justify-end">
               <BurnButton disabled={true} />
-              <IssueButton />
+              <IssueButton token={t} />
             </Row.Column>
           </Row>
         );
@@ -157,7 +172,7 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
             <p>{t.fireblocksTokenName}</p>
             <div className="flex flex-wrap col-span-2 gap-2 justify-center">
               <BurnButton disabled={true} />
-              <IssueButton />
+              <IssueButton token={t} />
             </div>
           </Card>
         );
@@ -194,9 +209,18 @@ function BurnButton({ disabled }: { disabled: boolean }) {
   );
 }
 
-function IssueButton() {
+function IssueButton({ token }: { token: IOUToken }) {
   const [openedAlert, setOpenedAlert] = useState(false);
   const [openedIssue, setOpenedIssue] = useState(false);
+
+  const actionData = useActionData<ActionResponse>();
+  const transition = useTransition();
+
+  useEffect(() => {
+    if (actionData?.ok) {
+      // TODO transactor.start
+    }
+  }, [actionData]);
 
   function closeAlert() {
     setOpenedAlert(false);
@@ -206,8 +230,13 @@ function IssueButton() {
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
 
+  const { address } = useAccount();
   const formMethods = useForm<IssueForm>({
     resolver: zodResolver(IssueFormSchema),
+    defaultValues: {
+      recipient: address,
+      iouContractAddress: "0xe45E0546B83f8A85833A368b7Ed49B1B1F9958EA",
+    },
   });
 
   return (
@@ -233,36 +262,51 @@ function IssueButton() {
         </div>
       </Modal>
       <Modal isOpen={openedIssue} onClose={() => setOpenedIssue(false)} title="Issue iouTODO">
-        <form
-          ref={formRef}
-          className="space-y-5 mt-5"
-          onSubmit={formMethods.handleSubmit((data) => {
-            submit(formRef.current, { method: "post", action: "/app/iou-center?index" });
-          })}
-        >
-          <div className="space-y-5 mt-5">
-            <Input
-              {...formMethods.register("amount")}
-              placeholder="Issue amount"
-              label="The tokens will be created and start circulating."
-              className="w-full"
-            />
-            <Error error={formMethods.formState.errors.amount?.message} />
-            <Input {...formMethods.register("recipient")} placeholder="Recepient address" className="w-full" />
-            <Error error={formMethods.formState.errors.recipient?.message} />
-            <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-              <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
-              <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+        {transition.state === "loading" || transition.state === "submitting" ? (
+          <p>Loading...</p>
+        ) : (
+          <form
+            ref={formRef}
+            className="space-y-5 mt-5"
+            onSubmit={formMethods.handleSubmit((data) => {
+              submit(formRef.current, { method: "post", action: "/app/iou-center?index" });
+            })}
+          >
+            <div className="space-y-5 mt-5">
+              <Input
+                {...formMethods.register("amount")}
+                placeholder="Issue amount"
+                label="The tokens will be created and start circulating."
+                className="w-full"
+              />
+              <input {...formMethods.register("iouContractAddress")} type="hidden" />
+              <Error error={formMethods.formState.errors.amount?.message} />
+              <Input {...formMethods.register("recipient")} placeholder="Recepient address" className="w-full" />
+              <Error error={formMethods.formState.errors.recipient?.message} />
+              <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+                <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
+                <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Issue</Button>
+              </div>
             </div>
-            <div className="flex gap-2 justify-end">
-              <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Issue</Button>
-            </div>
-          </div>
-        </form>
+          </form>
+        )}
       </Modal>
     </>
   );
 }
+
+const PARTIAL_IOU_CONTRACT_ABI = [
+  {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "nonces",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
