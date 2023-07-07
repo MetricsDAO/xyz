@@ -33,7 +33,7 @@ export default function IOUCenter() {
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
           <div className="flex flex-wrap gap-2">
-            <CreateIOUButton disabled={false} />
+            <CreateIOUButton disabled={false} networks={[]} />
             <AddTokenButton disabled={false} networks={[]} />
           </div>
         </section>
