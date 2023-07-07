@@ -47,7 +47,11 @@ function SearchAndFilter() {
       validator={withZod(z.any())}
       className="space-y-3 p-3 border-[1px] border-solid border-gray-100 rounded-md bg-blue-300 bg-opacity-5"
     >
-      <Input placeholder="Search" name="q" iconLeft={<MagnifyingGlassIcon className="ml-2 h-5 w-5" />} />
+      <Input
+        placeholder="Search"
+        name="q"
+        iconRight={<MagnifyingGlassIcon className="ml-2 h-5 w-5 text-stone-500" />}
+      />
       <h3 className="font-semibold text-lg">Sort:</h3>
       <Select
         placeholder="Select option"
