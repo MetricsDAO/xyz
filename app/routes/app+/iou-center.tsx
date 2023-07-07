@@ -1,9 +1,11 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import type { Network } from "@prisma/client";
 import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { forbidden } from "remix-utils";
+import { Field, Label, Select } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
 import { Input } from "~/components/input";
@@ -30,7 +32,10 @@ export default function IOUCenter() {
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
-          <CreateIOUButton disabled={true} />
+          <div className="flex flex-wrap gap-2">
+            <CreateIOUButton disabled={false} />
+            <AddTokenButton disabled={false} networks={[]} />
+          </div>
         </section>
         <section className="max-w-3xl">
           <p className="text-lg text-cyan-500">
@@ -74,6 +79,60 @@ function CreateIOUButton({ disabled }: { disabled: boolean }) {
           <p>The tokens will be created and start circulating</p>
           <Input label="Name the iouToken" placeholder="iouToken name" />
           <Input label="Amount of iouToken" placeholder="Issue amount" />
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
+            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
+              Cancel
+            </Button>
+            <Button disabled={!validAddress}>Save</Button>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+}
+
+function AddTokenButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
+  const [openedCreate, setOpenedCreate] = useState(false);
+
+  const validAddress = false;
+  return (
+    <>
+      <Button onClick={() => setOpenedCreate(true)} disabled={disabled}>
+        Add Token
+      </Button>
+      <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Add new Token">
+        <div className="space-y-5 mt-2">
+          <p>The tokens will be added</p>
+          <Field>
+            <Label>Target Chain</Label>
+            <Select
+              placeholder="Select a target chain"
+              onChange={(v) => {}}
+              options={networks.map((n) => {
+                return { label: n.name, value: n.name };
+              })}
+            />
+          </Field>
+          <Field>
+            <Label>Token Name</Label>
+            <Input label="Token Name" placeholder="Token name" />
+          </Field>
+          <Field>
+            <Label>Token Symbol</Label>
+            <Input label="Token Symbol" placeholder="Symbol" />
+          </Field>
+          <Field>
+            <Label>Contract Address</Label>
+            <Input label="Contract Address" placeholder="contract address" />
+          </Field>
+          <Field>
+            <Label>Decimals</Label>
+            <Input label="Decimals" placeholder="decimals" />
+          </Field>
           <div className="bg-amber-200/10 flex items-center rounded-md p-2">
             <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
             <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
