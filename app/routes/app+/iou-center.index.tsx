@@ -11,7 +11,6 @@ import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import { useAccount } from "wagmi";
 import { z } from "zod";
-import { zfd } from "zod-form-data";
 import { Error } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -24,10 +23,10 @@ import { Header, Row, Table } from "~/components/table";
 import { EvmAddressSchema } from "~/domain/address";
 import type { IOUToken } from "~/domain/treasury";
 import { nodeProvider } from "~/services/node.server";
-import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import { fetchIouTokenMetadata, getMintSignature } from "~/services/treasury.server";
 
 const IssueFormSchema = z.object({
-  amount: zfd.numeric(z.number().positive()),
+  amount: z.string(),
   recipient: EvmAddressSchema,
   iouContractAddress: EvmAddressSchema,
 });
@@ -47,11 +46,17 @@ export async function action({ request }: ActionArgs) {
   const formData = await IssueFormValidator.validate(await request.formData());
   console.log("formData", formData);
   if (formData.data) {
-    const { iouContractAddress, recipient } = formData.data;
+    const { iouContractAddress, recipient, amount } = formData.data;
     const contract = new ethers.Contract(iouContractAddress, PARTIAL_IOU_CONTRACT_ABI, nodeProvider);
     const nonce: BigNumber = await contract.nonces(recipient);
     console.log("nonce", nonce.toString());
-    // TODO await treasury({ source: iouContractAddress, to: recipient, amount, nonce });
+    const signature = await getMintSignature({
+      source: iouContractAddress,
+      to: recipient,
+      amount,
+      nonce: nonce.toNumber(),
+    });
+    console.log("signature", signature);
     return { ok: true };
   }
   return null;
