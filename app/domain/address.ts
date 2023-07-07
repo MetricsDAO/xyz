@@ -30,3 +30,27 @@ export const OsmosisAddressSchema = z.string().refine((address) => {
     return false;
   }
 }, "Must be a valid Osmosis address.");
+
+export const NearAddressSchema = z.string().refine(async (address) => {
+  try {
+    const raw = JSON.stringify({
+      method: "query",
+      params: {
+        request_type: "view_account",
+        account_id: address,
+        finality: "optimistic",
+      },
+      id: 123,
+      jsonrpc: "2.0",
+    });
+    const response = await fetch("https://rpc.mainnet.near.org/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: raw,
+    });
+    const json = await response.json();
+    return json.error ? false : true;
+  } catch {
+    return false;
+  }
+}, "Must be a valid NEAR address.");
