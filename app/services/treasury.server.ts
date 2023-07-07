@@ -48,7 +48,8 @@ export async function fetchIouTokenMetadata() {
 }
 
 export async function postIouTokenMetadata(body: IOUTokenPost) {
-  const res = await fetch(`${env.TREASURY_URL}ioutoken/metadata/`, {
+  console.log("body", body);
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/metadata`, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
@@ -56,7 +57,6 @@ export async function postIouTokenMetadata(body: IOUTokenPost) {
     return res.json();
   });
 
-  console.log("res", res);
   return IOUMetadataResponseSchema.parse(res);
 }
 
@@ -65,10 +65,21 @@ export async function getMintSignature(body: requestMint) {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
-  }).then((res) => {
-    return res.json();
   });
 
-  console.log("res", res);
-  return mintResponseSchema.parse(res);
+  if (!res.ok) {
+    throw new Error(`Request failed with status ${res.status}`);
+  }
+
+  const data = await res.json();
+  console.log("res", data);
+
+  try {
+    const parsed = mintResponseSchema.parse(data);
+    console.log("parsed", parsed);
+    return parsed;
+  } catch (error) {
+    console.error("Error occurred during the API request:", error);
+    throw error; // Rethrow the error to handle it further up the call stack
+  }
 }

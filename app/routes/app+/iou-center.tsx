@@ -11,15 +11,27 @@ import { Container } from "~/components/container";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import type { EvmAddress } from "~/domain/address";
 import { requireUser } from "~/services/session.server";
-import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import { fetchIouTokenMetadata, getMintSignature, postIouTokenMetadata } from "~/services/treasury.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
-  if (!user.isAdmin) {
-    throw forbidden({ error: "User does not have permission" });
-  }
+  // if (!user.isAdmin) {
+  //   throw forbidden({ error: "User does not have permission" });
+  // }
+
+  const input = {
+    source: "0x3FD3a5553EF000DdE330855411150B786B7365aB" as EvmAddress,
+    to: "0x3e2E6134F72ba1Fbb48fD5a840B11de9698E7B6D" as EvmAddress,
+    nonce: 1,
+    amount: "100000000",
+  };
+
+  const testingMintRequest = await getMintSignature(input);
+
+  console.log("TESTING MINT REQUEST", testingMintRequest);
 
   return typedjson({ iouTokens, user }, { status: 200 });
 };

@@ -95,7 +95,7 @@ export const requestMintSchema = z.object({
   source: EvmAddressSchema,
   to: EvmAddressSchema,
   nonce: z.number(),
-  amount: z.number(),
+  amount: z.string(),
 });
 
 export type requestMint = z.infer<typeof requestMintSchema>;
