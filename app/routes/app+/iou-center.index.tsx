@@ -1,26 +1,46 @@
-import { MagnifyingGlassIcon, ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import { ExclamationTriangleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
+import { withZod } from "@remix-validated-form/with-zod";
 import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { ValidatedForm } from "remix-validated-form";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
 import { Checkbox } from "~/components/checkbox";
+import { Combobox } from "~/components/combobox";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
-import { z } from "zod";
-import { withZod } from "@remix-validated-form/with-zod";
-import { ValidatedForm } from "remix-validated-form";
-import { Combobox } from "~/components/combobox";
-import { Header, Row, Table } from "~/components/table";
 import { Select } from "~/components/select";
-import type { DataFunctionArgs } from "@remix-run/server-runtime";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import { Error } from "~/components";
+import { Header, Row, Table } from "~/components/table";
 import type { IOUToken } from "~/domain/treasury";
+import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import { useSubmit } from "@remix-run/react";
+
+const IssueFormSchema = z.object({
+  amount: zfd.numeric(z.number().positive()),
+  recipient: z.string(),
+});
+
+const IssueFormValidator = withZod(IssueFormSchema);
+
+type IssueForm = z.infer<typeof IssueFormSchema>;
 
 export const loader = async ({ params }: DataFunctionArgs) => {
   const iouTokens = await fetchIouTokenMetadata();
 
   return typedjson({ iouTokens }, { status: 200 });
 };
+
+export async function action({ request }: ActionArgs) {
+  const formData = await IssueFormValidator.validate(await request.formData());
+  console.log("formData", formData);
+  return null;
+}
 
 export default function IOUTab() {
   const { iouTokens } = useTypedLoaderData<typeof loader>();
@@ -110,7 +130,7 @@ function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
             <Row.Column span={2}>{t.balance}</Row.Column>
             <Row.Column span={2} className="flex flex-wrap gap-2 justify-end">
               <BurnButton disabled={true} />
-              <IssueButton disabled={true} />
+              <IssueButton />
             </Row.Column>
           </Row>
         );
@@ -133,7 +153,7 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
             <p>{t.fireblocksTokenName}</p>
             <div className="flex flex-wrap col-span-2 gap-2 justify-center">
               <BurnButton disabled={true} />
-              <IssueButton disabled={true} />
+              <IssueButton />
             </div>
           </Card>
         );
@@ -170,7 +190,7 @@ function BurnButton({ disabled }: { disabled: boolean }) {
   );
 }
 
-function IssueButton({ disabled }: { disabled: boolean }) {
+function IssueButton() {
   const [openedAlert, setOpenedAlert] = useState(false);
   const [openedIssue, setOpenedIssue] = useState(false);
 
@@ -179,11 +199,16 @@ function IssueButton({ disabled }: { disabled: boolean }) {
     setOpenedIssue(true);
   }
 
+  const submit = useSubmit();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const formMethods = useForm<IssueForm>({
+    resolver: zodResolver(IssueFormSchema),
+  });
+
   return (
     <>
-      <Button onClick={() => setOpenedAlert(true)} disabled={disabled}>
-        Issue
-      </Button>
+      <Button onClick={() => setOpenedAlert(true)}>Issue</Button>
       <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
         <div className="mx-auto space-y-7">
           <ExclamationTriangleIcon className="text-yellow-700 mx-auto h-5 w-5" />
@@ -204,23 +229,35 @@ function IssueButton({ disabled }: { disabled: boolean }) {
         </div>
       </Modal>
       <Modal isOpen={openedIssue} onClose={() => setOpenedIssue(false)} title="Issue iouTODO">
-        <div className="space-y-5 mt-5">
-          <Input
-            placeholder="Issue amount"
-            label="The tokens will be created and start circulating."
-            className="w-full"
-          />
-          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
-            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+        <form
+          ref={formRef}
+          className="space-y-5 mt-5"
+          onSubmit={formMethods.handleSubmit((data) => {
+            submit(formRef.current, { method: "post", action: "/app/iou-center?index" });
+          })}
+        >
+          <div className="space-y-5 mt-5">
+            <Input
+              {...formMethods.register("amount")}
+              placeholder="Issue amount"
+              label="The tokens will be created and start circulating."
+              className="w-full"
+            />
+            <Error error={formMethods.formState.errors.amount?.message} />
+            <Input {...formMethods.register("recipient")} placeholder="Recepient address" className="w-full" />
+            <Error error={formMethods.formState.errors.recipient?.message} />
+            <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+              <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
+              <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Issue</Button>
+            </div>
           </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
-              Cancel
-            </Button>
-            <Button>Issue</Button>
-          </div>
-        </div>
+        </form>
       </Modal>
     </>
   );
