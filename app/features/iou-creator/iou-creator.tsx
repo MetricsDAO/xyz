@@ -38,12 +38,14 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
 
   const transactor = useTransactor({
     onSuccess: (receipt) => {
-      console.log("IOU Success");
+      console.log("IOU Success", receipt);
       // parse event logs for contract address
       const iface = new ethers.utils.Interface(PARTIAL_IOU_FACTORY_ABI);
       const event = getEventFromLogs(iouFactoryAddress, iface, receipt.logs, "IOUCreated");
 
       if (event) {
+        // need to double check this
+        const [iouAddress, iouId] = event.args;
         // post metadata request to treasury
         // add token to mongo
       }
