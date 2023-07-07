@@ -33,7 +33,7 @@ export default function IOUCenter() {
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
-          <CreateIOUButton disabled={false} networks={[]} />
+          <IOUCreator networks={[]} />
         </section>
         <section className="max-w-3xl">
           <p className="text-lg text-cyan-500">
