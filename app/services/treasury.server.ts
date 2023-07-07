@@ -47,7 +47,6 @@ export async function fetchIouTokenMetadata() {
 }
 
 export async function postIouTokenMetadata(body: IOUTokenPost) {
-  console.log("body", body);
   const res = await fetch(`${env.TREASURY_URL}/ioutoken/metadata`, {
     method: "POST",
     body: JSON.stringify(body),
