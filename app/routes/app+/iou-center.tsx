@@ -11,32 +11,28 @@ import { Container } from "~/components/container";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
-import { listNetworks } from "~/services/network.server";
 import { requireUser } from "~/services/session.server";
 import { fetchIouTokenMetadata } from "~/services/treasury.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
-  const networks = await listNetworks();
-  console.log("networks", networks);
+  if (!user.isAdmin) {
+    throw forbidden({ error: "User does not have permission" });
+  }
 
-  // if (!user.isAdmin) {
-  //   throw forbidden({ error: "User does not have permission" });
-  // }
-
-  return typedjson({ iouTokens, user, networks }, { status: 200 });
+  return typedjson({ iouTokens, user }, { status: 200 });
 };
 
 export default function IOUCenter() {
-  const { iouTokens, networks } = useTypedLoaderData<typeof loader>();
+  const { iouTokens } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
-          <CreateIOUButton disabled={false} networks={networks} />
+          <CreateIOUButton disabled={false} networks={[]} />
         </section>
         <section className="max-w-3xl">
           <p className="text-lg text-cyan-500">
@@ -66,10 +62,10 @@ export default function IOUCenter() {
   );
 }
 
-async function CreateIOUButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
+function CreateIOUButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
-  const validAddress = true;
+  const validAddress = false;
   return (
     <>
       <Button onClick={() => setOpenedCreate(true)} disabled={disabled}>

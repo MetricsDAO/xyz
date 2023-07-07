@@ -1,9 +1,11 @@
 import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost } from "~/domain/treasury";
-import { IOUMetadataResponseSchema, IOUToken } from "~/domain/treasury";
-import { IOUTokenMetadataSchema, fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
+import {
+  IOUMetadataResponseSchema,
+  IOUTokenMetadataSchema,
+  fetchClaimsResponseSchema,
+  fetchSignaturesResponseSchema,
+} from "~/domain/treasury";
 import env from "~/env.server";
-import { mongo } from "./mongo.server";
-import { prisma } from "./prisma.server";
 
 export async function fetchSignatures(body: FetchSignaturesBody) {
   const res = await fetch(`${env.TREASURY_URL}/ioutoken/sign-claim/`, {
@@ -54,16 +56,4 @@ export async function postIouTokenMetadata(body: IOUTokenPost) {
 
   console.log("res", res);
   return IOUMetadataResponseSchema.parse(res);
-}
-
-export async function handleSubmitIOUToken(data: IOUTokenPost) {
-  const res = await postIouTokenMetadata(data);
-
-  await prisma.token.create({
-    name: res.tokenName,
-    decimals: 18,
-    networkName: "Polygon",
-    contractAddress: "0xCce422781e1818821f50226C14E6289a7144a898",
-    symbol: "MBETA2",
-  });
 }
