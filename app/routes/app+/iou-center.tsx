@@ -65,7 +65,7 @@ export default function IOUCenter() {
   );
 }
 
-function CreateIOUButton({ disabled }: { disabled: boolean }) {
+function CreateIOUButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
   const validAddress = false;
@@ -75,21 +75,41 @@ function CreateIOUButton({ disabled }: { disabled: boolean }) {
         Create iouToken
       </Button>
       <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Create new iouToken">
-        <div className="space-y-5 mt-2">
-          <p>The tokens will be created and start circulating</p>
-          <Input label="Name the iouToken" placeholder="iouToken name" />
-          <Input label="Amount of iouToken" placeholder="Issue amount" />
-          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
-            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
-          </div>
+        <form className="space-y-5 mt-2">
+          <p>The tokens will be created and can then be issued</p>
+          <Field>
+            <Label>Target Chain</Label>
+            <Select
+              placeholder="Select a Target Chain"
+              onChange={(v) => {}}
+              options={networks.map((n) => {
+                return { label: n.name, value: n.name };
+              })}
+            />
+          </Field>
+          <Field>
+            <Label>iouToken Name</Label>
+            <Input label="iouToken Name" placeholder="iouToken Name" />
+          </Field>
+          <Field>
+            <Label>Decimals</Label>
+            <Input label="Decimals" placeholder="Decimals" />
+          </Field>
+          <Field>
+            <Label>Fireblocks Token Name</Label>
+            <Input label="Fireblocks Name" placeholder="Fireblocks Name" />
+          </Field>
+          <Field>
+            <Label>Contract Address</Label>
+            <Input label="Contract Address" placeholder="Contract Address" />
+          </Field>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
               Cancel
             </Button>
             <Button disabled={!validAddress}>Save</Button>
           </div>
-        </div>
+        </form>
       </Modal>
     </>
   );
