@@ -1,55 +1,67 @@
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import { ethers } from "ethers";
 import { useState } from "react";
+import { ethers } from "ethers";
 import { Button } from "../../components/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { IOUCreationFormSchema } from "./schema";
-import { Modal, Field, Label, Select, Input } from "~/components";
-import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import { Modal, Field, Label, Select, Input, Error } from "~/components";
+import { getEventFromLogs } from "~/utils/helpers";
 import type { EvmAddress } from "~/domain/address";
 import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
+import type { BigNumber } from "ethers";
 
-interface IOUCreatorProps {
+interface IOUCreatorArgs {
   name: string;
   symbol: string;
   destinationChain: string;
   destinationAddress: EvmAddress;
-  destinationDecimals: number;
+  destinationDecimals: BigNumber;
 }
 
-// TODO: Where to keep the factory address?
 export function IOUCreator({ networks, targetTokens }: { networks: Network[]; targetTokens: Token[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
-  //   const {
-  //     register,
-  //     handleSubmit,
-  //     formState: { errors },
-  //   } = useForm<IOUCreationForm>({
-  //     resolver: zodResolver(IOUCreationFormSchema),
-  //   });
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IOUCreationForm>({
+    resolver: zodResolver(IOUCreationFormSchema),
+  });
 
-  const validAddress = true;
+  // TODO: Where to keep the factory address?
+  const iouFactoryAddress = "0x47E38e585EbBBEC57F4FfeF222fb73B1E3A524bC";
 
   const transactor = useTransactor({
-    onSuccess: () => {
+    onSuccess: (receipt) => {
       console.log("IOU Success");
+      // parse event logs for contract address
+      const iface = new ethers.utils.Interface(PARTIAL_IOU_FACTORY_ABI);
+      const event = getEventFromLogs(iouFactoryAddress, iface, receipt.logs, "IOUCreated");
+
+      if (event) {
+        // post metadata request to treasury
+        // add token to mongo
+      }
     },
   });
 
-  const onSubmit = () => {
-    const iouReceipt = {
-      name: "Test",
-      symbol: "TEST",
-      destinationChain: "SOL",
-      destinationAddress: "0x47E38e585EbBBEC57F4FfeF222fb73B1E3A524bC" as EvmAddress,
-      destinationDecimals: 18,
+  const onSubmit = (data: IOUCreationForm) => {
+    console.log("submit", data);
+    const iouReceipt: IOUCreatorArgs = {
+      name: data.name,
+      symbol: data.symbol,
+      destinationChain: data.destinationChain,
+      destinationAddress: data.destinationAddress as EvmAddress,
+      destinationDecimals: ethers.BigNumber.from(data.destinationDecimals),
     };
+
     transactor.start({
-      config: () => configureFromValues({ iouReceipt, factoryAddress: "0x47E38e585EbBBEC57F4FfeF222fb73B1E3A524bC" }),
+      config: () => configureFromValues({ iouReceipt, factoryAddress: iouFactoryAddress }),
     });
   };
 
@@ -61,45 +73,63 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
           <p>The tokens will be created and can then be issued</p>
           <Field>
             <Label>Target Chain</Label>
-            <Select
-              placeholder="Select a Target Chain"
-              onChange={(v) => {}}
-              options={networks.map((n) => {
-                return { label: n.name, value: n.name };
-              })}
+            <Error error={errors.destinationChain?.message} />
+            <Controller
+              control={control}
+              name="destinationChain"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select a Target Chain"
+                  options={networks.map((n) => {
+                    return { label: n.name, value: n.name };
+                  })}
+                />
+              )}
             />
           </Field>
           <Field>
             <Label>Target Token</Label>
-            <Select
-              placeholder="Select a Target Token"
-              onChange={(v) => {}}
-              options={targetTokens.map((t) => {
-                return { label: t.name, value: t.name };
-              })}
+            <Error error={errors.destinationAddress?.message} />
+            <Controller
+              control={control}
+              name="destinationAddress"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select a Target Token"
+                  options={targetTokens.map((t) => {
+                    return { label: t.name, value: t.name };
+                  })}
+                />
+              )}
             />
           </Field>
           <Field>
             <Label>iouToken Name</Label>
-            <Input label="iouToken Name" placeholder="iouToken Name" />
+            <Error error={errors.name?.message} />
+            <Input {...register("name")} label="iouToken Name" placeholder="iouToken Name" />
           </Field>
           <Field>
             <Label>iouToken Symbol</Label>
-            <Input label="iouToken Symbol" placeholder="iouToken Symbol" />
+            <Error error={errors.symbol?.message} />
+            <Input {...register("symbol")} label="iouToken Symbol" placeholder="iouToken Symbol" />
           </Field>
           <Field>
             <Label>Decimals</Label>
-            <Input label="Decimals" placeholder="Decimals" />
+            <Error error={errors.destinationDecimals?.message} />
+            <Input {...register("destinationDecimals")} label="Decimals" placeholder="Decimals" />
           </Field>
           <Field>
             <Label>Fireblocks Token Name</Label>
-            <Input label="Fireblocks Name" placeholder="Fireblocks Name" />
+            <Error error={errors.fireblocksTokenName?.message} />
+            <Input {...register("fireblocksTokenName")} label="Fireblocks Name" placeholder="Fireblocks Name" />
           </Field>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
               Cancel
             </Button>
-            <Button disabled={!validAddress}>Save</Button>
+            <Button onClick={handleSubmit(onSubmit)}>Save</Button>
           </div>
         </form>
       </Modal>
@@ -117,7 +147,7 @@ function configureFromValues({
   iouReceipt,
   factoryAddress,
 }: {
-  iouReceipt: IOUCreatorProps;
+  iouReceipt: IOUCreatorArgs;
   factoryAddress: EvmAddress;
 }) {
   const receipt = {
@@ -186,5 +216,30 @@ const PARTIAL_IOU_FACTORY_ABI = [
     ],
     stateMutability: "nonpayable",
     type: "function",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "contract IOU",
+        name: "iou",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "deployer",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "iouId",
+        type: "uint256",
+      },
+    ],
+    name: "IOUCreated",
+    type: "event",
   },
 ] as const;
