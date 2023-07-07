@@ -66,56 +66,6 @@ export default function IOUCenter() {
   );
 }
 
-function CreateIOUButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
-  const [openedCreate, setOpenedCreate] = useState(false);
-
-  const validAddress = false;
-  return (
-    <>
-      <Button onClick={() => setOpenedCreate(true)} disabled={disabled}>
-        Create iouToken
-      </Button>
-      <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Create new iouToken">
-        <form className="space-y-5 mt-2">
-          <p>The tokens will be created and can then be issued</p>
-          <Field>
-            <Label>Target Chain</Label>
-            <Select
-              placeholder="Select a Target Chain"
-              onChange={(v) => {}}
-              options={networks.map((n) => {
-                return { label: n.name, value: n.name };
-              })}
-            />
-          </Field>
-          <Field>
-            <Label>iouToken Name</Label>
-            <Input label="iouToken Name" placeholder="iouToken Name" />
-          </Field>
-          <Field>
-            <Label>Decimals</Label>
-            <Input label="Decimals" placeholder="Decimals" />
-          </Field>
-          <Field>
-            <Label>Fireblocks Token Name</Label>
-            <Input label="Fireblocks Name" placeholder="Fireblocks Name" />
-          </Field>
-          <Field>
-            <Label>Contract Address</Label>
-            <Input label="Contract Address" placeholder="Contract Address" />
-          </Field>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
-              Cancel
-            </Button>
-            <Button disabled={!validAddress}>Save</Button>
-          </div>
-        </form>
-      </Modal>
-    </>
-  );
-}
-
 function AddTokenButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { IOUCreationFormSchema } from "./schema";
 import { Modal, Field, Label, Select, Input } from "~/components";
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import type { EvmAddress } from "~/domain/address";
 import type { IOUCreationForm } from "./schema";
 import type { Network } from "@prisma/client";
@@ -19,7 +20,6 @@ interface IOUCreatorProps {
 }
 
 // TODO: Where to keep the factory address?
-// export function IOUCreator({ iouReceipt }: { iouReceipt: IOUCreatorProps }) {
 export function IOUCreator({ networks }: { networks: Network[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
@@ -88,9 +88,7 @@ export function IOUCreator({ networks }: { networks: Network[] }) {
             <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
               Cancel
             </Button>
-            <Button onSubmit={onSubmit} disabled={!validAddress}>
-              Save
-            </Button>
+            <Button disabled={!validAddress}>Save</Button>
           </div>
         </form>
       </Modal>
