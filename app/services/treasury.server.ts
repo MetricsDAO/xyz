@@ -1,4 +1,6 @@
-import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, requestMint } from "~/domain/treasury";
+import { mintResponseSchema } from "~/domain/treasury";
+import { requestMintSchema } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
   IOUTokenMetadataSchema,
@@ -56,4 +58,17 @@ export async function postIouTokenMetadata(body: IOUTokenPost) {
 
   console.log("res", res);
   return IOUMetadataResponseSchema.parse(res);
+}
+
+export async function getMintSignature(body: requestMint) {
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/request-mint`, {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
+  }).then((res) => {
+    return res.json();
+  });
+
+  console.log("res", res);
+  return mintResponseSchema.parse(res);
 }

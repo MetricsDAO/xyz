@@ -89,4 +89,29 @@ export const IOUMetadataResponseSchema = z.object({
   decimals: z.number(),
 });
 
-export type IOUMetadataPostResponseSchema = z.infer<typeof IOUMetadataResponseSchema>;
+export type IOUMetadataPostResponse = z.infer<typeof IOUMetadataResponseSchema>;
+
+export const requestMintSchema = z.object({
+  source: EvmAddressSchema,
+  to: EvmAddressSchema,
+  nonce: z.number(),
+  amount: z.number(),
+});
+
+export type requestMint = z.infer<typeof requestMintSchema>;
+
+export const mintResponseSchema = z.object({
+  id: z.string(),
+  tokenName: z.string(),
+  chain: z.string(),
+  fireblocksTokenName: z.string(),
+  decimals: z.number(),
+  signedBody: z.object({
+    source: EvmAddressSchema,
+    to: EvmAddressSchema,
+    nonce: z.string(),
+    amount: z.number(),
+    expiration: z.date(),
+  }),
+  signature: z.string(),
+});
