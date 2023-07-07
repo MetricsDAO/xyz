@@ -1,11 +1,10 @@
 import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, requestMint } from "~/domain/treasury";
-import { mintResponseSchema } from "~/domain/treasury";
-import { requestMintSchema } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
   IOUTokenMetadataSchema,
   fetchClaimsResponseSchema,
   fetchSignaturesResponseSchema,
+  mintResponseSchema,
 } from "~/domain/treasury";
 import env from "~/env.server";
 
@@ -70,13 +69,10 @@ export async function getMintSignature(body: requestMint) {
   if (!res.ok) {
     throw new Error(`Request failed with status ${res.status}`);
   }
-
   const data = await res.json();
-  console.log("res", data);
 
   try {
     const parsed = mintResponseSchema.parse(data);
-    console.log("parsed", parsed);
     return parsed;
   } catch (error) {
     console.error("Error occurred during the API request:", error);
