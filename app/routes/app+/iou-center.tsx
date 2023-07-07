@@ -106,7 +106,10 @@ function AddTokenButton({ disabled, networks }: { disabled: boolean; networks: N
       </Button>
       <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Add new Token">
         <div className="space-y-5 mt-2">
-          <p>The tokens will be added</p>
+          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
+            <p className="text-yellow-700 text-sm">For tokens on polygon only</p>
+          </div>
           <Field>
             <Label>Target Chain</Label>
             <Select
@@ -133,10 +136,6 @@ function AddTokenButton({ disabled, networks }: { disabled: boolean; networks: N
             <Label>Decimals</Label>
             <Input label="Decimals" placeholder="decimals" />
           </Field>
-          <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-            <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
-            <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
-          </div>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
               Cancel
