@@ -70,3 +70,23 @@ export const IOUTokenMetadataSchema = z.object({
   metadata: z.array(IOUTokenSchema),
   signature: z.string(),
 });
+
+export const IOUTokenPostMetadataSchema = z.object({
+  tokenName: z.string(),
+  chain: z.string(),
+  decimals: z.number(),
+  fireblocksTokenName: z.string(),
+  iOUTokenContract_addresses: z.array(EvmAddressSchema),
+});
+
+export type IOUTokenPost = z.infer<typeof IOUTokenPostMetadataSchema>;
+
+export const IOUMetadataResponseSchema = z.object({
+  id: z.string(),
+  tokenName: z.string(),
+  chain: z.string(),
+  fireblocksTokenName: z.string(),
+  decimals: z.number(),
+});
+
+export type IOUMetadataPostResponseSchema = z.infer<typeof IOUMetadataResponseSchema>;

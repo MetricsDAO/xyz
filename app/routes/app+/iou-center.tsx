@@ -15,9 +15,9 @@ import { fetchIouTokenMetadata } from "~/services/treasury.server";
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
-  if (!user.isAdmin) {
-    throw forbidden({ error: "User does not have permission" });
-  }
+  // if (!user.isAdmin) {
+  //   throw forbidden({ error: "User does not have permission" });
+  // }
 
   return typedjson({ iouTokens, user }, { status: 200 });
 };
@@ -30,7 +30,7 @@ export default function IOUCenter() {
       <div className="space-y-2 mb-16">
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
-          <CreateIOUButton disabled={true} />
+          <CreateIOUButton disabled={false} />
         </section>
         <section className="max-w-3xl">
           <p className="text-lg text-cyan-500">

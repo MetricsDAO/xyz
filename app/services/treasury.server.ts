@@ -1,4 +1,5 @@
-import type { FetchClaimsInput, FetchSignaturesBody } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost } from "~/domain/treasury";
+import { IOUMetadataResponseSchema, IOUToken } from "~/domain/treasury";
 import { IOUTokenMetadataSchema, fetchClaimsResponseSchema, fetchSignaturesResponseSchema } from "~/domain/treasury";
 import env from "~/env.server";
 
@@ -38,4 +39,17 @@ export async function fetchIouTokenMetadata() {
   });
 
   return IOUTokenMetadataSchema.parse(res);
+}
+
+export async function postIouTokenMetadata(body: IOUTokenPost) {
+  const res = await fetch(`${env.TREASURY_URL}ioutoken/metadata/`, {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
+  }).then((res) => {
+    return res.json();
+  });
+
+  console.log("res", res);
+  return IOUMetadataResponseSchema.parse(res);
 }
