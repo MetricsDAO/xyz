@@ -10,7 +10,8 @@ import { Modal, Field, Label, Select, Input } from "~/components";
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import type { EvmAddress } from "~/domain/address";
 import type { IOUCreationForm } from "./schema";
-import type { Network } from "@prisma/client";
+import type { Network, Token } from "@prisma/client";
+
 interface IOUCreatorProps {
   name: string;
   symbol: string;
@@ -20,7 +21,7 @@ interface IOUCreatorProps {
 }
 
 // TODO: Where to keep the factory address?
-export function IOUCreator({ networks }: { networks: Network[] }) {
+export function IOUCreator({ networks, targetTokens }: { networks: Network[]; targetTokens: Token[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
   //   const {
@@ -69,8 +70,22 @@ export function IOUCreator({ networks }: { networks: Network[] }) {
             />
           </Field>
           <Field>
+            <Label>Target Token</Label>
+            <Select
+              placeholder="Select a Target Token"
+              onChange={(v) => {}}
+              options={targetTokens.map((t) => {
+                return { label: t.name, value: t.name };
+              })}
+            />
+          </Field>
+          <Field>
             <Label>iouToken Name</Label>
             <Input label="iouToken Name" placeholder="iouToken Name" />
+          </Field>
+          <Field>
+            <Label>iouToken Symbol</Label>
+            <Input label="iouToken Symbol" placeholder="iouToken Symbol" />
           </Field>
           <Field>
             <Label>Decimals</Label>
@@ -79,10 +94,6 @@ export function IOUCreator({ networks }: { networks: Network[] }) {
           <Field>
             <Label>Fireblocks Token Name</Label>
             <Input label="Fireblocks Name" placeholder="Fireblocks Name" />
-          </Field>
-          <Field>
-            <Label>Contract Address</Label>
-            <Input label="Contract Address" placeholder="Contract Address" />
           </Field>
           <div className="flex gap-2 justify-end">
             <Button variant="cancel" onClick={() => setOpenedCreate(false)}>

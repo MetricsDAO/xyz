@@ -14,19 +14,23 @@ import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { IOUCreator } from "~/features/iou-creator/iou-creator";
 import { requireUser } from "~/services/session.server";
 import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import { listTokens } from "~/services/tokens.server";
+import { listNetworks } from "~/services/network.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
+  const targetTokens = await listTokens();
+  const networks = await listNetworks();
   // if (!user.isAdmin) {
   //   throw forbidden({ error: "User does not have permission" });
   // }
 
-  return typedjson({ iouTokens, user }, { status: 200 });
+  return typedjson({ iouTokens, targetTokens, networks, user }, { status: 200 });
 };
 
 export default function IOUCenter() {
-  const { iouTokens } = useTypedLoaderData<typeof loader>();
+  const { iouTokens, targetTokens, networks } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -34,8 +38,8 @@ export default function IOUCenter() {
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
           <div className="flex flex-wrap gap-2">
-            <IOUCreator networks={[]} />
-            <AddTokenButton disabled={false} networks={[]} />
+            <IOUCreator networks={networks} targetTokens={targetTokens} />
+            <AddTokenButton disabled={false} networks={networks} />
           </div>
         </section>
         <section className="max-w-3xl">
