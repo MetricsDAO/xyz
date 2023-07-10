@@ -8,8 +8,7 @@ import { postIouTokenMetadata } from "~/services/treasury.server";
 const IouTokenValidator = withZod(IOUPostSchema);
 
 export async function action({ request }: ActionArgs) {
-  const formData = await IouTokenValidator.validate(await request.formData());
-  console.log("FORM DATA", formData);
+  const formData = await IouTokenValidator.validate(await request.json());
   if (formData.data) {
     const {
       name,
@@ -27,7 +26,6 @@ export async function action({ request }: ActionArgs) {
       fireblocksTokenName: fireblocksTokenName,
       iOUTokenContract_addresses: iouTokenAddresses,
     });
-    console.log("RES", res);
 
     //post token to db
     await createToken(name, destinationChain, destinationDecimals, destinationAddress, symbol, true);

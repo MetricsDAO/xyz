@@ -1,10 +1,9 @@
-import type { FetchClaimsInput, FetchSignaturesBody, IOUPost, IOUTokenPost, RequestMint } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, RequestMint } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
-  IOUTokenMetadataSchema,
+  MintResponseSchema,
   fetchClaimsResponseSchema,
   fetchSignaturesResponseSchema,
-  MintResponseSchema,
 } from "~/domain/treasury";
 import env from "~/env.server";
 

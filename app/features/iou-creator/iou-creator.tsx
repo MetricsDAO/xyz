@@ -52,7 +52,7 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
 
         const postMetaData = {
           ...values,
-          iouTokenAddresses: iouAddress,
+          iouTokenAddresses: Array.of(iouAddress),
         };
         PostAndSaveToken(postMetaData);
       }

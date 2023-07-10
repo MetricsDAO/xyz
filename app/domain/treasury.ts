@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
-import { prisma } from "~/services/prisma.server";
 
 export const fetchSignaturesBodySchema = z.array(
   z.object({
