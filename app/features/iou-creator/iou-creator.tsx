@@ -8,11 +8,14 @@ import { useForm, Controller } from "react-hook-form";
 import { IOUCreationFormSchema } from "./schema";
 import { Modal, Field, Label, Select, Input, Error } from "~/components";
 import { getEventFromLogs } from "~/utils/helpers";
+import { FormProvider } from "react-hook-form";
 import type { EvmAddress } from "~/domain/address";
 import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
 import type { BigNumber } from "ethers";
 import { iouFactoryAddress, iouFactoryAbi } from "~/abi/iou-factory";
+import { postIouTokenMetadata } from "~/services/treasury.server";
+import { createToken } from "~/domain/treasury";
 
 interface IOUCreatorArgs {
   name: string;
@@ -25,14 +28,16 @@ interface IOUCreatorArgs {
 export function IOUCreator({ networks, targetTokens }: { networks: Network[]; targetTokens: Token[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
+  const methods = useForm<IOUCreationForm>({
+    resolver: zodResolver(IOUCreationFormSchema),
+  });
+
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IOUCreationForm>({
-    resolver: zodResolver(IOUCreationFormSchema),
-  });
+  } = methods;
 
   const transactor = useTransactor({
     onSuccess: (receipt) => {
@@ -44,14 +49,29 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
       if (event) {
         // need to double check this
         const [iouAddress, iouId] = event.args;
+        const values = methods.getValues();
+        console.log("getValues", values);
         // post metadata request to treasury
+        const res = postIouTokenMetadata({
+          tokenName: values.name,
+          chain: values.destinationChain,
+          decimals: values.destinationDecimals,
+          fireblocksTokenName: values.fireblocksTokenName,
+          iOUTokenContract_addresses: iouAddress,
+        });
+
+        console.log("RESULT", res);
         // add token to mongo
+        createToken(values.name, values.destinationChain, values.destinationDecimals, iouAddress, values.symbol, true);
       }
     },
   });
 
   const onSubmit = (data: IOUCreationForm) => {
     console.log("submit", data);
+    console.log("methods", methods);
+    const values = methods.getValues();
+    console.log("values", values);
     const iouReceipt: IOUCreatorArgs = {
       name: data.name,
       symbol: data.symbol,
@@ -66,7 +86,7 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
   };
 
   return (
-    <>
+    <FormProvider {...methods}>
       <Button onClick={() => setOpenedCreate(true)}>Create iouToken</Button>
       <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Create new iouToken">
         <form className="space-y-5 mt-2">
@@ -139,7 +159,7 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
         title="Issue"
         confirmationMessage="Ensure there is enough token liquidity before issuing"
       />
-    </>
+    </FormProvider>
   );
 }
 
