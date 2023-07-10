@@ -1,23 +1,21 @@
-import { TxModal } from "~/components/tx-modal/tx-modal";
-import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import { useState } from "react";
-import { ethers } from "ethers";
-import { Button } from "../../components/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
-import { IOUCreationFormSchema } from "./schema";
-import { Modal, Field, Label, Select, Input, Error } from "~/components";
-import { getEventFromLogs } from "~/utils/helpers";
-import { FormProvider } from "react-hook-form";
-import type { EvmAddress } from "~/domain/address";
-import type { IOUCreationForm } from "./schema";
-import type { Network, Token } from "@prisma/client";
+import type { Network } from "@prisma/client";
 import type { BigNumber } from "ethers";
-import { iouFactoryAddress, iouFactoryAbi } from "~/abi/iou-factory";
-import { postIouTokenMetadata } from "~/services/treasury.server";
-import { createToken } from "~/domain/treasury";
+import { ethers } from "ethers";
+import { useState } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { iouFactoryAbi, iouFactoryAddress } from "~/abi/iou-factory";
+import { Error, Field, Input, Label, Modal, Select } from "~/components";
+import { TxModal } from "~/components/tx-modal/tx-modal";
+import type { EvmAddress } from "~/domain/address";
+import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { postIouToken } from "~/utils/fetch";
+import { getEventFromLogs } from "~/utils/helpers";
+import { Button } from "../../components/button";
+import type { IOUCreationForm } from "./schema";
+import { IOUCreationFormSchema } from "./schema";
 
-interface IOUCreatorArgs {
+export interface IOUCreatorArgs {
   name: string;
   symbol: string;
   destinationChain: string;
@@ -25,7 +23,7 @@ interface IOUCreatorArgs {
   destinationDecimals: BigNumber;
 }
 
-export function IOUCreator({ networks, targetTokens }: { networks: Network[]; targetTokens: Token[] }) {
+export function IOUCreator({ networks }: { networks: Network[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
   const methods = useForm<IOUCreationForm>({
@@ -47,22 +45,14 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
       const event = getEventFromLogs(iouFactoryAddress, iface, receipt.logs, "IOUCreated");
 
       if (event) {
-        // need to double check this
-        const [iouAddress, iouId] = event.args;
+        const [iouAddress] = event.args;
         const values = methods.getValues();
-        console.log("getValues", values);
-        // post metadata request to treasury
-        const res = postIouTokenMetadata({
-          tokenName: values.name,
-          chain: values.destinationChain,
-          decimals: values.destinationDecimals,
-          fireblocksTokenName: values.fireblocksTokenName,
-          iOUTokenContract_addresses: iouAddress,
-        });
 
-        console.log("RESULT", res);
-        // add token to mongo
-        createToken(values.name, values.destinationChain, values.destinationDecimals, iouAddress, values.symbol, true);
+        const postMetaData = {
+          ...values,
+          iouTokenAddresses: Array.of(iouAddress),
+        };
+        postIouToken(postMetaData);
       }
     },
   });
@@ -115,13 +105,7 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
               control={control}
               name="destinationAddress"
               render={({ field }) => (
-                <Select
-                  {...field}
-                  placeholder="Select a Target Token"
-                  options={targetTokens.map((t) => {
-                    return { label: t.name, value: t.contractAddress };
-                  })}
-                />
+                <Input {...register("destinationAddress")} label="Target Address" placeholder="Target Address" />
               )}
             />
           </Field>

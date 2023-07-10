@@ -4,6 +4,7 @@ import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { forbidden } from "remix-utils";
 import { Field, Label } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -13,23 +14,21 @@ import { TabNav, TabNavLink } from "~/components/tab-nav";
 import { IOUCreator } from "~/features/iou-creator/iou-creator";
 import { listNetworks } from "~/services/network.server";
 import { requireUser } from "~/services/session.server";
-import { listTokens } from "~/services/tokens.server";
 import { fetchIouTokenMetadata } from "~/services/treasury.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
-  const targetTokens = await listTokens();
   const networks = await listNetworks();
-  // if (!user.isAdmin) {
-  //   throw forbidden({ error: "User does not have permission" });
-  // }
+  if (!user.isAdmin) {
+    throw forbidden({ error: "User does not have permission" });
+  }
 
-  return typedjson({ iouTokens, targetTokens, networks, user }, { status: 200 });
+  return typedjson({ iouTokens, networks, user }, { status: 200 });
 };
 
 export default function IOUCenter() {
-  const { iouTokens, targetTokens, networks } = useTypedLoaderData<typeof loader>();
+  const { iouTokens, networks } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -37,7 +36,7 @@ export default function IOUCenter() {
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
           <div className="flex flex-wrap gap-2">
-            <IOUCreator networks={networks} targetTokens={targetTokens} />
+            <IOUCreator networks={networks} />
             <AddTokenButton disabled={false} networks={networks} />
           </div>
         </section>
