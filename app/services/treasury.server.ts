@@ -43,7 +43,7 @@ export async function fetchIouTokenMetadata() {
     return res.json();
   });
 
-  return IOUTokenMetadataSchema.parse(res);
+  return res;
 }
 
 export async function postIouTokenMetadata(body: IOUTokenPost) {

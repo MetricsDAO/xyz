@@ -11,6 +11,7 @@ import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjs
 import { ValidatedForm } from "remix-validated-form";
 import { useAccount } from "wagmi";
 import { z } from "zod";
+import { iouTokenAbi } from "~/abi/iou-token";
 import { Error } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -47,7 +48,7 @@ export async function action({ request }: ActionArgs) {
   const formData = await IssueFormValidator.validate(await request.formData());
   if (formData.data) {
     const { iouContractAddress, recipient, amount } = formData.data;
-    const contract = new ethers.Contract(iouContractAddress, PARTIAL_IOU_CONTRACT_ABI, nodeProvider);
+    const contract = new ethers.Contract(iouContractAddress, iouTokenAbi, nodeProvider);
     const nonce: BigNumber = await contract.nonces(recipient);
     const res = await getMintSignature({
       source: iouContractAddress,
@@ -304,13 +305,3 @@ function IssueButton({ token }: { token: IOUToken }) {
     </>
   );
 }
-
-const PARTIAL_IOU_CONTRACT_ABI = [
-  {
-    inputs: [{ internalType: "address", name: "", type: "address" }],
-    name: "nonces",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
