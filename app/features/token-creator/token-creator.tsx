@@ -27,7 +27,6 @@ export function AddTokenButton() {
       destinationDecimals: formValues.decimals,
       isIouToken: false,
     };
-
     postToken(data);
   };
 
