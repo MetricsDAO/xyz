@@ -4,7 +4,6 @@ import { EvmAddressSchema, OsmosisAddressSchema, SolAddressSchema, NearAddressSc
 export const PaymentAddressSchema = z.discriminatedUnion("networkName", [
   z.object({ networkName: z.literal("Polygon"), address: EvmAddressSchema }),
   z.object({ networkName: z.literal("Ethereum"), address: EvmAddressSchema }),
-  z.object({ networkName: z.literal("Avalanche"), address: EvmAddressSchema }),
   z.object({ networkName: z.literal("Solana"), address: SolAddressSchema }),
   z.object({ networkName: z.literal("Osmosis"), address: OsmosisAddressSchema }),
   z.object({ networkName: z.literal("Avalanche"), address: EvmAddressSchema }),
