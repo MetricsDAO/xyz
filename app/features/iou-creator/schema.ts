@@ -5,7 +5,7 @@ export const IOUCreationFormSchema = z.object({
   symbol: z.string().min(1, "Required").max(4, "Must be 4 characters or less"),
   destinationChain: z.string().min(1, "Required"),
   destinationAddress: z.string(),
-  destinationDecimals: z.string().min(1, "Required"),
+  destinationDecimals: z.number().min(1, "Required"),
   fireblocksTokenName: z.string().min(1, "Required"),
 });
 

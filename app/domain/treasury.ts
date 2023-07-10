@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EvmAddressSchema } from "./address";
+import { prisma } from "~/services/prisma.server";
 
 export const fetchSignaturesBodySchema = z.array(
   z.object({
@@ -118,3 +119,23 @@ export const MintResponseSchema = z.object({
 });
 
 export type MintResponse = z.infer<typeof MintResponseSchema>;
+
+export const createToken = async (
+  name: string,
+  networkName: string,
+  decimals: number,
+  contractAddress: string,
+  symbol: string,
+  isIou: boolean
+) => {
+  return prisma.token.create({
+    data: {
+      name: name,
+      networkName: networkName,
+      decimals: decimals,
+      contractAddress: contractAddress,
+      symbol: symbol,
+      isIou: isIou,
+    },
+  });
+};
