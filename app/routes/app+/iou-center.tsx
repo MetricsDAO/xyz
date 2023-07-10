@@ -4,6 +4,7 @@ import { Outlet } from "@remix-run/react";
 import type { DataFunctionArgs } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { forbidden } from "remix-utils";
 import { Field, Label } from "~/components";
 import { Button } from "~/components/button";
 import { Container } from "~/components/container";
@@ -19,9 +20,9 @@ export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
   const networks = await listNetworks();
-  // if (!user.isAdmin) {
-  //   throw forbidden({ error: "User does not have permission" });
-  // }
+  if (!user.isAdmin) {
+    throw forbidden({ error: "User does not have permission" });
+  }
 
   return typedjson({ iouTokens, networks, user }, { status: 200 });
 };
