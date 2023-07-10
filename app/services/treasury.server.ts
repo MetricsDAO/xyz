@@ -1,9 +1,10 @@
-import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, RequestMint } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
   IOUTokenMetadataSchema,
   fetchClaimsResponseSchema,
   fetchSignaturesResponseSchema,
+  MintResponseSchema,
 } from "~/domain/treasury";
 import env from "~/env.server";
 
@@ -46,7 +47,7 @@ export async function fetchIouTokenMetadata() {
 }
 
 export async function postIouTokenMetadata(body: IOUTokenPost) {
-  const res = await fetch(`${env.TREASURY_URL}ioutoken/metadata/`, {
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/metadata`, {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
@@ -54,6 +55,26 @@ export async function postIouTokenMetadata(body: IOUTokenPost) {
     return res.json();
   });
 
-  console.log("res", res);
   return IOUMetadataResponseSchema.parse(res);
+}
+
+export async function getMintSignature(body: RequestMint) {
+  const res = await fetch(`${env.TREASURY_URL}/ioutoken/request-mint`, {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json", authorization: env.TREASURY_API_KEY },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Request failed with status ${res.status}`);
+  }
+  const data = await res.json();
+
+  try {
+    const parsed = MintResponseSchema.parse(data);
+    return parsed;
+  } catch (error) {
+    console.error("Error occurred during the API request:", error);
+    throw error; // Rethrow the error to handle it further up the call stack
+  }
 }
