@@ -11,21 +11,26 @@ import { Container } from "~/components/container";
 import { Input } from "~/components/input";
 import { Modal } from "~/components/modal";
 import { TabNav, TabNavLink } from "~/components/tab-nav";
+import { IOUCreator } from "~/features/iou-creator/iou-creator";
 import { requireUser } from "~/services/session.server";
 import { fetchIouTokenMetadata } from "~/services/treasury.server";
+import { listTokens } from "~/services/tokens.server";
+import { listNetworks } from "~/services/network.server";
 
 export const loader = async ({ request }: DataFunctionArgs) => {
   const user = await requireUser(request, "/app/login?redirectto=app/iou-center");
   const iouTokens = await fetchIouTokenMetadata();
-  if (!user.isAdmin) {
-    throw forbidden({ error: "User does not have permission" });
-  }
+  const targetTokens = await listTokens();
+  const networks = await listNetworks();
+  // if (!user.isAdmin) {
+  //   throw forbidden({ error: "User does not have permission" });
+  // }
 
-  return typedjson({ iouTokens, user }, { status: 200 });
+  return typedjson({ iouTokens, targetTokens, networks, user }, { status: 200 });
 };
 
 export default function IOUCenter() {
-  const { iouTokens } = useTypedLoaderData<typeof loader>();
+  const { iouTokens, targetTokens, networks } = useTypedLoaderData<typeof loader>();
 
   return (
     <Container className="py-16 px-10">
@@ -33,8 +38,8 @@ export default function IOUCenter() {
         <section className="flex flex-wrap gap-5 justify-between">
           <h1 className="text-3xl font-semibold">iouCenter</h1>
           <div className="flex flex-wrap gap-2">
-            <CreateIOUButton disabled={false} networks={[]} />
-            <AddTokenButton disabled={false} networks={[]} />
+            <IOUCreator networks={networks} targetTokens={targetTokens} />
+            <AddTokenButton disabled={false} networks={networks} />
           </div>
         </section>
         <section className="max-w-3xl">
@@ -62,56 +67,6 @@ export default function IOUCenter() {
 
       <Outlet />
     </Container>
-  );
-}
-
-function CreateIOUButton({ disabled, networks }: { disabled: boolean; networks: Network[] }) {
-  const [openedCreate, setOpenedCreate] = useState(false);
-
-  const validAddress = false;
-  return (
-    <>
-      <Button onClick={() => setOpenedCreate(true)} disabled={disabled}>
-        Create iouToken
-      </Button>
-      <Modal isOpen={openedCreate} onClose={() => setOpenedCreate(false)} title="Create new iouToken">
-        <form className="space-y-5 mt-2">
-          <p>The tokens will be created and can then be issued</p>
-          <Field>
-            <Label>Target Chain</Label>
-            <Select
-              placeholder="Select a Target Chain"
-              onChange={(v) => {}}
-              options={networks.map((n) => {
-                return { label: n.name, value: n.name };
-              })}
-            />
-          </Field>
-          <Field>
-            <Label>iouToken Name</Label>
-            <Input label="iouToken Name" placeholder="iouToken Name" />
-          </Field>
-          <Field>
-            <Label>Decimals</Label>
-            <Input label="Decimals" placeholder="Decimals" />
-          </Field>
-          <Field>
-            <Label>Fireblocks Token Name</Label>
-            <Input label="Fireblocks Name" placeholder="Fireblocks Name" />
-          </Field>
-          <Field>
-            <Label>Contract Address</Label>
-            <Input label="Contract Address" placeholder="Contract Address" />
-          </Field>
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedCreate(false)}>
-              Cancel
-            </Button>
-            <Button disabled={!validAddress}>Save</Button>
-          </div>
-        </form>
-      </Modal>
-    </>
   );
 }
 
