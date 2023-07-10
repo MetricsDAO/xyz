@@ -12,7 +12,7 @@ const IouTokenValidator = withZod(IOUPostSchema);
 export async function action({ request }: ActionArgs) {
   const user = await requireUser(request);
 
-  if (!user || !user.isAdmin) {
+  if (!user) {
     throw forbidden({ error: "Not allowed" });
   }
   const formData = await IouTokenValidator.validate(await request.json());
