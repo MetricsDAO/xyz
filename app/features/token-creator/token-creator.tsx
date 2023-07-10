@@ -2,9 +2,10 @@ import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Button, Error, Field, Input, Label, Modal } from "~/components";
-import { AddTokenFormSchema, type AddTokenForm } from "./schema";
 import { postToken } from "~/utils/fetch";
+import { AddTokenFormSchema, type AddTokenForm } from "./schema";
 
 export function AddTokenButton() {
   const [openedCreate, setOpenedCreate] = useState(false);
@@ -15,6 +16,7 @@ export function AddTokenButton() {
 
   const {
     handleSubmit,
+    register,
     formState: { errors },
   } = methods;
 
@@ -28,6 +30,8 @@ export function AddTokenButton() {
       isIouToken: false,
     };
     postToken(data);
+    setOpenedCreate(false);
+    toast.success("Token successfully created");
   };
 
   return (
@@ -42,22 +46,22 @@ export function AddTokenButton() {
             </div>
             <Field>
               <Label>Token Name</Label>
-              <Input label="Token Name" placeholder="Token name" />
+              <Input {...register("tokenName")} label="Token Name" placeholder="Token name" />
               <Error error={errors.tokenName?.message} />
             </Field>
             <Field>
               <Label>Token Symbol</Label>
-              <Input label="Token Symbol" placeholder="Symbol" />
+              <Input {...register("tokenSymbol")} label="Token Symbol" placeholder="Symbol" />
               <Error error={errors.tokenSymbol?.message} />
             </Field>
             <Field>
               <Label>Contract Address</Label>
-              <Input label="Contract Address" placeholder="contract address" />
+              <Input {...register("contractAddress")} label="Contract Address" placeholder="contract address" />
               <Error error={errors.contractAddress?.message} />
             </Field>
             <Field>
               <Label>Decimals</Label>
-              <Input label="Decimals" placeholder="decimals" />
+              <Input {...register("decimals", { valueAsNumber: true })} label="Decimals" placeholder="decimals" />
               <Error error={errors.decimals?.message} />
             </Field>
             <div className="flex gap-2 justify-end">
