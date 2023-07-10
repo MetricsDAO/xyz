@@ -130,13 +130,3 @@ export const IOUPostSchema = z.object({
 });
 
 export type IOUPost = z.infer<typeof IOUPostSchema>;
-
-export async function PostAndSaveToken(data: IOUPost) {
-  const res = await fetch("/api/post-token-metadata", {
-    body: JSON.stringify(data),
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-  const json = await res.json();
-  return json;
-}

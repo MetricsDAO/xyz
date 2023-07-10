@@ -14,7 +14,7 @@ import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
 import type { BigNumber } from "ethers";
 import { iouFactoryAbi, iouFactoryAddress } from "~/abi/iou-factory";
-import { PostAndSaveToken } from "~/domain/treasury";
+import { PostAndSaveToken } from "~/utils/fetch";
 
 export interface IOUCreatorArgs {
   name: string;
