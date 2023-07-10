@@ -14,6 +14,7 @@ import { getEventFromLogs } from "~/utils/helpers";
 import { Button } from "../../components/button";
 import type { IOUCreationForm } from "./schema";
 import { IOUCreationFormSchema } from "./schema";
+import toast from "react-hot-toast";
 
 export interface IOUCreatorArgs {
   name: string;
@@ -54,6 +55,7 @@ export function IOUCreator({ networks }: { networks: Network[] }) {
         };
         postIouToken(postMetaData);
       }
+      toast.success("Successfully added IOU Token");
     },
   });
 
