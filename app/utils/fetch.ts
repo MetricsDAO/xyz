@@ -10,7 +10,7 @@ export async function postNewEvent(event: Event) {
   }).then((res) => res.json() as Promise<IndexEventResponse>);
 }
 
-export async function PostAndSaveToken(data: IOUPost) {
+export async function postAndSaveToken(data: IOUPost) {
   const res = await fetch("/api/post-token-metadata", {
     body: JSON.stringify(data),
     method: "POST",
