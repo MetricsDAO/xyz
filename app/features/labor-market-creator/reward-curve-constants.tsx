@@ -25,7 +25,6 @@ const passFail = {
 };
 
 export function getRewardCurveArgs(curveType: string) {
-  console.log(curveType);
   switch (curveType) {
     case "Constant":
       return constantLikert;

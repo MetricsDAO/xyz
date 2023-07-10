@@ -40,7 +40,6 @@ export function IOUCreator({ networks }: { networks: Network[] }) {
 
   const transactor = useTransactor({
     onSuccess: (receipt) => {
-      console.log("IOU Success", receipt);
       // parse event logs for contract address
       const iface = new ethers.utils.Interface(iouFactoryAbi);
       const event = getEventFromLogs(iouFactoryAddress, iface, receipt.logs, "IOUCreated");
@@ -60,10 +59,7 @@ export function IOUCreator({ networks }: { networks: Network[] }) {
   });
 
   const onSubmit = (data: IOUCreationForm) => {
-    console.log("submit", data);
-    console.log("methods", methods);
     const values = methods.getValues();
-    console.log("values", values);
     const iouReceipt: IOUCreatorArgs = {
       name: data.name,
       symbol: data.symbol,
@@ -164,8 +160,6 @@ function configureFromValues({
     ...iouReceipt,
     destinationDecimals: ethers.BigNumber.from(iouReceipt.destinationDecimals),
   };
-
-  console.log("Formatted IOU receipt", receipt);
 
   return configureWrite({
     abi: iouFactoryAbi,
