@@ -56,6 +56,7 @@ export const fetchClaimsResponseSchema = z.object({
 export type FetchClaimsResponse = z.infer<typeof fetchClaimsResponseSchema>;
 
 const IOUTokenSchema = z.object({
+  contractAddress: EvmAddressSchema,
   id: z.string(),
   tokenName: z.string(),
   chain: z.string(),
@@ -91,16 +92,16 @@ export const IOUMetadataResponseSchema = z.object({
 
 export type IOUMetadataPostResponse = z.infer<typeof IOUMetadataResponseSchema>;
 
-export const requestMintSchema = z.object({
+export const RequestMintSchema = z.object({
   source: EvmAddressSchema,
   to: EvmAddressSchema,
-  nonce: z.number(),
+  nonce: z.string(),
   amount: z.string(),
 });
 
-export type requestMint = z.infer<typeof requestMintSchema>;
+export type RequestMint = z.infer<typeof RequestMintSchema>;
 
-export const mintResponseSchema = z.object({
+export const MintResponseSchema = z.object({
   id: z.string(),
   tokenName: z.string(),
   chain: z.string(),
@@ -110,8 +111,10 @@ export const mintResponseSchema = z.object({
     source: EvmAddressSchema,
     to: EvmAddressSchema,
     nonce: z.string(),
-    amount: z.number(),
-    expiration: z.date(),
+    amount: z.string(),
+    expiration: z.number(),
   }),
   signature: z.string(),
 });
+
+export type MintResponse = z.infer<typeof MintResponseSchema>;

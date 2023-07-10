@@ -1,13 +1,13 @@
 import { ExclamationTriangleIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useActionData, useSubmit, useTransition } from "@remix-run/react";
+import { useSubmit } from "@remix-run/react";
 import type { ActionArgs, DataFunctionArgs } from "@remix-run/server-runtime";
 import { withZod } from "@remix-validated-form/with-zod";
 import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjson";
 import { ValidatedForm } from "remix-validated-form";
 import { useAccount } from "wagmi";
 import { z } from "zod";
@@ -22,6 +22,7 @@ import { Select } from "~/components/select";
 import { Header, Row, Table } from "~/components/table";
 import { EvmAddressSchema } from "~/domain/address";
 import type { IOUToken } from "~/domain/treasury";
+import { IOUIssueTokenCreator } from "~/features/iou-issue-token-creator";
 import { nodeProvider } from "~/services/node.server";
 import { fetchIouTokenMetadata, getMintSignature } from "~/services/treasury.server";
 
@@ -41,32 +42,42 @@ export const loader = async ({ params }: DataFunctionArgs) => {
   return typedjson({ iouTokens }, { status: 200 });
 };
 
-type ActionResponse = Awaited<ReturnType<typeof action>>;
+type ActionResponse = typeof action;
 export async function action({ request }: ActionArgs) {
   const formData = await IssueFormValidator.validate(await request.formData());
-  console.log("formData", formData);
   if (formData.data) {
     const { iouContractAddress, recipient, amount } = formData.data;
     const contract = new ethers.Contract(iouContractAddress, PARTIAL_IOU_CONTRACT_ABI, nodeProvider);
     const nonce: BigNumber = await contract.nonces(recipient);
-    console.log("nonce", nonce.toString());
-    const signature = await getMintSignature({
+    const res = await getMintSignature({
       source: iouContractAddress,
       to: recipient,
       amount,
-      nonce: nonce.toNumber(),
+      nonce: nonce.toString(),
     });
-    console.log("signature", signature);
-    return { ok: true };
+    return typedjson({ ok: true, data: res });
   }
-  return null;
+  return typedjson({ ok: false, data: null });
 }
 
 export default function IOUTab() {
   const { iouTokens } = useTypedLoaderData<typeof loader>();
+  const actionData = useTypedActionData<ActionResponse>();
 
   return (
     <section className="flex flex-col-reverse md:flex-row space-y-reverse space-y-7 gap-x-5">
+      {/* This data should be set if we got actionData.ok response */}
+      {actionData?.ok && actionData?.data && (
+        <IOUIssueTokenCreator
+          source={actionData.data.signedBody.source}
+          amount={actionData.data.signedBody.amount}
+          to={actionData.data.signedBody.to}
+          expiry={actionData.data.signedBody.expiration}
+          nonce={actionData.data.signedBody.nonce}
+          signature={actionData.data.signature as `0x${string}`} //should be a 0xstring
+          startTransaction={true}
+        />
+      )}
       <main className="flex-1 space-y-4">
         <IOUListView iouTokens={iouTokens.metadata} />
       </main>
@@ -214,23 +225,9 @@ function BurnButton({ disabled }: { disabled: boolean }) {
   );
 }
 
+type ModalState = "closed" | "alert" | "issue-metadata";
 function IssueButton({ token }: { token: IOUToken }) {
-  const [openedAlert, setOpenedAlert] = useState(false);
-  const [openedIssue, setOpenedIssue] = useState(false);
-
-  const actionData = useActionData<ActionResponse>();
-  const transition = useTransition();
-
-  useEffect(() => {
-    if (actionData?.ok) {
-      // TODO transactor.start
-    }
-  }, [actionData]);
-
-  function closeAlert() {
-    setOpenedAlert(false);
-    setOpenedIssue(true);
-  }
+  const [modalState, setModalState] = useState<ModalState>("closed");
 
   const submit = useSubmit();
   const formRef = useRef<HTMLFormElement>(null);
@@ -240,67 +237,69 @@ function IssueButton({ token }: { token: IOUToken }) {
     resolver: zodResolver(IssueFormSchema),
     defaultValues: {
       recipient: address,
-      iouContractAddress: "0xe45E0546B83f8A85833A368b7Ed49B1B1F9958EA",
+      iouContractAddress: token.contractAddress,
     },
   });
 
   return (
     <>
-      <Button onClick={() => setOpenedAlert(true)}>Issue</Button>
-      <Modal isOpen={openedAlert} onClose={() => setOpenedAlert(false)}>
-        <div className="mx-auto space-y-7">
-          <ExclamationTriangleIcon className="text-yellow-700 mx-auto h-5 w-5" />
-          <div className="space-y-2">
-            <h1 className="text-center text-lg font-semibold">Please check token liquidity</h1>
-            <p className="text-gray-500 text-center text-md">
-              You must ensure the DAO has enough token liquidity before issuing more iouTokens
-            </p>
-          </div>
-          <div className="flex gap-2 w-full">
-            <Button variant="cancel" fullWidth onClick={() => setOpenedAlert(false)}>
-              Cancel
-            </Button>
-            <Button fullWidth onClick={() => closeAlert()}>
-              All set
-            </Button>
-          </div>
-        </div>
-      </Modal>
-      <Modal isOpen={openedIssue} onClose={() => setOpenedIssue(false)} title="Issue iouTODO">
-        {transition.state === "loading" || transition.state === "submitting" ? (
-          <p>Loading...</p>
-        ) : (
-          <form
-            ref={formRef}
-            className="space-y-5 mt-5"
-            onSubmit={formMethods.handleSubmit((data) => {
-              submit(formRef.current, { method: "post", action: "/app/iou-center?index" });
-            })}
-          >
-            <div className="space-y-5 mt-5">
-              <Input
-                {...formMethods.register("amount")}
-                placeholder="Issue amount"
-                label="The tokens will be created and start circulating."
-                className="w-full"
-              />
-              <input {...formMethods.register("iouContractAddress")} type="hidden" />
-              <Error error={formMethods.formState.errors.amount?.message} />
-              <Input {...formMethods.register("recipient")} placeholder="Recepient address" className="w-full" />
-              <Error error={formMethods.formState.errors.recipient?.message} />
-              <div className="bg-amber-200/10 flex items-center rounded-md p-2">
-                <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
-                <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+      <Button onClick={() => setModalState("alert")}>Issue</Button>
+      <Modal isOpen={modalState !== "closed"} onClose={() => setModalState("closed")} title="Issue IOU">
+        <>
+          {modalState === "alert" && (
+            <div className="mx-auto space-y-7">
+              <ExclamationTriangleIcon className="text-yellow-700 mx-auto h-5 w-5" />
+              <div className="space-y-2">
+                <h1 className="text-center text-lg font-semibold">Please check token liquidity</h1>
+                <p className="text-gray-500 text-center text-md">
+                  You must ensure the DAO has enough token liquidity before issuing more iouTokens
+                </p>
               </div>
-              <div className="flex gap-2 justify-end">
-                <Button variant="cancel" onClick={() => setOpenedIssue(false)}>
+              <div className="flex gap-2 w-full">
+                <Button variant="cancel" fullWidth onClick={() => setModalState("closed")}>
                   Cancel
                 </Button>
-                <Button type="submit">Issue</Button>
+                <Button fullWidth onClick={() => setModalState("issue-metadata")}>
+                  All set
+                </Button>
               </div>
             </div>
-          </form>
-        )}
+          )}
+
+          {modalState === "issue-metadata" && (
+            <form
+              ref={formRef}
+              className="space-y-5 mt-5"
+              onSubmit={formMethods.handleSubmit((data) => {
+                submit(formRef.current, { method: "post", action: "/app/iou-center?index" });
+                setModalState("closed");
+              })}
+            >
+              <div className="space-y-5 mt-5">
+                <Input
+                  {...formMethods.register("amount")}
+                  placeholder="Issue amount"
+                  label="The tokens will be created and start circulating."
+                  className="w-full"
+                />
+                <input {...formMethods.register("iouContractAddress")} type="hidden" />
+                <Error error={formMethods.formState.errors.amount?.message} />
+                <Input {...formMethods.register("recipient")} placeholder="Recepient address" className="w-full" />
+                <Error error={formMethods.formState.errors.recipient?.message} />
+                <div className="bg-amber-200/10 flex items-center rounded-md p-2">
+                  <ExclamationTriangleIcon className="text-yellow-700 mx-2 h-5 w-5" />
+                  <p className="text-yellow-700 text-sm">Ensure there is enough token liquidity before issuing</p>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button variant="cancel" onClick={() => setModalState("closed")}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Issue</Button>
+                </div>
+              </div>
+            </form>
+          )}
+        </>
       </Modal>
     </>
   );

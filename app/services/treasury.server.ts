@@ -1,10 +1,10 @@
-import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, requestMint } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, RequestMint } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
   IOUTokenMetadataSchema,
   fetchClaimsResponseSchema,
   fetchSignaturesResponseSchema,
-  mintResponseSchema,
+  MintResponseSchema,
 } from "~/domain/treasury";
 import env from "~/env.server";
 
@@ -58,7 +58,7 @@ export async function postIouTokenMetadata(body: IOUTokenPost) {
   return IOUMetadataResponseSchema.parse(res);
 }
 
-export async function getMintSignature(body: requestMint) {
+export async function getMintSignature(body: RequestMint) {
   const res = await fetch(`${env.TREASURY_URL}/ioutoken/request-mint`, {
     method: "POST",
     body: JSON.stringify(body),
@@ -71,7 +71,7 @@ export async function getMintSignature(body: requestMint) {
   const data = await res.json();
 
   try {
-    const parsed = mintResponseSchema.parse(data);
+    const parsed = MintResponseSchema.parse(data);
     return parsed;
   } catch (error) {
     console.error("Error occurred during the API request:", error);
