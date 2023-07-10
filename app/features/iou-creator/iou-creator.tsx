@@ -13,8 +13,8 @@ import type { EvmAddress } from "~/domain/address";
 import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
 import type { BigNumber } from "ethers";
-import { PostAndSaveToken } from "~/services/treasury.server";
 import { iouFactoryAbi, iouFactoryAddress } from "~/abi/iou-factory";
+import { PostAndSaveToken } from "~/domain/treasury";
 
 export interface IOUCreatorArgs {
   name: string;

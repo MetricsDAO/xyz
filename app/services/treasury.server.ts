@@ -78,13 +78,3 @@ export async function getMintSignature(body: RequestMint) {
     throw error; // Rethrow the error to handle it further up the call stack
   }
 }
-
-export async function PostAndSaveToken(data: IOUPost) {
-  const res = await fetch("/api/post-token-metadata", {
-    body: JSON.stringify(data),
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-  const json = await res.json();
-  return json;
-}
