@@ -119,7 +119,7 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
                   {...field}
                   placeholder="Select a Target Token"
                   options={targetTokens.map((t) => {
-                    return { label: t.name, value: t.name };
+                    return { label: t.name, value: t.contractAddress };
                   })}
                 />
               )}
@@ -138,7 +138,11 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
           <Field>
             <Label>Decimals</Label>
             <Error error={errors.destinationDecimals?.message} />
-            <Input {...register("destinationDecimals")} label="Decimals" placeholder="Decimals" />
+            <Input
+              {...register("destinationDecimals", { valueAsNumber: true })}
+              label="Decimals"
+              placeholder="Decimals"
+            />
           </Field>
           <Field>
             <Label>Fireblocks Token Name</Label>
