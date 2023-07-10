@@ -14,7 +14,7 @@ import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
 import type { BigNumber } from "ethers";
 import { iouFactoryAbi, iouFactoryAddress } from "~/abi/iou-factory";
-import { postAndSaveToken } from "~/utils/fetch";
+import { postIouToken } from "~/utils/fetch";
 
 export interface IOUCreatorArgs {
   name: string;
@@ -46,15 +46,14 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
       const event = getEventFromLogs(iouFactoryAddress, iface, receipt.logs, "IOUCreated");
 
       if (event) {
-        // need to double check this
-        const [iouAddress, iouId] = event.args;
+        const [iouAddress] = event.args;
         const values = methods.getValues();
 
         const postMetaData = {
           ...values,
           iouTokenAddresses: Array.of(iouAddress),
         };
-        postAndSaveToken(postMetaData);
+        postIouToken(postMetaData);
       }
     },
   });
