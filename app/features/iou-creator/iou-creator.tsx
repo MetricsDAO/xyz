@@ -1,22 +1,21 @@
-import { TxModal } from "~/components/tx-modal/tx-modal";
-import { configureWrite, useTransactor } from "~/hooks/use-transactor";
-import { useState } from "react";
-import { ethers } from "ethers";
-import { Button } from "../../components/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
-import { IOUCreationFormSchema } from "./schema";
-import { Modal, Field, Label, Select, Input, Error } from "~/components";
-import { getEventFromLogs } from "~/utils/helpers";
-import { FormProvider } from "react-hook-form";
-import type { EvmAddress } from "~/domain/address";
-import type { IOUCreationForm } from "./schema";
-import type { Network, Token } from "@prisma/client";
+import type { Network } from "@prisma/client";
 import type { BigNumber } from "ethers";
-import { postIouTokenMetadata } from "~/services/treasury.server";
-import { createToken } from "~/services/tokens.server";
+import { ethers } from "ethers";
+import { useState } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { iouFactoryAbi, iouFactoryAddress } from "~/abi/iou-factory";
+import { Error, Field, Input, Label, Modal, Select } from "~/components";
+import { TxModal } from "~/components/tx-modal/tx-modal";
+import type { EvmAddress } from "~/domain/address";
+import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { postIouToken } from "~/utils/fetch";
+import { getEventFromLogs } from "~/utils/helpers";
+import { Button } from "../../components/button";
+import type { IOUCreationForm } from "./schema";
+import { IOUCreationFormSchema } from "./schema";
 
-interface IOUCreatorArgs {
+export interface IOUCreatorArgs {
   name: string;
   symbol: string;
   destinationChain: string;
@@ -24,7 +23,7 @@ interface IOUCreatorArgs {
   destinationDecimals: BigNumber;
 }
 
-export function IOUCreator({ networks, targetTokens }: { networks: Network[]; targetTokens: Token[] }) {
+export function IOUCreator({ networks }: { networks: Network[] }) {
   const [openedCreate, setOpenedCreate] = useState(false);
 
   const methods = useForm<IOUCreationForm>({
@@ -38,33 +37,22 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
     formState: { errors },
   } = methods;
 
-  // TODO: Where to keep the factory address?
-  const iouFactoryAddress = "0x47E38e585EbBBEC57F4FfeF222fb73B1E3A524bC";
-
   const transactor = useTransactor({
     onSuccess: (receipt) => {
       console.log("IOU Success", receipt);
       // parse event logs for contract address
-      const iface = new ethers.utils.Interface(PARTIAL_IOU_FACTORY_ABI);
+      const iface = new ethers.utils.Interface(iouFactoryAbi);
       const event = getEventFromLogs(iouFactoryAddress, iface, receipt.logs, "IOUCreated");
 
       if (event) {
-        // need to double check this
-        const [iouAddress, iouId] = event.args;
+        const [iouAddress] = event.args;
         const values = methods.getValues();
-        console.log("getValues", values);
-        // post metadata request to treasury
-        const res = postIouTokenMetadata({
-          tokenName: values.name,
-          chain: values.destinationChain,
-          decimals: values.destinationDecimals,
-          fireblocksTokenName: values.fireblocksTokenName,
-          iOUTokenContract_addresses: iouAddress,
-        });
 
-        console.log("RESULT", res);
-        // add token to mongo
-        createToken(values.name, values.destinationChain, values.destinationDecimals, iouAddress, values.symbol, true);
+        const postMetaData = {
+          ...values,
+          iouTokenAddresses: Array.of(iouAddress),
+        };
+        postIouToken(postMetaData);
       }
     },
   });
@@ -117,13 +105,7 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
               control={control}
               name="destinationAddress"
               render={({ field }) => (
-                <Select
-                  {...field}
-                  placeholder="Select a Target Token"
-                  options={targetTokens.map((t) => {
-                    return { label: t.name, value: t.name };
-                  })}
-                />
+                <Input {...register("destinationAddress")} label="Target Address" placeholder="Target Address" />
               )}
             />
           </Field>
@@ -140,7 +122,11 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
           <Field>
             <Label>Decimals</Label>
             <Error error={errors.destinationDecimals?.message} />
-            <Input {...register("destinationDecimals")} label="Decimals" placeholder="Decimals" />
+            <Input
+              {...register("destinationDecimals", { valueAsNumber: true })}
+              label="Decimals"
+              placeholder="Decimals"
+            />
           </Field>
           <Field>
             <Label>Fireblocks Token Name</Label>
@@ -180,88 +166,9 @@ function configureFromValues({
   console.log("Formatted IOU receipt", receipt);
 
   return configureWrite({
-    abi: PARTIAL_IOU_FACTORY_ABI,
+    abi: iouFactoryAbi,
     address: factoryAddress,
     functionName: "createIOU",
     args: [receipt],
   });
 }
-
-const PARTIAL_IOU_FACTORY_ABI = [
-  {
-    inputs: [
-      {
-        components: [
-          {
-            internalType: "string",
-            name: "name",
-            type: "string",
-          },
-          {
-            internalType: "string",
-            name: "symbol",
-            type: "string",
-          },
-          {
-            internalType: "string",
-            name: "destinationChain",
-            type: "string",
-          },
-          {
-            internalType: "string",
-            name: "destinationAddress",
-            type: "string",
-          },
-          {
-            internalType: "uint256",
-            name: "destinationDecimals",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct IIOUFactory.Receipt",
-        name: "_receipt",
-        type: "tuple",
-      },
-    ],
-    name: "createIOU",
-    outputs: [
-      {
-        internalType: "contract IOU",
-        name: "iou",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "iouId",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "contract IOU",
-        name: "iou",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "deployer",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "iouId",
-        type: "uint256",
-      },
-    ],
-    name: "IOUCreated",
-    type: "event",
-  },
-] as const;

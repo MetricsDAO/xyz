@@ -11,6 +11,7 @@ import { typedjson, useTypedActionData, useTypedLoaderData } from "remix-typedjs
 import { ValidatedForm } from "remix-validated-form";
 import { useAccount } from "wagmi";
 import { z } from "zod";
+import { iouTokenAbi } from "~/abi/iou-token";
 import { Error } from "~/components";
 import { Button } from "~/components/button";
 import { Card } from "~/components/card";
@@ -25,11 +26,13 @@ import type { IOUToken } from "~/domain/treasury";
 import { IOUIssueTokenCreator } from "~/features/iou-issue-token-creator";
 import { nodeProvider } from "~/services/node.server";
 import { fetchIouTokenMetadata, getMintSignature } from "~/services/treasury.server";
+import { toTokenAmount } from "~/utils/helpers";
 
 const IssueFormSchema = z.object({
   amount: z.string(),
   recipient: EvmAddressSchema,
   iouContractAddress: EvmAddressSchema,
+  decimals: z.coerce.number(),
 });
 
 const IssueFormValidator = withZod(IssueFormSchema);
@@ -46,13 +49,13 @@ type ActionResponse = typeof action;
 export async function action({ request }: ActionArgs) {
   const formData = await IssueFormValidator.validate(await request.formData());
   if (formData.data) {
-    const { iouContractAddress, recipient, amount } = formData.data;
-    const contract = new ethers.Contract(iouContractAddress, PARTIAL_IOU_CONTRACT_ABI, nodeProvider);
+    const { iouContractAddress, recipient, amount, decimals } = formData.data;
+    const contract = new ethers.Contract(iouContractAddress, iouTokenAbi, nodeProvider);
     const nonce: BigNumber = await contract.nonces(recipient);
     const res = await getMintSignature({
       source: iouContractAddress,
       to: recipient,
-      amount,
+      amount: toTokenAmount(amount, decimals).toString(),
       nonce: nonce.toString(),
     });
     return typedjson({ ok: true, data: res });
@@ -238,6 +241,7 @@ function IssueButton({ token }: { token: IOUToken }) {
     defaultValues: {
       recipient: address,
       iouContractAddress: token.contractAddress,
+      decimals: token.decimals,
     },
   });
 
@@ -283,6 +287,7 @@ function IssueButton({ token }: { token: IOUToken }) {
                   className="w-full"
                 />
                 <input {...formMethods.register("iouContractAddress")} type="hidden" />
+                <input {...formMethods.register("decimals")} type="hidden" />
                 <Error error={formMethods.formState.errors.amount?.message} />
                 <Input {...formMethods.register("recipient")} placeholder="Recepient address" className="w-full" />
                 <Error error={formMethods.formState.errors.recipient?.message} />
@@ -304,13 +309,3 @@ function IssueButton({ token }: { token: IOUToken }) {
     </>
   );
 }
-
-const PARTIAL_IOU_CONTRACT_ABI = [
-  {
-    inputs: [{ internalType: "address", name: "", type: "address" }],
-    name: "nonces",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
