@@ -10,6 +10,7 @@ import { Button } from "../../components/button";
 import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
 import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
+import { iouTokenAbi } from "~/abi/iou-token";
 
 interface RedeemRewardCreatorProps {
   submission: SubmissionWithReward;
@@ -169,24 +170,8 @@ function configureRedeem({
   const { iouTokenAddress, laborMarketAddress, submissionId, amount, signature } = inputs;
   return configureWrite({
     address: iouTokenAddress,
-    abi: PARTIAL_IOU_TOKEN_ABI,
+    abi: iouTokenAbi,
     functionName: "redeem",
     args: [laborMarketAddress, BigNumber.from(submissionId), "submission", BigNumber.from(amount), signature],
   });
 }
-
-const PARTIAL_IOU_TOKEN_ABI = [
-  {
-    inputs: [
-      { internalType: "address", name: "_marketplaceAddress", type: "address" },
-      { internalType: "uint256", name: "_participationId", type: "uint256" },
-      { internalType: "string", name: "_participationType", type: "string" },
-      { internalType: "uint256", name: "_amount", type: "uint256" },
-      { internalType: "bytes", name: "_signature", type: "bytes" },
-    ],
-    name: "redeem",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-] as const;

@@ -3,6 +3,7 @@ import { useCallback, useEffect } from "react";
 import { TxModal } from "~/components/tx-modal/tx-modal";
 import type { EvmAddress } from "~/domain/address";
 import { configureWrite, useTransactor } from "~/hooks/use-transactor";
+import { iouTokenAbi } from "~/abi/iou-token";
 
 interface IOUIssueTokenCreatorProps {
   source: EvmAddress;
@@ -41,25 +42,9 @@ function configureFromValues(inputs: {
 }) {
   const { source, to, amount, nonce, expiry, signature } = inputs;
   return configureWrite({
-    abi: PARTIAL_IOU_CONTRACT_ABI,
+    abi: iouTokenAbi,
     address: source,
     functionName: "issue",
     args: [to, BigNumber.from(amount), BigNumber.from(nonce), BigNumber.from(expiry), signature],
   });
 }
-
-const PARTIAL_IOU_CONTRACT_ABI = [
-  {
-    inputs: [
-      { internalType: "address", name: "_to", type: "address" },
-      { internalType: "uint256", name: "_amount", type: "uint256" },
-      { internalType: "uint256", name: "_nonce", type: "uint256" },
-      { internalType: "uint256", name: "_expiry", type: "uint256" },
-      { internalType: "bytes", name: "_signature", type: "bytes" },
-    ],
-    name: "issue",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-] as const;
