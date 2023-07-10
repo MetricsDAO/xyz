@@ -167,7 +167,6 @@ function IOUTable({ iouTokens }: { iouTokens: IOUToken[] }) {
             <Row.Column>{t.fireblocksTokenName}</Row.Column>
             <Row.Column span={2}>{t.balance}</Row.Column>
             <Row.Column span={2} className="flex flex-wrap gap-2 justify-end">
-              <BurnButton disabled={true} />
               <IssueButton token={t} />
             </Row.Column>
           </Row>
@@ -190,7 +189,6 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
             <div>Fireblocks</div>
             <p>{t.fireblocksTokenName}</p>
             <div className="flex flex-wrap col-span-2 gap-2 justify-center">
-              <BurnButton disabled={true} />
               <IssueButton token={t} />
             </div>
           </Card>
@@ -200,33 +198,34 @@ function IOUCards({ iouTokens }: { iouTokens: IOUToken[] }) {
   );
 }
 
-function BurnButton({ disabled }: { disabled: boolean }) {
-  const [openedBurn, setOpenedBurn] = useState(false);
+// Maybe one day?
+// function BurnButton({ disabled }: { disabled: boolean }) {
+//   const [openedBurn, setOpenedBurn] = useState(false);
 
-  return (
-    <>
-      <Button onClick={() => setOpenedBurn(true)} variant="cancel" disabled={disabled}>
-        Burn
-      </Button>
-      <Modal isOpen={openedBurn} onClose={() => setOpenedBurn(false)} title="Burn iouTODO">
-        <div className="space-y-5 mt-5">
-          <Input
-            id="burn"
-            placeholder="Burn amount"
-            label="The tokens will be burned and cease to exist."
-            className="w-full"
-          />
-          <div className="flex gap-2 justify-end">
-            <Button variant="cancel" onClick={() => setOpenedBurn(false)}>
-              Cancel
-            </Button>
-            <Button>Burn</Button>
-          </div>
-        </div>
-      </Modal>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <Button onClick={() => setOpenedBurn(true)} variant="cancel" disabled={disabled}>
+//         Burn
+//       </Button>
+//       <Modal isOpen={openedBurn} onClose={() => setOpenedBurn(false)} title="Burn iouTODO">
+//         <div className="space-y-5 mt-5">
+//           <Input
+//             id="burn"
+//             placeholder="Burn amount"
+//             label="The tokens will be burned and cease to exist."
+//             className="w-full"
+//           />
+//           <div className="flex gap-2 justify-end">
+//             <Button variant="cancel" onClick={() => setOpenedBurn(false)}>
+//               Cancel
+//             </Button>
+//             <Button>Burn</Button>
+//           </div>
+//         </div>
+//       </Modal>
+//     </>
+//   );
+// }
 
 type ModalState = "closed" | "alert" | "issue-metadata";
 function IssueButton({ token }: { token: IOUToken }) {
