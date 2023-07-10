@@ -13,10 +13,9 @@ import type { EvmAddress } from "~/domain/address";
 import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
 import type { BigNumber } from "ethers";
-import { postIouTokenMetadata } from "~/services/treasury.server";
-import { createToken } from "~/domain/treasury";
+import { PostAndSaveToken } from "~/services/treasury.server";
 
-interface IOUCreatorArgs {
+export interface IOUCreatorArgs {
   name: string;
   symbol: string;
   destinationChain: string;
@@ -52,19 +51,12 @@ export function IOUCreator({ networks, targetTokens }: { networks: Network[]; ta
         // need to double check this
         const [iouAddress, iouId] = event.args;
         const values = methods.getValues();
-        console.log("getValues", values);
-        // post metadata request to treasury
-        const res = postIouTokenMetadata({
-          tokenName: values.name,
-          chain: values.destinationChain,
-          decimals: values.destinationDecimals,
-          fireblocksTokenName: values.fireblocksTokenName,
-          iOUTokenContract_addresses: iouAddress,
-        });
 
-        console.log("RESULT", res);
-        // add token to mongo
-        createToken(values.name, values.destinationChain, values.destinationDecimals, iouAddress, values.symbol, true);
+        const postMetaData = {
+          ...values,
+          iouTokenAddresses: iouAddress,
+        };
+        PostAndSaveToken(postMetaData);
       }
     },
   });

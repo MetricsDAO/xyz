@@ -120,22 +120,14 @@ export const MintResponseSchema = z.object({
 
 export type MintResponse = z.infer<typeof MintResponseSchema>;
 
-export const createToken = async (
-  name: string,
-  networkName: string,
-  decimals: number,
-  contractAddress: string,
-  symbol: string,
-  isIou: boolean
-) => {
-  return prisma.token.create({
-    data: {
-      name: name,
-      networkName: networkName,
-      decimals: decimals,
-      contractAddress: contractAddress,
-      symbol: symbol,
-      isIou: isIou,
-    },
-  });
-};
+export const IOUPostSchema = z.object({
+  name: z.string().min(1, "Required"),
+  symbol: z.string().min(1, "Required").max(4, "Must be 4 characters or less"),
+  destinationChain: z.string().min(1, "Required"),
+  destinationAddress: z.string(),
+  destinationDecimals: z.number().min(1, "Required"),
+  fireblocksTokenName: z.string().min(1, "Required"),
+  iouTokenAddresses: z.array(EvmAddressSchema),
+});
+
+export type IOUPost = z.infer<typeof IOUPostSchema>;

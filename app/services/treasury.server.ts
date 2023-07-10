@@ -1,4 +1,4 @@
-import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, RequestMint } from "~/domain/treasury";
+import type { FetchClaimsInput, FetchSignaturesBody, IOUPost, IOUTokenPost, RequestMint } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
   IOUTokenMetadataSchema,
@@ -77,4 +77,14 @@ export async function getMintSignature(body: RequestMint) {
     console.error("Error occurred during the API request:", error);
     throw error; // Rethrow the error to handle it further up the call stack
   }
+}
+
+export async function PostAndSaveToken(data: IOUPost) {
+  const res = await fetch("/api/post-token-metadata", {
+    body: JSON.stringify(data),
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  const json = await res.json();
+  return json;
 }
