@@ -1,10 +1,10 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider } from "react-hook-form";
-import { Button, Field, Input, Label, Modal, Error } from "~/components";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { Button, Error, Field, Input, Label, Modal } from "~/components";
 import { AddTokenFormSchema, type AddTokenForm } from "./schema";
-import { createToken } from "~/services/tokens.server";
+import { postToken } from "~/utils/fetch";
 
 export function AddTokenButton() {
   const [openedCreate, setOpenedCreate] = useState(false);
@@ -19,14 +19,16 @@ export function AddTokenButton() {
   } = methods;
 
   const onSubmit = (formValues: AddTokenForm) => {
-    createToken(
-      formValues.tokenName,
-      "Polygon",
-      formValues.decimals,
-      formValues.contractAddress,
-      formValues.tokenSymbol,
-      false
-    );
+    const data = {
+      name: formValues.tokenName,
+      symbol: formValues.tokenSymbol,
+      destinationChain: "polygon",
+      destinationAddress: formValues.contractAddress,
+      destinationDecimals: formValues.decimals,
+      isIouToken: false,
+    };
+
+    postToken(data);
   };
 
   return (
