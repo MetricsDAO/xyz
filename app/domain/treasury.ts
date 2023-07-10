@@ -56,7 +56,7 @@ export const fetchClaimsResponseSchema = z.object({
 export type FetchClaimsResponse = z.infer<typeof fetchClaimsResponseSchema>;
 
 const IOUTokenSchema = z.object({
-  contractAddress: EvmAddressSchema,
+  contractAddress: EvmAddressSchema.optional(),
   id: z.string(),
   tokenName: z.string(),
   chain: z.string(),

@@ -1,4 +1,5 @@
 import type { FetchClaimsInput, FetchSignaturesBody, IOUTokenPost, RequestMint } from "~/domain/treasury";
+import { IOUTokenMetadataSchema } from "~/domain/treasury";
 import {
   IOUMetadataResponseSchema,
   MintResponseSchema,
@@ -42,7 +43,7 @@ export async function fetchIouTokenMetadata() {
     return res.json();
   });
 
-  return res;
+  return IOUTokenMetadataSchema.parse(res);
 }
 
 export async function postIouTokenMetadata(body: IOUTokenPost) {
