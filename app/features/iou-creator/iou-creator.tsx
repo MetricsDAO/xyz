@@ -14,7 +14,7 @@ import type { IOUCreationForm } from "./schema";
 import type { Network, Token } from "@prisma/client";
 import type { BigNumber } from "ethers";
 import { postIouTokenMetadata } from "~/services/treasury.server";
-import { createToken } from "~/domain/treasury";
+import { createToken } from "~/services/tokens.server";
 
 interface IOUCreatorArgs {
   name: string;

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button, Field, Input, Label, Modal, Error } from "~/components";
 import { AddTokenFormSchema, type AddTokenForm } from "./schema";
-import { createToken } from "~/domain/treasury";
+import { createToken } from "~/services/tokens.server";
 
 export function AddTokenButton() {
   const [openedCreate, setOpenedCreate] = useState(false);
