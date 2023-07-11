@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
+}
+
+@layer components {
+  .input-wrapper {
+    @apply border border-gray-400/40 rounded-lg overflow-hidden flex;
+  }
+
+  .input {
+    @apply flex-1 px-3 py-3 outline-none text-sm placeholder:text-black/40;
+  }
+
+  .input-text {
+    @apply h-12;
+  }
+}

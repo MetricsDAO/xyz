@@ -11,10 +11,34 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=monty
       - MONGO_INITDB_ROOT_PASSWORD=pass
 
-  # app:
-  #   build: .
-  #   ports:
-  #     - "8000:3000"
-  #   environment:
-  #     - SESSION_SECRET=secret
-  #     - ENVIRONMENT=production
+  webapp:
+    container_name: "webapp"
+    build:
+      context: ./apps/webapp
+    ports:
+      - "8000:3000"
+    env_file:
+      - ./apps/webapp/.env
+    # these take precedence over env_file
+    environment:
+      - MONGODB_URI=mongodb://monty:pass@mongo:27017?authSource=admin&directConnection=true
+      - MONGODB_PRISMA_URI=mongodb://monty:pass@mongo:27017/prisma?authSource=admin&directConnection=true
+
+  indexer:
+    container_name: "indexer"
+    build:
+      context: ./apps/indexer
+    ports:
+      - "8001:3000"
+    env_file:
+      - ./apps/indexer/.env
+    # these take precedence over env_file
+    environment:
+      - MONGODB_URI=mongodb://monty:pass@mongo:27017?authSource=admin&directConnection=true
+      - MONGODB_PRISMA_URI=mongodb://monty:pass@mongo:27017/prisma?authSource=admin&directConnection=true
+
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  app_network:
+    external: true
