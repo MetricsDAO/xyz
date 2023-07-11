@@ -5,7 +5,6 @@ import type { BadgeData } from "~/features/labor-market-creator/schema";
 
 export function GatingBadge({ badge }: { badge: BadgeData }) {
   const extraData = useTokenData({ token: badge.contractAddress, tokenId: badge.tokenId.toString() });
-  console.log(extraData);
   return (
     <Detail>
       <DetailItem title={extraData?.name}>

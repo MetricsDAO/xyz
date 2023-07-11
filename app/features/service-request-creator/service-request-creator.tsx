@@ -220,8 +220,6 @@ function configureFromValues({
   const currentDate = new Date();
   const signalDeadline = new Date(claimDate(currentDate, parseDatetime(form.analyst.endDate, form.analyst.endTime)));
 
-  console.log("inputs", inputs);
-
   const obj = {
     pTokenProvider: form.analyst.rewardToken,
     pTokenProviderTotal: toTokenAmount(form.analyst.maxReward, form.analyst.rewardTokenDecimals).mul(
@@ -237,8 +235,6 @@ function configureFromValues({
     signalExp: unixTimestamp(signalDeadline),
     submissionExp: unixTimestamp(new Date(parseDatetime(form.analyst.endDate, form.analyst.endTime))),
   };
-
-  console.log("obj", obj);
 
   return configureWrite({
     abi: contracts.LaborMarket.abi,
