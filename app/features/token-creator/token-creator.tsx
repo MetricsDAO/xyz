@@ -56,12 +56,12 @@ export function AddTokenButton() {
             </Field>
             <Field>
               <Label>Contract Address</Label>
-              <Input {...register("contractAddress")} label="Contract Address" placeholder="contract address" />
+              <Input {...register("contractAddress")} label="Contract Address" placeholder="Contract address" />
               <Error error={errors.contractAddress?.message} />
             </Field>
             <Field>
               <Label>Decimals</Label>
-              <Input {...register("decimals", { valueAsNumber: true })} label="Decimals" placeholder="decimals" />
+              <Input {...register("decimals", { valueAsNumber: true })} label="Decimals" placeholder="Decimals" />
               <Error error={errors.decimals?.message} />
             </Field>
             <div className="flex gap-2 justify-end">
