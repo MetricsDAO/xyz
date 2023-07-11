@@ -1,15 +1,11 @@
 {
-  "name": "remix-app-template",
+  "name": "mdao-indexer",
+  "version": "0.0.1",
   "private": true,
   "description": "",
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "build": "run-s build:*",
-    "build:routes": "remix-routes",
-    "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
-    "build:remix": "remix build",
-    "build:server": "esbuild --platform=node --format=cjs ./server.ts --outdir=build --bundle",
     "dev": "run-p dev:*",
     "dev:routes": "remix-routes -w",
     "dev:build": "cross-env NODE_ENV=development npm run build:server -- --watch",
@@ -18,7 +14,6 @@
     "dev:indexer": "cross-env NODE_ENV=development tsx -r dotenv/config indexer/run.ts",
     "dev:server": "cross-env NODE_ENV=development node --inspect --require ./node_modules/dotenv/config ./build/server.js",
     "docker": "docker compose up -d --remove-orphans",
-    "generate:ethers": "typechain --target ethers-v5 --out-dir app/contracts './node_modules/labor-markets-abi/dist/abis/*.json'",
     "generate:css": "tailwindcss -i ./styles/app.css -o app/styles/app.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint '**/*.{ts,tsx}'",
     "deploy:indexer": "flyctl deploy -c fly.indexer.toml",
@@ -30,10 +25,10 @@
     "reset": "prisma migrate reset",
     "prod": "yarn build && remix-serve api",
     "typecheck": "tsc -b",
-    "pine": "tsx -r dotenv/config pinekit/cli.ts",
-    "postinstall": "yarn generate:ethers"
+    "pine": "tsx -r dotenv/config pinekit/cli.ts"
   },
   "dependencies": {
+    "@mdao/schema": "*",
     "@axiomhq/axiom-node": "^0.10.0",
     "@faker-js/faker": "^7.6.0",
     "@flipsidecrypto/pine-sdk": "^0.0.6",

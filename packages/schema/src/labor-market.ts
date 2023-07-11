@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { EvmAddressSchema } from "../address";
-import { arrayToObject } from "../shared/utils";
+import { arrayToObject } from "./utils";
+import { EvmAddressSchema } from "./address";
 
 export const BadgeGatingType = z.enum(["Anyone", "Any", "All"]);
 

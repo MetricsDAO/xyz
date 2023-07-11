@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_PRISMA_URI")
+}
+
+model User {
+  id        String         @id @default(cuid()) @map("_id")
+  address   String         @default("")
+  createdAt DateTime       @default(now())
+  isAdmin   Boolean        @default(false)
+  wallet    Wallet[]
+  Ipfs      IpfsMetadata[]
+}
+
+model Wallet {
+  id          String   @id @default(cuid()) @map("_id")
+  address     String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  networkName String
+  chain       Network  @relation(fields: [networkName], references: [name])
+
+  @@unique([userId, networkName])
+}
+
+// Respresents a project or blockchain that MDAO supports. Appears in labor market creation flow and search
+model Project {
+  id        String   @id @default(cuid()) @map("_id")
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+}
+
+// Represents a token that MDAO supports. Appear in labor market creation flows and search.
+model Token {
+  id              String  @id @default(cuid()) @map("_id")
+  symbol          String
+  decimals        Int     @default(18)
+  isIou           Boolean @default(false)
+  iouSymbol       String?
+  name            String
+  networkName     String
+  contractAddress String
+  chain           Network @relation(fields: [networkName], references: [name])
+
+  @@unique([symbol, networkName])
+}
+
+model Network {
+  id     String   @id @default(cuid()) @map("_id")
+  name   String   @unique
+  token  Token[]
+  wallet Wallet[]
+}
+
+model IpfsMetadata {
+  id          String   @id @default(cuid()) @map("_id")
+  hash        String
+  url         String?
+  sizeBytes   Int
+  timestamp   DateTime
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+}
