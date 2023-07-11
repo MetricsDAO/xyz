@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { SubmissionFormSchema } from "~/features/submission-creator/schema";
 import { EvmAddressSchema } from "./address";
 import { RewardSchema } from "./reward-submissions";
 import { ServiceRequestDocSchema } from "./service-request";
@@ -56,7 +55,10 @@ export const SubmissionDocSchema = z.object({
       avg: z.number(),
     })
     .optional(),
-  appData: SubmissionFormSchema.nullable(),
+  appData: z.object({
+    title: z.string().min(1, "Required"),
+    submissionUrl: z.string().min(1, "Required"),
+  }),
   rewardClaimed: z.boolean().optional(), // TODO: not optional
   reward: RewardSchema.optional(),
 });

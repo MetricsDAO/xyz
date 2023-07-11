@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
-import { pineConfig } from "~/utils/pine-config.server";
 import { ActivityDoc, EventDoc, LaborMarketDoc, ServiceRequestDoc, SubmissionDoc, ReviewDoc } from "@mdao/schema";
 import env from "./env";
+import { pineConfig } from "./pine-config";
 
 const client = new MongoClient(env.MONGODB_URI, {
   connectTimeoutMS: 60000, // set timeout to 60 seconds

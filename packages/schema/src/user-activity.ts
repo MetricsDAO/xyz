@@ -13,7 +13,7 @@ export const ActivityTypeSchema = z.enum([
 export const ActivityGroupTypeSchema = z.enum(["LaborMarket", "ServiceRequest", "Submission", "Review"]);
 export const ActivityIconTypeSchema = z.enum(["labor-market", "service-request", "submission", "review"]);
 
-export const LaborMarketConfigSchema = z.object({
+const LaborMarketConfigSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   title: z.string(),
 });
@@ -24,7 +24,7 @@ export const RequestConfigSchema = z.object({
   title: z.string(),
 });
 
-export const SubmissionConfigSchema = z.object({
+const SubmissionConfigSchema = z.object({
   laborMarketAddress: EvmAddressSchema,
   requestId: z.string(),
   submissionId: z.string(),
