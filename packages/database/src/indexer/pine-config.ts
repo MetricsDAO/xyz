@@ -1,6 +1,6 @@
-import env from "./env";
+import env from "../env";
 
-// The partical name of the ephemeral cache/database in Mongodb with indexed data
+// The partial name of the ephemeral cache/database in Mongodb with indexed data. YYYYMMDD used as convention.
 const SUBSCRIBER = "20230706";
 
 export function pineConfig() {

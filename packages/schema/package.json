@@ -10,7 +10,6 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "clean": "rimraf .turbo dist node_modules"

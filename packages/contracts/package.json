@@ -11,8 +11,14 @@
   "exports": {
     ".": "./index.ts"
   },
+  "scripts": {
+    "generate:contracts": "typechain --target ethers-v5 --out-dir generated './node_modules/labor-markets-abi/dist/abis/*.json'"
+  },
   "dependencies": {
     "labor-markets-abi": "2.1.1",
     "labor-markets-abi-dev": "npm:labor-markets-abi@2.0.9"
+  },
+  "devDependencies": {
+    "@typechain/ethers-v5": "^10.2.0"
   }
 }

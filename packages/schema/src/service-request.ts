@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { fromUnixTimestamp } from "~/utils/date";
-import { EvmAddressSchema } from "../address";
-import { arrayToObject } from "../shared/utils";
+import { arrayToObject } from "./utils";
+import { EvmAddressSchema } from "./address";
+import { fromUnixTimestamp } from "@mdao/date";
 
 /**
  * AppData is any data that isn't stored by the contract directly but is stored in IPFS instead.

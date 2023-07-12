@@ -1,4 +1,4 @@
-import { prisma } from "~/services/prisma.server";
+import { prisma } from ".";
 
 async function main() {
   await prisma.project.createMany({

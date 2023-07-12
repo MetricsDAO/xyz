@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import { ActivityDoc, EventDoc, LaborMarketDoc, ServiceRequestDoc, SubmissionDoc, ReviewDoc } from "@mdao/schema";
-import env from "./env";
+import env from "../env";
 import { pineConfig } from "./pine-config";
 
 const client = new MongoClient(env.MONGODB_URI, {

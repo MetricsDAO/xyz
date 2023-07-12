@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { EvmAddressSchema } from "../address";
-import { RewardSchema } from "../reward-submissions/schema";
-import { SubmissionDocSchema } from "../submission/schemas";
+import { EvmAddressSchema } from "./address";
+import { SubmissionDocSchema } from "./submission";
+import { RewardSchema } from "./reward-submissions";
 
 export const ReviewSearchSchema = z.object({
   sortBy: z.enum(["blockTimestamp", "score"]).default("blockTimestamp").describe("Sort by column."),
