@@ -16,7 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "allowJs": true,
-    "plugins": [{ "name": "typescript-remix-routes-plugin" }],
     "paths": {
       "~/*": ["./app/*"]
     }

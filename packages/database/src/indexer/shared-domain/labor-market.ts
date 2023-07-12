@@ -9,7 +9,7 @@ import {
 } from "@mdao/schema";
 import { mongo } from "../mongo";
 import { safeCreateEvent } from "./event";
-import { fetchIpfsJson } from "~/ipfs";
+import { fetchIpfsJson } from "../../ipfs";
 
 export async function indexLaborMarketEvent(event: {
   name: string;

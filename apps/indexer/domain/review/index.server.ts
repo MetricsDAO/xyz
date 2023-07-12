@@ -1,13 +1,11 @@
 import { BigNumber } from "ethers";
 import { getAddress } from "ethers/lib/utils.js";
-import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
-import type { ReviewAppData } from "~/domain/review/schemas";
-import { ReviewAppDataSchema, ReviewEventSchema } from "~/domain/review/schemas";
-import { mongo } from "../../services/mongo.server";
-import { listTokens } from "~/services/tokens.server";
-import { fetchIpfsJson } from "~/services/ipfs.server";
-import { logger } from "~/services/logger.server";
+// import { logger } from "~/services/logger.server";
+import type { TracerEvent } from "@mdao/pinekit";
+import { fetchIpfsJson, mongo, prisma } from "@mdao/database";
+import type { ReviewAppData } from "@mdao/schema";
+import { ReviewAppDataSchema, ReviewEventSchema } from "@mdao/schema";
 
 export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   const contractAddress = getAddress(event.contract.address);
@@ -20,7 +18,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
   try {
     appData = await getIndexedReviewAppData(uri);
   } catch (e) {
-    logger.warn("Failed to parse review app data. Skipping indexing", e);
+    console.warn("Failed to parse review app data. Skipping indexing", e);
     return;
   }
 
@@ -56,7 +54,7 @@ export const indexerRequestReviewedEvent = async (event: TracerEvent) => {
     }
   );
 
-  const tokens = await listTokens();
+  const tokens = await prisma.token.findMany();
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenReviewer);
 
   await mongo.reviews.insertOne({

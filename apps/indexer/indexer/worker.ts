@@ -1,20 +1,23 @@
-import * as pine from "pinekit";
-import { indexerLaborMarketConfiguredEvent } from "~/domain/labor-market/index.server";
-import { indexerRequestReviewedEvent } from "~/domain/review/index.server";
-import { indexerRequestPayClaimedEvent } from "~/domain/reward-submissions/index.server";
+import * as pine from "@mdao/pinekit";
+import { indexerRequestReviewedEvent } from "domain/review/index.server";
+import { indexerRequestPayClaimedEvent } from "domain/reward/index.server";
 import {
-  indexerRequestConfiguredEvent,
   indexerRequestSignalEvent,
   indexerRequestWithdrawnEvent,
   indexerReviewSignalEvent,
-} from "~/domain/service-request/index.server";
-import { indexerRequestFulfilledEvent } from "~/domain/submission/index.server";
-import env from "~/env.server";
-import { logger } from "~/services/logger.server";
-import { getContracts } from "~/utils/contracts.server";
-import { pineConfig } from "~/utils/pine-config.server";
+} from "domain/service-request/index.server";
+import env from "../env";
+import {
+  EvmAddressSchema,
+  LaborMarketConfigSchema,
+  ServiceRequestConfigSchema,
+  SubmissionConfigSchema,
+} from "@mdao/schema";
+import { indexLaborMarketEvent, indexServiceRequestEvent, indexSubmissionEvent, pineConfig } from "@mdao/database";
+import { contractsByEnv } from "@mdao/contracts";
+import { logger } from "./logger";
 
-const contracts = getContracts();
+const contracts = contractsByEnv(env.ENVIRONMENT === "development");
 const config = pineConfig();
 
 const worker = pine.createWorker({
@@ -41,11 +44,29 @@ const LaborMarket = worker.contractFromEvent("LaborMarket", {
 });
 
 worker.onEvent(LaborMarket, "LaborMarketConfigured", async (event) => {
-  return indexerLaborMarketConfiguredEvent(event);
+  const address = EvmAddressSchema.parse(event.contract.address);
+  const inputs = LaborMarketConfigSchema.parse(event.decoded.inputs);
+  return indexLaborMarketEvent({
+    name: "LaborMarketConfigured",
+    address,
+    blockNumber: event.block.number,
+    blockTimestamp: new Date(event.block.timestamp),
+    transactionHash: event.txHash,
+    args: inputs,
+  });
 });
 
 worker.onEvent(LaborMarket, "RequestConfigured", async (event) => {
-  return indexerRequestConfiguredEvent(event);
+  const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
+  const config = ServiceRequestConfigSchema.parse(event.decoded.inputs);
+  return indexServiceRequestEvent({
+    name: "RequestConfigured",
+    address: laborMarketAddress,
+    blockNumber: event.block.number,
+    blockTimestamp: new Date(event.block.timestamp),
+    transactionHash: event.txHash,
+    args: config,
+  });
 });
 
 worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
@@ -53,7 +74,18 @@ worker.onEvent(LaborMarket, "ReviewSignal", async (event) => {
 });
 
 worker.onEvent(LaborMarket, "RequestFulfilled", async (event) => {
-  return indexerRequestFulfilledEvent(event);
+  const config = SubmissionConfigSchema.parse(event.decoded.inputs);
+  const laborMarketAddress = EvmAddressSchema.parse(event.contract.address);
+
+  // create submission
+  return indexSubmissionEvent({
+    name: "RequestFulfilled",
+    address: laborMarketAddress,
+    blockNumber: event.block.number,
+    blockTimestamp: new Date(event.block.timestamp),
+    transactionHash: event.txHash,
+    args: config,
+  });
 });
 
 worker.onEvent(LaborMarket, "RequestSignal", async (event) => {

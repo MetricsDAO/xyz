@@ -3,6 +3,7 @@ import { ActivityDoc, EventDoc, LaborMarketDoc, ServiceRequestDoc, SubmissionDoc
 import env from "../env";
 import { pineConfig } from "./pine-config";
 
+console.log("env", env);
 const client = new MongoClient(env.MONGODB_URI, {
   connectTimeoutMS: 60000, // set timeout to 60 seconds
   maxPoolSize: 200, // set the maximum number of connections in the pool

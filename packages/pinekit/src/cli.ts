@@ -1,7 +1,7 @@
 import { Command } from "commander";
-import { Client } from "pinekit";
-import env from "~/env.server";
-import { contractsByEnv } from "~/utils/contracts.server";
+import { Client } from "./client";
+import env from "./env";
+import { contractsByEnv } from "@mdao/contracts";
 
 require("dotenv").config();
 

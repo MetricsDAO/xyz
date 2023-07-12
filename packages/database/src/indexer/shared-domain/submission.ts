@@ -2,7 +2,7 @@ import invariant from "tiny-invariant";
 // import { logger } from "~/services/logger.server";
 import { EvmAddress, SubmissionConfig } from "@mdao/schema";
 import { safeCreateEvent } from "./event";
-import { fetchIpfsJson } from "~/ipfs";
+import { fetchIpfsJson } from "../../ipfs";
 import { mongo } from "../mongo";
 
 export async function indexSubmissionEvent(event: {

@@ -1,7 +1,7 @@
 import PinataSDK from "@pinata/sdk";
 import type { User } from "@prisma/client";
-import env from "~/env";
-import { prisma } from "~/prisma";
+import env from "../env";
+import { prisma } from "../prisma";
 
 const pinata = new PinataSDK({
   pinataApiKey: env.PINATA_API_KEY,

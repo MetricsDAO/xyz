@@ -8,5 +8,16 @@
   ],
   "exports": {
     ".": "./src/index.ts"
+  },
+  "scripts": {
+    "pine": "tsx -r dotenv/config src/cli.ts"
+  },
+  "dependencies": {
+    "@mdao/contracts": "*",
+    "zod": "^3.20.6"
+  },
+  "devDependencies": {
+    "tsx": "^3.11.0",
+    "dotenv": "^16.0.1"
   }
 }

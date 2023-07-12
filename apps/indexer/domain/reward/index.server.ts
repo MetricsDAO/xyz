@@ -1,9 +1,8 @@
+import { mongo, prisma } from "@mdao/database";
+import type { TracerEvent } from "@mdao/pinekit";
+import { RequestPayClaimedEventSchema } from "@mdao/schema";
 import { getAddress } from "ethers/lib/utils.js";
-import type { TracerEvent } from "pinekit/types";
 import invariant from "tiny-invariant";
-import { mongo } from "~/services/mongo.server";
-import { listTokens } from "~/services/tokens.server";
-import { RequestPayClaimedEventSchema } from "./schema";
 
 export async function indexerRequestPayClaimedEvent(event: TracerEvent) {
   const laborMarketAddress = getAddress(event.contract.address);
@@ -15,7 +14,7 @@ export async function indexerRequestPayClaimedEvent(event: TracerEvent) {
   });
   invariant(serviceRequest, "Service request should exist");
 
-  const tokens = await listTokens();
+  const tokens = await prisma.token.findMany();
   const token = tokens.find((t) => t.contractAddress === serviceRequest.configuration.pTokenProvider);
 
   await mongo.submissions.updateOne(

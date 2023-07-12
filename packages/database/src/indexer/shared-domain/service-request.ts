@@ -11,7 +11,7 @@ import {
   ServiceRequestDoc,
 } from "@mdao/schema";
 import { safeCreateEvent } from "./event";
-import { fetchIpfsJson } from "~/ipfs";
+import { fetchIpfsJson } from "../../ipfs";
 import { BigNumber } from "ethers";
 
 export async function indexServiceRequestEvent(event: {
