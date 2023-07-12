@@ -47,10 +47,10 @@ export function ReviewCreatorPanel({
   };
 
   const alreadyReviewed = userHasReviewed(reviews);
-  const reviewDeadlinePassed = serviceRequest && dateHasPassed(serviceRequest.configuration.signalExp);
+  const reviewDeadlineNotPassed = serviceRequest && !dateHasPassed(serviceRequest.configuration.signalExp);
   const isCurrentUsersSubmission = submission.configuration.fulfiller === account.address;
 
-  const canSubmitReview = !alreadyReviewed && !reviewDeadlinePassed && !isCurrentUsersSubmission;
+  const canSubmitReview = !alreadyReviewed && reviewDeadlineNotPassed && !isCurrentUsersSubmission;
 
   const selectedScore = watch("score");
 
