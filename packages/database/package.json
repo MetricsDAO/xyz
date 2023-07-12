@@ -11,8 +11,8 @@
   },
   "license": "UNLICENSED",
   "scripts": {
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "clean": "rimraf .turbo dist node_modules"
+    "lint": "eslint --cache --cache-location node_modules/.cache/eslint .",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "zod": "^3.20.6",

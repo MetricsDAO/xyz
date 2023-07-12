@@ -27,7 +27,8 @@ services:
   indexer:
     container_name: "indexer"
     build:
-      context: ./apps/indexer
+      dockerfile: ./apps/indexer/Dockerfile
+      context: .
     ports:
       - "8001:3000"
     env_file:

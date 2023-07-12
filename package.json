@@ -4,14 +4,9 @@
     "apps/*"
   ],
   "private": true,
-  "scripts": {
-    "postinstall": "typechain --target ethers-v5 --out-dir packages/contracts/generated './node_modules/labor-markets-abi/dist/abis/*.json'"
-  },
-  "dependencies": {
-    "labor-markets-abi": "2.1.1",
-    "labor-markets-abi-dev": "npm:labor-markets-abi@2.0.9"
-  },
+  "scripts": {},
+  "dependencies": {},
   "devDependencies": {
-    "@typechain/ethers-v5": "^10.2.0"
+    "turbo": "^1.3.1"
   }
 }

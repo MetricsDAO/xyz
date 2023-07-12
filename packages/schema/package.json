@@ -1,5 +1,6 @@
 {
   "name": "@mdao/schema",
+  "private": true,
   "description": "",
   "version": "0.0.1",
   "main": "src/index.ts",
@@ -11,7 +12,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+    "lint": "eslint --cache --cache-location node_modules/.cache/eslint .",
     "clean": "rimraf .turbo dist node_modules"
   },
   "dependencies": {
