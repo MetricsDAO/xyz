@@ -5,6 +5,8 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
-    "dev": {}
+    "dev": {
+      "dotEnv": [".env"]
+    }
   }
 }

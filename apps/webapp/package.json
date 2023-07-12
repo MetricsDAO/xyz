@@ -16,7 +16,7 @@
     "dev:build": "cross-env NODE_ENV=development npm run build:server -- --watch",
     "dev:css": "yarn generate:css --watch",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
-    "dev:server": "cross-env NODE_ENV=development node --inspect --require ./node_modules/dotenv/config ./build/server.js",
+    "dev:server": "cross-env NODE_ENV=development node --inspect --require dotenv/config ./build/server.js",
     "docker": "docker compose up -d --remove-orphans",
     "generate:css": "tailwindcss -i ./styles/app.css -o app/styles/app.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint '**/*.{ts,tsx}'",

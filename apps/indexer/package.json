@@ -6,7 +6,7 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "dev:indexer": "cross-env NODE_ENV=development tsx -r dotenv/config indexer/run.ts",
+    "dev": "cross-env NODE_ENV=development tsx -r dotenv/config indexer/run.ts",
     "start:indexer": "cross-env NODE_ENV=production tsx indexer/run.ts",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint '**/*.{ts,tsx}'",
     "reindex": "cross-env NODE_ENV=production tsx indexer/reindex.ts"
