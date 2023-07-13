@@ -8,7 +8,6 @@ import type { EvmAddress } from "~/domain/address";
 import { useProjects, useTokens } from "~/hooks/use-root-data";
 import type { MarketplaceForm } from "./schema";
 import { MarketplaceFormSchema } from "./schema";
-import { ethers } from "ethers";
 
 export function OverviewForm({
   defaultValues,
