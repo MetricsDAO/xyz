@@ -76,6 +76,7 @@ const hasRedeemed = (claims: FetchClaimsResponse[], submission: SubmissionDoc) =
       (v) =>
         v.marketplaceAddress === submission.laborMarketAddress &&
         v.participationID === submission.id &&
+        v.iouAddress === submission.reward?.tokenAddress &&
         v.redeemTx !== null
     );
   });
