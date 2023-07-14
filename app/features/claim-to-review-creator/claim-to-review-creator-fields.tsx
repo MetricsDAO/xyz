@@ -4,6 +4,7 @@ import { CountdownCard } from "~/components/countdown-card";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { claimToReviewDeadline } from "~/utils/helpers";
 import type { ClaimToReviewFormValues } from "./claim-to-review-creator-values";
+import { useUser } from "~/hooks/use-user";
 
 export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest: ServiceRequestDoc }) {
   const {
@@ -11,11 +12,15 @@ export function ClaimToReviewCreatorFields({ serviceRequest }: { serviceRequest:
     formState: { errors },
   } = useFormContext<ClaimToReviewFormValues>();
 
-  const claimedReviews =
-    serviceRequest.indexData.claimsToReview.length > 0
-      ? serviceRequest.indexData.claimsToReview.reduce((sum, claim) => sum + claim.signalAmount, 0)
-      : 0;
-  const numClaimsRemaining = serviceRequest.configuration.reviewerLimit - claimedReviews;
+  const user = useUser();
+
+  const userClaimedReviews = serviceRequest.indexData.claimsToReview.reduce((sum, claim) => {
+    if (claim.signaler === user.address) {
+      return sum + claim.signalAmount;
+    }
+    return sum;
+  }, 0);
+  const numClaimsRemaining = Math.max(serviceRequest.configuration.providerLimit - userClaimedReviews, 0); // 0 if negative
 
   return (
     <>
