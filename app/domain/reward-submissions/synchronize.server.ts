@@ -9,6 +9,11 @@ import { fetchSignaturesBodySchema } from "../treasury";
 import { BucketEnforcement__factory } from "~/contracts";
 import { nodeProvider } from "~/services/node.server";
 
+// submission id is not enough for uniqueness. Need to also look at serviceRequestId
+const getParticipationId = (s: SubmissionDoc) => {
+  return `${s.serviceRequestId}-${s.id}`;
+};
+
 const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) => {
   const iouSubmissions = submissions.filter((s) => s.reward?.isIou === true && !s.reward?.iouHasRedeemed);
   if (iouSubmissions.length === 0) {
@@ -17,7 +22,7 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
   const fetchSignaturesBody = iouSubmissions.map((s) => {
     invariant(s.reward?.tokenAmount, `submission ${s.id} has no tokenAmount`);
     return {
-      participationID: s.id,
+      participationID: getParticipationId(s),
       claimerAddress: s.configuration.fulfiller,
       marketplaceAddress: s.laborMarketAddress,
       iouAddress: s.sr.configuration.pTokenProvider,
@@ -31,7 +36,7 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
     iouSubmissions.map((s) => {
       return {
         marketplaceAddress: s.laborMarketAddress,
-        participationId: s.id,
+        participationId: getParticipationId(s),
         type: "submission",
       };
     })
@@ -66,7 +71,7 @@ const getSignature = (signatures: FetchSignaturesResponse, submission: Submissio
   return signatures.find(
     (c) =>
       c.signedBody.marketplaceAddress === submission.laborMarketAddress &&
-      c.signedBody.participationID === submission.id
+      c.signedBody.participationID === getParticipationId(submission)
   );
 };
 
@@ -75,7 +80,7 @@ const hasRedeemed = (claims: FetchClaimsResponse[], submission: SubmissionDoc) =
     return c.claims.val.find(
       (v) =>
         v.marketplaceAddress === submission.laborMarketAddress &&
-        v.participationID === submission.id &&
+        v.participationID === getParticipationId(submission) &&
         v.redeemTx !== null
     );
   });
