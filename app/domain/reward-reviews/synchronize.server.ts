@@ -4,6 +4,7 @@ import { fetchClaims, fetchSignatures } from "~/services/treasury.server";
 import type { ReviewDoc, ReviewWithSubmission } from "../review/schemas";
 import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
 import { fetchSignaturesBodySchema } from "../treasury";
+import { getReviewParticipationId } from "~/utils/helpers";
 
 const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
   const iouReviews = reviews.filter((s) => s.reward?.isIou === true && !s.reward?.iouHasRedeemed);
@@ -15,7 +16,7 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
     invariant(r.reward?.tokenAmount, `review ${r.id} has no tokenAmount`);
     invariant(r.reward?.tokenAddress, `review ${r.id} has no tokenAddress`);
     return {
-      participationID: r.id,
+      participationID: getReviewParticipationId(r),
       claimerAddress: r.reviewer,
       marketplaceAddress: r.laborMarketAddress,
       iouAddress: r.reward.tokenAddress,
@@ -29,7 +30,7 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
     iouReviews.map((r) => {
       return {
         marketplaceAddress: r.laborMarketAddress,
-        participationId: r.id,
+        participationId: getReviewParticipationId(r),
         type: "review",
       };
     })
@@ -62,7 +63,9 @@ const updateTreasuryData = async (reviews: ReviewWithSubmission[]) => {
 
 const getSignature = (signatures: FetchSignaturesResponse, review: ReviewDoc) => {
   return signatures.find(
-    (c) => c.signedBody.marketplaceAddress === review.laborMarketAddress && c.signedBody.participationID === review.id
+    (c) =>
+      c.signedBody.marketplaceAddress === review.laborMarketAddress &&
+      c.signedBody.participationID === getReviewParticipationId(review)
   );
 };
 
@@ -70,7 +73,9 @@ const hasRedeemed = (claims: FetchClaimsResponse[], review: ReviewDoc) => {
   const redemptedClaim = claims.find((c) => {
     return c.claims.val.find(
       (v) =>
-        v.marketplaceAddress === review.laborMarketAddress && v.participationID === review.id && v.redeemTx !== null
+        v.marketplaceAddress === review.laborMarketAddress &&
+        v.participationID === getReviewParticipationId(review) &&
+        v.redeemTx !== null
     );
   });
 
