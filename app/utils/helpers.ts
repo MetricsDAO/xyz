@@ -128,7 +128,7 @@ export function getEventFromLogs(
 
 // review id is not enough for uniqueness. Need to also look at serviceRequestId and submissionId
 export const getReviewParticipationId = (r: ReviewDoc) => {
-  const id = ethers.utils.id(`${r.serviceRequestId}${r.submissionId}${r.id}`);
+  const id = `${r.serviceRequestId}${r.submissionId}${r.id}`;
   return hashToUint256(id).toString();
 };
 
