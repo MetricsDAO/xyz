@@ -66,7 +66,8 @@ const getSignature = (signatures: FetchSignaturesResponse, submission: Submissio
   return signatures.find(
     (c) =>
       c.signedBody.marketplaceAddress === submission.laborMarketAddress &&
-      c.signedBody.participationID === submission.id
+      c.signedBody.participationID === submission.id &&
+      c.signedBody.iouAddress === submission.reward?.tokenAddress
   );
 };
 

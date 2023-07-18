@@ -28,6 +28,7 @@ export const fetchSignaturesResponseSchema = z.array(
       participationID: z.string(),
       claimerAddress: EvmAddressSchema,
       marketplaceAddress: EvmAddressSchema,
+      iouAddress: EvmAddressSchema,
     }),
     signature: z.string(),
   })
