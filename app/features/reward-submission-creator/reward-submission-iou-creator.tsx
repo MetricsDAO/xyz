@@ -153,7 +153,7 @@ function configureClaim({
     address: inputs.laborMarketAddress,
     abi: contracts.LaborMarket.abi,
     functionName: "claim",
-    args: [BigNumber.from(inputs.submissionId), BigNumber.from(inputs.serviceRequestId)],
+    args: [BigNumber.from(inputs.serviceRequestId), BigNumber.from(inputs.submissionId)],
   });
 }
 
