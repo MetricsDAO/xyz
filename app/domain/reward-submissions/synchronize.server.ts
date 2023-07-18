@@ -8,6 +8,7 @@ import type { FetchClaimsResponse, FetchSignaturesResponse } from "../treasury";
 import { fetchSignaturesBodySchema } from "../treasury";
 import { BucketEnforcement__factory } from "~/contracts";
 import { nodeProvider } from "~/services/node.server";
+import { getSubmissionParticipationId } from "~/utils/helpers";
 
 const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) => {
   const iouSubmissions = submissions.filter((s) => s.reward?.isIou === true && !s.reward?.iouHasRedeemed);
@@ -17,7 +18,7 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
   const fetchSignaturesBody = iouSubmissions.map((s) => {
     invariant(s.reward?.tokenAmount, `submission ${s.id} has no tokenAmount`);
     return {
-      participationID: s.id,
+      participationID: getSubmissionParticipationId(s),
       claimerAddress: s.configuration.fulfiller,
       marketplaceAddress: s.laborMarketAddress,
       iouAddress: s.sr.configuration.pTokenProvider,
@@ -31,7 +32,7 @@ const updateTreasuryData = async (submissions: SubmissionWithServiceRequest[]) =
     iouSubmissions.map((s) => {
       return {
         marketplaceAddress: s.laborMarketAddress,
-        participationId: s.id,
+        participationId: getSubmissionParticipationId(s),
         type: "submission",
       };
     })
@@ -66,7 +67,7 @@ const getSignature = (signatures: FetchSignaturesResponse, submission: Submissio
   return signatures.find(
     (c) =>
       c.signedBody.marketplaceAddress === submission.laborMarketAddress &&
-      c.signedBody.participationID === submission.id
+      c.signedBody.participationID === getSubmissionParticipationId(submission)
   );
 };
 
@@ -75,7 +76,7 @@ const hasRedeemed = (claims: FetchClaimsResponse[], submission: SubmissionDoc) =
     return c.claims.val.find(
       (v) =>
         v.marketplaceAddress === submission.laborMarketAddress &&
-        v.participationID === submission.id &&
+        v.participationID === getSubmissionParticipationId(submission) &&
         v.redeemTx !== null
     );
   });

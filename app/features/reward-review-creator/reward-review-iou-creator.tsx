@@ -11,6 +11,7 @@ import ConnectWalletWrapper from "../connect-wallet-wrapper";
 import { NoPayoutAddressFoundModalButton } from "../my-rewards/no-payout-address-modal-button";
 import { RedeemConfirmation } from "../my-rewards/redeem-confirmation";
 import { iouTokenAbi } from "~/abi/iou-token";
+import { getReviewParticipationId } from "~/utils/helpers";
 
 interface RedeemRewardCreatorProps {
   review: ReviewDoc;
@@ -49,7 +50,7 @@ export function RewardReviewIOUCreator({ review }: RedeemRewardCreatorProps) {
           inputs: {
             iouTokenAddress: token.contractAddress as EvmAddress,
             laborMarketAddress: review.laborMarketAddress,
-            submissionId: review.id, //TODO what should this be
+            participationId: getReviewParticipationId(review),
             amount: review.reward.tokenAmount,
             signature: signature as `0x${string}`,
           },
@@ -105,16 +106,16 @@ function configureRedeem({
   inputs: {
     iouTokenAddress: EvmAddress;
     laborMarketAddress: EvmAddress;
-    submissionId: string;
+    participationId: string;
     amount: string;
     signature: `0x${string}`;
   };
 }) {
-  const { iouTokenAddress, laborMarketAddress, submissionId, amount, signature } = inputs;
+  const { iouTokenAddress, laborMarketAddress, participationId, amount, signature } = inputs;
   return configureWrite({
     address: iouTokenAddress,
     abi: iouTokenAbi,
     functionName: "redeem",
-    args: [laborMarketAddress, BigNumber.from(submissionId), "review", BigNumber.from(amount), signature],
+    args: [laborMarketAddress, BigNumber.from(participationId), "review", BigNumber.from(amount), signature],
   });
 }
