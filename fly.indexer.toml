@@ -1,7 +1,5 @@
 app = "mdao-indexer-v2"
 
-primary_region = "iad"
-
 [experimental]
 cmd = ["yarn", "start:indexer"]
 
