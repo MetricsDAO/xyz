@@ -208,7 +208,8 @@ function SubmissionsTable({ submissions, projects }: { submissions: CombinedDoc[
                 <img alt="" src="/img/icons/poly.svg" width={15} />
                 <CopyToClipboard
                   className="text-stone-500"
-                  content={truncateAddress(s.configuration.fulfiller)}
+                  content={s.configuration.fulfiller}
+                  displayContent={truncateAddress(s.configuration.fulfiller)}
                   iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                 />
               </div>
@@ -255,7 +256,8 @@ function SubmissionsCard({ submissions, projects }: { submissions: CombinedDoc[]
                 <img alt="" src="/img/icons/poly.svg" width={15} />
                 <CopyToClipboard
                   className="text-stone-500"
-                  content={truncateAddress(s.configuration.fulfiller)}
+                  content={s.configuration.fulfiller}
+                  displayContent={truncateAddress(s.configuration.fulfiller.toString() || "")}
                   iconRight={<DocumentDuplicateIcon className="w-5 h-5" />}
                 />
               </div>
