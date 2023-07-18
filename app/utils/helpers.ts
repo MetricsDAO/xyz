@@ -2,6 +2,9 @@ import type { Project, Token } from "@prisma/client";
 import { BigNumber, ethers } from "ethers";
 import type { ServiceRequestDoc } from "~/domain/service-request/schemas";
 import { claimDate } from "./date";
+import type { ReviewDoc } from "~/domain";
+import type { SubmissionDoc } from "~/domain/submission/schemas";
+import invariant from "tiny-invariant";
 
 export const truncateAddress = (address: string) => {
   if (address.length < 10) {
@@ -122,3 +125,22 @@ export function getEventFromLogs(
     .map((log) => iface.parseLog(log))
     .find((e) => e.name === eventName);
 }
+
+// review id is not enough for uniqueness. Need to also look at serviceRequestId and submissionId
+export const getReviewParticipationId = (r: ReviewDoc) => {
+  const id = `${r.serviceRequestId}${r.submissionId}${r.id}`;
+  return hashToUint256(id).toString();
+};
+
+// submission id is not enough for uniqueness. Need to also look at serviceRequestId
+export const getSubmissionParticipationId = (s: SubmissionDoc) => {
+  const id = `${s.serviceRequestId}${s.id}`;
+  return hashToUint256(id).toString();
+};
+
+export const hashToUint256 = (text: string) => {
+  const hash = ethers.utils.id(text);
+  const bn = BigNumber.from(hash);
+  invariant(bn.lte(ethers.constants.MaxUint256), "Hash is too large to fit in a BigNumber"); // just in case
+  return bn;
+};
