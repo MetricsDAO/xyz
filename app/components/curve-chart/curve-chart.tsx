@@ -96,7 +96,7 @@ function AggresiveCurve({ token, amount, decimals }: { token: string; amount: st
         <div className="border border-[#C9C9C9] h-16 mx-1 self-center" />
         <div style={{ width: `15%` }} className="font-semibold justify-between flex flex-col">
           <AmountInPercent amount={amount} token={token} decimals={decimals} percent={75} />
-          <div className="w-full h-2 bg-gradient-to-r from-[#AAC079] to-[#A3C877] rounded-full mt-1" />
+          <div className="w-full h-2 bg-gradient-to-r from-[#AAC079] to-[#98D176] rounded-full mt-1" />
         </div>
         <div className="border border-[#C9C9C9] h-16 mx-1 self-center" />
         <div style={{ width: `10%` }} className="font-semibold justify-between flex flex-col">
