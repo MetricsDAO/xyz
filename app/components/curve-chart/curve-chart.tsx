@@ -123,7 +123,7 @@ function AcceptableCurve({ token, amount, decimals }: { token: string; amount: s
   return (
     <div className="hidden md:block">
       <div className="w-full flex">
-        <div style={{ width: `75%` }} className="font-semibold justify-between flex flex-col">
+        <div style={{ width: `50%` }} className="font-semibold justify-between flex flex-col">
           <AmountInPercent amount={amount} token={token} decimals={decimals} percent={0} />
           <div className="w-full h-2 bg-gradient-to-r from-[#F57F86] to-[#C1AE7D] rounded-full mt-1" />
         </div>
@@ -133,7 +133,7 @@ function AcceptableCurve({ token, amount, decimals }: { token: string; amount: s
           <div className="w-full h-2 bg-gradient-to-r from-[#BCB27D] to-[#AAC079] rounded-full mt-1" />
         </div>
         <div className="border border-[#C9C9C9] h-16 mx-1 self-center" />
-        <div style={{ width: `10%` }} className="font-semibold justify-between flex flex-col">
+        <div style={{ width: `25%` }} className="font-semibold justify-between flex flex-col">
           <AmountInPercent amount={amount} token={token} decimals={decimals} percent={100} />
           <div className="w-full h-2 bg-gradient-to-r from-[#A1C977] to-[#98D176] rounded-full mt-1" />
         </div>
@@ -141,13 +141,13 @@ function AcceptableCurve({ token, amount, decimals }: { token: string; amount: s
 
       <div className="w-full flex">
         <p className="font-semibold">0</p>
-        <p style={{ width: `75%` }} className="text-right font-semibold">
+        <p style={{ width: `50%` }} className="text-right font-semibold">
           50
         </p>
         <p style={{ width: `25%` }} className="text-right font-semibold">
           75
         </p>
-        <p style={{ width: `10%` }} className="text-right font-semibold" />
+        <p style={{ width: `25%` }} className="text-right font-semibold" />
       </div>
     </div>
   );
