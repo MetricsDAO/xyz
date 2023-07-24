@@ -19,7 +19,7 @@ export function CurveChart({
         <h3 className="font-semibold text-neutral-400">max earn</h3>
       </div>
       {type === "Constant" && <ConstantCurve token={token} amount={amount} decimals={decimals} />}
-      {type === "Aggressive" && <AggresiveCurve token={token} amount={amount} decimals={decimals} />}
+      {type === "Aggressive" && <AggressiveCurve token={token} amount={amount} decimals={decimals} />}
       {type === "Acceptable" && <AcceptableCurve token={token} amount={amount} decimals={decimals} />}
       {type === "Pass / Fail" && <PassFailCurve token={token} amount={amount} decimals={decimals} />}
       <div className="space-y-1">
@@ -85,7 +85,7 @@ function ConstantCurve({ token, amount, decimals }: { token: string; amount: str
   );
 }
 
-function AggresiveCurve({ token, amount, decimals }: { token: string; amount: string; decimals: number }) {
+function AggressiveCurve({ token, amount, decimals }: { token: string; amount: string; decimals: number }) {
   return (
     <div className="hidden md:block">
       <div className="w-full flex">
@@ -95,7 +95,7 @@ function AggresiveCurve({ token, amount, decimals }: { token: string; amount: st
         </div>
         <div className="border border-[#C9C9C9] h-16 mx-1 self-center" />
         <div style={{ width: `15%` }} className="font-semibold justify-between flex flex-col">
-          <AmountInPercent amount={amount} token={token} decimals={decimals} percent={75} />
+          <AmountInPercent amount={amount} token={token} decimals={decimals} percent={50} />
           <div className="w-full h-2 bg-gradient-to-r from-[#AAC079] to-[#A3C877] rounded-full mt-1" />
         </div>
         <div className="border border-[#C9C9C9] h-16 mx-1 self-center" />
