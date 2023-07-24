@@ -8,13 +8,13 @@ const constantLikert = {
 
 const aggresive = {
   auxilaries: [BigNumber.from(100)],
-  alphas: [BigNumber.from(0), BigNumber.from(74), BigNumber.from(90)],
+  alphas: [BigNumber.from(0), BigNumber.from(75), BigNumber.from(90)],
   betas: [BigNumber.from(0), BigNumber.from(50), BigNumber.from(100)],
 };
 
 const acceptable = {
   auxilaries: [BigNumber.from(100)],
-  alphas: [BigNumber.from(0), BigNumber.from(49), BigNumber.from(74)],
+  alphas: [BigNumber.from(0), BigNumber.from(50), BigNumber.from(75)],
   betas: [BigNumber.from(0), BigNumber.from(50), BigNumber.from(100)],
 };
 
