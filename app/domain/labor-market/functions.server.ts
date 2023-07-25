@@ -72,6 +72,7 @@ function filterToMongo(filter: LaborMarketFilter): Parameters<typeof mongo.labor
     ...(filter.q ? { $text: { $search: filter.q, $language: "english" } } : {}),
     ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
     ...(filter.token ? { serviceRequestRewardPools: { $elemMatch: { pToken: { $in: filter.token } } } } : {}),
+    ...(filter.exclude ? { address: { $nin: filter.exclude } } : {}),
   };
 }
 
