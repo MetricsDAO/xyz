@@ -74,6 +74,7 @@ export const ServiceRequestFilterSchema = z.object({
   project: z.array(z.string()).optional(),
   language: z.array(z.string()).optional(),
   laborMarket: z.string().optional(),
+  exclude: z.array(EvmAddressSchema).optional(), // labor market addresses
 });
 export type ServiceRequestFilter = z.infer<typeof ServiceRequestFilterSchema>;
 

@@ -9,12 +9,14 @@ import { countServiceRequests, searchServiceRequests } from "~/domain/service-re
 import { ServiceRequestSearchSchema } from "~/domain/service-request/schemas";
 import { ListChallenges } from "~/features/challenges/list-challenges/list-challenges";
 import { SearchChallenges } from "~/features/challenges/search-challenges/search-challenges";
+import { HIDDEN_PRODUCTION_LABOR_MARKETS } from "~/utils/constants";
 
 export async function loader({ request }: DataFunctionArgs) {
   const searchParams = getSearchParamsOrFail(request, ServiceRequestSearchSchema);
-  const serviceRequests = await searchServiceRequests(searchParams);
-  const totalResults = await countServiceRequests(searchParams);
-  return typedjson({ serviceRequests, searchParams, totalResults });
+  const searchParamsWithExclusions = { ...searchParams, exclude: HIDDEN_PRODUCTION_LABOR_MARKETS };
+  const serviceRequests = await searchServiceRequests(searchParamsWithExclusions);
+  const totalResults = await countServiceRequests(searchParamsWithExclusions);
+  return typedjson({ serviceRequests, searchParams: searchParamsWithExclusions, totalResults });
 }
 
 export default function Challenges() {

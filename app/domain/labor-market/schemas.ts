@@ -85,6 +85,7 @@ export const LaborMarketFilterSchema = z.object({
   type: LaborMarketTypeSchema,
   token: z.array(z.string()).optional(),
   project: z.array(z.string()).optional(),
+  exclude: z.array(EvmAddressSchema).optional(),
 });
 export type LaborMarketFilter = z.infer<typeof LaborMarketFilterSchema>;
 
