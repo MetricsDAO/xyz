@@ -21,7 +21,6 @@ import ConnectWalletWrapper from "~/features/connect-wallet-wrapper";
 import { MarketplacesListView } from "~/features/marketplaces-list-view";
 import { listProjects } from "~/services/projects.server";
 import { listTokens } from "~/services/tokens.server";
-import { HIDDEN_PRODUCTION_LABOR_MARKETS } from "~/utils/constants";
 
 const validator = withZod(LaborMarketSearchSchema);
 
@@ -36,9 +35,8 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   url.searchParams.set("type", "analyze");
   const searchParams = getParamsOrFail(url.searchParams, LaborMarketSearchSchema);
 
-  const searchParamsWithExclusions = { ...searchParams, exclude: HIDDEN_PRODUCTION_LABOR_MARKETS };
-  const marketplaces = await searchLaborMarkets(searchParamsWithExclusions);
-  const totalResults = await countLaborMarkets(searchParamsWithExclusions);
+  const marketplaces = await searchLaborMarkets(searchParams);
+  const totalResults = await countLaborMarkets(searchParams);
 
   const marketplacesWithActiveChallengeData = await Promise.all(
     marketplaces.map(async (m) => {
@@ -50,7 +48,7 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
   const tokens = await listTokens();
   const projects = await listProjects();
   return typedjson({
-    searchParams: searchParamsWithExclusions,
+    searchParams,
     marketplacesWithActiveChallengeData,
     totalResults,
     tokens,
