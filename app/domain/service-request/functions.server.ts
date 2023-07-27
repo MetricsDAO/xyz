@@ -109,7 +109,6 @@ function filterToMongo(filter: ServiceRequestFilter): Parameters<typeof mongo.se
     ...(filter.project ? { "appData.projectSlugs": { $in: filter.project } } : {}),
     ...(filter.laborMarket ? { laborMarketAddress: filter.laborMarket as `0x${string}` } : {}),
     ...(filter.token ? { "configuration.pToken": { $in: filter.token } } : {}),
-    ...(filter.exclude ? { laborMarketAddress: { $nin: filter.exclude } } : {}),
   };
 }
 
