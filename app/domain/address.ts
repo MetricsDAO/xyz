@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
 import { bech32 } from "bech32";
+import { useIsAddressValidated } from "~/hooks/use-is-address-validated";
 
 export const EvmAddressSchema = z
   .string()
@@ -54,3 +55,11 @@ export const NearAddressSchema = z.string().refine(async (address) => {
     return false;
   }
 }, "Must be a valid NEAR address.");
+
+export const FlowAddressSchema = z.string().refine(async (address) => {
+  try {
+    return await useIsAddressValidated(address);
+  } catch {
+    return false;
+  }
+}, `Must be a valid FLOW address.`);
