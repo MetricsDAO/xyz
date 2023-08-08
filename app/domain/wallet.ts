@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { EvmAddressSchema, OsmosisAddressSchema, SolAddressSchema, NearAddressSchema } from "./address";
+import {
+  EvmAddressSchema,
+  OsmosisAddressSchema,
+  SolAddressSchema,
+  NearAddressSchema,
+  FlowAddressSchema,
+} from "./address";
 
 export const PaymentAddressSchema = z.discriminatedUnion("networkName", [
   z.object({ networkName: z.literal("Polygon"), address: EvmAddressSchema }),
@@ -8,6 +14,7 @@ export const PaymentAddressSchema = z.discriminatedUnion("networkName", [
   z.object({ networkName: z.literal("Osmosis"), address: OsmosisAddressSchema }),
   z.object({ networkName: z.literal("Avalanche"), address: EvmAddressSchema }),
   z.object({ networkName: z.literal("NEAR"), address: NearAddressSchema }),
+  z.object({ networkName: z.literal("Flow"), address: FlowAddressSchema }),
 ]);
 
 export const WalletAddSchema = z.object({

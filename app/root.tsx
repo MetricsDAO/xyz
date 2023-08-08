@@ -38,7 +38,11 @@ export async function loader({ request }: DataFunctionArgs) {
     projects,
     tokens,
     contracts,
-    ENV: { ENVIRONMNET: env.ENVIRONMENT, SENTRY_DSN: env.SENTRY_DSN },
+    ENV: {
+      ENVIRONMNET: env.ENVIRONMENT,
+      SENTRY_DSN: env.SENTRY_DSN,
+      TREASURY_URL: env.TREASURY_URL,
+    },
   });
 }
 
