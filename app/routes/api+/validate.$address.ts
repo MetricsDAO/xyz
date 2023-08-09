@@ -8,8 +8,6 @@ const paramSchema = z.object({ address: z.string() });
 export async function loader({ params }: DataFunctionArgs) {
   const { address } = getParamsOrFail(params, paramSchema);
 
-  console.log("address", address);
-
   const isValid = await validate(address);
 
   return { isValid };
