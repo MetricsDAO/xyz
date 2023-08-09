@@ -58,7 +58,6 @@ export const NearAddressSchema = z.string().refine(async (address) => {
 
 export const FlowAddressSchema = z.string().refine(async (address) => {
   try {
-    console.log("addressadsas", address);
     const res = await getIsAddressValid(address);
     return res.isValid;
   } catch {
