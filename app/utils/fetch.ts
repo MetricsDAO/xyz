@@ -2,6 +2,7 @@ import type { IndexEventResponse } from "~/routes/api+/index-event";
 import type { Event } from "~/domain";
 import type { IOUPost } from "~/domain/treasury";
 import type { AddToken } from "~/routes/api+/add-token";
+import type { ValidateAddressResponse } from "~/routes/api+/validate.$address";
 
 export async function postNewEvent(event: Event) {
   return fetch("/api/index-event", {
@@ -29,4 +30,13 @@ export async function postToken(data: AddToken) {
   });
   const json = await res.json();
   return json;
+}
+
+export async function getIsAddressValid(address: string) {
+  return await fetch(`/api/validate/${address}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json() as Promise<ValidateAddressResponse>);
 }
