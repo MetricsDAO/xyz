@@ -57,6 +57,9 @@ async function main() {
       { slug: "phase", name: "Phase" },
       { slug: "metricsdao", name: "MetricsDAO" },
       { slug: "evmos", name: "Evmos" },
+      { slug: "base", name: "Base" },
+      { slug: "sei", name: "Sei" },
+      { slug: "sui", name: "Sui" },
     ],
   });
 
