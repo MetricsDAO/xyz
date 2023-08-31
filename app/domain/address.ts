@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
 import { bech32 } from "bech32";
-import { getIsAddressValid } from "~/utils/fetch";
 
 export const EvmAddressSchema = z
   .string()
@@ -58,8 +57,15 @@ export const NearAddressSchema = z.string().refine(async (address) => {
 
 export const FlowAddressSchema = z.string().refine(async (address) => {
   try {
-    const res = await getIsAddressValid(address);
-    return res.isValid;
+    const TREASURY_URL = process.env.TREASURY_URL || window.ENV.TREASURY_URL;
+    const response = await fetch(`${TREASURY_URL}/validate/${address}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await response.json();
+    return json.valid ? true : false;
   } catch {
     return false;
   }
