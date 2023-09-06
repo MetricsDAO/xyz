@@ -9794,10 +9794,10 @@ kuler@^2.0.0:
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
 
-"labor-markets-abi-dev@npm:labor-markets-abi@2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/labor-markets-abi/-/labor-markets-abi-2.0.9.tgz#1649f59f73d2533f533a8ee4cccefc0d35bb21ff"
-  integrity sha512-ep4/tIWK+GRNNYIenzG0HFXax1GDJqIT0z6DhVsQAZX933ro2rZ43xvho2bB7QzLcIXt3I0yXrPS6AIn7eAGIQ==
+labor-markets-abi-dev@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/labor-markets-abi-dev/-/labor-markets-abi-dev-2.2.0.tgz#161f3a5635f3af758bcacc3f439ba782ca22134e"
+  integrity sha512-XUga6kGOUHSXlQ1S42c8b4G8UDfMgl/+xBI2d1KIGoHR7pmXX52xTiDNJgBUKk8XpoWGIYauBBwLry+oETQRTA==
 
 labor-markets-abi@^2.2.0:
   version "2.2.0"
