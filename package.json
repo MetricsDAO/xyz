@@ -76,7 +76,7 @@
     "express": "^4.18.2",
     "express-prometheus-middleware": "^1.2.0",
     "isbot": "latest",
-    "labor-markets-abi": "2.1.1",
+    "labor-markets-abi": "^2.2.0",
     "labor-markets-abi-dev": "npm:labor-markets-abi@2.0.9",
     "mdx-bundler": "^9.2.1",
     "mongodb": "^5.3.0",
