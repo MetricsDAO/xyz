@@ -21,6 +21,7 @@ const { chains, provider } = configureChains([polygon, mainnet], [publicProvider
 
 const { connectors } = getDefaultWallets({
   appName: "MetricsDAO",
+  projectId: "ff1ff238a25c6800e3c8c08f5b848ef7",
   chains,
 });
 
