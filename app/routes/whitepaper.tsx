@@ -38,7 +38,7 @@ White Paper - Version 2.0
 
 January 2023
 
-CHANCE* Drake Danner† Meg Lister†
+CHANCE\* Drake Danner† Meg Lister†
 
 MetricsDAO unites analysts in a service DAO to provide on-demand data analytics using a scalable system enabled by on-chain primitives and democratized access to experts.
 
