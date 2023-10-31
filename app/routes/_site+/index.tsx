@@ -11,6 +11,100 @@ export default function Index() {
 
   return (
     <div>
+      <div
+        style={{
+          height: "min-content",
+          width: "100%",
+          color: "black",
+          border: "2px solid #ccc",
+          borderRadius: "10px",
+          marginBottom: "20px",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+        }}
+      >
+        <div
+          style={{
+            padding: "20px",
+            borderRadius: "10px 10px 0 0",
+            textAlign: "center",
+            color: "black",
+          }}
+        >
+          <h3 style={{ color: "black" }}>
+            <strong style={{ color: "red", fontSize: "23px" }}>
+              As of November 1, 2023, Flipside Crypto no longer hosts the Metrics application for the Labor Markets
+              protocol.
+            </strong>
+          </h3>
+          <p>
+            The code for the application and protocol are open source and may be utilized according to respective
+            software licenses.
+          </p>
+          <p style={{ marginBottom: "8px", marginTop: "8px", fontWeight: "bold" }}>
+            Flipside Crypto’s Community Analytics Rewards programs can be accessed on: &nbsp;
+            <a href="https://flipsidecrypto.xyz/earn" style={{ color: "#404040", textDecoration: "underline" }}>
+              Flipside Earn
+            </a>{" "}
+          </p>
+          <p>
+            <a
+              href="https://github.com/MetricsDAO"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#404040", textDecoration: "underline" }}
+            >
+              Metrics App GitHub
+            </a>
+            &nbsp; & &nbsp;
+            <a
+              href="https://github.com/MetricsDAO/xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#404040", textDecoration: "underline" }}
+            >
+              Repo
+            </a>
+            &nbsp; & &nbsp;
+            <a
+              href="https://metricsdao.gitbook.io/metrics-app-1/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#404040", textDecoration: "underline" }}
+            >
+              Docs
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://github.com/FlipsideCrypto/labor-market"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#404040", textDecoration: "underline" }}
+            >
+              Labor Market Protocol Repo
+            </a>
+            &nbsp; & &nbsp;
+            <a
+              href="https://metricsdao.gitbook.io/labor-markets-protocol/components/labor-market"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#404040", textDecoration: "underline" }}
+            >
+              Labor Market Protocol Docs
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://polygonscan.com/address/0x1d9285fef4a58256a2a58a1a66ac7739ee9daa3a"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#404040", textDecoration: "underline" }}
+            >
+              Most Recent Deployment
+            </a>
+          </p>
+        </div>
+      </div>
       <div className="flex flex-row">
         <aside className="hidden md:block w-1/6">
           <div className="fixed top-1/3 left-0 flex flex-col items-center pt-8 pl-5 gap-y-5 -z-10">

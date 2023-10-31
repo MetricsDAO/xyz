@@ -128,18 +128,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
 
-      - name: 🐳 Docker build indexer
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          file: Dockerfile.indexer
-          tags: registry.fly.io/mdao-indexer-v3:${{ github.ref_name }}-${{ github.sha }}
-          build-args: |
-            COMMIT_SHA=${{ github.sha }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
-
       # This ugly bit is necessary if you don't want your cache to grow forever
       # till it hits GitHub's limit of 5GB.
       # Temp fix
@@ -164,13 +152,6 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
-      - name: 🚀 Deploy Indexer
-        uses: superfly/flyctl-actions@1.3
-        with:
-          args: "deploy --config fly.indexer.toml  --app mdao-indexer-dev --image registry.fly.io/mdao-indexer-v3:${{ github.ref_name }}-${{ github.sha }}"
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
       - name: 🚀 Deploy App
         uses: superfly/flyctl-actions@1.3
         with:
@@ -191,13 +172,6 @@ jobs:
 
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
-
-      - name: 🚀 Deploy Indexer
-        uses: superfly/flyctl-actions@1.3
-        with:
-          args: "deploy --config fly.indexer.toml  --app mdao-indexer-v3 --image registry.fly.io/mdao-indexer-v3:${{ github.ref_name }}-${{ github.sha }}"
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: 🚀 Deploy App
         uses: superfly/flyctl-actions@1.3
