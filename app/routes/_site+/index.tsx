@@ -221,7 +221,6 @@ export default function Index() {
                 Winners earn tokens from the partner reward pool while increasing their reputation score in the
                 MetricsDAO ecosystem.
               </p>
-              <MarketingButton label="Launch App" link="/app/analyze" />
             </div>
           </InfoSection>
         </main>
