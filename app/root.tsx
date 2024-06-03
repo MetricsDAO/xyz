@@ -171,11 +171,6 @@ function App() {
 
 export default withSentry(App, {
   errorBoundaryOptions: {
-    fallback: ({ error }) => (
-      <div className="w-screen h-screen flex items-center justify-center">
-        <Blurs />
-        <ErrorBoundary error={error} />
-      </div>
-    ),
+    fallback: <ErrorBoundary />,
   },
 });
